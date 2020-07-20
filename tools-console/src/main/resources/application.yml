@@ -1,0 +1,13 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: sanri-tools
+  profiles:
+    active: company
+  main:
+    banner-mode: off
+data:
+  path:
+    config: d:/help/diary/OneDrive/.stfolder/sanritoolsconfig
+    tmp: d:/tmp
