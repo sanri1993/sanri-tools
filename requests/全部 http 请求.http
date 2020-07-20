@@ -1,0 +1,4 @@
+### 看子模块的 resource 能不能加载
+GET {{baseUrl}}/index/randomData
+
+###

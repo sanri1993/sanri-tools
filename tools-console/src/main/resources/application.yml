@@ -6,8 +6,8 @@ spring:
   profiles:
     active: company
   main:
-    banner-mode: off
+    banner-mode: "off"
 data:
   path:
-    config: d:/help/diary/OneDrive/.stfolder/sanritoolsconfig
+    config: d:/test/config
     tmp: d:/tmp

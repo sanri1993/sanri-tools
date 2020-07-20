@@ -13,8 +13,6 @@ import java.util.Map;
 @Service
 public class RedisService {
     @Autowired
-    ConnectService connectService;
-
-    Map<ConnectIdParam, RedisProperties.Jedis> connectMap = new HashMap<>();
+    FileManager fileManager;
 
 }

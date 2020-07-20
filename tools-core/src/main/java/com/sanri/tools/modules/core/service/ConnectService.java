@@ -1,6 +1,7 @@
 package com.sanri.tools.modules.core.service;
 
 import com.sanri.tools.modules.core.service.file.FileManager;
+import com.sanri.tools.modules.core.utils.ReachableUtil;
 import com.sanri.tools.modules.protocol.param.ConnectIdParam;
 import com.sanri.tools.modules.protocol.param.ConnectParam;
 import com.sanri.tools.modules.protocol.exception.ToolException;
@@ -29,15 +30,4 @@ public class ConnectService {
         }
     }
 
-    /**
-     * 获取连接详情
-     * @param connectIdParam
-     * @return
-     */
-    public String connectConfigInfo(ConnectIdParam connectIdParam) throws IOException {
-        String connName = connectIdParam.getConnName();
-        String module = connectIdParam.getModule();
-        String readConfig = fileManager.readConfig(module, connName);
-        return readConfig;
-    }
 }

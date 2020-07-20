@@ -1,6 +1,9 @@
 package com.sanri.tools.modules.core.service.file;
 
+import com.alibaba.fastjson.JSON;
 import com.sanri.tools.modules.protocol.dto.ConfigPath;
+import com.sanri.tools.modules.protocol.param.ConnectIdParam;
+import com.sanri.tools.modules.protocol.param.DatabaseConnectParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,10 +21,13 @@ import java.util.List;
 @Service
 @Slf4j
 public class FileManager {
-    @Autowired
-    private FileManagerProperties fileManagerProperties;
-    private File configBase = fileManagerProperties.getConfig();
-    private File tmpBase = fileManagerProperties.getTmp();
+    private File configBase;
+    private File tmpBase ;
+
+    public FileManager(FileManagerProperties fileManagerProperties){
+        configBase = fileManagerProperties.getConfig();
+        tmpBase = fileManagerProperties.getTmp();
+    }
 
     @PostConstruct
     public void init(){
@@ -131,5 +137,14 @@ public class FileManager {
             configPaths.add(new ConfigPath(name,directory));
         }
         return configPaths;
+    }
+
+    /**
+     * 写入模块配置
+     * @param connectIdParam
+     * @param data
+     */
+    public void writeConfig(ConnectIdParam connectIdParam, Object data) throws IOException {
+        writeConfig(connectIdParam.getModule(),connectIdParam.getConnName(), JSON.toJSONString(data));
     }
 }
