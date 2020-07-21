@@ -23,6 +23,7 @@ public class JdbcConnectionService {
     /** 保存所有的连接信息 连接名 ==> 连接 */
     private Map<String,ExConnection> CONNECTIONS = new HashMap<String, ExConnection>();
 
+    public final static String module = "database";
     /**
      * 保存一个连接
      * @param connectionInfo

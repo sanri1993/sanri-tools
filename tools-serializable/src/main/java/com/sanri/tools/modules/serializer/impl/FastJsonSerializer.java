@@ -15,4 +15,9 @@ public class FastJsonSerializer extends StringSerializer {
         String deserialize = ObjectUtils.toString(super.deserialize(bytes,classLoader));
         return JSON.parseObject(deserialize);
     }
+
+    @Override
+    public String name() {
+        return "fastjson";
+    }
 }

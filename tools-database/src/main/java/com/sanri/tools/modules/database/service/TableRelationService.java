@@ -118,7 +118,7 @@ public class TableRelationService {
      */
     public void serializable(){
         try {
-            fileManager.writeConfig("database","metadata/relations",JSON.toJSONString(TableRelationDtoMap));
+            fileManager.writeConfig(JdbcConnectionService.module,"metadata/relations",JSON.toJSONString(TableRelationDtoMap));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -130,7 +130,7 @@ public class TableRelationService {
     @PostConstruct
     public void init(){
         try {
-            String readFileToString = fileManager.readConfig("database", "metadata/relations");
+            String readFileToString = fileManager.readConfig(JdbcConnectionService.module, "metadata/relations");
             if(StringUtils.isBlank(readFileToString)){
                 return ;
             }

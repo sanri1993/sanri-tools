@@ -3,6 +3,13 @@ package com.sanri.tools.modules.serializer;
 import java.io.IOException;
 
 public interface Serializer {
+
+    /**
+     * 序列化标识名称
+     * @return
+     */
+    String name();
+
     /**
      * 序列化成字节数组
      * @param data

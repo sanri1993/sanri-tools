@@ -38,8 +38,6 @@ public class MetadataController {
     @Autowired
     private ConnectService connectService;
 
-    private final static String module = "database";
-
     /**
      *
      * 作者:sanri <br/>
@@ -49,7 +47,7 @@ public class MetadataController {
      */
     @GetMapping("/connections")
     public Set<String> connections(){
-        return connectService.names(module);
+        return connectService.names(JdbcConnectionService.module);
     }
 
     /**
@@ -58,7 +56,7 @@ public class MetadataController {
      */
     @PostMapping("/connection/load")
     public void connectionLoad(String connName) throws IOException, SQLException {
-        DatabaseConnectParam databaseConnectParam = connectService.readConnParams(connName);
+        DatabaseConnectParam databaseConnectParam = (DatabaseConnectParam) connectService.readConnParams(JdbcConnectionService.module,connName);
         jdbcConnectionService.saveConnection(databaseConnectParam);
     }
 

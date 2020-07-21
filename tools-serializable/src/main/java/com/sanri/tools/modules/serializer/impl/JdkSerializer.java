@@ -9,6 +9,11 @@ import java.io.ObjectOutputStream;
 
 public class JdkSerializer implements Serializer {
     @Override
+    public String name() {
+        return "jdk";
+    }
+
+    @Override
     public byte[] serialize(Object o) throws IOException {
         if(o == null) return new byte[0];
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

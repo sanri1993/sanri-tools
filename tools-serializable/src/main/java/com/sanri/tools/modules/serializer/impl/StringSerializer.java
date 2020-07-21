@@ -9,6 +9,11 @@ import java.nio.charset.StandardCharsets;
  */
 public class StringSerializer implements Serializer {
     @Override
+    public String name() {
+        return "string";
+    }
+
+    @Override
     public byte[] serialize(Object data){
         if(data == null)return new byte[0];
         return ((String)data).getBytes(StandardCharsets.UTF_8);

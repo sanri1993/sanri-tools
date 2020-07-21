@@ -8,6 +8,11 @@ import org.apache.commons.codec.binary.Hex;
 @Slf4j
 public class HexSerializer implements Serializer {
     @Override
+    public String name() {
+        return "hex";
+    }
+
+    @Override
     public byte[] serialize(Object o){
         if (o == null)
             return new byte[0];

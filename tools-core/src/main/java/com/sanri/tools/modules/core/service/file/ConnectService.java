@@ -96,9 +96,10 @@ public class ConnectService {
         return null;
     }
 
-    public DatabaseConnectParam readConnParams(String connName) throws IOException {
-        String content = content("database", connName);
-        DatabaseConnectParam databaseConnectParam = JSON.parseObject(content, DatabaseConnectParam.class);
-        return databaseConnectParam;
+    public AbstractConnectParam readConnParams(String module,String connName) throws IOException {
+        String content = content(module, connName);
+        Class<?> paramClass = moduleParamFactory(module);
+        AbstractConnectParam abstractConnectParam = (AbstractConnectParam) JSON.parseObject(content, paramClass);
+        return abstractConnectParam;
     }
 }

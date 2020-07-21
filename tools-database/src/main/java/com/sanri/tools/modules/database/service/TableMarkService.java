@@ -46,7 +46,7 @@ public class TableMarkService {
      */
     private void serializable(){
         try {
-            fileManager.writeConfig("database","metadata/tablemark", JSON.toJSONString(tableMarkMap));
+            fileManager.writeConfig(JdbcConnectionService.module,"metadata/tablemark", JSON.toJSONString(tableMarkMap));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -55,7 +55,7 @@ public class TableMarkService {
     @PostConstruct
     private void init(){
         try {
-            String tableMark = fileManager.readConfig("database", "metadata/tablemark");
+            String tableMark = fileManager.readConfig(JdbcConnectionService.module, "metadata/tablemark");
             if(StringUtils.isNotBlank(tableMark)){
                 TypeReference<Map<String,TableMark>> typeReference = new TypeReference<Map<String,TableMark>>(){};
                 tableMarkMap = JSON.parseObject(tableMark, typeReference);
@@ -104,7 +104,7 @@ public class TableMarkService {
         if(connection == null){
             synchronized (TableMarkService.class){
                 if(connection == null){
-                    DatabaseConnectParam databaseConnectParam = connectService.readConnParams(connName);
+                    DatabaseConnectParam databaseConnectParam = (DatabaseConnectParam) connectService.readConnParams(JdbcConnectionService.module,connName);
                     connection = jdbcConnectionService.saveConnection(databaseConnectParam);
                 }
             }

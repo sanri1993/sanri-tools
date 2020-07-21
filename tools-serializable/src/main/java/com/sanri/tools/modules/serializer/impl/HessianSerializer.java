@@ -11,6 +11,11 @@ import java.io.IOException;
 
 public class HessianSerializer implements Serializer {
     @Override
+    public String name() {
+        return "hessian";
+    }
+
+    @Override
     public byte[] serialize(Object o) throws IOException {
         if (o == null)return new byte[0];
 

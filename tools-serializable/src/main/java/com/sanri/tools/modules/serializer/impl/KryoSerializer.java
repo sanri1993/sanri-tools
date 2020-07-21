@@ -26,6 +26,11 @@ public class KryoSerializer implements Serializer {
     private Log logger = LogFactory.getLog(getClass());
 
     @Override
+    public String name() {
+        return "kryo";
+    }
+
+    @Override
     public byte[] serialize(Object data)  {
         if (data == null) return new byte[0];
         Kryo kryo = kryos.get();
