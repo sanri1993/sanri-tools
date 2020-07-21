@@ -1,15 +1,21 @@
 package com.sanri.tools.modules.database.service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.sanri.tools.modules.core.service.file.ConnectService;
+import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.protocol.db.Table;
 import com.sanri.tools.modules.protocol.db.TableMark;
+import com.sanri.tools.modules.protocol.param.DatabaseConnectParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -18,6 +24,10 @@ public class TableMarkService {
     private Map<String, TableMark> tableMarkMap = new HashMap<>();
     @Autowired
     private JdbcConnectionService jdbcConnectionService;
+    @Autowired
+    private FileManager fileManager;
+    @Autowired
+    private ConnectService connectService;
 
     /**
      * 配置表标签,直接覆盖的方式
@@ -27,6 +37,31 @@ public class TableMarkService {
         for (TableMark tableMark : tableMarks) {
             String key = StringUtils.join(Arrays.asList(tableMark.getConnName(),tableMark.getSchemaName(),tableMark.getTableName()),'.');
             tableMarkMap.put(key,tableMark);
+        }
+        serializable();
+    }
+
+    /**
+     * 所有数据序列化存储起来
+     */
+    private void serializable(){
+        try {
+            fileManager.writeConfig("database","metadata/tablemark", JSON.toJSONString(tableMarkMap));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @PostConstruct
+    private void init(){
+        try {
+            String tableMark = fileManager.readConfig("database", "metadata/tablemark");
+            if(StringUtils.isNotBlank(tableMark)){
+                TypeReference<Map<String,TableMark>> typeReference = new TypeReference<Map<String,TableMark>>(){};
+                tableMarkMap = JSON.parseObject(tableMark, typeReference);
+            }
+        } catch (IOException e) {
+            log.error("加载表标签失败:{}",e.getMessage());
         }
     }
 
@@ -62,10 +97,19 @@ public class TableMarkService {
      * 查找有某个标签的表
      * @return
      */
-    public List<Table> findTagTables(String connName,String schemaName,String tag) throws SQLException {
+    public List<Table> findTagTables(String connName,String schemaName,String tag) throws SQLException, IOException {
         List<Table> findTables = new ArrayList<>();
 
         ExConnection connection = jdbcConnectionService.getConnection(connName);
+        if(connection == null){
+            synchronized (TableMarkService.class){
+                if(connection == null){
+                    DatabaseConnectParam databaseConnectParam = connectService.readConnParams(connName);
+                    connection = jdbcConnectionService.saveConnection(databaseConnectParam);
+                }
+            }
+        }
+
         List<Table> tables = connection.refreshTables(schemaName);
         for (Table table : tables) {
             String tableName = table.getTableName();

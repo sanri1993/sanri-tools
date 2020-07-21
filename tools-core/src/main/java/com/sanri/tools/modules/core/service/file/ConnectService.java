@@ -1,4 +1,4 @@
-package com.sanri.tools.modules.core.service;
+package com.sanri.tools.modules.core.service.file;
 
 import com.alibaba.fastjson.JSON;
 import com.sanri.tools.modules.core.service.file.FileManager;
@@ -96,4 +96,9 @@ public class ConnectService {
         return null;
     }
 
+    public DatabaseConnectParam readConnParams(String connName) throws IOException {
+        String content = content("database", connName);
+        DatabaseConnectParam databaseConnectParam = JSON.parseObject(content, DatabaseConnectParam.class);
+        return databaseConnectParam;
+    }
 }

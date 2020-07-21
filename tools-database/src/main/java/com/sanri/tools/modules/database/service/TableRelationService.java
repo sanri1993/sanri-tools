@@ -7,14 +7,12 @@ import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.protocol.db.Column;
 import com.sanri.tools.modules.protocol.db.TableRelationDto;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,9 +35,11 @@ public class TableRelationService {
      * @param schemaName
      * @param TableRelationDtos
      */
-    public void insert(String connName,String schemaName,Set<TableRelationDto> TableRelationDtos){
+    public void configRelation(String connName, String schemaName, Set<TableRelationDto> TableRelationDtos){
         Set<TableRelationDto> relations = loadSchemaRelationMap(connName, schemaName);
         relations.addAll(TableRelationDtos);
+
+        serializable();
     }
 
     /**
@@ -116,10 +116,9 @@ public class TableRelationService {
     /**
      * 序列化现在的所有表关系
      */
-    public void serializerRelation(){
-        String relationJson = JSON.toJSONString(TableRelationDtoMap);
+    public void serializable(){
         try {
-            fileManager.writeConfig("database","metadata/relations",relationJson);
+            fileManager.writeConfig("database","metadata/relations",JSON.toJSONString(TableRelationDtoMap));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -139,7 +138,7 @@ public class TableRelationService {
             TypeReference<Map<String, Map<String, Set<TableRelationDto>>>> mapTypeReference = new TypeReference<Map<String, Map<String, Set<TableRelationDto>>>>() {};
             TableRelationDtoMap = JSON.parseObject(readFileToString, mapTypeReference);
         } catch (IOException e) {
-            log.error("加载表关系失败:{}",e.getMessage(),e);
+            log.error("加载表关系失败:{}",e.getMessage());
         }
 
     }

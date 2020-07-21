@@ -37,4 +37,44 @@ GET {{baseUrl}}/db/metadata/schemas?connName=lo
 ### 获取 schema 的所有表
 GET {{baseUrl}}/db/metadata/tables?connName=lo&schemaName=hdsc_db
 
+### 标记表-常用标记
+GET {{baseUrl}}/db/metadata/extend/mark/tags
+
+### 标记表-标记表
+POST {{baseUrl}}/db/metadata/extend/mark/config/tableMark
+Content-Type: application/json
+
+[
+  {
+    "connName": "lo",
+    "schemaName": "hdsc_db",
+    "tableName": "mct_event_handler",
+    "tags": ["biz"]
+  }
+]
+
+### 标记表-获取表标记
+GET {{baseUrl}}/db/metadata/extend/mark/tableTags?connName=lo&schemaName=hdsc_db&tableName=mct_event_handler
+
+### 标记表-查找某个标记的表
+GET {{baseUrl}}/db/metadata/extend/mark/tagTables?connName=lo&schemaName=hdsc_db
+
+### 表关系 - 配置表关系
+POST {{baseUrl}}/db/metadata/extend/relation/config
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "schemaName": "hdsc_db",
+  "tableRelations": [
+    {
+      "sourceTableName": "mct.mct_event_handler",
+      "targetTableName": "mct.mct_event_record_common",
+      "sourceColumnName": "uuid",
+      "targetColumnName": "uuid",
+      "relation": "ONE_ONE"
+    }
+  ]
+}
+
 ###

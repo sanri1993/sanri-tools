@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ public class DataController {
      * @return
      */
     @GetMapping("/cleanBizTables")
-    public String cleanBizTables(String connName,String schemaName,String tagName) throws SQLException {
+    public String cleanBizTables(String connName,String schemaName,String tagName) throws SQLException, IOException {
         List<Table> tagTables = tableMarkService.findTagTables(connName, schemaName, tagName);
         List<String> sqls = new ArrayList<>();
         for (Table tagTable : tagTables) {

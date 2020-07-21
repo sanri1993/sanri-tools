@@ -8,8 +8,6 @@ import com.sanri.tools.modules.protocol.param.DatabaseConnectParam;
 import com.sanri.tools.modules.protocol.utils.PropertyEditUtil;
 import lombok.extern.slf4j.Slf4j;
 import oracle.jdbc.pool.OracleDataSource;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.stereotype.Component;
 
@@ -28,8 +26,9 @@ public class JdbcConnectionService {
     /**
      * 保存一个连接
      * @param connectionInfo
+     * @return
      */
-    public void saveConnection(DatabaseConnectParam databaseConnectParam) throws SQLException {
+    public ExConnection saveConnection(DatabaseConnectParam databaseConnectParam) throws SQLException {
         ConnectIdParam connectIdParam = databaseConnectParam.getConnectIdParam();
         ConnectParam connectParam = databaseConnectParam.getConnectParam();
         AuthParam authParam = databaseConnectParam.getAuthParam();
@@ -69,7 +68,7 @@ public class JdbcConnectionService {
         }
         if(exConnection != null) {
             CONNECTIONS.put(connectIdParam.getConnName(), exConnection);
-            return ;
+            return exConnection;
         }
 
         String error = "添加连接失败,当前数据库类型不受支持:"+databaseConnectParam.getDbType();

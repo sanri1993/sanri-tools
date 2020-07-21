@@ -1,7 +1,7 @@
 package com.sanri.tools.modules.core.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.sanri.tools.modules.core.service.ConnectService;
+import com.sanri.tools.modules.core.service.file.ConnectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,9 +1,6 @@
 package com.sanri.tools.modules.database.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.sanri.tools.modules.core.controller.ConnectController;
-import com.sanri.tools.modules.core.service.ConnectService;
-import com.sanri.tools.modules.core.service.file.FileManager;
+import com.sanri.tools.modules.core.service.file.ConnectService;
 import com.sanri.tools.modules.database.service.ExConnection;
 import com.sanri.tools.modules.database.service.JdbcConnectionService;
 import com.sanri.tools.modules.database.service.OracleExConnection;
@@ -61,8 +58,7 @@ public class MetadataController {
      */
     @PostMapping("/connection/load")
     public void connectionLoad(String connName) throws IOException, SQLException {
-        String content = connectService.content(module, connName);
-        DatabaseConnectParam databaseConnectParam = JSON.parseObject(content, DatabaseConnectParam.class);
+        DatabaseConnectParam databaseConnectParam = connectService.readConnParams(connName);
         jdbcConnectionService.saveConnection(databaseConnectParam);
     }
 

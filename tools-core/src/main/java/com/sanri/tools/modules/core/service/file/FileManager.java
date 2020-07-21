@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -153,5 +155,35 @@ public class FileManager {
             configPaths.add(new ConfigPath(name,directory));
         }
         return configPaths;
+    }
+
+    /**
+     * 获取相对于临时文件夹的资源
+     * @param baseName
+     * @return
+     */
+    public Resource relativeResource(String baseName) {
+        File file = new File(tmpBase, baseName);
+        if(!file.exists())return null;
+
+        if(file.isFile()){
+            return new FileSystemResource(file);
+        }
+
+        int length = file.list().length;
+        if(length == 0){
+            log.warn("空文件夹[{}]",file);
+            return null;
+        }
+
+        // 只有一个文件的情况
+        if(length == 1) {
+            String fileName = file.list()[0];
+            return new FileSystemResource(new File(file, fileName));
+        }
+
+        // 打包下载
+
+        return null;
     }
 }
