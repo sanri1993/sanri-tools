@@ -1,8 +1,8 @@
 package com.sanri.tools.modules.database.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.sanri.tools.modules.core.controller.ConnectManager;
+import com.sanri.tools.modules.core.controller.ConnectController;
+import com.sanri.tools.modules.core.service.ConnectService;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.database.service.ExConnection;
 import com.sanri.tools.modules.database.service.JdbcConnectionService;
@@ -11,7 +11,6 @@ import com.sanri.tools.modules.protocol.db.Column;
 import com.sanri.tools.modules.protocol.db.Schema;
 import com.sanri.tools.modules.protocol.db.Table;
 import com.sanri.tools.modules.protocol.param.DatabaseConnectParam;
-import oracle.jdbc.proxy.annotation.Post;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
@@ -40,7 +39,7 @@ public class MetadataController {
     @Autowired
     JdbcConnectionService jdbcConnectionService;
     @Autowired
-    private FileManager fileManager;
+    private ConnectService connectService;
 
     private final static String module = "database";
 
@@ -53,7 +52,7 @@ public class MetadataController {
      */
     @GetMapping("/connections")
     public Set<String> connections(){
-        return fileManager.simpleConfigNames(module, ConnectManager.CONNECT_NAME);
+        return connectService.names(module);
     }
 
     /**
@@ -62,8 +61,8 @@ public class MetadataController {
      */
     @PostMapping("/connection/load")
     public void connectionLoad(String connName) throws IOException, SQLException {
-        String readConfig = fileManager.readConfig(module, ConnectManager.CONNECT_NAME + "/" + connName);
-        DatabaseConnectParam databaseConnectParam = JSON.parseObject(readConfig, DatabaseConnectParam.class);
+        String content = connectService.content(module, connName);
+        DatabaseConnectParam databaseConnectParam = JSON.parseObject(content, DatabaseConnectParam.class);
         jdbcConnectionService.saveConnection(databaseConnectParam);
     }
 

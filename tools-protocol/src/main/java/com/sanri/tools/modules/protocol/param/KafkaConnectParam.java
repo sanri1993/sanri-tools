@@ -5,9 +5,7 @@ import lombok.Data;
 import javax.security.auth.login.AppConfigurationEntry;
 
 @Data
-public class KafkaConnectParam {
-    private ConnectIdParam connectIdParam;
-    private ConnectParam connectParam;
+public class KafkaConnectParam extends AbstractConnectParam{
     private String zookeeperConnName;
     private String version;
     private String chroot = "/";
