@@ -1,5 +1,6 @@
 package com.sanri.tools.modules.core.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.sanri.tools.modules.core.service.ConnectService;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.core.utils.ReachableUtil;
@@ -21,6 +22,9 @@ public class ConnectManager {
     private ConnectService connectService;
     @Autowired
     private FileManager fileManager;
+
+    // 连接都保存在这个目录
+    public static final String CONNECT_NAME = "connect";
 
     /**
      * 模块列表
@@ -60,19 +64,28 @@ public class ConnectManager {
     @PostMapping("/create/database")
     public void createDatabase(@RequestBody DatabaseConnectParam databaseConnectParam) throws IOException {
         checkHostportReachable(databaseConnectParam);
-        fileManager.writeConfig(databaseConnectParam.getConnectIdParam(),databaseConnectParam);
+        ConnectIdParam connectIdParam = databaseConnectParam.getConnectIdParam();
+        String module = connectIdParam.getModule();
+        String connName = connectIdParam.getConnName();
+        fileManager.writeConfig(module,CONNECT_NAME+"/"+connName, JSON.toJSONString(databaseConnectParam));
     }
 
     @PostMapping("/create/redis")
     public void createRedis(@RequestBody RedisConnectParam redisConnectParam) throws IOException {
         checkHostportReachable(redisConnectParam);
-        fileManager.writeConfig(redisConnectParam.getConnectIdParam(),redisConnectParam);
+        ConnectIdParam connectIdParam = redisConnectParam.getConnectIdParam();
+        String module = connectIdParam.getModule();
+        String connName = connectIdParam.getConnName();
+        fileManager.writeConfig(module,CONNECT_NAME+"/"+connName, JSON.toJSONString(redisConnectParam));
     }
 
     @PostMapping("/create/kafka")
     public void createKafka(@RequestBody KafkaConnectParam kafkaConnectParam) throws IOException {
         checkHostportReachable(kafkaConnectParam);
-        fileManager.writeConfig(kafkaConnectParam.getConnectIdParam(),kafkaConnectParam);
+        ConnectIdParam connectIdParam = kafkaConnectParam.getConnectIdParam();
+        String module = connectIdParam.getModule();
+        String connName = connectIdParam.getConnName();
+        fileManager.writeConfig(module,CONNECT_NAME+"/"+connName, JSON.toJSONString(kafkaConnectParam));
     }
 
     private void checkHostportReachable(Object param){

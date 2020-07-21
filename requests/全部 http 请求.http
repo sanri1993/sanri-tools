@@ -1,4 +1,40 @@
 ### 看子模块的 resource 能不能加载
 GET {{baseUrl}}/index/randomData
 
+### 创建数据库连接
+POST {{baseUrl}}/connect/create/database
+Content-Type: application/json
+
+{
+  "connectIdParam": {
+    "module": "database",
+    "connName": "lo"
+  },
+  "connectParam": {
+    "host": "10.101.72.43",
+    "port": 5432
+  },
+  "authParam": {
+    "username": "postgres",
+    "password": "postgres"
+  },
+  "dbType": "postgresql",
+  "schema": "hdsc_db"
+}
+
+### 获取所有数据库连接
+GET {{baseUrl}}/db/metadata/connections
+
+### 加载连接
+POST {{baseUrl}}/db/metadata/connection/load
+Content-Type: application/x-www-form-urlencoded
+
+connName=lo
+
+### 获取所有 schema
+GET {{baseUrl}}/db/metadata/schemas?connName=lo
+
+### 获取 schema 的所有表
+GET {{baseUrl}}/db/metadata/tables?connName=lo&schemaName=hdsc_db
+
 ###

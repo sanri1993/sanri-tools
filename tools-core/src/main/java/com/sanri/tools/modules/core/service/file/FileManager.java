@@ -14,9 +14,7 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -63,6 +61,7 @@ public class FileManager {
         if(!moduleDir.exists())moduleDir.mkdir();
 
         File configFile = new File(moduleDir, baseName);
+        configFile.getParentFile().mkdirs();
         FileUtils.writeStringToFile(configFile,content);
     }
 
@@ -74,6 +73,20 @@ public class FileManager {
     public List<String> simpleConfigNames(String module){
         List<ConfigPath> configPaths = configNames(module);
         List<String> names = new ArrayList<>();
+        for (ConfigPath configPath : configPaths) {
+            names.add(configPath.getPathName());
+        }
+        return names;
+    }
+
+    /**
+     * 简单配置名列表
+     * @param module
+     * @return
+     */
+    public Set<String> simpleConfigNames(String module, String baseName){
+        List<ConfigPath> configPaths = configNames(module+"/"+baseName);
+        Set<String> names = new HashSet<>();
         for (ConfigPath configPath : configPaths) {
             names.add(configPath.getPathName());
         }
@@ -125,6 +138,9 @@ public class FileManager {
         // check module exists
         if(!moduleDir.exists())moduleDir.mkdir();
         File file = new File(moduleDir, baseName);
+        if(!file.exists()){
+            return null;
+        }
         return FileUtils.readFileToString(file);
     }
 
@@ -137,14 +153,5 @@ public class FileManager {
             configPaths.add(new ConfigPath(name,directory));
         }
         return configPaths;
-    }
-
-    /**
-     * 写入模块配置
-     * @param connectIdParam
-     * @param data
-     */
-    public void writeConfig(ConnectIdParam connectIdParam, Object data) throws IOException {
-        writeConfig(connectIdParam.getModule(),connectIdParam.getConnName(), JSON.toJSONString(data));
     }
 }
