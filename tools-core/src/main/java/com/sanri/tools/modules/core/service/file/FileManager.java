@@ -186,4 +186,16 @@ public class FileManager {
 
         return null;
     }
+
+    /**
+     * 创建临时目录;支持子目录
+     * @param baseName
+     */
+    public File mkTmpDir(String baseName) {
+        File file = new File(tmpBase, baseName);
+        if(!file.exists()){
+            file.mkdirs();
+        }
+        return file;
+    }
 }

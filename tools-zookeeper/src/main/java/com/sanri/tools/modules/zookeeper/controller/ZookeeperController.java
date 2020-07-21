@@ -1,4 +1,4 @@
-package com.sanri.modules.zookeeper.controller;
+package com.sanri.tools.modules.zookeeper.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
