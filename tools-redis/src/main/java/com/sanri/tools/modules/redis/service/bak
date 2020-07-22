@@ -1,0 +1,137 @@
+ // 保存的 jedis 客户端
+    private Map<String, JedisCommands> jedisMap = new HashMap<String, JedisCommands>();
+    @Autowired
+    private ConnectService connectService;
+
+    public static final String module = "redis";
+
+    /**
+     * 获取一个客户端
+     * @return
+     */
+    JedisCommands client(String connName) throws IOException {
+        JedisCommands jedisCommands = jedisMap.get(connName);
+        if(jedisCommands == null){
+            // 获取连接参数
+            RedisConnectParam redisConnectParam = (RedisConnectParam) connectService.readConnParams(module,connName);
+            ConnectParam connectParam = redisConnectParam.getConnectParam();
+            Jedis jedis = new Jedis(connectParam.getHost(), connectParam.getPort(), connectParam.getConnectionTimeout(), connectParam.getSessionTimeout());
+            AuthParam authParam = redisConnectParam.getAuthParam();
+            String password = authParam.getPassword();
+            if(StringUtils.isNotBlank(password)){
+                jedis.auth(password);
+            }
+            // 判断是否为集群
+            boolean cluster = isCluster(jedis);
+            if(!cluster){
+                jedisMap.put(connName,jedis);
+                return jedis;
+            }
+            // 是集群 ,创建集群命令,先查到所有节点
+            List<RedisNode> redisNodes = clusterNodes(jedis);
+
+        }
+    }
+
+    public List<RedisNode> masterSlaveNodes(Jedis jedis){
+        List<RedisNode> redisNodes = new ArrayList<>();
+
+        //如果不是集群模式,看是否为主从模式,获取主从结构的所有节点
+        String replication = jedis.info("Replication");
+        Map<String, String> properties = ColonCommandReply.colonCommandReply.parserKeyValue(replication);
+        String connected_slaves = properties.get("connected_slaves");
+        if(StringUtils.isNotBlank(connected_slaves)) {
+            int slaves = NumberUtils.toInt(connected_slaves);
+            if(slaves == 0){
+                // 单机模式
+                RedisNode redisNode = new RedisNode();
+                String host = jedis.getClient().getHost();
+                int port = jedis.getClient().getPort();
+                redisNode.setId(host+":"+port);
+                redisNode.setRole("master");
+                redisNode.setHostAndPort(HostAndPort.parseString(redisNode.getId()));
+                return Collections.singletonList(redisNode);
+            }
+
+            // 否则就是主从模式,级联获取所有节点
+
+            Client client = jedis.getClient();
+            findSlaves(HostAndPort.parseString(client.getHost()+":"+client.getPort()),redisNodes,null);
+
+        }
+        return redisNodes;
+    }
+    private void findSlaves(HostAndPort hostAndPort,List<RedisNode> redisNodes,String masterId) {
+        // 先添加父节点
+        Jedis jedis = new Jedis(hostAndPort.getHost(), hostAndPort.getPort());
+        String replication = jedis.info("Replication");jedis.disconnect();
+        Map<String, String> properties = ColonCommandReply.colonCommandReply.parserKeyValue(replication);
+        RedisNode redisNode = new RedisNode();
+        redisNode.setId(hostAndPort.toString());
+        redisNode.setRole(properties.get("role"));
+        redisNode.setHostAndPort(hostAndPort);
+        redisNode.setMaster(masterId);
+        redisNodes.add(redisNode);
+
+        // 添加子节点
+        Iterator<Map.Entry<String, String>> iterator = properties.entrySet().iterator();
+        while (iterator.hasNext()){
+            Map.Entry<String, String> next = iterator.next();
+            String key = next.getKey();
+            if(key.startsWith("slave")){
+                String value = next.getValue();
+                String[] split = StringUtils.split(value, ',');
+                String host = split[0].split("=")[1];int port = NumberUtils.toInt(split[1].split("=")[1]);
+                findSlaves(HostAndPort.parseString(host+":"+port),redisNodes,hostAndPort.toString());
+            }
+        }
+    }
+
+    /**
+     * 获取集群所有节点
+     * @param jedis
+     * @return
+     */
+    public List<RedisNode> clusterNodes(Jedis jedis) {
+        Client client = jedis.getClient();
+        client.clusterNodes();
+        String bulkReply = client.getBulkReply();
+        List<String []> nodeCommandLines = CommandReply.spaceCommandReply.parser(bulkReply);
+        List<RedisNode> redisNodes = nodeCommandLines.stream().map(line -> {
+            RedisNode redisNode = new RedisNode();
+            redisNode.setId(line[0]);
+            redisNode.setHostAndPort(HostAndPort.parseString(line[1]));
+            String flags = line[2];
+            redisNode.setRole(flags.replace("myself,", ""));
+            redisNode.setMaster(line[3]);
+            if ("master".equals(redisNode.getRole())) {
+                String slots = line[8];
+                if(slots.contains("-")){
+                    String[] split = StringUtils.split(slots, '-');
+                    int start = NumberUtils.toInt(split[0]);int end = NumberUtils.toInt(split[1]);
+                    redisNode.setSlotStart(start);redisNode.setSlotEnd(end);
+                }else{
+                    int around = NumberUtils.toInt(slots);
+                    redisNode.setSlotStart(around);redisNode.setSlotEnd(around);
+                }
+            }
+            return redisNode;
+        }).collect(Collectors.toList());
+
+        return redisNodes;
+    }
+
+    /**
+     * 判断是否为集群模式
+     * @param jedis
+     * @return
+     */
+    private boolean isCluster(Jedis jedis) {
+        String info = jedis.info("Cluster");
+        Map<String, String> properties = ColonCommandReply.colonCommandReply.parserKeyValue(info);
+        String cluster_enabled = properties.get("cluster_enabled");
+        if("1".equals(cluster_enabled)){
+            return true;
+        }
+        return false;
+    }
