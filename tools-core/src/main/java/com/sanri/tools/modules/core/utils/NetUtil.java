@@ -1,16 +1,14 @@
 package com.sanri.tools.modules.core.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.net.*;
 
-public class ReachableUtil {
-    private static Logger log = LoggerFactory.getLogger(ReachableUtil.class);
+@Slf4j
+public class NetUtil {
     /**
      * 是否主机端口可以连接
      * @param host
@@ -56,5 +54,18 @@ public class ReachableUtil {
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * 本地 ip
+     * @return
+     */
+    public static String localIp(){
+        try {
+            return Inet4Address.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 }

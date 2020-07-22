@@ -11,9 +11,11 @@ import oracle.jdbc.pool.OracleDataSource;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -118,4 +120,5 @@ public class JdbcConnectionService {
     public ExConnection getConnection(String connName){
         return CONNECTIONS.get(connName);
     }
+
 }

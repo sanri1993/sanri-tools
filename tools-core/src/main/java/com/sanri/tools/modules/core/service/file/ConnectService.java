@@ -1,8 +1,7 @@
 package com.sanri.tools.modules.core.service.file;
 
 import com.alibaba.fastjson.JSON;
-import com.sanri.tools.modules.core.service.file.FileManager;
-import com.sanri.tools.modules.core.utils.ReachableUtil;
+import com.sanri.tools.modules.core.utils.NetUtil;
 import com.sanri.tools.modules.protocol.dto.ConfigPath;
 import com.sanri.tools.modules.protocol.param.*;
 import com.sanri.tools.modules.protocol.exception.ToolException;
@@ -30,7 +29,7 @@ public class ConnectService {
     public void testConnectReachable(ConnectParam connectParam){
         String host = connectParam.getHost();
         int port = connectParam.getPort();
-        boolean hostConnectable = ReachableUtil.isHostConnectable(host, port);
+        boolean hostConnectable = NetUtil.isHostConnectable(host, port);
         if (!hostConnectable){
             throw new ToolException("连接失败 "+host+":"+port);
         }
@@ -76,7 +75,7 @@ public class ConnectService {
         }
         AbstractConnectParam abstractConnectParam = (AbstractConnectParam) JSON.parseObject(data, param);
         ConnectParam connectParam = abstractConnectParam.getConnectParam();
-        ReachableUtil.isHostConnectable(connectParam.getHost(),connectParam.getPort());
+        NetUtil.isHostConnectable(connectParam.getHost(),connectParam.getPort());
 
         String connName = abstractConnectParam.getConnectIdParam().getConnName();
         fileManager.writeConfig(MODULE,module+"/"+connName, data);
