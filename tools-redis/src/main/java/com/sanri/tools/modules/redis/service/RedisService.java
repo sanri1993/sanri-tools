@@ -2,6 +2,8 @@ package com.sanri.tools.modules.redis.service;
 
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
 import com.sanri.tools.modules.core.service.file.ConnectService;
+import com.sanri.tools.modules.core.service.plugin.PluginDto;
+import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.protocol.param.AuthParam;
 import com.sanri.tools.modules.protocol.param.ConnectParam;
 import com.sanri.tools.modules.protocol.param.RedisConnectParam;
@@ -15,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.*;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,6 +34,8 @@ public class RedisService {
     private Map<String, Jedis> jedisMap = new ConcurrentHashMap<>();
     @Autowired
     private ConnectService connectService;
+    @Autowired
+    private PluginManager pluginManager;
 
     public static final String module = "redis";
 
@@ -571,5 +577,24 @@ public class RedisService {
         }
 
         return jedis;
+    }
+
+    @PostConstruct
+    public void register(){
+        pluginManager.register(PluginDto.builder().module(module).author("sanri").envs("default").build());
+    }
+
+    @PreDestroy
+    public void destory(){
+        log.info("清除 {} 客户端列表:{}",module,jedisMap.keySet());
+        Iterator<Jedis> iterator = jedisMap.values().iterator();
+        while (iterator.hasNext()){
+            Jedis next = iterator.next();
+            if(next != null){
+                try {
+                    next.close();
+                } catch (Exception e) {}
+            }
+        }
     }
 }

@@ -1,6 +1,11 @@
 package com.sanri.tools.modules.database.service;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+import com.sanri.tools.modules.core.service.plugin.PluginDto;
+import com.sanri.tools.modules.core.service.plugin.PluginManager;
+import com.sanri.tools.modules.database.service.impl.MysqlExConnection;
+import com.sanri.tools.modules.database.service.impl.OracleExConnection;
+import com.sanri.tools.modules.database.service.impl.PostgreSqlExConnection;
 import com.sanri.tools.modules.protocol.param.AuthParam;
 import com.sanri.tools.modules.protocol.param.ConnectIdParam;
 import com.sanri.tools.modules.protocol.param.ConnectParam;
@@ -9,13 +14,12 @@ import com.sanri.tools.modules.protocol.utils.PropertyEditUtil;
 import lombok.extern.slf4j.Slf4j;
 import oracle.jdbc.pool.OracleDataSource;
 import org.postgresql.ds.PGSimpleDataSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PreDestroy;
+import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,6 +31,9 @@ public class JdbcConnectionService {
     private Map<String,ExConnection> CONNECTIONS = new ConcurrentHashMap<String, ExConnection>();
 
     public final static String module = "database";
+
+    @Autowired
+    private PluginManager pluginManager;
     /**
      * 保存一个连接
      * @param connectionInfo
@@ -122,4 +129,8 @@ public class JdbcConnectionService {
         return CONNECTIONS.get(connName);
     }
 
+    @PostConstruct
+    public void register(){
+        pluginManager.register(PluginDto.builder().module(module).author("sanri").envs("default").build());
+    }
 }

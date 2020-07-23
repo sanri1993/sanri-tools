@@ -1,5 +1,6 @@
-package com.sanri.tools.modules.database.service;
+package com.sanri.tools.modules.database.service.impl;
 
+import com.sanri.tools.modules.database.service.ExConnection;
 import com.sanri.tools.modules.protocol.db.Column;
 import com.sanri.tools.modules.protocol.db.ColumnType;
 import com.sanri.tools.modules.protocol.db.Schema;

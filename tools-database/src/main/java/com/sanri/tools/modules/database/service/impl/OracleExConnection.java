@@ -1,13 +1,13 @@
-package com.sanri.tools.modules.database.service;
+package com.sanri.tools.modules.database.service.impl;
 
-import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+import com.sanri.tools.modules.database.service.ExConnection;
 import com.sanri.tools.modules.protocol.db.Column;
 import com.sanri.tools.modules.protocol.db.ColumnType;
 import com.sanri.tools.modules.protocol.db.Schema;
 import com.sanri.tools.modules.protocol.db.Table;
+import oracle.jdbc.pool.OracleDataSource;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
-import org.apache.commons.dbutils.handlers.ColumnListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
@@ -21,92 +21,81 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class MysqlExConnection extends ExConnection{
-    public static final String dbType = "mysql";
+public class OracleExConnection extends ExConnection {
+    public static final String dbType = "oracle";
 
-    public MysqlExConnection(DataSource dataSource) throws SQLException {
+    public OracleExConnection(DataSource dataSource) throws SQLException {
         super(dataSource);
     }
 
     @Override
     public String getDriver() {
-        return "com.mysql.jdbc.Driver";
+        return "oracle.jdbc.driver.OracleDriver";
     }
 
     @Override
     public String getConnectionURL(String schemaName) {
-        MysqlDataSource dataSource = (MysqlDataSource) getDataSource(schemaName);
-        String builtUrl = "jdbc:mysql://";
-       return builtUrl + dataSource.getServerName() + ":" + dataSource.getPort() + "/" + dataSource.getDatabaseName()+"?characterEncoding=utf8";
+        OracleDataSource oracleDataSource = (OracleDataSource) getDataSource(schemaName);
+        return "jdbc:oracle:thin:@"+oracleDataSource.getServerName()+":"+oracleDataSource.getPortNumber()+":"+oracleDataSource.getDatabaseName();
     }
 
     @Override
     public String getUsername() {
-        return ((MysqlDataSource)dataSource).getUser();
+        OracleDataSource oracleDataSource = (OracleDataSource) getDataSource();
+        return oracleDataSource.getUser();
     }
 
     @Override
     public String getPassword() {
-        return getPassword((MysqlDataSource) this.dataSource);
-    }
-
-    @Override
-    protected DataSource copyDataSource(String schemaName) {
-        MysqlDataSource newDatasource = new MysqlDataSource();
-        MysqlDataSource dataSource = (MysqlDataSource) this.dataSource;
-
-        newDatasource.setServerName(dataSource.getServerName());
-        newDatasource.setPort(dataSource.getPort());
-        newDatasource.setDatabaseName(schemaName);
-        newDatasource.setUser(dataSource.getUser());
-        String password = getPassword(dataSource);
-        newDatasource.setPassword(password);
-
-        String url = newDatasource.getUrl();
-        url += "?allowMultiQueries=true&characterEncoding=utf-8&useUnicode=true";
-        newDatasource.setUrl(url);
-        return newDatasource;
-    }
-
-    private String getPassword(MysqlDataSource dataSource) {
-        Field password = ReflectionUtils.findField(MysqlDataSource.class, "password");
+//        OracleDataSource oracleDataSource = (OracleDataSource) getDataSource();
+        //反射 password
+        Field password = ReflectionUtils.findField(OracleDataSource.class, "password");
         password.setAccessible(true);
         Object field = ReflectionUtils.getField(password, dataSource);
         return ObjectUtils.toString(field);
     }
 
     @Override
+    protected DataSource copyDataSource(String schemaName) throws SQLException {
+//        OracleDataSource oracleDataSource = new OracleDataSource();
+//        PropertyEditUtil.copyExclude(oracleDataSource,dataSource);
+//        oracleDataSource.setDatabaseName(schemaName);
+        return dataSource;
+    }
+
+    @Override
     protected List<Schema> refreshSchemas() throws SQLException {
-        ColumnListHandler<String> resultSetHandler = new ColumnListHandler<String>();
-        List<String> databases = mainQueryRunner.query("show databases",resultSetHandler );
+//        TypeListHandler<String> resultSetHandler = new TypeListHandler<String>();
+//        List<String> databases = mainQueryRunner.query("select * from v$database",resultSetHandler );
         List<Schema> schemas = new ArrayList<Schema>();
-        for (String database : databases) {
-            if(database.equalsIgnoreCase("performance_schema") || database.equalsIgnoreCase("information_schema")){
-                // 排除默认库并加到最后
-                continue;
-            }
-            schemas.add(new Schema(database));
-        }
-        schemas.add(new Schema("performance_schema"));
-        schemas.add(new Schema("information_schema"));
+//        for (String database : databases) {
+//            schemas.add(new Schema(database));
+//        }
+
+        schemas.add(new Schema(((OracleDataSource)dataSource).getUser()));
         return schemas;
     }
 
     @Override
     protected List<Table> refreshTables(String schemaName) throws SQLException {
         Schema schema = schemas.get(schemaName);
-        QueryRunner queryRunner = new QueryRunner(schema.dataSource());
+        OracleDataSource dataSource = (OracleDataSource) schema.dataSource();
+        QueryRunner queryRunner = new QueryRunner(dataSource);
         //查询当前数据库所有表的主键信息
-        String primaryKeySql ="SELECT TABLE_NAME as tableName,COLUMN_NAME as primaryKey FROM INFORMATION_SCHEMA.`KEY_COLUMN_USAGE` WHERE  constraint_name='PRIMARY' and CONSTRAINT_SCHEMA = '"+schemaName+"'";
+        String primaryKeySql ="select b.TABLE_NAME  as tableName,b.COLUMN_NAME as primaryKey from user_constraints a " +
+                "inner join user_cons_columns b on a.CONSTRAINT_NAME = b.CONSTRAINT_NAME and a.CONSTRAINT_TYPE = 'P' ";
         Map<String, Set<String>> tablePrimaryMap = queryPrimaryKeys(queryRunner, primaryKeySql);
 
-        List<Table> tables = queryRunner.query("show table status", new ResultSetHandler<List<Table>>() {
+        List<Table> tables = queryRunner.query("select dt.table_name \"name\",dtc.comments \"comment\" " +
+                "from user_tables dt,user_tab_comments dtc,user_objects uo " +
+                "where dt.table_name = dtc.table_name and dt.table_name = uo.object_name and uo.object_type='TABLE'  ", new ResultSetHandler<List<Table>>() {
             @Override
             public List<Table> handle(ResultSet resultSet) throws SQLException {
                 List<Table> tables = new ArrayList<Table>();
                 while (resultSet.next()) {
-                    String tableName = ObjectUtils.toString(resultSet.getString("name")).toLowerCase();
+                    String tableName = ObjectUtils.toString(resultSet.getString("name"));
                     String comments = resultSet.getString("comment");
+
                     Table table = new Table(tableName, comments);
                     Set<String> primaryKeys = tablePrimaryMap.get(tableName);
                     if(primaryKeys != null) {
@@ -127,10 +116,9 @@ public class MysqlExConnection extends ExConnection{
         Set<String> primaryKeys = table.getPrimaryKeys();
 
         QueryRunner queryRunner = new QueryRunner(schema.dataSource());
-        String sql = "select column_name,data_type,column_comment,numeric_precision,numeric_scale,character_maximum_length " +
-                "from information_schema.columns " +
-                "where table_name='"+tableName+"' " +
-                "and table_schema='"+schemaName+"'";
+        String sql = "select a.COLUMN_NAME,a.DATA_TYPE,b.COMMENTS,a.DATA_PRECISION,a.DATA_SCALE,a.DATA_LENGTH from user_tab_columns a " +
+                "inner join user_col_comments b on a.COLUMN_NAME = b.COLUMN_NAME " +
+                "where a.TABLE_NAME = '"+tableName.toUpperCase()+"'";
         List<Column> columns = queryRunner.query(sql, new ResultSetHandler<List<Column>>() {
             @Override
             public List<Column> handle(ResultSet resultSet) throws SQLException {
@@ -157,16 +145,16 @@ public class MysqlExConnection extends ExConnection{
 
     @Override
     public String getDatabase() {
-        return ((MysqlDataSource)dataSource).getDatabaseName();
+        return ((OracleDataSource)dataSource).getDatabaseName();
     }
 
 
     @Override
     public String ddL(String schemaName, String tableName) throws SQLException {
+        String sql = "select dbms_metadata.get_ddl('"+tableName+"','COMMUNITY') from dual";
         Schema schema = schemas.get(schemaName);
         QueryRunner queryRunner = new QueryRunner(schema.dataSource());
-        String ddL = queryRunner.query("show create table " + tableName, new ScalarHandler<String>(2));
-        return ddL;
+        return queryRunner.query(sql, new ScalarHandler<String>(1));
     }
 
     @Override

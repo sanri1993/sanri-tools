@@ -3,10 +3,13 @@ package com.sanri.tools.modules.kafka.service;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sanri.tools.modules.core.service.file.ConnectService;
+import com.sanri.tools.modules.core.service.plugin.PluginDto;
+import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.kafka.dtos.*;
 import com.sanri.tools.modules.kafka.dtos.MBeanMonitorInfo;
 import com.sanri.tools.modules.protocol.param.KafkaConnectParam;
 import com.sanri.tools.modules.zookeeper.service.ZookeeperService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.kafka.clients.CommonClientConfigs;
@@ -21,6 +24,8 @@ import org.springframework.core.Constants;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.management.*;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
@@ -37,11 +42,14 @@ import java.util.regex.Pattern;
  * kafka 主题和消费组管理
  */
 @Service
+@Slf4j
 public class KafkaService {
     @Autowired
     private ConnectService connectService;
     @Autowired
     private ZookeeperService zookeeperService;
+    @Autowired
+    private PluginManager pluginManager;
 
     public static final String module = "kafka";
 
@@ -500,5 +508,24 @@ public class KafkaService {
         properties.put("key.deserializer","org.apache.kafka.common.serialization.ByteArrayDeserializer");
         properties.put("value.deserializer","org.apache.kafka.common.serialization.ByteArrayDeserializer");
         return properties;
+    }
+
+    @PostConstruct
+    public void register(){
+        pluginManager.register(PluginDto.builder().module(module).author("sanri").envs("default").build());
+    }
+
+    @PreDestroy
+    public void destory(){
+        log.info("清除 {} 客户端列表:{}",module,adminClientMap.keySet());
+        Iterator<AdminClient> iterator = adminClientMap.values().iterator();
+        while (iterator.hasNext()){
+            AdminClient next = iterator.next();
+            if(next != null){
+                try {
+                    next.close();
+                } catch (Exception e) {}
+            }
+        }
     }
 }

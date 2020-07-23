@@ -10,12 +10,4 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/index")
 public class IndexController {
-
-    @Autowired
-    private RandomDataService randomDataService;
-
-    @GetMapping("/randomData")
-    public Object testRandomData(){
-        return randomDataService.populateData(DatabaseConnectParam.class);
-    }
 }

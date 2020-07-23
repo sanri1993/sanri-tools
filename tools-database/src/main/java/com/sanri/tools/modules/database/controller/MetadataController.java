@@ -3,7 +3,7 @@ package com.sanri.tools.modules.database.controller;
 import com.sanri.tools.modules.core.service.file.ConnectService;
 import com.sanri.tools.modules.database.service.ExConnection;
 import com.sanri.tools.modules.database.service.JdbcConnectionService;
-import com.sanri.tools.modules.database.service.OracleExConnection;
+import com.sanri.tools.modules.database.service.impl.OracleExConnection;
 import com.sanri.tools.modules.protocol.db.Column;
 import com.sanri.tools.modules.protocol.db.Schema;
 import com.sanri.tools.modules.protocol.db.Table;

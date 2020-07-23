@@ -173,7 +173,7 @@ public class ZookeeperService {
 
     @PreDestroy
     public void destory(){
-        log.info("清除 zookeeper 客户端列表");
+        log.info("清除 {} 客户端列表:{}",module,zkClientMap.keySet());
         Iterator<ZkClient> iterator = zkClientMap.values().iterator();
         while (iterator.hasNext()){
             ZkClient next = iterator.next();
