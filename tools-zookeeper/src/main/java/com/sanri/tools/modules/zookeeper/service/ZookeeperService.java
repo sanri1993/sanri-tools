@@ -22,12 +22,13 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Slf4j
 public class ZookeeperService {
     // connName ==> ZkClient
-    Map<String, ZkClient> zkClientMap = new HashMap<String, ZkClient>();
+    Map<String, ZkClient> zkClientMap = new ConcurrentHashMap<String, ZkClient>();
 
     @Autowired
     private ConnectService connectService;

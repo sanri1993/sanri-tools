@@ -18,12 +18,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Component
 public class JdbcConnectionService {
     /** 保存所有的连接信息 连接名 ==> 连接 */
-    private Map<String,ExConnection> CONNECTIONS = new HashMap<String, ExConnection>();
+    private Map<String,ExConnection> CONNECTIONS = new ConcurrentHashMap<String, ExConnection>();
 
     public final static String module = "database";
     /**
