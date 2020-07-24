@@ -7,7 +7,7 @@ import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.protocol.param.AuthParam;
 import com.sanri.tools.modules.protocol.param.ConnectParam;
 import com.sanri.tools.modules.protocol.param.RedisConnectParam;
-import com.sanri.tools.modules.redis.dto.*;
+import com.sanri.tools.modules.redis.dtos.*;
 import com.sanri.tools.modules.serializer.service.Serializer;
 import com.sanri.tools.modules.serializer.service.SerializerChoseService;
 import lombok.extern.slf4j.Slf4j;

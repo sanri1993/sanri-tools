@@ -1,4 +1,4 @@
-package com.sanri.tools.modules.redis.dto;
+package com.sanri.tools.modules.redis.dtos;
 
 import lombok.Data;
 import redis.clients.jedis.HostAndPort;

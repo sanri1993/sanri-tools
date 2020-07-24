@@ -91,8 +91,8 @@ public class KafkaService {
      *
      * @return
      */
-    public Map<String, Integer> topics(String clusterName) throws IOException, ExecutionException, InterruptedException {
-        Map<String, Integer> result = new HashMap<>();
+    public List<TopicInfo> topics(String clusterName) throws IOException, ExecutionException, InterruptedException {
+        List<TopicInfo> topicInfos = new ArrayList<>();
 
         AdminClient adminClient = loadAdminClient(clusterName);
 
@@ -106,9 +106,9 @@ public class KafkaService {
             String topic = topicDescriptionEntry.getKey();
             TopicDescription topicDescription = topicDescriptionEntry.getValue().get();
             List<TopicPartitionInfo> partitions = topicDescription.partitions();
-            result.put(topic,partitions.size());
+            topicInfos.add(new TopicInfo(topic,partitions.size()));
         }
-        return result;
+        return topicInfos;
     }
 
     /**
@@ -299,8 +299,8 @@ public class KafkaService {
      * @throws ExecutionException
      * @throws InterruptedException
      */
-    public Map<String, Long> logSizes(String clusterName, String topic) throws IOException, ExecutionException, InterruptedException {
-        Map<String, Long> results = new HashMap<>();
+    public List<TopicLogSize> logSizes(String clusterName, String topic) throws IOException, ExecutionException, InterruptedException {
+        List<TopicLogSize> topicLogSizes = new ArrayList<>();
 
         Properties properties = kafkaProperties(clusterName);
         KafkaConsumer<byte[], byte[]> consumer = new KafkaConsumer<>(properties);
@@ -320,14 +320,14 @@ public class KafkaService {
                 TopicPartition topicPartition = entry.getKey();
                 Long logSize = entry.getValue();
 
-                results.put(topicPartition.partition() + "", logSize);
+                topicLogSizes.add(new TopicLogSize(topic,topicPartition.partition(),logSize));
             }
         }finally {
             if(consumer != null)
                 consumer.close();
         }
 
-        return results;
+        return topicLogSizes;
     }
 
     public AdminClient loadAdminClient(String clusterName) throws IOException {

@@ -1,4 +1,4 @@
-package com.sanri.tools.modules.zookeeper.dto;
+package com.sanri.tools.modules.zookeeper.dtos;
 
 import lombok.Data;
 

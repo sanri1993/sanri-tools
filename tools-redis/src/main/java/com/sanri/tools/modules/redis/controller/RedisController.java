@@ -1,6 +1,6 @@
 package com.sanri.tools.modules.redis.controller;
 
-import com.sanri.tools.modules.redis.dto.*;
+import com.sanri.tools.modules.redis.dtos.*;
 import com.sanri.tools.modules.redis.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

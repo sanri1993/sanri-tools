@@ -1,8 +1,8 @@
 package com.sanri.tools.modules.zookeeper.service;
 
 import com.sanri.tools.modules.core.service.file.FileManager;
-import com.sanri.tools.modules.zookeeper.dto.PathFavorite;
-import com.sanri.tools.modules.zookeeper.dto.PathFavoriteParam;
+import com.sanri.tools.modules.zookeeper.dtos.PathFavorite;
+import com.sanri.tools.modules.zookeeper.dtos.PathFavoriteParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

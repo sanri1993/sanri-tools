@@ -27,7 +27,7 @@ import java.util.concurrent.Future;
  */
 @Service
 @Slf4j
-public class KafkaDataConsumerService {
+public class KafkaDataService {
     @Autowired
     private SerializerChoseService serializerChoseService;
     @Autowired
