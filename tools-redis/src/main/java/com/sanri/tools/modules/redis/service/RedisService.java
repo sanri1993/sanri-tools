@@ -2,13 +2,13 @@ package com.sanri.tools.modules.redis.service;
 
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
 import com.sanri.tools.modules.core.service.file.ConnectService;
-import com.sanri.tools.modules.core.service.plugin.PluginDto;
+import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.protocol.param.AuthParam;
 import com.sanri.tools.modules.protocol.param.ConnectParam;
 import com.sanri.tools.modules.protocol.param.RedisConnectParam;
 import com.sanri.tools.modules.redis.dto.*;
-import com.sanri.tools.modules.serializer.Serializer;
+import com.sanri.tools.modules.serializer.service.Serializer;
 import com.sanri.tools.modules.serializer.service.SerializerChoseService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -67,7 +67,7 @@ public class RedisService {
      * @return
      * @throws IOException
      */
-    public List<RedisKeyResult> scan(RedisScanParam redisScanParam) throws IOException {
+    public List<RedisKeyResult> scan(RedisScanParam redisScanParam) throws IOException, ClassNotFoundException {
         String connName = redisScanParam.getConnName();
         Jedis jedis = jedis(connName);
         boolean cluster = isCluster(jedis);
@@ -78,21 +78,23 @@ public class RedisService {
         JedisCommands client = jedis;
 
         // 开始搜索每个节点上的 key 列表
-        List<String> keys = new ArrayList<>();
+        Set<String> keys = new HashSet<>();
         String keySerializer = redisScanParam.getKeySerializer();
         Serializer serializer = serializerChoseService.choseSerializer(keySerializer);
         if(!cluster){
             int index = redisScanParam.getIndex();
             jedis.select(index);
-            keys = nodeScan(jedis, pattern, limit,serializer);
+            keys.addAll(nodeScan(jedis, pattern, limit,serializer));
         }else{
             JedisCluster jedisCluster = jedisCluster(jedis);
             client = jedisCluster;
+            // ip:port => JedisPool
             Map<String, JedisPool> clusterNodes = jedisCluster.getClusterNodes();
             Iterator<JedisPool> iterator = clusterNodes.values().iterator();
             while (iterator.hasNext()){
                 JedisPool jedisPool = iterator.next();
                 Jedis currentJedis = jedisPool.getResource();
+                // 判断当前节点是否为 master ,只从 master 取数据; 目前还是从所有节点中找数据
                 List<String> currentKeys = nodeScan(currentJedis, pattern, limit,serializer);
                 keys.addAll(currentKeys);
                 if(keys.size() >= limit){break;}
@@ -217,7 +219,7 @@ public class RedisService {
      * @param hashKeyCommandParam
      * @return
      */
-    public List<String> hashKeys(HashScanParam hashScanParam) throws IOException {
+    public List<String> hashKeys(HashScanParam hashScanParam) throws IOException, ClassNotFoundException {
         String connName = hashScanParam.getConnName();
         String hashKeySerizlizer = hashScanParam.getHashKeySerizlizer();
         Serializer serializer = serializerChoseService.choseSerializer(hashKeySerizlizer);
@@ -265,7 +267,7 @@ public class RedisService {
      * @param dataQueryParam
      * @return
      */
-    public Object loadData(RedisDataQueryParam dataQueryParam) throws IOException {
+    public Object loadData(RedisDataQueryParam dataQueryParam) throws IOException, ClassNotFoundException {
         String connName = dataQueryParam.getConnName();
         String key = dataQueryParam.getKey();
         String keySerializerChose = dataQueryParam.getKeySerializer();
@@ -295,24 +297,45 @@ public class RedisService {
                     valueBytes = jedisCluster.get(keyBytes);
                     break;
                 case Hash:
-                    String hashKey = extraQueryParam.getHashKey();
-                    byte[] cursor = "0".getBytes();
-                    byte[] serialize = hashKeySerializer.serialize(hashKey);
-                    ScanParams scanParams = new ScanParams().match(serialize).count(100);
-                    do {
-                        ScanResult<Map.Entry<byte[], byte[]>> entryScanResult = jedisCluster.hscan(keyBytes, cursor, scanParams);
-                        cursor = entryScanResult.getCursorAsBytes();
-                        List<Map.Entry<byte[], byte[]>> result = entryScanResult.getResult();
-                        for (Map.Entry<byte[], byte[]> entry : result) {
-                            hashValueBytes.put(entry.getKey(),entry.getValue());
-                        }
-                    }while (NumberUtils.toInt(new String(cursor)) != 0);
+                    if (extraQueryParam != null) {
+                        String hashKey = extraQueryParam.getHashKey();
+                        byte[] cursor = "0".getBytes();
+                        byte[] serialize = hashKeySerializer.serialize(hashKey);
+                        ScanParams scanParams = new ScanParams().match(serialize).count(100);
+                        do {
+                            ScanResult<Map.Entry<byte[], byte[]>> entryScanResult = jedisCluster.hscan(keyBytes, cursor, scanParams);
+                            cursor = entryScanResult.getCursorAsBytes();
+                            List<Map.Entry<byte[], byte[]>> result = entryScanResult.getResult();
+                            for (Map.Entry<byte[], byte[]> entry : result) {
+                                hashValueBytes.put(entry.getKey(), entry.getValue());
+                            }
+                        } while (NumberUtils.toInt(new String(cursor)) != 0);
+
+                        break;
+                    }
+                    Map<byte[], byte[]> map = jedisCluster.hgetAll(keyBytes);
+                    Iterator<Map.Entry<byte[], byte[]>> iterator = map.entrySet().iterator();
+                    while (iterator.hasNext()){
+                        Map.Entry<byte[], byte[]> entry = iterator.next();
+                        hashValueBytes.put(entry.getKey(), entry.getValue());
+                    }
+
                     break;
                 case List:
-                    Long begin = extraQueryParam.getBegin();if(begin == null){begin = 0L;}
-                    Long end = extraQueryParam.getEnd();if(end == null ){end = jedisCluster.llen(keyBytes);}
+                    if(extraQueryParam != null) {
+                        Long begin = extraQueryParam.getBegin();
+                        if (begin == null) {
+                            begin = 0L;
+                        }
+                        Long end = extraQueryParam.getEnd();
+                        if (end == null) {
+                            end = jedisCluster.llen(keyBytes);
+                        }
 
-                    listValueBytes = jedisCluster.lrange(keyBytes,begin,end);
+                        listValueBytes = jedisCluster.lrange(keyBytes, begin, end);
+                        break;
+                    }
+                    listValueBytes = jedisCluster.lrange(keyBytes, 0, jedisCluster.llen(keyBytes));
                     break;
             }
 
@@ -415,7 +438,7 @@ public class RedisService {
      * @param keySerializer
      * @return
      */
-    private List<String> nodeScan(Jedis jedis, String pattern, int limit, Serializer serializer) throws IOException {
+    private List<String> nodeScan(Jedis jedis, String pattern, int limit, Serializer serializer) throws IOException, ClassNotFoundException {
         ScanParams scanParams = new ScanParams();
         scanParams.count(limit);
         if(StringUtils.isNotBlank(pattern)) {
@@ -569,9 +592,11 @@ public class RedisService {
             ConnectParam connectParam = redisConnectParam.getConnectParam();
             jedis = new Jedis(connectParam.getHost(), connectParam.getPort(), connectParam.getConnectionTimeout(), connectParam.getSessionTimeout());
             AuthParam authParam = redisConnectParam.getAuthParam();
-            String password = authParam.getPassword();
-            if(StringUtils.isNotBlank(password)){
-                jedis.auth(password);
+            if(authParam != null) {
+                String password = authParam.getPassword();
+                if (StringUtils.isNotBlank(password)) {
+                    jedis.auth(password);
+                }
             }
             jedisMap.put(connName,jedis);
         }
@@ -581,7 +606,7 @@ public class RedisService {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module(module).author("sanri").envs("default").build());
+        pluginManager.register(PluginDto.builder().module(module).name("main").author("sanri").envs("default").build());
     }
 
     @PreDestroy

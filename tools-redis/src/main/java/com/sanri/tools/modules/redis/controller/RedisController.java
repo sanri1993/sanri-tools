@@ -3,9 +3,7 @@ package com.sanri.tools.modules.redis.controller;
 import com.sanri.tools.modules.redis.dto.*;
 import com.sanri.tools.modules.redis.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -42,7 +40,7 @@ public class RedisController {
      * @throws IOException
      */
     @GetMapping("/scan")
-    public List<RedisKeyResult> scan(RedisScanParam redisScanParam) throws IOException {
+    public List<RedisKeyResult> scan(RedisScanParam redisScanParam) throws IOException, ClassNotFoundException {
         return redisService.scan(redisScanParam);
     }
 
@@ -64,12 +62,19 @@ public class RedisController {
      * @throws IOException
      */
     @GetMapping("/hashKeys")
-    public List<String> hashKeys(HashScanParam hashScanParam) throws IOException {
+    public List<String> hashKeys(HashScanParam hashScanParam) throws IOException, ClassNotFoundException {
         return redisService.hashKeys(hashScanParam);
     }
 
-    @GetMapping("/data")
-    public Object data(RedisDataQueryParam dataQueryParam) throws IOException, ClassNotFoundException {
+    /**
+     * 获取数据,并使用指定的序列化方式序列化值
+     * @param dataQueryParam
+     * @return
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    @PostMapping("/data")
+    public Object data(@RequestBody RedisDataQueryParam dataQueryParam) throws IOException, ClassNotFoundException {
         return redisService.loadData(dataQueryParam);
     }
 }

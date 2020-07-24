@@ -1,6 +1,7 @@
 package com.sanri.tools.modules.core.service.file;
 
 import com.alibaba.fastjson.JSON;
+import com.sanri.tools.modules.core.dtos.ConnectDto;
 import com.sanri.tools.modules.core.utils.NetUtil;
 import com.sanri.tools.modules.protocol.dto.ConfigPath;
 import com.sanri.tools.modules.protocol.param.*;
@@ -9,7 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -100,5 +104,34 @@ public class ConnectService {
         Class<?> paramClass = moduleParamFactory(module);
         AbstractConnectParam abstractConnectParam = (AbstractConnectParam) JSON.parseObject(content, paramClass);
         return abstractConnectParam;
+    }
+
+    /**
+     * 列出所有连接
+     * @return
+     */
+    public List<ConnectDto> selectAll() {
+        List<ConnectDto> connects = new ArrayList<>();
+        List<ConfigPath> configPaths = fileManager.configNames(MODULE);
+        for (ConfigPath configPath : configPaths) {
+            String childModule = configPath.getPathName();
+            List<ConfigPath> childs = fileManager.configChildNames(MODULE, childModule);
+            for (ConfigPath child : childs) {
+                File file = child.getFile();
+                long lastModified = file.lastModified();
+                ConnectDto connect = new ConnectDto(childModule, file.getName(), new Date(lastModified));
+                connects.add(connect);
+            }
+        }
+        return connects;
+    }
+
+    /**
+     * 删除连接文件
+     * @param module
+     * @param connName
+     */
+    public void dropConnect(String module, String connName) {
+        fileManager.dropConfig(MODULE,module+"/"+connName);
     }
 }

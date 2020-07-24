@@ -1,8 +1,11 @@
 package com.sanri.tools.modules.serializer.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.sanri.tools.modules.serializer.SerializerConstants;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.stereotype.Component;
 
+@Component
 public class FastJsonSerializer extends StringSerializer {
     @Override
     public byte[] serialize(Object data){
@@ -18,6 +21,6 @@ public class FastJsonSerializer extends StringSerializer {
 
     @Override
     public String name() {
-        return "fastjson";
+        return SerializerConstants.FASTJSON;
     }
 }

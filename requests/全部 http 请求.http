@@ -77,4 +77,91 @@ Content-Type: application/json
   ]
 }
 
+### 创建 zookeeper 连接
+POST {{baseUrl}}/connect/create/zookeeper
+Content-Type: application/json
+
+{
+  "connectIdParam": {
+    "module": "zookeeper",
+    "connName": "192.168.72.43"
+  },
+  "connectParam": {
+    "host": "10.101.72.43",
+    "port": 2181
+  }
+}
+
+### 列出子节点
+GET {{baseUrl}}/zookeeper/childrens?connName=192.168.72.43&path=/brokers
+
+### 元数据 meta
+GET {{baseUrl}}/zookeeper/meta?connName=192.168.72.43&path=/brokers
+
+### acls 权限
+GET {{baseUrl}}/zookeeper/acls?connName=192.168.72.43&path=/brokers
+
+### 读取数据
+GET {{baseUrl}}/zookeeper/readData?connName=192.168.72.43&path=/brokers/ids/1&serializer=string
+
+### 创建 redis 连接
+POST {{baseUrl}}/connect/create/redis
+Content-Type: application/json
+
+{
+  "connectIdParam": {
+    "module": "redis",
+    "connName": "10.101.72.43"
+  },
+  "connectParam": {
+    "host": "10.101.72.43",
+    "port": 7000
+  }
+}
+
+### 查看 redis 的节点列表
+GET {{baseUrl}}/redis/nodes?connName=10.101.72.43
+
+### scan 某个 key ,可以模糊查询
+GET {{baseUrl}}/redis/scan?connName=10.101.72.43&pattern=PLC:PARKINGLOT.CACHE&limit=10
+
+### 读取某个具体的 key; 这个数据有点复杂,本来是用 GET 请求的,换 POST
+POST {{baseUrl}}/redis/data
+Content-Type: application/json
+
+{
+  "connName": "10.101.72.43",
+  "key": "PLC:PARKINGLOT.CACHE",
+  "serializerChose": {
+    "value": "jdk",
+    "hashKey": "jdk",
+    "hashValue": "jdk"
+  }
+
+}
+
+### 获取所有插件名称
+GET {{baseUrl}}/plugin/names
+
+### 获取插件详情
+GET {{baseUrl}}/plugin/detail?key=kafka:main
+
+### 访问插件
+GET {{baseUrl}}/plugin/visited?key=kafka:main
+
+### 插件-序列化数据到文件
+GET {{baseUrl}}/plugin/serializer
+
+### 连接管理-获取所有模块
+GET {{baseUrl}}/connect/modules
+
+### 连接管理-获取某个模块的连接列表
+GET {{baseUrl}}/connect/redis/names
+
+### 连接管理-获取某个连接详情
+GET {{baseUrl}}/connect/redis/10.101.72.43
+
+### 连接管理-获取所有连接
+GET {{baseUrl}}/connect/all
+
 ###

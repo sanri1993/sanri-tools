@@ -1,16 +1,19 @@
 package com.sanri.tools.modules.serializer.impl;
 
-import com.sanri.tools.modules.serializer.Serializer;
+import com.sanri.tools.modules.serializer.service.Serializer;
+import com.sanri.tools.modules.serializer.SerializerConstants;
+import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
+@Component
 public class JdkSerializer implements Serializer {
     @Override
     public String name() {
-        return "jdk";
+        return SerializerConstants.JDK;
     }
 
     @Override
@@ -24,16 +27,11 @@ public class JdkSerializer implements Serializer {
     }
 
     @Override
-    public Object deserialize(byte[] bytes,ClassLoader classLoader) throws IOException {
+    public Object deserialize(byte[] bytes,ClassLoader classLoader) throws IOException, ClassNotFoundException {
         if(bytes == null) return  null;
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
         CustomObjectInputStream objectInputStream = new CustomObjectInputStream(byteArrayInputStream,classLoader);
 
-        try {
-            return  objectInputStream.readObject();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return  objectInputStream.readObject();
     }
 }

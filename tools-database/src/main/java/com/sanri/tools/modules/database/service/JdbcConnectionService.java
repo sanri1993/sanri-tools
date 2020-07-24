@@ -1,7 +1,7 @@
 package com.sanri.tools.modules.database.service;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
-import com.sanri.tools.modules.core.service.plugin.PluginDto;
+import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.database.service.impl.MysqlExConnection;
 import com.sanri.tools.modules.database.service.impl.OracleExConnection;
@@ -131,6 +131,6 @@ public class JdbcConnectionService {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module(module).author("sanri").envs("default").build());
+        pluginManager.register(PluginDto.builder().module(module).name("main").author("sanri").envs("default").build());
     }
 }

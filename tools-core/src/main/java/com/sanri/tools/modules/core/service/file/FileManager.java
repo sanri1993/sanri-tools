@@ -152,7 +152,7 @@ public class FileManager {
         for (File file : files) {
             String name = file.getName();
             boolean directory = file.isDirectory();
-            configPaths.add(new ConfigPath(name,directory));
+            configPaths.add(new ConfigPath(name,directory,file));
         }
         return configPaths;
     }
@@ -197,5 +197,17 @@ public class FileManager {
             file.mkdirs();
         }
         return file;
+    }
+
+    /**
+     * 删除配置文件
+     * @param module
+     * @param baseName
+     */
+    public void dropConfig(String module, String baseName) {
+        File configFile = new File(configBase, module+"/"+baseName);
+        if (!configFile.exists()){
+            FileUtils.deleteQuietly(configFile);
+        }
     }
 }

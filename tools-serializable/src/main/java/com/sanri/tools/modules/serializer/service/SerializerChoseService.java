@@ -1,17 +1,28 @@
 package com.sanri.tools.modules.serializer.service;
 
-import com.sanri.tools.modules.serializer.Serializer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class SerializerChoseService {
+    private Map<String,Serializer> serializerMap = new HashMap<>();
 
+    @Autowired(required = false)
+    public SerializerChoseService(List<Serializer> serializers){
+        for (Serializer serializer : serializers) {
+            serializerMap.put(serializer.name(),serializer);
+        }
+    }
     /**
      * 获取一个序列化工具
-     * @param deserialize
+     * @param serializer
      * @return
      */
-    public Serializer choseSerializer(String deserialize) {
-        return null;
+    public Serializer choseSerializer(String serializer) {
+        return serializerMap.get(serializer);
     }
 }

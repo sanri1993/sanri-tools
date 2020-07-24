@@ -1,6 +1,6 @@
 package com.sanri.tools.modules.zookeeper.service;
 
-import com.sanri.tools.modules.serializer.Serializer;
+import com.sanri.tools.modules.serializer.service.Serializer;
 import org.I0Itec.zkclient.exception.ZkMarshallingError;
 import org.I0Itec.zkclient.serialize.ZkSerializer;
 
@@ -28,6 +28,8 @@ public class ZkSerializerAdapter implements ZkSerializer {
         try {
             return serializer.deserialize(bytes,ClassLoader.getSystemClassLoader());
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
         return null;

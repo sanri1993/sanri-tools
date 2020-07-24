@@ -1,4 +1,4 @@
-package com.sanri.tools.modules.serializer;
+package com.sanri.tools.modules.serializer.service;
 
 import java.io.IOException;
 
@@ -23,5 +23,5 @@ public interface Serializer {
      * @param classLoader
      * @return
      */
-    public Object deserialize(byte[] bytes,ClassLoader classLoader) throws IOException;
+    public Object deserialize(byte[] bytes,ClassLoader classLoader) throws IOException, ClassNotFoundException;
 }

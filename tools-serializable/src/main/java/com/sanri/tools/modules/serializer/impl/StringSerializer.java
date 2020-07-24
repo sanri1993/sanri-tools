@@ -1,12 +1,14 @@
 package com.sanri.tools.modules.serializer.impl;
 
-import com.sanri.tools.modules.serializer.Serializer;
+import com.sanri.tools.modules.serializer.service.Serializer;
+import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 
 /**
  * 字符串序列化
  */
+@Component
 public class StringSerializer implements Serializer {
     @Override
     public String name() {

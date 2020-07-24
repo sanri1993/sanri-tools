@@ -3,16 +3,17 @@ package com.sanri.tools.modules.serializer.impl;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
-import com.sanri.tools.modules.serializer.Serializer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.sanri.tools.modules.serializer.service.Serializer;
+import com.sanri.tools.modules.serializer.SerializerConstants;
 import org.objenesis.strategy.StdInstantiatorStrategy;
+import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
 
 /**
  * kryo 序列化
  */
+@Component
 public class KryoSerializer implements Serializer {
     public static final ThreadLocal<Kryo> kryos = new ThreadLocal<Kryo>(){
         protected Kryo initialValue() {
@@ -23,11 +24,10 @@ public class KryoSerializer implements Serializer {
         };
     };
 
-    private Log logger = LogFactory.getLog(getClass());
 
     @Override
     public String name() {
-        return "kryo";
+        return SerializerConstants.KRYO;
     }
 
     @Override

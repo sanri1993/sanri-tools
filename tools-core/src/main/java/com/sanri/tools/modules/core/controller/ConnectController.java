@@ -1,6 +1,7 @@
 package com.sanri.tools.modules.core.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.sanri.tools.modules.core.dtos.ConnectDto;
 import com.sanri.tools.modules.core.service.file.ConnectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +36,14 @@ public class ConnectController {
     }
 
     /**
+     * 列出所有连接
+     * @return
+     */
+    @GetMapping("/all")
+    public List<ConnectDto> connects(){
+        return connectService.selectAll();
+    }
+    /**
      * 获取连接详情
      * @param module
      * @param connName
@@ -52,9 +61,17 @@ public class ConnectController {
      * @throws IOException
      */
     @PostMapping("/create/{module}")
-    public void createDatabase(@PathVariable("module") String module,@RequestBody JSONObject data) throws IOException {
+    public void createConnect(@PathVariable("module") String module, @RequestBody JSONObject data) throws IOException {
         connectService.createConnect(module,data.toJSONString());
     }
 
-
+    /**
+     * 删除连接; 这个删除不会删除真实连接,真实连接会在项目关闭后释放连接
+     * @param module
+     * @param connName
+     */
+    @PostMapping("/{module}/{connName}")
+    public void dropConnect(@PathVariable("module") String module,@PathVariable("connName")String connName){
+        connectService.dropConnect(module,connName);
+    }
 }

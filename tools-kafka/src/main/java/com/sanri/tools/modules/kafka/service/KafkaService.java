@@ -3,7 +3,7 @@ package com.sanri.tools.modules.kafka.service;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sanri.tools.modules.core.service.file.ConnectService;
-import com.sanri.tools.modules.core.service.plugin.PluginDto;
+import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.kafka.dtos.*;
 import com.sanri.tools.modules.kafka.dtos.MBeanMonitorInfo;
@@ -512,7 +512,7 @@ public class KafkaService {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module(module).author("sanri").envs("default").build());
+        pluginManager.register(PluginDto.builder().module(module).name("main").author("sanri").envs("default").build());
     }
 
     @PreDestroy

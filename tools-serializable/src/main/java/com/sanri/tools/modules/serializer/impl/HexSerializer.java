@@ -1,15 +1,18 @@
 package com.sanri.tools.modules.serializer.impl;
 
-import com.sanri.tools.modules.serializer.Serializer;
+import com.sanri.tools.modules.serializer.service.Serializer;
+import com.sanri.tools.modules.serializer.SerializerConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.springframework.stereotype.Component;
 
 @Slf4j
+@Component
 public class HexSerializer implements Serializer {
     @Override
     public String name() {
-        return "hex";
+        return SerializerConstants.HEX;
     }
 
     @Override

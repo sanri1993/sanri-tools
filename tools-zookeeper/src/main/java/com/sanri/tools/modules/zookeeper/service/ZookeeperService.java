@@ -1,11 +1,13 @@
 package com.sanri.tools.modules.zookeeper.service;
 
 import com.sanri.tools.modules.core.service.file.ConnectService;
-import com.sanri.tools.modules.protocol.param.AbstractConnectParam;
+import com.sanri.tools.modules.core.dtos.PluginDto;
+import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.protocol.param.ConnectParam;
 import com.sanri.tools.modules.protocol.param.ZookeeperConnectParam;
 import com.sanri.tools.modules.protocol.zk.ZooNodeACL;
-import com.sanri.tools.modules.serializer.Serializer;
+import com.sanri.tools.modules.serializer.SerializerConstants;
+import com.sanri.tools.modules.serializer.service.Serializer;
 import com.sanri.tools.modules.serializer.service.SerializerChoseService;
 import lombok.extern.slf4j.Slf4j;
 import org.I0Itec.zkclient.ZkClient;
@@ -19,6 +21,7 @@ import org.apache.zookeeper.data.Stat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.*;
@@ -34,6 +37,8 @@ public class ZookeeperService {
     private ConnectService connectService;
     @Autowired
     private SerializerChoseService serializerChoseService;
+    @Autowired
+    private PluginManager pluginManager;
 
     public static final String module = "zookeeper";
 
@@ -124,10 +129,10 @@ public class ZookeeperService {
      * 读取数据
      * @param connName
      * @param path
-     * @param deserialize 反序列化工具
+     * @param serializer 序列化工具
      * @return
      */
-    public Object readData(String connName,String path,String deserialize) throws IOException {
+    public Object readData(String connName,String path,String serializer) throws IOException {
         path = resolvePath(path);
 
         ZkClient zkClient = zkClient(connName);
@@ -136,8 +141,12 @@ public class ZookeeperService {
             return "";
         }
         byte [] dataBytes = (byte[]) data;
-        Serializer serializer = serializerChoseService.choseSerializer(deserialize);
-        ZkSerializerAdapter zkSerializerAdapter = new ZkSerializerAdapter(serializer);
+        Serializer serializerChose = serializerChoseService.choseSerializer(serializer);
+        if(serializerChose == null){
+            // 如果找不到序列化工具,选择 string 序列化
+            serializerChose = serializerChoseService.choseSerializer(SerializerConstants.STRING);
+        }
+        ZkSerializerAdapter zkSerializerAdapter = new ZkSerializerAdapter(serializerChose);
         Object object = zkSerializerAdapter.deserialize(dataBytes);
         return object;
     }
@@ -169,6 +178,11 @@ public class ZookeeperService {
         }
         String cleanPath = org.springframework.util.StringUtils.cleanPath(path);
         return cleanPath;
+    }
+
+    @PostConstruct
+    public void register(){
+        pluginManager.register(PluginDto.builder().module(module).name("main").author("sanri").build());
     }
 
     @PreDestroy

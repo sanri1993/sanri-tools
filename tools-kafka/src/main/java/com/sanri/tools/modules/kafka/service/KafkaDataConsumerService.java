@@ -3,7 +3,7 @@ package com.sanri.tools.modules.kafka.service;
 import com.alibaba.fastjson.JSON;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
 import com.sanri.tools.modules.kafka.dtos.*;
-import com.sanri.tools.modules.serializer.Serializer;
+import com.sanri.tools.modules.serializer.service.Serializer;
 import com.sanri.tools.modules.serializer.service.SerializerChoseService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -47,7 +47,7 @@ public class KafkaDataConsumerService {
      * @throws ExecutionException
      * @throws IOException
      */
-    public List<KafkaData> lastDatas(DataConsumerParam dataConsumerParam) throws InterruptedException, ExecutionException, IOException {
+    public List<KafkaData> lastDatas(DataConsumerParam dataConsumerParam) throws InterruptedException, ExecutionException, IOException, ClassNotFoundException {
         int partition = dataConsumerParam.getPartition();
         String clusterName = dataConsumerParam.getClusterName();
         String topic = dataConsumerParam.getTopic();
@@ -131,7 +131,7 @@ public class KafkaDataConsumerService {
      * @param classloaderName
      * @return
      */
-    public List<KafkaData> nearbyDatas(NearbyDataConsumerParam nearbyDataConsumerParam) throws IOException {
+    public List<KafkaData> nearbyDatas(NearbyDataConsumerParam nearbyDataConsumerParam) throws IOException, ClassNotFoundException {
         String clusterName = nearbyDataConsumerParam.getClusterName();
         String topic = nearbyDataConsumerParam.getTopic();
         int partition = nearbyDataConsumerParam.getPartition();

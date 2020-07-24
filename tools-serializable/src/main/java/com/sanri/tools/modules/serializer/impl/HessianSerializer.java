@@ -2,17 +2,20 @@ package com.sanri.tools.modules.serializer.impl;
 
 import com.caucho.hessian.io.HessianInput;
 import com.caucho.hessian.io.HessianOutput;
-import com.sanri.tools.modules.serializer.Serializer;
+import com.sanri.tools.modules.serializer.service.Serializer;
+import com.sanri.tools.modules.serializer.SerializerConstants;
 import org.apache.commons.io.IOUtils;
+import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+@Component
 public class HessianSerializer implements Serializer {
     @Override
     public String name() {
-        return "hessian";
+        return SerializerConstants.HESSIAN;
     }
 
     @Override
