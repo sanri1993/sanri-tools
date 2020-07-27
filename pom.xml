@@ -70,6 +70,7 @@
         </dependency>
     </dependencies>
 
+    <!-- 解决 springboot 自带版本太高问题 -->
     <dependencyManagement>
         <dependencies>
             <dependency>
