@@ -1,7 +1,8 @@
 ```
 tool-console 用于聚合其它服务，并对前端提供统一的输出格式，异常处理
 
-tools-core 主要提供配置文件服务，临时文件服务，类加载器，随机数据生成 
+tools-core 主要提供配置文件服务，临时文件服务，类加载器，数据服务 ,插件服务,连接服务;
+其它服务通过注册的形式,将自己的工具注册到插件服务,然后由插件服务统一对外提供插件功能 
 
 tools-database 提供关系型数据库服务，支持 mysql,oracle,postgresql
 
@@ -25,5 +26,6 @@ tools-redis redis 工具
    
 tools-websocket 如果需要实时向前端发送数据，引入这个包
 
+tools-soap 用于 webservice 的调用
 ```
 每一个模块自己提供数据访问控制器，如被 console 聚合，则能提供相应功能 
