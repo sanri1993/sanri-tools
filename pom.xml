@@ -13,6 +13,7 @@
         <module>tools-websocket</module>
         <module>tools-serializable</module>
         <module>tools-database</module>
+        <module>tools-soap</module>
     </modules>
 
     <parent>
