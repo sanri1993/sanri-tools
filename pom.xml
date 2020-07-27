@@ -14,6 +14,7 @@
         <module>tools-serializable</module>
         <module>tools-database</module>
     </modules>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -68,4 +69,13 @@
         </dependency>
     </dependencies>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>5.1.12</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

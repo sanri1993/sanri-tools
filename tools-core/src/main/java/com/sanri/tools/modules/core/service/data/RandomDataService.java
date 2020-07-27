@@ -159,7 +159,7 @@ public class RandomDataService {
      * @param propertyType
      * @return
      */
-    private Object populateDataOrigin( String columnName, Class<?> propertyType) {
+    protected Object populateDataOrigin( String columnName, Class<?> propertyType) {
         columnName = Objects.toString(columnName,"");
 
         if(propertyType == String.class){

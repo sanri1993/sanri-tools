@@ -23,7 +23,7 @@ public abstract class ExConnection {
     protected QueryRunner mainQueryRunner;
 
     private String connName;
-    protected  Map<String, Schema> schemas = new HashMap<String, Schema>();
+    protected Map<String, Schema> schemas = new HashMap<String, Schema>();
 
     public ExConnection(DataSource dataSource) throws SQLException {
         this.mainQueryRunner = new QueryRunner(dataSource);
@@ -302,9 +302,16 @@ public abstract class ExConnection {
         return "";
     }
 
-    public void executor(String schemaName, String ddl) throws SQLException {
+    /**
+     * 执行 sql 语句
+     * @param schemaName
+     * @param sql
+     * @throws SQLException
+     */
+    public void execute(String schemaName, String sql) throws SQLException {
         Schema schema = getSchema(schemaName);
         QueryRunner queryRunner = new QueryRunner(schema.dataSource());
-        queryRunner.update(ddl);
+        queryRunner.update(sql);
     }
+
 }

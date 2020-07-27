@@ -64,7 +64,7 @@ public class MysqlExConnection extends ExConnection {
         newDatasource.setPassword(password);
 
         String url = newDatasource.getUrl();
-        url += "?allowMultiQueries=true&characterEncoding=utf-8&useUnicode=true";
+        url += "?allowMultiQueries=true&characterEncoding=utf-8&useUnicode=true&useSSL=false&serverTimezone=UTC";
         newDatasource.setUrl(url);
         return newDatasource;
     }

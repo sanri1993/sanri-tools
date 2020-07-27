@@ -1,12 +1,12 @@
 package com.sanri.tools.modules.database.controller;
 
+import com.sanri.tools.modules.database.dtos.TableDataParam;
+import com.sanri.tools.modules.database.service.TableDataService;
 import com.sanri.tools.modules.database.service.TableMarkService;
 import com.sanri.tools.modules.protocol.db.Table;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -21,6 +21,8 @@ import java.util.List;
 public class DataController {
     @Autowired
     TableMarkService tableMarkService;
+    @Autowired
+    private TableDataService tableDataService;
 
     /**
      * 获取清除所有业务表数据 sql
@@ -35,5 +37,10 @@ public class DataController {
             sqls.add("truncate "+tableName);
         }
         return StringUtils.join(sqls,";\n");
+    }
+
+    @PostMapping("/singleTableRandomData")
+    public void singleTableRandomData(@RequestBody TableDataParam tableDataParam){
+        tableDataService.singleTableWriteRandomData(tableDataParam);
     }
 }

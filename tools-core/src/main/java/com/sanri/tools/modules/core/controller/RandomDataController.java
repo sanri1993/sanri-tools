@@ -1,21 +1,29 @@
 package com.sanri.tools.modules.core.controller;
 
+import com.sanri.tools.modules.core.dtos.SpiderDataParam;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
 import com.sanri.tools.modules.core.service.classloader.ExtendClassloader;
+import com.sanri.tools.modules.core.service.data.JsoupSpiderDataService;
 import com.sanri.tools.modules.core.service.data.RandomDataService;
+import com.sanri.tools.modules.core.service.data.RegexRandomDataService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/data")
 public class RandomDataController {
     @Autowired
     private RandomDataService randomDataService;
+    @Autowired
+    private RegexRandomDataService regexRandomDataService;
+    @Autowired
+    private JsoupSpiderDataService jsoupSpiderDataService;
+
     @Autowired
     private ClassloaderService classloaderService;
 
@@ -30,6 +38,19 @@ public class RandomDataController {
     public Object randomData(String className,String classloaderName) throws ClassNotFoundException {
         ExtendClassloader classloader = classloaderService.getClassloader(classloaderName);
         return randomDataService.randomData(className,classloader);
+    }
+
+    /**
+     * 使用正则表达式随机填充数据
+     * @param className
+     * @param classloaderName
+     * @return
+     * @throws ClassNotFoundException
+     */
+    @GetMapping("/random/regex")
+    public Object regexRandomData(String className,String classloaderName) throws ClassNotFoundException {
+        ExtendClassloader classloader = classloaderService.getClassloader(classloaderName);
+        return regexRandomDataService.randomData(className,classloader);
     }
 
     /**
@@ -48,5 +69,21 @@ public class RandomDataController {
             list.add(randomData);
         }
         return list;
+    }
+
+    /**
+     * 爬取数据
+     * @param className
+     * @param classloaderName
+     * @return
+     */
+    @PostMapping("/spider")
+    public Object spiderData(@RequestBody SpiderDataParam spiderDataParam) throws IOException, ClassNotFoundException {
+        String classloaderName = spiderDataParam.getClassloaderName();
+        String className = spiderDataParam.getClassName();
+        Map<String, String> params = spiderDataParam.getParams();
+
+        ExtendClassloader classloader = classloaderService.getClassloader(classloaderName);
+        return jsoupSpiderDataService.spiderData(className,classloader,params);
     }
 }

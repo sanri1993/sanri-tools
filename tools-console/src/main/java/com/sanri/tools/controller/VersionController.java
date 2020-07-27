@@ -1,5 +1,6 @@
 package com.sanri.tools.controller;
 
+import com.sanri.tools.modules.core.utils.RandomUtil;
 import com.sanri.tools.service.VersionService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -24,5 +25,11 @@ public class VersionController {
    @GetMapping("/current")
    public String current(){
        return versionService.currentVersion();
+   }
+
+   @GetMapping("/random")
+   public void random(){
+      Class<RandomUtil> randomUtilClass = RandomUtil.class;
+      String address = RandomUtil.address();
    }
 }

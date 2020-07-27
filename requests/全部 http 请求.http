@@ -1,5 +1,5 @@
 ### 看子模块的 resource 能不能加载
-GET {{baseUrl}}/index/randomData
+GET {{baseUrl}}/version/random
 
 ### 创建数据库连接
 POST {{baseUrl}}/connect/create/database
@@ -8,18 +8,18 @@ Content-Type: application/json
 {
   "connectIdParam": {
     "module": "database",
-    "connName": "lo"
+    "connName": "localhost"
   },
   "connectParam": {
-    "host": "10.101.72.43",
-    "port": 5432
+    "host": "localhost",
+    "port": 3306
   },
   "authParam": {
-    "username": "postgres",
-    "password": "postgres"
+    "username": "root",
+    "password": "h123"
   },
-  "dbType": "postgresql",
-  "schema": "hdsc_db"
+  "dbType": "mysql",
+  "schema": "test"
 }
 
 ### 获取所有数据库连接
@@ -29,7 +29,7 @@ GET {{baseUrl}}/db/metadata/connections
 POST {{baseUrl}}/db/metadata/connection/load
 Content-Type: application/x-www-form-urlencoded
 
-connName=lo
+connName=localhost
 
 ### 获取所有 schema
 GET {{baseUrl}}/db/metadata/schemas?connName=lo
@@ -163,5 +163,17 @@ GET {{baseUrl}}/connect/redis/10.101.72.43
 
 ### 连接管理-获取所有连接
 GET {{baseUrl}}/connect/all
+
+### 单表随机数据生成
+POST {{baseUrl}}/db/data/singleTableRandomData
+Content-Type: application/json
+
+{
+  "connName": "localhost",
+  "schemaName": "test",
+  "tableName": "test",
+  "columnMappers":[{"columnName": "name","random": "T(com.sanri.tools.modules.core.utils.RandomUtil).chinese(64,null)"},
+    {"columnName": "idcard","random": "T(com.sanri.tools.modules.core.utils.RandomUtil).idcard()"}]
+}
 
 ###
