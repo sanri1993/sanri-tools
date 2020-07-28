@@ -8,34 +8,38 @@ Content-Type: application/json
 {
   "connectIdParam": {
     "module": "database",
-    "connName": "localhost"
+    "connName": "lo"
   },
   "connectParam": {
-    "host": "localhost",
-    "port": 3306
+    "host": "10.101.72.43",
+    "port": 5432
   },
   "authParam": {
-    "username": "root",
-    "password": "h123"
+    "username": "postgres",
+    "password": "postgres"
   },
-  "dbType": "mysql",
-  "schema": "test"
+  "dbType": "postgresql",
+  "database": "hdsc_db"
 }
 
 ### 获取所有数据库连接
 GET {{baseUrl}}/db/metadata/connections
 
-### 加载连接
-POST {{baseUrl}}/db/metadata/connection/load
-Content-Type: application/x-www-form-urlencoded
 
-connName=localhost
+### 获取所有 catalogs
+GET {{baseUrl}}/db/metadata/catalogs?connName=localhost
 
-### 获取所有 schema
-GET {{baseUrl}}/db/metadata/schemas?connName=lo
+### 获取 catalog 的所有表
+GET {{baseUrl}}/db/metadata/tables?connName=localhost&catalog=test
 
-### 获取 schema 的所有表
-GET {{baseUrl}}/db/metadata/tables?connName=lo&schemaName=hdsc_db
+### 刷新表的列
+GET {{baseUrl}}/db/metadata/refreshColumns?connName=localhost&catalog=test&tableName=batch
+
+### 刷新表的主键
+GET {{baseUrl}}/db/metadata/refreshPrimaryKeys?connName=localhost&catalog=test&tableName=batch
+
+### 刷新表的索引
+GET {{baseUrl}}/db/metadata/refreshIndexs?connName=localhost&catalog=test&tableName=batch
 
 ### 标记表-常用标记
 GET {{baseUrl}}/db/metadata/extend/mark/tags

@@ -2,13 +2,14 @@ package com.sanri.tools.modules.protocol.param;
 
 import lombok.Data;
 
+import javax.sql.DataSource;
 import java.util.Properties;
 
 @Data
 public class DatabaseConnectParam extends AbstractConnectParam{
     private AuthParam authParam;
     private String dbType;
-    private String schema;
+    private String database;
     private String spellingRule = "lower";
 
     public static final String dbType_mysql = "mysql";
@@ -52,4 +53,5 @@ public class DatabaseConnectParam extends AbstractConnectParam{
 
         return properties;
     }
+
 }

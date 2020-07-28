@@ -7,20 +7,22 @@ import java.sql.*;
 import java.util.Properties;
 
 public class MetadataMain {
-    private static final String driver = "com.mysql.jdbc.Driver";
-    private static final String url = "jdbc:mysql://localhost:3306/test";
-    private static final String username = "root";
-    private static final String password = "h123";
+//    private static final String driver = "com.mysql.jdbc.Driver";
+//    private static final String url = "jdbc:mysql://localhost:3306/test";
+//    private static final String username = "root";
+//    private static final String password = "h123";
 
-//    private static final String driver = "org.postgresql.Driver";
-//    private static final String url = "jdbc:postgresql://10.101.72.43:5432/hdsc_db";
-//    private static final String username = "postgres";
-//    private static final String password = "postgres";
+    private static final String driver = "org.postgresql.Driver";
+    private static final String url = "jdbc:postgresql://10.101.72.43:5432/hdsc_db";
+    private static final String username = "postgres";
+    private static final String password = "postgres";
 
     @Before
     public void init() throws ClassNotFoundException {
         Class.forName(driver);
     }
+
+
 
     /**
      * mysql 使用的 catlog
@@ -117,7 +119,7 @@ public class MetadataMain {
         Connection connection = DriverManager.getConnection(url, props);
         DatabaseMetaData metaData = connection.getMetaData();
         String[] types = { "TABLE" };
-        ResultSet mct = metaData.getIndexInfo(null, null, "%",false,true);
+        ResultSet mct = metaData.getIndexInfo("hdsc_db", null, "id_device_play_record",false,true);
         ResultSetMetaData resultSetMetaData = mct.getMetaData();
         int columnCount = resultSetMetaData.getColumnCount();
         while (mct.next()){
