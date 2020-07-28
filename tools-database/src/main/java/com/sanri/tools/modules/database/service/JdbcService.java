@@ -3,6 +3,7 @@ package com.sanri.tools.modules.database.service;
 import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.service.file.ConnectService;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
+import com.sanri.tools.modules.database.dtos.DynamicQueryDto;
 import com.sanri.tools.modules.database.dtos.meta.*;
 import com.sanri.tools.modules.protocol.param.AuthParam;
 import com.sanri.tools.modules.protocol.param.ConnectParam;
@@ -21,10 +22,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -224,6 +222,13 @@ public class JdbcService {
             keyword = keyword.split(":")[1];
         }
 
+        // oracle 的特殊处理
+        DataSource dataSource = dataSourceMap.get(connName);
+        if (dataSource instanceof OracleDataSource){
+            //如果为 oracle ,搜索关键字转大写
+            keyword = keyword.toUpperCase();
+        }
+
         List<TableMetaData> findTables = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(firstFilterTables)){
             for (TableMetaData tableMetaData : firstFilterTables) {
@@ -299,6 +304,23 @@ public class JdbcService {
         return queryRunner.query(sql,resultSetHandler,params);
     }
 
+    // 动态查询, 以前用于 sql 客户端的,就是前端动态给出 sql 查出结果; 不知道还要不要
+    public List<DynamicQueryDto> executeDynamicQuery(String connName,List<String> sqls){
+        List<DynamicQueryDto> dynamicQueryDtos = new ArrayList<>();
+        DataSource dataSource = dataSourceMap.get(connName);
+        QueryRunner queryRunner = new QueryRunner(dataSource);
+        for (String sql : sqls) {
+            try {
+                DynamicQueryDto dynamicQueryDto = queryRunner.query(sql, dynamicQueryProcessor);
+                dynamicQueryDto.setSql(sql);
+                dynamicQueryDtos.add(dynamicQueryDto);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return dynamicQueryDtos;
+    }
+
     protected Map<ActualTableName, TableMetaData> refreshTableInfo(String connName, String catalog, String schema) throws IOException, SQLException {
         DatabaseMetaData databaseMetaData = databaseMetaData(connName);
         List<Table> tables;
@@ -369,6 +391,7 @@ public class JdbcService {
     static ColumnListProcessor columnListProcessor = new ColumnListProcessor();
     static IndexListProcessor indexListProcessor = new IndexListProcessor();
     static PrimaryKeyListProcessor primaryKeyListProcessor = new PrimaryKeyListProcessor();
+    static DynamicQueryProcessor dynamicQueryProcessor = new DynamicQueryProcessor();
 
     private static class SchemaListProcessor implements ResultSetHandler<List<Schema>>{
         @Override
@@ -467,6 +490,37 @@ public class JdbcService {
                 primaryKeys.add(primaryKey);
             }
             return primaryKeys;
+        }
+    }
+
+    private static class DynamicQueryProcessor implements ResultSetHandler<DynamicQueryDto>{
+        @Override
+        public DynamicQueryDto handle(ResultSet resultSet) throws SQLException {
+            DynamicQueryDto dynamicQueryDto = new DynamicQueryDto();
+
+            //添加头部
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+            for (int i = 1; i <= columnCount; i++) {
+                String columnLabel = metaData.getColumnLabel(i);
+                int columnType = metaData.getColumnType(i);
+                String columnTypeName = metaData.getColumnTypeName(i);
+                dynamicQueryDto.addHeader(new DynamicQueryDto.Header(columnLabel,columnType,columnTypeName));
+            }
+
+            // 添加数据
+            while (resultSet.next()) {
+                List<Object> row = new ArrayList<Object>();
+                for (int i = 1; i <= columnCount; i++) {
+
+                    Object columnData = resultSet.getObject(i);
+                    row.add(columnData);
+                }
+
+                dynamicQueryDto.addRow(row);
+            }
+
+            return dynamicQueryDto;
         }
     }
 
