@@ -1,4 +1,4 @@
-package com.sanri.tools.modules.database.dtos;
+package com.sanri.tools.modules.database.dtos.meta;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;

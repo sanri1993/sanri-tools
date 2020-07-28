@@ -1,4 +1,4 @@
-package com.sanri.tools.modules.database.dtos;
+package com.sanri.tools.modules.database.dtos.meta;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;

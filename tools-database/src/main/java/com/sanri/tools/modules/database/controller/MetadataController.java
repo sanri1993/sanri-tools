@@ -1,7 +1,7 @@
 package com.sanri.tools.modules.database.controller;
 
 import com.sanri.tools.modules.core.service.file.ConnectService;
-import com.sanri.tools.modules.database.dtos.*;
+import com.sanri.tools.modules.database.dtos.meta.*;
 import com.sanri.tools.modules.database.service.JdbcService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -70,7 +70,7 @@ public class MetadataController {
      * @throws SQLException
      */
     @GetMapping("/refreshColumns")
-    public List<Column> refreshColumns(String connName, String catalog,String schema,String tableName) throws IOException, SQLException {
+    public List<Column> refreshColumns(String connName, String catalog, String schema, String tableName) throws IOException, SQLException {
         ActualTableName actualTableName = new ActualTableName(catalog,schema,tableName);
         return jdbcService.refreshTableColumns(connName,actualTableName);
     }
@@ -84,7 +84,7 @@ public class MetadataController {
 
     // 刷新表格主键项
     @GetMapping("/refreshPrimaryKeys")
-    public List<PrimaryKey> refreshPrimaryKeys(String connName, String catalog,String schema,String tableName) throws IOException, SQLException {
+    public List<PrimaryKey> refreshPrimaryKeys(String connName, String catalog, String schema, String tableName) throws IOException, SQLException {
         ActualTableName actualTableName = new ActualTableName(catalog,schema,tableName);
         return jdbcService.refreshTablePrimaryKeys(connName,actualTableName);
     }

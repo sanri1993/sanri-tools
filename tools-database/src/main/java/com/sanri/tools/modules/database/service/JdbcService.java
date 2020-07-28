@@ -1,13 +1,16 @@
 package com.sanri.tools.modules.database.service;
 
+import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.service.file.ConnectService;
-import com.sanri.tools.modules.database.dtos.*;
+import com.sanri.tools.modules.core.service.plugin.PluginManager;
+import com.sanri.tools.modules.database.dtos.meta.*;
 import com.sanri.tools.modules.protocol.param.AuthParam;
 import com.sanri.tools.modules.protocol.param.ConnectParam;
 import com.sanri.tools.modules.protocol.param.DatabaseConnectParam;
 import oracle.jdbc.pool.OracleDataSource;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.dbutils.DbUtils;
+import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.ColumnListHandler;
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +18,7 @@ import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
@@ -30,6 +34,8 @@ import java.util.stream.Collectors;
 public class JdbcService {
     @Autowired
     private ConnectService connectService;
+    @Autowired
+    private PluginManager pluginManager;
 
     public static final String module = "database";
 
@@ -250,6 +256,47 @@ public class JdbcService {
         }
 
         return findTables;
+    }
+
+    /**
+     * 查找 某一张表
+     * @param connName
+     * @param actualTableName
+     * @return
+     */
+    public TableMetaData findTable(String connName, ActualTableName actualTableName) {
+        Map<ActualTableName, TableMetaData> actualTableNameTableMetaDataMap = tableMetaDataMap.get(connName);
+        TableMetaData tableMetaData = actualTableNameTableMetaDataMap.get(actualTableName);
+        return tableMetaData;
+    }
+
+    /**
+     * 执行 sql ,在某个连接上
+     * @param connName
+     * @param sql
+     * @return
+     */
+    public int executeUpdate(String connName, String sql) throws SQLException {
+        DataSource dataSource = dataSourceMap.get(connName);
+        QueryRunner queryRunner = new QueryRunner(dataSource);
+        int update = queryRunner.update(sql);
+        return update;
+    }
+
+    /**
+     * 执行查询
+     * @param connName
+     * @param sql
+     * @param resultSetHandler
+     * @param params
+     * @param <T>
+     * @return
+     * @throws SQLException
+     */
+    public <T> T executeQuery(String connName,String sql,ResultSetHandler<T> resultSetHandler,Object...params) throws SQLException {
+        DataSource dataSource = dataSourceMap.get(connName);
+        QueryRunner queryRunner = new QueryRunner(dataSource);
+        return queryRunner.query(sql,resultSetHandler,params);
     }
 
     protected Map<ActualTableName, TableMetaData> refreshTableInfo(String connName, String catalog, String schema) throws IOException, SQLException {
@@ -473,4 +520,8 @@ public class JdbcService {
         return dataSource;
     }
 
+    @PostConstruct
+    public void register(){
+        pluginManager.register(PluginDto.builder().module(module).name("main").author("sanri").envs("default").build());
+    }
 }

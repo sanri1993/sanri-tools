@@ -1,6 +1,6 @@
 package com.sanri.tools.modules.database.controller;
 
-import com.sanri.tools.modules.database.dtos.ActualTableName;
+import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
 import com.sanri.tools.modules.database.dtos.BatchTableRelationParam;
 import com.sanri.tools.modules.database.dtos.TableMark;
 import com.sanri.tools.modules.database.dtos.TableRelationDto;

@@ -1,6 +1,5 @@
-package com.sanri.tools.modules.database.dtos;
+package com.sanri.tools.modules.database.dtos.meta;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 

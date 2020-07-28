@@ -1,8 +1,8 @@
 package com.sanri.tools.modules.database.dtos;
 
+import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 

@@ -1,5 +1,9 @@
 package com.sanri.tools.modules.database.service;
 
+import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
+import com.sanri.tools.modules.database.dtos.meta.Column;
+import com.sanri.tools.modules.database.dtos.TableDataParam;
+import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
@@ -31,27 +35,12 @@ public class TableDataService {
     public void singleTableWriteRandomData(TableDataParam tableDataParam) {
         // 获取表元数据信息
         String connName = tableDataParam.getConnName();
-        String schemaName = tableDataParam.getSchemaName();
-        String tableName = tableDataParam.getTableName();
-        ExConnection connection = jdbcService.getConnection(connName);
-        try {
-            Map<String, Table> tables = connection.getSchema(schemaName).getTables();
-            if(tables.isEmpty()) {
-                // 刷新数据表
-                connection.tables(schemaName, true);
-
-                // 刷新数据表的列
-                connection.columns(schemaName,tableName,true);
-            }
-        } catch (SQLException e) {
-            log.error("刷新数据表失败 {}",e.getMessage(),e);
-            return ;
-        }
-        Table table = connection.getSchema(schemaName).getTable(tableName);
+        ActualTableName actualTableName = tableDataParam.getActualTableName();
+        TableMetaData tableMetaData = jdbcService.findTable(connName,actualTableName);
 
         List<TableDataParam.ColumnMapper> columnMappers = tableDataParam.getColumnMappers();
         HashMap<String, Object> paramMap = new HashMap<>();
-        paramMap.put("tableName",tableName);
+        paramMap.put("tableName",actualTableName.getTableName());
         String columns = columnMappers.stream().map(TableDataParam.ColumnMapper::getColumnName).collect(Collectors.joining(","));
         paramMap.put("columns",columns);
         List<Object> values = new ArrayList<>();
@@ -59,6 +48,9 @@ public class TableDataService {
         StringSubstitutor stringSubstitutor = new StringSubstitutor(paramMap, "${", "}");
 
         String insertSql = "insert into ${tableName}(${columns}) values ${values}";
+
+        // column 映射成 map
+        Map<String, Column> columnMap = tableMetaData.getColumns().stream().collect(Collectors.toMap(Column::getColumnName, column -> column));
 
         // 将数据分段插入
         int SEGMENT_SIZE = 100;
@@ -81,8 +73,8 @@ public class TableDataService {
                     Expression expression = expressionParser.parseExpression(random);
                     String value = expression.getValue(String.class);
 
-                    Column column = table.getColumn(columnName);
-                    String dataType = column.getColumnType().getDataType();
+                    Column column = columnMap.get(columnName);
+                    String dataType = column.getTypeName();
                     // 需要判断数据库字段类型,数字型和字符型的添加不一样的
                     values.add("'"+value+"'");
                 }
@@ -94,7 +86,8 @@ public class TableDataService {
             String finalSql = stringSubstitutor.replace(insertSql);
             log.info("将要执行的语句为 {}",finalSql);
             try {
-                connection.execute(schemaName,finalSql);
+                int executeUpdate = jdbcService.executeUpdate(connName, finalSql);
+                log.info("影响行数 {}",executeUpdate);
             } catch (SQLException e) {
                 log.error("当前 sql 执行错误 {}",finalSql);
             }
