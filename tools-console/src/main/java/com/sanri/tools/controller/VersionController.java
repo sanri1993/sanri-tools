@@ -1,19 +1,11 @@
 package com.sanri.tools.controller;
 
-import com.sanri.tools.modules.core.utils.RandomUtil;
 import com.sanri.tools.service.VersionService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.PostConstruct;
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/version")
@@ -27,9 +19,4 @@ public class VersionController {
        return versionService.currentVersion();
    }
 
-   @GetMapping("/random")
-   public void random(){
-      Class<RandomUtil> randomUtilClass = RandomUtil.class;
-      String address = RandomUtil.address();
-   }
 }
