@@ -33,6 +33,11 @@
 <!--            <artifactId>tools-soap</artifactId>-->
 <!--            <version>${project.version}</version>-->
 <!--        </dependency>-->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>tools-swagger-doc</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

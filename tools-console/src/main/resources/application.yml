@@ -9,6 +9,15 @@ spring:
     banner-mode: "off"
   freemarker:
     cache: false
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false
+    servlet:
+      content-type: text/html
+    enabled: true
+    encoding: UTF-8
+    mode: HTML
 data:
   path:
     config: d:/test/config

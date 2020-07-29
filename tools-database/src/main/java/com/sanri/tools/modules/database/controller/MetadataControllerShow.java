@@ -26,7 +26,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 /**
- * 为了使用 freemarker 工具
+ * 使用 freemarker 工具, 将数据库文档转成 html word
  */
 @Controller
 @RequestMapping("/db/metadata")
@@ -72,6 +72,17 @@ public class MetadataControllerShow {
         template.process(model,response.getWriter());
     }
 
+    /**
+     * 先处理成 html 文档,然后转成 word 文档
+     * @param connName
+     * @param catalog
+     * @param schema
+     * @param templateName
+     * @return
+     * @throws IOException
+     * @throws SQLException
+     * @throws TemplateException
+     */
     @GetMapping("/doc/download/word")
     public ResponseEntity<UrlResource> downDocWord(String connName, String catalog, String schema, String templateName) throws IOException, SQLException, TemplateException {
         List<TableMetaData> filterTables = jdbcService.filterSchemaTables(connName, catalog, schema);
