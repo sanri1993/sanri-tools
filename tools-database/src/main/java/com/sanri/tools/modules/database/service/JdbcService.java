@@ -51,11 +51,59 @@ public class JdbcService {
      */
     public Collection<TableMetaData> tables(String connName, String catalog) throws IOException, SQLException {
         Map<ActualTableName, TableMetaData> actualTableNameTableMetaDataMap = tableMetaDataMap.get(connName);
-        if (actualTableNameTableMetaDataMap == null){
+        if (actualTableNameTableMetaDataMap == null || StringUtils.isBlank(catalog)){
             actualTableNameTableMetaDataMap = refreshTableInfo(connName, catalog, null);
             tableMetaDataMap.put(connName,actualTableNameTableMetaDataMap);
+
+            return actualTableNameTableMetaDataMap.values();
         }
-        return actualTableNameTableMetaDataMap.values();
+
+        // 需要判断指定的 catalog 是否已经加载,对于 mysql 数据库来说
+        // 查找所有的 catalog ,如果没有就加载一下,最后返回指定的 catalog 数据
+        Set<String> existCatalogs = actualTableNameTableMetaDataMap.keySet().stream().map(ActualTableName::getCatalog).collect(Collectors.toSet());
+        if (!existCatalogs.contains(catalog)){
+            Map<ActualTableName, TableMetaData> newCatalogTables = refreshTableInfo(connName, catalog, null);
+            actualTableNameTableMetaDataMap.putAll(newCatalogTables);
+        }
+
+        // 过滤出指定 catalog 的数据
+        Collection<TableMetaData> catalogTables = new ArrayList<>();
+        Iterator<TableMetaData> iterator = actualTableNameTableMetaDataMap.values().iterator();
+        while (iterator.hasNext()){
+            TableMetaData tableMetaData = iterator.next();
+            String currentCatalog = tableMetaData.getActualTableName().getCatalog();
+            if (catalog.contains(currentCatalog)){
+                catalogTables.add(tableMetaData);
+            }
+        }
+
+        return catalogTables;
+    }
+
+    /**
+     * 过滤出指定 schema 的表
+     * @param connName
+     * @param catalog
+     * @param schema
+     * @return
+     * @throws IOException
+     * @throws SQLException
+     */
+    public List<TableMetaData> filterSchemaTables(String connName, String catalog, String schema) throws IOException, SQLException {
+        Collection<TableMetaData> tables = tables(connName, catalog);
+        List<TableMetaData> filterTables = new ArrayList<>(tables);
+        if (StringUtils.isNotBlank(schema)){
+            // 过滤掉不是 schema 的表
+            Iterator<TableMetaData> iterator = filterTables.iterator();
+            while (iterator.hasNext()){
+                TableMetaData next = iterator.next();
+                ActualTableName actualTableName = next.getActualTableName();
+                if (!schema.equals(actualTableName.getSchema())){
+                    iterator.remove();
+                }
+            }
+        }
+        return filterTables;
     }
 
     /**

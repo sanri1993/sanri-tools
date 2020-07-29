@@ -7,6 +7,8 @@ spring:
     active: company
   main:
     banner-mode: "off"
+  freemarker:
+    cache: false
 data:
   path:
     config: d:/test/config
