@@ -39,9 +39,9 @@
             </exclusions>
         </dependency>
         <dependency>
-        　　<groupId>org.apache.poi</groupId>
-        　　<artifactId>poi</artifactId>
-        　　<version>4.1.0</version>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>4.1.0</version>
         </dependency>
 
         <!-- 数据库连接驱动 -->
@@ -75,7 +75,6 @@
             <artifactId>junit</artifactId>
         </dependency>
     </dependencies>
-
 
 
 </project>
