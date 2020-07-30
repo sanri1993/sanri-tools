@@ -22,3 +22,10 @@ data:
   path:
     config: d:/test/config
     tmp: d:/tmp
+translate:
+  baidu:
+    appId: appid
+    secret: secret
+  youdao:
+    appId: appKey
+    secret: appSecret

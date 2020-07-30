@@ -180,4 +180,10 @@ Content-Type: application/json
     {"columnName": "idcard","random": "T(com.sanri.tools.modules.core.utils.RandomUtil).idcard()"}]
 }
 
+### google 翻译
+GET http://translate.google.cn/translate_a/single?client=gtx&sl=zh-CN&tl=en&dt=t&q=算法
+
+### 翻译替换工具
+GET {{baseUrl}}/name/translate?orginChars=我是中国人&splitToolName=ik&tranlates=baidu
+
 ###

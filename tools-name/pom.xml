@@ -9,39 +9,35 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>tools-core</artifactId>
+    <artifactId>tools-name</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>tools-protocol</artifactId>
+            <artifactId>tools-core</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>tools-serializable</artifactId>
-            <version>${project.version}</version>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.jsoup</groupId>
-            <artifactId>jsoup</artifactId>
-            <version>1.11.3</version>
+            <groupId>org.wltea.analyzer</groupId>
+            <artifactId>IKAnalyzer</artifactId>
+            <version>2012FF_u1</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-text</artifactId>
-            <version>1.5</version>
+            <groupId>org.lionsoul</groupId>
+            <artifactId>jcseg-core</artifactId>
+            <version>1.9.9</version>
         </dependency>
-
-        <!-- 一个支持 http 请求的工具 -->
         <dependency>
-            <groupId>com.dtflys.forest</groupId>
-            <artifactId>spring-boot-starter-forest</artifactId>
-            <version>1.3.6</version>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-analyzers-common</artifactId>
+            <version>4.2.0</version>
         </dependency>
-
     </dependencies>
 
 </project>
