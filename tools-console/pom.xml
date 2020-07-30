@@ -12,6 +12,12 @@
     <artifactId>tools-console</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>tools-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
 <!--        <dependency>-->
 <!--            <groupId>${project.groupId}</groupId>-->
 <!--            <artifactId>tools-kafka</artifactId>-->
@@ -38,11 +44,12 @@
 <!--            <version>${project.version}</version>-->
 <!--        </dependency>-->
 
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>tools-name</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>${project.groupId}</groupId>-->
+<!--                <artifactId>tools-name</artifactId>-->
+<!--                <version>${project.version}</version>-->
+<!--            </dependency>-->
+
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
