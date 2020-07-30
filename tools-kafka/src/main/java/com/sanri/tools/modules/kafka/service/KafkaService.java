@@ -91,8 +91,8 @@ public class KafkaService {
      *
      * @return
      */
-    public List<TopicInfo> topics(String clusterName) throws IOException, ExecutionException, InterruptedException {
-        List<TopicInfo> topicInfos = new ArrayList<>();
+    public List<TopicDescription> topics(String clusterName) throws IOException, ExecutionException, InterruptedException {
+        List<TopicDescription> topicInfos = new ArrayList<>();
 
         AdminClient adminClient = loadAdminClient(clusterName);
 
@@ -105,8 +105,7 @@ public class KafkaService {
             Map.Entry<String, KafkaFuture<TopicDescription>> topicDescriptionEntry = iterator.next();
             String topic = topicDescriptionEntry.getKey();
             TopicDescription topicDescription = topicDescriptionEntry.getValue().get();
-            List<TopicPartitionInfo> partitions = topicDescription.partitions();
-            topicInfos.add(new TopicInfo(topic,partitions.size()));
+            topicInfos.add(topicDescription);
         }
         return topicInfos;
     }
@@ -211,6 +210,7 @@ public class KafkaService {
         Collection<MemberDescription> members = consumerGroupDescription.members();
         List<TopicPartition> allTopicPartition = new ArrayList<>();
         for (MemberDescription member : members) {
+            String host = member.host();                // 需要加入这个,这样才能知道哪些主题的哪些分区在哪个主机上消费
             MemberAssignment assignment = member.assignment();
             Set<TopicPartition> topicPartitions = assignment.topicPartitions();
             allTopicPartition.addAll(topicPartitions);
