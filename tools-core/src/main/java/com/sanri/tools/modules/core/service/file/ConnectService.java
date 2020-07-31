@@ -79,7 +79,9 @@ public class ConnectService {
         }
         AbstractConnectParam abstractConnectParam = (AbstractConnectParam) JSON.parseObject(data, param);
         ConnectParam connectParam = abstractConnectParam.getConnectParam();
-        NetUtil.isHostConnectable(connectParam.getHost(),connectParam.getPort());
+        if (connectParam != null) {
+            NetUtil.isHostConnectable(connectParam.getHost(), connectParam.getPort());
+        }
 
         String connName = abstractConnectParam.getConnectIdParam().getConnName();
         fileManager.writeConfig(MODULE,module+"/"+connName, data);

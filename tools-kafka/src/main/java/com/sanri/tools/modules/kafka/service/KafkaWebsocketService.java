@@ -109,8 +109,7 @@ public class KafkaWebsocketService {
             try {
                 int partitions = kafkaService.partitions(clusterName, topic);
 
-                Properties properties = kafkaService.kafkaProperties(clusterName);
-                KafkaConsumer<byte[], byte[]> consumer = new KafkaConsumer<byte[], byte[]>(properties);
+                KafkaConsumer<byte[], byte[]> consumer = kafkaService.loadConsumerClient(clusterName);
                 try {
                     List<TopicPartition> topicPartitions = new ArrayList<>();
                     for (int i=0;i < partitions;i++) {

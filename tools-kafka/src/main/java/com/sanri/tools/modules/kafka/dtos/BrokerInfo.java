@@ -2,6 +2,9 @@ package com.sanri.tools.modules.kafka.dtos;
 
 import lombok.Data;
 
+/**
+ * 对应 kafka 数据的 Node
+ */
 @Data
 public class BrokerInfo {
     private int id;
@@ -12,6 +15,12 @@ public class BrokerInfo {
     public BrokerInfo() {
     }
 
+    public BrokerInfo(int id, String host, int port) {
+        this.id = id;
+        this.host = host;
+        this.port = port;
+    }
+
     public BrokerInfo(int id, String host, int port, int jxmPort) {
         this.id = id;
         this.host = host;
@@ -19,4 +28,7 @@ public class BrokerInfo {
         this.jxmPort = jxmPort;
     }
 
+    public String hostAndPort(){
+        return host+":"+port;
+    }
 }

@@ -88,16 +88,16 @@ Content-Type: application/json
 {
   "connectIdParam": {
     "module": "zookeeper",
-    "connName": "192.168.72.43"
+    "connName": "192.168.72.42_2181"
   },
   "connectParam": {
-    "host": "10.101.72.43",
+    "host": "10.101.72.42",
     "port": 2181
   }
 }
 
 ### 列出子节点
-GET {{baseUrl}}/zookeeper/childrens?connName=192.168.72.43&path=/brokers
+GET {{baseUrl}}/zookeeper/childrens?connName=192.168.72.42_2181&path=/hd/kafka
 
 ### 元数据 meta
 GET {{baseUrl}}/zookeeper/meta?connName=192.168.72.43&path=/brokers
@@ -186,4 +186,37 @@ GET http://translate.google.cn/translate_a/single?client=gtx&sl=zh-CN&tl=en&dt=t
 ### 翻译替换工具
 GET {{baseUrl}}/name/translate?orginChars=我是中国人&splitToolName=ik&tranlates=baidu
 
-###
+### 创建 kafka 连接
+POST {{baseUrl}}/kafka/connect/create
+Content-Type: application/yaml
+
+connectIdParam:
+  module: kafka
+  connName: 192.168.72.42_2181
+chroot: /hd/kafka
+kafka:
+  properties:
+    sasl:
+      jaas:
+        config: org.apache.kafka.common.security.plain.PlainLoginModule required username=hd password=hd-kafka;
+      mechanism: PLAIN
+    security:
+      protocol: SASL_PLAINTEXT
+
+### 列出所有的主题信息
+GET {{baseUrl}}/kafka/topics?clusterName=192.168.72.42_2181
+
+### 列出主题日志数量
+GET {{baseUrl}}/kafka/topic/logSize?clusterName=192.168.72.42_2181&topic=EGSC_SCP_DEVICEMGMT_STATUSTOBROADCAST_TOPIC
+
+### 列出所有的消费组
+GET {{baseUrl}}/kafka/groups?clusterName=192.168.72.42_2181
+
+### 列出消费组消费的主题
+GET {{baseUrl}}/kafka/group/topics?clusterName=192.168.72.42_2181&group=scp-st-broadcastApp_BC_APP6876
+
+### 消费组情况查询
+GET {{baseUrl}}/kafka/group/subscribes?clusterName=192.168.72.42_2181&group=scp-st-broadcastApp_BC_APP6876
+
+### 消费组消费主题的偏移量 offset,logsize,lag
+GET {{baseUrl}}/kafka/group/topic/offset?clusterName=192.168.72.42_2181&group=scp-st-broadcastApp_BC_APP6876&topic=EGSC_SCP_DEVICEMGMT_STATUSTOBROADCAST_TOPIC

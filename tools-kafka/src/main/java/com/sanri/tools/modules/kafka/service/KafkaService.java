@@ -1,5 +1,6 @@
 package com.sanri.tools.modules.kafka.service;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sanri.tools.modules.core.service.file.ConnectService;
@@ -7,19 +8,18 @@ import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.kafka.dtos.*;
 import com.sanri.tools.modules.kafka.dtos.MBeanMonitorInfo;
+import com.sanri.tools.modules.protocol.exception.ToolException;
 import com.sanri.tools.modules.protocol.param.KafkaConnectParam;
 import com.sanri.tools.modules.zookeeper.service.ZookeeperService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.admin.*;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.*;
-import org.apache.kafka.common.config.SaslConfigs;
-import org.apache.kafka.common.security.auth.SecurityProtocol;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.core.Constants;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
@@ -37,6 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * kafka 主题和消费组管理
@@ -54,6 +55,19 @@ public class KafkaService {
     public static final String module = "kafka";
 
     private static final Map<String, AdminClient> adminClientMap = new ConcurrentHashMap<>();
+
+    /**
+     * 读取 brokers 信息
+     * @param clusterName
+     * @return
+     * @throws IOException
+     */
+    public List<BrokerInfo> brokers(String clusterName) throws IOException {
+        KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(module, clusterName);
+        String chroot = kafkaConnectParam.getChroot();
+        List<BrokerInfo> brokerInfos = readZookeeperBrokers(clusterName, chroot);
+        return brokerInfos;
+    }
 
     /**
      * 创建主题
@@ -91,8 +105,8 @@ public class KafkaService {
      *
      * @return
      */
-    public List<TopicDescription> topics(String clusterName) throws IOException, ExecutionException, InterruptedException {
-        List<TopicDescription> topicInfos = new ArrayList<>();
+    public List<TopicInfo> topics(String clusterName) throws IOException, ExecutionException, InterruptedException {
+        List<TopicInfo> topicInfos = new ArrayList<>();
 
         AdminClient adminClient = loadAdminClient(clusterName);
 
@@ -105,7 +119,29 @@ public class KafkaService {
             Map.Entry<String, KafkaFuture<TopicDescription>> topicDescriptionEntry = iterator.next();
             String topic = topicDescriptionEntry.getKey();
             TopicDescription topicDescription = topicDescriptionEntry.getValue().get();
-            topicInfos.add(topicDescription);
+
+            // 复制数据,因为 TopicDescription 没有 getset
+            TopicInfo topicInfo = new TopicInfo(topicDescription.name(), topicDescription.isInternal());
+            topicInfos.add(topicInfo);
+            List<TopicPartitionInfo> partitions = topicDescription.partitions();
+            for (TopicPartitionInfo partition : partitions) {
+                Node leader = partition.leader();
+                BrokerInfo leaderBroker = new BrokerInfo(leader.id(), leader.host(), leader.port());
+
+                List<Node> replicas = partition.replicas();
+                List<BrokerInfo> replicaBrokers = new ArrayList<>();
+                for (Node replica : replicas) {
+                    replicaBrokers.add(new BrokerInfo(replica.id(), replica.host(), replica.port()));
+                }
+
+                List<Node> isr = partition.isr();
+                List<BrokerInfo> isrBrokers = new ArrayList<>();
+                for (Node node : isr) {
+                    isrBrokers.add(new BrokerInfo(node.id(), node.host(), node.port()));
+                }
+                TopicInfo.TopicPartitionInfo partitionInfo = new TopicInfo.TopicPartitionInfo(partition.partition(), leaderBroker, replicaBrokers, isrBrokers);
+                topicInfo.addPartitionInfo(partitionInfo);
+            }
         }
         return topicInfos;
     }
@@ -190,56 +226,51 @@ public class KafkaService {
     }
 
     /**
-     * 消费组订阅主题消费情况查询
+     * 消费组详情查询, 包含分区策略, 当前的组协调器,和每一个主机分到的消费分区
      * @param clusterName
      * @param group
      * @return
      * @throws IOException
      */
-    public List<TopicOffset> groupSubscribeTopicsMonitor(String clusterName, String group) throws IOException, ExecutionException, InterruptedException {
+    public ConsumerGroupInfo consumerGroupInfo(String clusterName, String group) throws IOException, ExecutionException, InterruptedException {
         AdminClient adminClient = loadAdminClient(clusterName);
 
-        //创建 KafkaConsumer 来获取 offset ,lag,logsize
-        Properties properties = kafkaProperties(clusterName);
-        KafkaConsumer<byte[], byte[]> consumer = new KafkaConsumer<byte[], byte[]>(properties);
-
-        List<TopicPartition> topicPartitionsQuery = new ArrayList<>();
         DescribeConsumerGroupsResult describeConsumerGroupsResult = adminClient.describeConsumerGroups(Collections.singletonList(group));
         Map<String, KafkaFuture<ConsumerGroupDescription>> stringKafkaFutureMap = describeConsumerGroupsResult.describedGroups();
         ConsumerGroupDescription consumerGroupDescription = stringKafkaFutureMap.get(group).get();
+
+        Node coordinator = consumerGroupDescription.coordinator();
+        BrokerInfo coordinatorBroker = new BrokerInfo(coordinator.id(),coordinator.host(),coordinator.port());
+        String partitionAssignor = consumerGroupDescription.partitionAssignor();
+        ConsumerGroupInfo consumerGroupInfo = new ConsumerGroupInfo(coordinatorBroker,partitionAssignor);
+
+        Map<String,Set<SimpleTopicPartition>> map = new HashMap<>();
+
         Collection<MemberDescription> members = consumerGroupDescription.members();
-        List<TopicPartition> allTopicPartition = new ArrayList<>();
         for (MemberDescription member : members) {
             String host = member.host();                // 需要加入这个,这样才能知道哪些主题的哪些分区在哪个主机上消费
             MemberAssignment assignment = member.assignment();
+
             Set<TopicPartition> topicPartitions = assignment.topicPartitions();
-            allTopicPartition.addAll(topicPartitions);
-        }
-
-        //查询 group  offset 信息
-        Map<TopicPartition, OffsetAndMetadata> offsetAndMetadataMap = adminClient.listConsumerGroupOffsets(group).partitionsToOffsetAndMetadata().get();
-
-        Map<TopicPartition, Long> topicPartitionLongMap = consumer.endOffsets(allTopicPartition);
-        Iterator<Map.Entry<TopicPartition, Long>> iterator = topicPartitionLongMap.entrySet().iterator();
-        Map<String,TopicOffset> topicOffsets = new HashMap<>();
-        while (iterator.hasNext()){
-            Map.Entry<TopicPartition, Long> entry = iterator.next();
-            TopicPartition topicPartition = entry.getKey();
-            String topic = topicPartition.topic();
-            int partition = topicPartition.partition();
-            Long logSize = entry.getValue();
-            long offset = offsetAndMetadataMap.get(topicPartition).offset();
-            long lag = logSize - offset;
-
-            TopicOffset topicOffset = topicOffsets.get(topic);
-            if(topicOffset == null){
-                topicOffset = new TopicOffset(group,topic);
-                topicOffsets.put(topic,topicOffset);
+            Set<SimpleTopicPartition> simpleTopicPartitions = new HashSet<>();
+            for (TopicPartition topicPartition : topicPartitions) {
+                SimpleTopicPartition simpleTopicPartition = new SimpleTopicPartition(topicPartition.topic(), topicPartition.partition());
+                simpleTopicPartitions.add(simpleTopicPartition);
             }
-            topicOffset.addPartitionOffset(new OffsetShow(topic,partition,offset,logSize));
+            Set<SimpleTopicPartition> existHostTopicPartitions = map.computeIfAbsent(host, k -> new HashSet<>());
+            existHostTopicPartitions.addAll(simpleTopicPartitions);
         }
-        return new ArrayList<>(topicOffsets.values());
+        Iterator<Map.Entry<String, Set<SimpleTopicPartition>>> iterator = map.entrySet().iterator();
+        while (iterator.hasNext()){
+            Map.Entry<String, Set<SimpleTopicPartition>> entry = iterator.next();
+            String host = entry.getKey();
+            Set<SimpleTopicPartition> simpleTopicPartitions = entry.getValue();
+            consumerGroupInfo.addMember(new ConsumerGroupInfo.MemberInfo(host,simpleTopicPartitions));
+        }
+
+        return consumerGroupInfo;
     }
+
 
     /**
      * 消费组主题信息监控; 单个消费组内,单个主题消费情况的查询
@@ -251,11 +282,10 @@ public class KafkaService {
      * @throws ExecutionException
      * @throws InterruptedException
      */
-    public List<OffsetShow> groupTopicMonitor(String clusterName, String group, String topic) throws IOException, ExecutionException, InterruptedException {
+    public List<OffsetShow> groupTopicConsumerInfo(String clusterName, String group, String topic) throws IOException, ExecutionException, InterruptedException {
         List<OffsetShow> offsetShows = new ArrayList<>();
         AdminClient adminClient = loadAdminClient(clusterName);
-        Properties properties = kafkaProperties(clusterName);
-        KafkaConsumer<byte[], byte[]> consumer = new KafkaConsumer<>(properties);
+        KafkaConsumer<byte[], byte[]> consumer = loadConsumerClient(clusterName);
 
         DescribeTopicsResult describeTopicsResult = adminClient.describeTopics(Collections.singletonList(topic));
         TopicDescription topicDescription = describeTopicsResult.values().get(topic).get();
@@ -273,6 +303,8 @@ public class KafkaService {
         Map<TopicPartition, OffsetAndMetadata> offsetAndMetadataMap = adminClient.listConsumerGroupOffsets(group,listConsumerGroupOffsetsOptions).partitionsToOffsetAndMetadata().get();
 
         Map<TopicPartition, Long> topicPartitionLongMap = consumer.endOffsets(topicPartitions);
+        consumer.close();
+
         Iterator<Map.Entry<TopicPartition, Long>> iterator = topicPartitionLongMap.entrySet().iterator();
         while (iterator.hasNext()){
             Map.Entry<TopicPartition, Long> entry = iterator.next();
@@ -302,9 +334,7 @@ public class KafkaService {
     public List<TopicLogSize> logSizes(String clusterName, String topic) throws IOException, ExecutionException, InterruptedException {
         List<TopicLogSize> topicLogSizes = new ArrayList<>();
 
-        Properties properties = kafkaProperties(clusterName);
-        KafkaConsumer<byte[], byte[]> consumer = new KafkaConsumer<>(properties);
-
+        KafkaConsumer<byte[], byte[]> consumer = loadConsumerClient(clusterName);
         try {
             List<PartitionInfo> partitionInfos = consumer.partitionsFor(topic);
 
@@ -330,12 +360,28 @@ public class KafkaService {
         return topicLogSizes;
     }
 
+    /**
+     * 加载一个消费客户端
+     * @param clusterName
+     * @return
+     * @throws IOException
+     */
+    public KafkaConsumer<byte[], byte[]> loadConsumerClient(String clusterName) throws IOException {
+        KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(module, clusterName);
+        Map<String, Object> properties = kafkaConnectParam.getKafka().buildConsumerProperties();
+        // 设置为 byte[] 序列化
+        properties.put("key.deserializer","org.apache.kafka.common.serialization.ByteArrayDeserializer");
+        properties.put("value.deserializer","org.apache.kafka.common.serialization.ByteArrayDeserializer");
+        return new KafkaConsumer<byte[], byte[]>(properties);
+    }
+
     public AdminClient loadAdminClient(String clusterName) throws IOException {
         AdminClient adminClient = adminClientMap.get(clusterName);
         if(adminClient == null){
-            Properties properties = kafkaProperties(clusterName);
-
-            adminClient =  KafkaAdminClient.create(properties);
+            KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(module, clusterName);
+            KafkaProperties kafka = kafkaConnectParam.getKafka();
+            Map<String, Object> kafkaProperties = kafka.buildAdminProperties();
+            adminClient = AdminClient.create(kafkaProperties);
             adminClientMap.put(clusterName,adminClient);
         }
 
@@ -344,14 +390,12 @@ public class KafkaService {
 
     private static final String relativeBrokerPath = "/brokers/ids";
     static Pattern ipPort = Pattern.compile("(\\d+\\.\\d+\\.\\d+\\.\\d+):(\\d+)");
-    public List<BrokerInfo> brokers(KafkaConnectParam kafkaConnectParam) throws IOException {
+    private List<BrokerInfo> readZookeeperBrokers(String connName,String chroot) throws IOException {
         List<BrokerInfo> brokerInfos = new ArrayList<>();
-        String clusterName = kafkaConnectParam.getConnectIdParam().getConnName();
-        String chroot = kafkaConnectParam.getChroot();
 
-        List<String> childrens = zookeeperService.childrens(clusterName, chroot + relativeBrokerPath);
+        List<String> childrens = zookeeperService.childrens(connName, chroot + relativeBrokerPath);
         for (String children : childrens) {
-            String brokerInfo = Objects.toString(zookeeperService.readData(clusterName, chroot + relativeBrokerPath + "/" + children, "string"),"");
+            String brokerInfo = Objects.toString(zookeeperService.readData(connName, chroot + relativeBrokerPath + "/" + children, "string"),"");
             JSONObject brokerJson = JSONObject.parseObject(brokerInfo);
             String host = brokerJson.getString("host");
             int port = brokerJson.getIntValue("port");
@@ -373,59 +417,13 @@ public class KafkaService {
         return brokerInfos;
     }
 
-    public List<String> brokers(String clusterName) throws IOException {
-        KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(module, clusterName);
-        List<BrokerInfo> brokerInfos = brokers(kafkaConnectParam);
-        List<String> servers = new ArrayList<>();
-        for (BrokerInfo brokerInfo : brokerInfos) {
-            String server = brokerInfo.getHost() + ":" + brokerInfo.getPort();
-            servers.add(server);
-        }
-        return servers;
-    }
-
-    public Properties kafkaProperties(String clusterName) throws IOException {
-        KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(module, clusterName);
-
-        Properties properties = createDefaultConfig(clusterName);
-
-        //从 zk 中拿到 bootstrapServers
-        List<String> servers = brokers(clusterName);
-
-        String bootstrapServers = StringUtils.join(servers,',');
-        properties.put("bootstrap.servers", bootstrapServers);
-
-        if(StringUtils.isNotBlank(kafkaConnectParam.getSaslMechanism())) {
-            properties.put(SaslConfigs.SASL_MECHANISM, kafkaConnectParam.getSaslMechanism());
-        }
-        if(StringUtils.isNotBlank(kafkaConnectParam.getSecurityProtocol())){
-            properties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, kafkaConnectParam.getSecurityProtocol());
-        }
-
-        String securityChoseValue = kafkaConnectParam.getSecurityProtocol();
-        SecurityProtocol securityProtocol = SecurityProtocol.valueOf(securityChoseValue);
-        switch (securityProtocol){
-            case PLAINTEXT:
-                break;
-            case SASL_PLAINTEXT:
-                properties.put("sasl.jaas.config",kafkaConnectParam.getJaasConfig());
-                break;
-            case SASL_SSL:
-                properties.put("sasl.jaas.config",kafkaConnectParam.getJaasConfig());
-            case SSL:
-                throw new IllegalArgumentException("不支持 ssl 操作");
-        }
-
-        return properties;
-    }
-
     /**
      *  kafka 的 mBean 数据监控
      */
     private static final String JMX = "service:jmx:rmi:///jndi/rmi://%s/jmxrmi";
     public Collection<MBeanMonitorInfo> monitor(String clusterName, Class clazz, String topic) throws IOException, MalformedObjectNameException, AttributeNotFoundException, MBeanException, ReflectionException, InstanceNotFoundException {
         KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(module, clusterName);
-        List<BrokerInfo> brokers = brokers(kafkaConnectParam);
+        List<BrokerInfo> brokers = readZookeeperBrokers(kafkaConnectParam.getConnectIdParam().getConnName(),kafkaConnectParam.getChroot());
 
         List<MBeanMonitorInfo> mBeanInfos = new ArrayList<>();
         for (BrokerInfo broker : brokers) {
@@ -491,25 +489,6 @@ public class KafkaService {
         return mMbeans;
     }
 
-    private Properties createDefaultConfig(String clusterName) {
-        Properties properties = new Properties();
-        final String consumerGroup = "console-"+clusterName;
-        //每个消费者分配独立的组号
-        properties.put("group.id", consumerGroup);
-        //如果value合法，则自动提交偏移量
-        properties.put("enable.auto.commit", "true");
-        //设置多久一次更新被消费消息的偏移量
-        properties.put("auto.commit.interval.ms", "1000");
-        //设置会话响应的时间，超过这个时间kafka可以选择放弃消费或者消费下一条消息
-        properties.put("session.timeout.ms", "30000");
-        //该参数表示从头开始消费该主题
-        properties.put("auto.offset.reset", "earliest");
-        //注意反序列化方式为ByteArrayDeserializer
-        properties.put("key.deserializer","org.apache.kafka.common.serialization.ByteArrayDeserializer");
-        properties.put("value.deserializer","org.apache.kafka.common.serialization.ByteArrayDeserializer");
-        return properties;
-    }
-
     @PostConstruct
     public void register(){
         pluginManager.register(PluginDto.builder().module(module).name("main").author("sanri").envs("default").build());
@@ -528,4 +507,42 @@ public class KafkaService {
             }
         }
     }
+
+    /**
+     * 创建 kafka 连接,强依赖于 zookeeper
+     * @param kafkaConnectParam
+     */
+    public void createConnect(KafkaConnectParam kafkaConnectParam) throws IOException {
+        KafkaProperties kafka = kafkaConnectParam.getKafka();
+        String connName = kafkaConnectParam.getConnectIdParam().getConnName();
+        String chroot = kafkaConnectParam.getChroot();
+
+        List<String> bootstrapServers = kafka.getBootstrapServers();
+        if (bootstrapServers.size() == 1){
+            String brokerOnlyOne = bootstrapServers.get(0);
+            if ("localhost:9092".equals(brokerOnlyOne)){
+                // 如果是默认的,检查 zookeeper 上的节点,如果不一致,则取 zookeeper 上的节点数据
+                List<BrokerInfo> brokers = readZookeeperBrokers(connName,chroot);
+                if (brokers.size() == 0){
+                    throw new ToolException("zookeeper "+connName+" 上的 kafka 节点为空");
+                }
+
+                List<String> bootstrapServersZookeeper = brokers.stream().map(broker -> broker.getHost() + ":" + broker.getPort()).collect(Collectors.toList());
+                String bootstrapServersString = StringUtils.join(bootstrapServersZookeeper, ',');
+                if (!bootstrapServersString.equals(brokerOnlyOne)){
+                    kafka.setBootstrapServers(bootstrapServersZookeeper);
+                }
+            }
+        }
+
+        // 一些默认参数配置
+        KafkaProperties.Consumer consumer = kafka.getConsumer();
+        consumer.setGroupId("console-sanritools-"+connName);
+        consumer.setAutoOffsetReset("earliest");
+        consumer.setEnableAutoCommit(true);
+
+        // 然后调用 连接服务,将配置序列化
+        connectService.createConnect(module, null);
+    }
+
 }

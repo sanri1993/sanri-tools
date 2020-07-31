@@ -3,16 +3,22 @@ package com.sanri.tools.modules.kafka.controller;
 import com.sanri.tools.modules.kafka.dtos.*;
 import com.sanri.tools.modules.kafka.service.KafkaDataService;
 import com.sanri.tools.modules.kafka.service.KafkaService;
+import com.sanri.tools.modules.protocol.param.KafkaConnectParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.boot.context.properties.bind.BindResult;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.boot.env.YamlPropertySourceLoader;
+import org.springframework.core.env.PropertySource;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/kafka")
@@ -21,6 +27,23 @@ public class KafkaController {
     private KafkaService kafkaService;
     @Autowired
     private KafkaDataService kafkaDataService;
+
+    YamlPropertySourceLoader yamlPropertySourceLoader = new YamlPropertySourceLoader();
+
+    /**
+     * kafka 连接的创建需要依赖于 zookeeper
+     * @param kafkaConnectParam
+     */
+    @PostMapping(value = "/connect/create",consumes = "application/yaml")
+    public void createConnect(@RequestBody String yamlConfig) throws IOException {
+        ByteArrayResource byteArrayResource = new ByteArrayResource(yamlConfig.getBytes());
+        List<PropertySource<?>> load = yamlPropertySourceLoader.load("a",byteArrayResource);
+        Iterable<ConfigurationPropertySource> from = ConfigurationPropertySources.from(load);
+        Binder binder = new Binder(from);
+        BindResult<KafkaConnectParam> bind = binder.bind("", KafkaConnectParam.class);
+        KafkaConnectParam kafkaConnectParam = bind.get();
+        kafkaService.createConnect(kafkaConnectParam);
+    }
 
     @PostMapping("/topic/create")
     public void createTopic(String clusterName,String topic,int partitions,int replication) throws InterruptedException, ExecutionException, IOException {
@@ -82,18 +105,20 @@ public class KafkaController {
         return kafkaDataService.nearbyDatas(nearbyDataConsumerParam);
     }
 
-    @GetMapping("/group/topics/offset")
-    public List<TopicOffset> groupSubscribeTopicsMonitor(String clusterName, String group) throws InterruptedException, ExecutionException, IOException {
-        return kafkaService.groupSubscribeTopicsMonitor(clusterName,group);
+    @GetMapping("/group/subscribes")
+    public ConsumerGroupInfo consumerGroupInfo(String clusterName, String group) throws InterruptedException, ExecutionException, IOException {
+        return kafkaService.consumerGroupInfo(clusterName,group);
     }
 
     @GetMapping("/group/topic/offset")
-    public List<OffsetShow> groupTopicMonitor(String clusterName, String group, String topic) throws InterruptedException, ExecutionException, IOException {
-        return kafkaService.groupTopicMonitor(clusterName,group,topic);
+    public List<OffsetShow> groupTopicConsumerInfo(String clusterName, String group, String topic) throws InterruptedException, ExecutionException, IOException {
+        return kafkaService.groupTopicConsumerInfo(clusterName,group,topic);
     }
 
     @GetMapping("/brokers")
     public List<String> brokers(String clusterName) throws IOException {
-        return kafkaService.brokers(clusterName);
+        List<BrokerInfo> brokers = kafkaService.brokers(clusterName);
+        List<String> collect = brokers.stream().map(BrokerInfo::hostAndPort).collect(Collectors.toList());
+        return collect;
     }
 }

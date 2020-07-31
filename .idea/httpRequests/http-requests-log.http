@@ -1,0 +1,426 @@
+GET http://localhost:8081/kafka/group/subscribes?clusterName=192.168.72.42_2181&group=scp-st-broadcastApp_BC_APP6876
+
+<> 2020-07-31T035047.200.json
+
+###
+
+GET http://localhost:8081/kafka/group/subscribes?clusterName=192.168.72.42_2181&group=scp-st-broadcastApp_BC_APP6876
+
+<> 2020-07-31T034936.200.json
+
+###
+
+GET http://localhost:8081/kafka/group/topics/offset?clusterName=192.168.72.42_2181&group=scp-st-broadcastApp_BC_APP6876
+
+<> 2020-07-31T031853.200.json
+
+###
+
+GET http://localhost:8081/kafka/group/topics/offset?clusterName=192.168.72.42_2181&group=scp-st-broadcastApp_BC_APP6876
+
+<> 2020-07-31T031311.200.json
+
+###
+
+GET http://localhost:8081/kafka/group/topic/offset?clusterName=192.168.72.42_2181&group=scp-st-broadcastApp_BC_APP6876&topic=EGSC_SCP_DEVICEMGMT_STATUSTOBROADCAST_TOPIC
+
+<> 2020-07-31T030813.200.json
+
+###
+
+GET http://localhost:8081/kafka/group/topic/offset?clusterName=192.168.72.42_2181&group=scp-st-broadcastApp_BC_APP6876&topic=EGSC_SCP_DEVICEMGMT_STATUSTOBROADCAST_TOPIC
+
+<> 2020-07-31T030721.200.json
+
+###
+
+GET http://localhost:8081/kafka/topic/logSize?clusterName=192.168.72.42_2181&topic=EGSC_SCP_DEVICEMGMT_STATUSTOBROADCAST_TOPIC
+
+<> 2020-07-31T030519.200.json
+
+###
+
+GET http://localhost:8081/kafka/group/topics?clusterName=192.168.72.42_2181&group=scp-st-broadcastApp_BC_APP6876
+
+<> 2020-07-31T030428.200.json
+
+###
+
+GET http://localhost:8081/kafka/groups?clusterName=192.168.72.42_2181
+
+<> 2020-07-31T030337.200.json
+
+###
+
+GET http://localhost:8081/kafka/topics?clusterName=192.168.72.42_2181
+
+<> 2020-07-31T030001.200.json
+
+###
+
+GET http://localhost:8081/kafka/topics?clusterName=192.168.72.42_2181
+
+<> 2020-07-31T025933.500.json
+
+###
+
+GET http://localhost:8081/kafka/topics?clusterName=192.168.72.42_2181
+
+<> 2020-07-31T023942.200.json
+
+###
+
+POST http://localhost:8081/kafka/connect/create
+Content-Type: application/yaml
+
+connectIdParam:
+  module: kafka
+  connName: 192.168.72.42_2181
+chroot: /hd/kafka
+kafka:
+  properties:
+    sasl:
+      jaas:
+        config: org.apache.kafka.common.security.plain.PlainLoginModule required username=hd password=hd-kafka;
+      mechanism: PLAIN
+    security:
+      protocol: SASL_PLAINTEXT
+
+###
+
+POST http://localhost:8081/kafka/connect/create
+Content-Type: application/yaml
+
+connectIdParam:
+  module: kafka
+  connName: 192.168.72.42_2181
+chroot: /hd/kafka
+kafka:
+  properties:
+    sasl:
+      jaas:
+        config: org.apache.kafka.common.security.plain.PlainLoginModule required username=hd password=hd-kafka;
+      mechanism: PLAIN
+    security:
+      protocol: SASL_PLAINTEXT
+
+###
+
+POST http://localhost:8081/kafka/connect/create
+Content-Type: application/yaml
+
+connectIdParam:
+  module: kafka
+  connName: 192.168.72.42_2181
+chroot: /hd/kafka
+kafka:
+  properties:
+    sasl:
+      jaas:
+        config: org.apache.kafka.common.security.plain.PlainLoginModule required username=hd password=hd-kafka;
+      mechanism: PLAIN
+    security:
+      protocol: SASL_PLAINTEXT
+
+###
+
+POST http://localhost:8081/kafka/connect/create
+Content-Type: application/yaml
+
+connectIdParam:
+  module: kafka
+  connName: 192.168.72.42_2181
+chroot: /hd/kafka
+kafka:
+  properties:
+    sasl:
+      jaas:
+        config: org.apache.kafka.common.security.plain.PlainLoginModule required username=hd password=hd-kafka;
+      mechanism: PLAIN
+    security:
+      protocol: SASL_PLAINTEXT
+
+###
+
+POST http://localhost:8081/kafka/connect/create
+Content-Type: application/json
+
+{
+  "connectIdParam": {
+    "module": "kafka",
+    "connName": "192.168.72.42_2181"
+  },
+  "chroot": "/hd/kafka",
+  "kafka": {
+    "properties.sasl.jaas.config": "org.apache.kafka.common.security.plain.PlainLoginModule required username=hd password=hd-kafka;",
+    "properties.sasl.mechanism": "PLAIN",
+    "properties.security.protocol": "SASL_PLAINTEXT"
+  }
+}
+
+###
+
+POST http://localhost:8081/kafka/connect/create
+Content-Type: application/json
+
+{
+  "connectIdParam": {
+    "module": "kafka",
+    "connName": "192.168.72.42_2181"
+  },
+  "chroot": "/hd/kafka",
+  "kafka": {
+    "properties.sasl.jaas.config": "org.apache.kafka.common.security.plain.PlainLoginModule required username=hd password=hd-kafka;",
+    "properties.sasl.mechanism": "PLAIN",
+    "properties.security.protocol": "SASL_PLAINTEXT"
+  }
+}
+
+<> 2020-07-31T101418.500.json
+
+###
+
+POST http://localhost:8081/kafka/connect/create
+Content-Type: application/json
+
+{
+  "connectIdParam": {
+    "module": "kafka",
+    "connName": "192.168.72.42_2181"
+  },
+  "chroot": "/hd/kafka",
+  "kafka": {
+    "properties.sasl.jaas.config": "org.apache.kafka.common.security.plain.PlainLoginModule required username=hd password=hd-kafka;",
+    "properties.sasl.mechanism": "PLAIN",
+    "properties.security.protocol": "SASL_PLAINTEXT"
+  }
+}
+
+<> 2020-07-31T101127.500.json
+
+###
+
+POST http://localhost:8081/kafka/connect/create
+Content-Type: application/json
+
+{
+  "connectIdParam": {
+    "module": "kafka",
+    "connName": "192.168.72.42_2181"
+  },
+  "chroot": "/hd/kafka",
+  "kafka": {
+    "properties.sasl.jaas.config": "org.apache.kafka.common.security.plain.PlainLoginModule required username=hd password=hd-kafka;",
+    "properties.sasl.mechanism": "PLAIN",
+    "properties.security.protocol": "SASL_PLAINTEXT",
+  }
+}
+
+<> 2020-07-31T101040.400.json
+
+###
+
+POST http://localhost:8081/kafka/connect/create
+Content-Type: application/json
+
+{
+  "connectIdParam": {
+    "module": "kafka",
+    "connName": "192.168.72.42_2181"
+  },
+  "chroot": "/hd/kafka",
+  "kafka": {
+    "properties.sasl.jaas.config": "org.apache.kafka.common.security.plain.PlainLoginModule required username=hd password=hd-kafka;",
+    "properties.sasl.mechanism": "PLAIN",
+    "properties.security.protocol": "SASL_PLAINTEXT",
+  }
+}
+
+<> 2020-07-31T101018.400.json
+
+###
+
+GET http://localhost:8081/zookeeper/childrens?connName=192.168.72.42_2181&path=/hd/kafka
+
+<> 2020-07-31T100332.200.json
+
+###
+
+GET http://localhost:8081/zookeeper/childrens?connName=192.168.72.42_2181&path=/hd/kafka
+
+<> 2020-07-31T100233.404.json
+
+###
+
+POST http://localhost:8081/connect/create/zookeeper
+Content-Type: application/json
+
+{
+  "connectIdParam": {
+    "module": "zookeeper",
+    "connName": "192.168.72.42_2181"
+  },
+  "connectParam": {
+    "host": "10.101.72.42",
+    "port": 2181
+  }
+}
+
+###
+
+GET http://localhost:8081/name/translate?orginChars=我是中国人&splitToolName=ik&tranlates=baidu
+
+<> 2020-07-30T035825.200.json
+
+###
+
+GET http://localhost:8081/name/translate?orginChars=我是中国人&splitToolName=ik&tranlates=baidu
+
+<> 2020-07-30T035744.200.json
+
+###
+
+GET http://localhost:8081/name/translate?orginChars=我是中国人&splitToolName=ik&tranlates=baidu
+
+<> 2020-07-30T035615.200.json
+
+###
+
+GET http://localhost:8081/name/translate?orginChars=我是中国人&splitToolName=ik&tranlates=baidu
+
+<> 2020-07-30T035341.500.json
+
+###
+
+GET http://translate.google.cn/translate_a/single?client=gtx&sl=zh-CN&tl=en&dt=t&q=算法
+
+<> 2020-07-30T023111.200.json
+
+###
+
+GET http://translate.google.cn/translate_a/single?client=gtx&sl=zh-CN&tl=en&dt=t&q=算法
+
+<> 2020-07-30T120349.200.json
+
+###
+
+GET http://translate.google.cn/translate_a/single?client=gtx&sl=en&tl=zh-CN&dt=t&q=算法
+
+<> 2020-07-30T120226.200.json
+
+###
+
+GET http://translate.google.cn/translate_a/single?client=gtx&sl=en&tl=zh-CN&dt=t&q=需要翻译的东西
+
+<> 2020-07-30T120156.200.json
+
+###
+
+GET https://translate.google.cn/translate_a/single?client=webapp&sl=auto&tl=en&hl=zh-CN&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=sos&dt=ss&dt=t&dt=gt&otf=2&ssel=0&tsel=3&xid=45662847&kc=1&tk=372286.224741&q=查询
+
+<> 2020-07-30T115958.403.html
+
+###
+
+GET https://translate.google.cn/translate_a/single?client=webapp&sl=auto&tl=en&hl=zh-CN&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=sos&dt=ss&dt=t&dt=gt&otf=2&ssel=0&tsel=3&xid=45662847&kc=1&tk=372286.224741&q=算法工程师a
+
+<> 2020-07-30T115943.200.json
+
+###
+
+GET http://localhost:8081/plugin/names
+
+<> 2020-07-29T051941.200.json
+
+###
+
+GET http://localhost:8081/db/metadata/refreshPrimaryKeys?connName=localhost&catalog=test&tableName=batch
+
+<> 2020-07-28T032826.200.json
+
+###
+
+GET http://localhost:8081/db/metadata/refreshIndexs?connName=localhost&catalog=test&tableName=batch
+
+<> 2020-07-28T032805.200.json
+
+###
+
+GET http://localhost:8081/db/metadata/refreshColumns?connName=localhost&catalog=test&tableName=batch
+
+<> 2020-07-28T032722.200.json
+
+###
+
+GET http://localhost:8081/db/metadata/tables?connName=localhost&catalog=test
+
+<> 2020-07-28T032658.200.json
+
+###
+
+GET http://localhost:8081/db/metadata/tables?connName=lo&catalog=test
+
+<> 2020-07-28T032639.200.json
+
+###
+
+GET http://localhost:8081/db/metadata/refreshColumns?connName=localhost&catalog=test&tableName=batch
+
+<> 2020-07-28T032610.500.json
+
+###
+
+GET http://localhost:8081/db/metadata/refreshColumns?connName=localhost&catalog=test&tableName=batch
+
+<> 2020-07-28T032548.500.json
+
+###
+
+GET http://localhost:8081/db/metadata/refreshColumns?connName=lo&schema=id&tableName=id_device_play_record
+
+<> 2020-07-28T032518.200.json
+
+###
+
+GET http://localhost:8081/db/metadata/refreshColumns?connName=lo&catalog=hdsc_db&schema=id&tableName=id_device_play_record
+
+<> 2020-07-28T031945.500.json
+
+###
+
+GET http://localhost:8081/db/metadata/refreshColumns?connName=lo&catalog=hdsc_db&schema=id&tableName=id_device_play_record
+
+<> 2020-07-28T031859.500.json
+
+###
+
+GET http://localhost:8081/db/metadata/tables?connName=lo&catalog=hdsc_db
+
+<> 2020-07-28T031630.200.json
+
+###
+
+GET http://localhost:8081/db/metadata/tables?connName=lo&catalog=hdsc_db
+
+<> 2020-07-28T031050.200.json
+
+###
+
+GET http://localhost:8081/db/metadata/catalogs?connName=localhost
+
+<> 2020-07-28T030131.200.json
+
+###
+
+GET http://localhost:8081/db/metadata/tables?connName=lo&catalog=hdsc_db
+
+<> 2020-07-28T025929.200.json
+
+###
+
+GET http://localhost:8081/db/metadata/tables?connName=localhost&catalog=test
+
+<> 2020-07-28T025841.200.json
+
+###
+

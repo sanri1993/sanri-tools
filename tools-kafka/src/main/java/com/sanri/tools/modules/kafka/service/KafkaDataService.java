@@ -2,7 +2,9 @@ package com.sanri.tools.modules.kafka.service;
 
 import com.alibaba.fastjson.JSON;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
+import com.sanri.tools.modules.core.service.file.ConnectService;
 import com.sanri.tools.modules.kafka.dtos.*;
+import com.sanri.tools.modules.protocol.param.KafkaConnectParam;
 import com.sanri.tools.modules.serializer.service.Serializer;
 import com.sanri.tools.modules.serializer.service.SerializerChoseService;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +36,8 @@ public class KafkaDataService {
     private KafkaService kafkaService;
     @Autowired
     private ClassloaderService classloaderService;
+    @Autowired
+    private ConnectService connectService;
 
     /**
      * 消费主题最后面的数据
@@ -65,8 +69,7 @@ public class KafkaDataService {
         }
 
         // 分配主题和分区
-        Properties properties = kafkaService.kafkaProperties(clusterName);
-        KafkaConsumer<byte[], byte[]> consumer = new KafkaConsumer<byte[], byte[]>(properties);
+        KafkaConsumer<byte[], byte[]> consumer = kafkaService.loadConsumerClient(clusterName);
         try {
             consumer.assign(topicPartitions);
 
@@ -138,8 +141,7 @@ public class KafkaDataService {
         long offset = nearbyDataConsumerParam.getOffset();
         int perPartitionSize = nearbyDataConsumerParam.getPerPartitionSize();
 
-        Properties properties = kafkaService.kafkaProperties(clusterName);
-        KafkaConsumer<byte[], byte[]> consumer = new KafkaConsumer<byte[], byte[]>(properties);
+        KafkaConsumer<byte[], byte[]> consumer = kafkaService.loadConsumerClient(clusterName);
         List<KafkaData> datas = new ArrayList<>();
         try {
             TopicPartition topicPartition = new TopicPartition(topic, partition);
@@ -197,7 +199,10 @@ public class KafkaDataService {
      * @param sendJsonDataParam@return
      */
     public void sendJsonData(SendJsonDataParam sendJsonDataParam) throws IOException, ExecutionException, InterruptedException {
-        Properties properties = kafkaService.kafkaProperties(sendJsonDataParam.getClusterName());
+        String clusterName = sendJsonDataParam.getClusterName();
+
+        KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(KafkaService.module,clusterName);
+        Map<String, Object> properties = kafkaConnectParam.getKafka().buildProducerProperties();
         properties.put("key.serializer","org.apache.kafka.common.serialization.StringSerializer");
         properties.put("value.serializer","org.apache.kafka.common.serialization.StringSerializer");
         KafkaProducer kafkaProducer = new KafkaProducer(properties);
@@ -219,7 +224,10 @@ public class KafkaDataService {
         Serializer serializerChose = serializerChoseService.choseSerializer(sendObjectDataParam.getSerializer());
         byte[] serialize = serializerChose.serialize(object);
 
-        Properties properties = kafkaService.kafkaProperties(sendObjectDataParam.getClusterName());
+        String clusterName = sendObjectDataParam.getClusterName();
+
+        KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(KafkaService.module,clusterName);
+        Map<String, Object> properties = kafkaConnectParam.getKafka().buildProducerProperties();
         properties.put("key.serializer","org.apache.kafka.common.serialization.StringSerializer");
         properties.put("value.serializer","org.apache.kafka.common.serialization.ByteArraySerializer");
         KafkaProducer kafkaProducer = new KafkaProducer(properties);
