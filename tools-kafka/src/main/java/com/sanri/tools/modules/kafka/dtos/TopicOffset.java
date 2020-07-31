@@ -21,6 +21,12 @@ public class TopicOffset {
         this.topic = topic;
     }
 
+    public TopicOffset(String group, String topic, List<OffsetShow> partitionOffsets) {
+        this.group = group;
+        this.topic = topic;
+        this.partitionOffsets = partitionOffsets;
+    }
+
     public void addPartitionOffset(OffsetShow offsetShow) {
         partitionOffsets.add(offsetShow);
         logSize += offsetShow.getLogSize();

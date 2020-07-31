@@ -115,6 +115,11 @@ public class KafkaController {
         return kafkaService.groupTopicConsumerInfo(clusterName,group,topic);
     }
 
+    @GetMapping("/group/topics/offset")
+    public List<TopicOffset> groupTopicConsumerInfos(String clusterName, String group) throws InterruptedException, ExecutionException, IOException {
+        return kafkaService.groupTopicConsumerInfos(clusterName,group);
+    }
+
     @GetMapping("/brokers")
     public List<String> brokers(String clusterName) throws IOException {
         List<BrokerInfo> brokers = kafkaService.brokers(clusterName);

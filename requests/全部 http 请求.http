@@ -220,3 +220,11 @@ GET {{baseUrl}}/kafka/group/subscribes?clusterName=192.168.72.42_2181&group=scp-
 
 ### 消费组消费主题的偏移量 offset,logsize,lag
 GET {{baseUrl}}/kafka/group/topic/offset?clusterName=192.168.72.42_2181&group=scp-st-broadcastApp_BC_APP6876&topic=EGSC_SCP_DEVICEMGMT_STATUSTOBROADCAST_TOPIC
+
+### 消费组所有主题的偏移量
+GET {{baseUrl}}/kafka/group/topics/offset?clusterName=192.168.72.42_2181&group=scp-st-broadcastApp_BC_APP6876
+
+### brokers
+GET {{baseUrl}}/kafka/brokers?clusterName=192.168.72.42_2181
+
+###

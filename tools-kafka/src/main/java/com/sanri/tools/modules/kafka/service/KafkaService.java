@@ -271,6 +271,57 @@ public class KafkaService {
         return consumerGroupInfo;
     }
 
+    /**
+     * 消费组的所有的主题数据消费情况查询
+     * @param clusterName
+     * @param group
+     * @return
+     */
+    public List<TopicOffset> groupTopicConsumerInfos(String clusterName, String group) throws IOException, ExecutionException, InterruptedException {
+        AdminClient adminClient = loadAdminClient(clusterName);
+        Map<TopicPartition, OffsetAndMetadata> topicPartitionOffsetAndMetadataMap = adminClient.listConsumerGroupOffsets(group).partitionsToOffsetAndMetadata().get();
+        Set<TopicPartition> topicPartitions = topicPartitionOffsetAndMetadataMap.keySet();
+        KafkaConsumer<byte[], byte[]> kafkaConsumer = loadConsumerClient(clusterName);
+        Map<TopicPartition, Long> topicPartitionLongMap = kafkaConsumer.endOffsets(topicPartitions);
+
+        List<OffsetShow> offsetShows = new ArrayList<>();
+        Iterator<Map.Entry<TopicPartition, OffsetAndMetadata>> iterator = topicPartitionOffsetAndMetadataMap.entrySet().iterator();
+        while (iterator.hasNext()){
+            Map.Entry<TopicPartition, OffsetAndMetadata> offsetAndMetadataEntry = iterator.next();
+            TopicPartition topicPartition = offsetAndMetadataEntry.getKey();
+            OffsetAndMetadata offsetAndMetadata = offsetAndMetadataEntry.getValue();
+            Long logSize = topicPartitionLongMap.get(topicPartition);
+            OffsetShow offsetShow = new OffsetShow(topicPartition.topic(), topicPartition.partition(), offsetAndMetadata.offset(),logSize);
+            offsetShows.add(offsetShow);
+        }
+
+        Map<String, List<OffsetShow>> listMap = offsetShows.stream().collect(Collectors.groupingBy(OffsetShow::getTopic));
+
+        // 最后进行统计
+        List<TopicOffset> topicOffsets = new ArrayList<>();
+        Iterator<Map.Entry<String, List<OffsetShow>>> listMapIterator = listMap.entrySet().iterator();
+        while (listMapIterator.hasNext()){
+            Map.Entry<String, List<OffsetShow>> entry = listMapIterator.next();
+            String topic = entry.getKey();
+            List<OffsetShow> offsetShowList = entry.getValue();
+            TopicOffset topicOffset = new TopicOffset(group, topic,offsetShowList);
+
+            long totalLogSize = 0 , totalOffset = 0 ;
+            for (OffsetShow offsetShow : offsetShowList) {
+                long logSize = offsetShow.getLogSize();
+                long offset = offsetShow.getOffset();
+                totalLogSize += logSize;
+                totalOffset += offset;
+            }
+            topicOffset.setLogSize(totalLogSize);
+            topicOffset.setOffset(totalOffset);
+            topicOffset.setLag(totalLogSize - totalOffset);
+            topicOffsets.add(topicOffset);
+        }
+
+        return topicOffsets;
+    }
+
 
     /**
      * 消费组主题信息监控; 单个消费组内,单个主题消费情况的查询
