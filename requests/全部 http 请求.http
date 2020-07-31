@@ -228,6 +228,12 @@ GET {{baseUrl}}/kafka/group/topics/offset?clusterName=192.168.72.42_2181&group=s
 GET {{baseUrl}}/kafka/brokers?clusterName=192.168.72.42_2181
 
 ### 消费主题最后几条数据
-GET {{baseUrl}}/kafka/topic/data/last?clusterName=192.168.72.42_2181&topic=EGSC_SCP_SDC_EVENT_DATA_TOPIC&partition=0&perPartitionSize=10&serializer=string
+GET {{baseUrl}}/kafka/topic/data/last?clusterName=192.168.72.42_2181&topic=EGSC_SCP_SDC_EVENT_DATA_TOPIC&partition=-1&perPartitionSize=10&serializer=string
 
-###
+### 消费主题附近的几条数据
+GET {{baseUrl}}/kafka/group/topic/data/nearby?clusterName=192.168.72.42_2181&topic=EGSC_SCP_SDC_EVENT_DATA_TOPIC&partition=0&offset=16090&perPartitionSize=10&serializer=string
+
+### 发送 json 数据
+POST {{baseUrl}}/kafka/topic/data/send/json
+Content-Type: application/json
+

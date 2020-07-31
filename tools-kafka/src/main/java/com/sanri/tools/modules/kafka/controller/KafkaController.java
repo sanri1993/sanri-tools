@@ -1,5 +1,6 @@
 package com.sanri.tools.modules.kafka.controller;
 
+import com.dtflys.forest.annotation.Request;
 import com.sanri.tools.modules.kafka.dtos.*;
 import com.sanri.tools.modules.kafka.service.KafkaDataService;
 import com.sanri.tools.modules.kafka.service.KafkaService;
@@ -76,12 +77,12 @@ public class KafkaController {
     }
 
     @PostMapping("/topic/data/send/json")
-    public void topicSendJsonData(SendJsonDataParam sendJsonDataParam) throws InterruptedException, ExecutionException, IOException {
+    public void topicSendJsonData(@RequestBody SendJsonDataParam sendJsonDataParam) throws InterruptedException, ExecutionException, IOException {
         kafkaDataService.sendJsonData(sendJsonDataParam);
     }
 
     @PostMapping("/topic/data/send")
-    public void topicSendData(SendObjectDataParam sendObjectDataParam) throws ClassNotFoundException, ExecutionException, InterruptedException, IOException {
+    public void topicSendData(@RequestBody SendObjectDataParam sendObjectDataParam) throws ClassNotFoundException, ExecutionException, InterruptedException, IOException {
         kafkaDataService.sendObjectData(sendObjectDataParam);
     }
 
