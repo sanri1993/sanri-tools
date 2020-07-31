@@ -1,3 +1,59 @@
+GET http://localhost:8081/kafka/topic/data/last?clusterName=192.168.72.42_2181&topic=EGSC_SCP_SDC_EVENT_DATA_TOPIC&partition=0&perPartitionSize=10&serializer=string
+
+<> 2020-07-31T053544.200.json
+
+###
+
+GET http://localhost:8081/kafka/topic/data/last?clusterName=192.168.72.42_2181&topic=EGSC_SCP_SDC_EVENT_DATA_TOPIC&partition=0&perPartitionSize=10&serializer=string
+
+###
+
+POST http://localhost:8081/kafka/connect/create
+Content-Type: application/yaml
+
+connectIdParam:
+  module: kafka
+  connName: 192.168.72.42_2181
+chroot: /hd/kafka
+kafka:
+  properties:
+    sasl:
+      jaas:
+        config: org.apache.kafka.common.security.plain.PlainLoginModule required username=hd password=hd-kafka;
+      mechanism: PLAIN
+    security:
+      protocol: SASL_PLAINTEXT
+  consumer:
+    group-id: sanritest1
+    auto-offset-reset: earliest
+    enable-auto-commit: false
+
+<> 2020-07-31T044801.500.json
+
+###
+
+GET http://localhost:8081/kafka/topic/data/last?clusterName=192.168.72.42_2181&topic=EGSC_SCP_SDC_EVENT_DATA_TOPIC&partition=0&perPartitionSize=10&serializer=string
+
+###
+
+GET http://localhost:8081/kafka/brokers?clusterName=192.168.72.42_2181
+
+<> 2020-07-31T042611.200.json
+
+###
+
+GET http://localhost:8081/kafka/brokers?clusterName=192.168.72.42_2181
+
+<> 2020-07-31T042603.200.json
+
+###
+
+GET http://localhost:8081/kafka/group/topics/offset?clusterName=192.168.72.42_2181&group=scp-st-broadcastApp_BC_APP6876
+
+<> 2020-07-31T042509.200.json
+
+###
+
 GET http://localhost:8081/kafka/group/subscribes?clusterName=192.168.72.42_2181&group=scp-st-broadcastApp_BC_APP6876
 
 <> 2020-07-31T035047.200.json
@@ -379,48 +435,6 @@ GET http://localhost:8081/db/metadata/refreshColumns?connName=localhost&catalog=
 GET http://localhost:8081/db/metadata/refreshColumns?connName=lo&schema=id&tableName=id_device_play_record
 
 <> 2020-07-28T032518.200.json
-
-###
-
-GET http://localhost:8081/db/metadata/refreshColumns?connName=lo&catalog=hdsc_db&schema=id&tableName=id_device_play_record
-
-<> 2020-07-28T031945.500.json
-
-###
-
-GET http://localhost:8081/db/metadata/refreshColumns?connName=lo&catalog=hdsc_db&schema=id&tableName=id_device_play_record
-
-<> 2020-07-28T031859.500.json
-
-###
-
-GET http://localhost:8081/db/metadata/tables?connName=lo&catalog=hdsc_db
-
-<> 2020-07-28T031630.200.json
-
-###
-
-GET http://localhost:8081/db/metadata/tables?connName=lo&catalog=hdsc_db
-
-<> 2020-07-28T031050.200.json
-
-###
-
-GET http://localhost:8081/db/metadata/catalogs?connName=localhost
-
-<> 2020-07-28T030131.200.json
-
-###
-
-GET http://localhost:8081/db/metadata/tables?connName=lo&catalog=hdsc_db
-
-<> 2020-07-28T025929.200.json
-
-###
-
-GET http://localhost:8081/db/metadata/tables?connName=localhost&catalog=test
-
-<> 2020-07-28T025841.200.json
 
 ###
 

@@ -1,6 +1,7 @@
 package com.sanri.tools.modules.core.service.file;
 
 import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanri.tools.modules.core.dtos.ConnectDto;
 import com.sanri.tools.modules.core.utils.NetUtil;
 import com.sanri.tools.modules.protocol.dto.ConfigPath;
@@ -101,11 +102,15 @@ public class ConnectService {
         return null;
     }
 
+    ObjectMapper objectMapper = new ObjectMapper();
+
+    // 使用 fastjson 在反序列化 kafka 的时候有问题, 这里换成 jackson
     public AbstractConnectParam readConnParams(String module,String connName) throws IOException {
         String content = content(module, connName);
         Class<?> paramClass = moduleParamFactory(module);
-        AbstractConnectParam abstractConnectParam = (AbstractConnectParam) JSON.parseObject(content, paramClass);
-        return abstractConnectParam;
+//        AbstractConnectParam abstractConnectParam = (AbstractConnectParam) JSON.parseObject(content, paramClass);
+        Object readValue = objectMapper.readValue(content, paramClass);
+        return (AbstractConnectParam) readValue;
     }
 
     /**

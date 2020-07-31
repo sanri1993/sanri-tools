@@ -593,7 +593,7 @@ public class KafkaService {
         consumer.setEnableAutoCommit(true);
 
         // 然后调用 连接服务,将配置序列化
-        connectService.createConnect(module, null);
+        connectService.createConnect(module, JSON.toJSONString(kafkaConnectParam));
     }
 
 }

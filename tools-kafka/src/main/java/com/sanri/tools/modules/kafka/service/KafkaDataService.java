@@ -103,6 +103,11 @@ public class KafkaDataService {
             while (true) {
                 ConsumerRecords<byte[], byte[]> consumerRecords = consumer.poll(Duration.ofMillis(10));
                 Iterator<ConsumerRecord<byte[], byte[]>> consumerRecordIterator = consumerRecords.iterator();
+                if (!consumerRecordIterator.hasNext()){
+                    // 如果根本没数据,则跳出
+                    log.info("[{}][{}][{}] 尾部[{}]条数据读取到数据量为 0 ",clusterName,topic,partition,dataConsumerParam.getPerPartitionSize());
+                    break;
+                }
                 while (consumerRecordIterator.hasNext()) {
                     ConsumerRecord<byte[], byte[]> consumerRecord = consumerRecordIterator.next();
                     byte[] value = consumerRecord.value();
@@ -110,6 +115,7 @@ public class KafkaDataService {
                     PartitionKafkaData partitionKafkaData = new PartitionKafkaData(consumerRecord.offset(), deserialize, consumerRecord.timestamp(), consumerRecord.partition());
                     datas.add(partitionKafkaData);
                 }
+
                 currentFetchCount+= consumerRecords.count();
                 if(currentFetchCount >= seekCount){
                     break;
