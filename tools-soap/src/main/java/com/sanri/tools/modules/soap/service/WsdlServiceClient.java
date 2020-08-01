@@ -37,6 +37,7 @@ public class WsdlServiceClient {
         WsdlService wsdlService = wsdlServiceMap.get(fixedWsdlUrl);
         if(wsdlService == null) {
             wsdlService = WsdlServiceLoader.loadService(url);
+            wsdlServiceMap.put(fixedWsdlUrl,wsdlService);
         }
         return wsdlService;
     }

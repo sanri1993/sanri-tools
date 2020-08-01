@@ -102,7 +102,7 @@ public class SoapController {
     }
 
     @PostMapping("/{port}/{operation}/request")
-    public String sendRequest(String wsdl, @PathVariable("port") String port, @PathVariable("operation") String operation, String message) throws IOException {
+    public String sendRequest(String wsdl, @PathVariable("port") String port, @PathVariable("operation") String operation, @RequestBody String message) throws IOException {
         WsdlService wsdlService = wsdlServiceClient.loadWebservice(wsdl);
         if(wsdlService != null){
             WsdlPort wsdlPort = wsdlService.getWsdlPort(port);

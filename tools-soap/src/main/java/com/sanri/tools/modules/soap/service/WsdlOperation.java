@@ -127,6 +127,8 @@ public class WsdlOperation {
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		HttpPost httpPost = new HttpPost(postMessageUrl);
 		httpPost.addHeader("SOAPAction",soapActionURI);
+		httpPost.addHeader("Content-Type", "text/xml; charset=utf-8");
+		httpPost.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36");
 		HttpEntity httpEntity = null;
 		switch (soapType){
 			case SOAP11:
@@ -140,9 +142,10 @@ public class WsdlOperation {
 			return  null;
 		}
 
-		log.info("调用 "+postMessageUrl+" 的:"+this.getOperation().getName()+" 方法时发送的　soap 消息为:\n"+soapMessage);
+		httpPost.setEntity(httpEntity);
+		log.info("调用 {} 的: {} 方法时发送的　soap 消息为:\n{}",postMessageUrl,this.getOperation().getName(),soapMessage);
 		String postSoapMessage = httpClient.execute(httpPost, new BasicResponseHandler());
-		log.info("调用 "+postMessageUrl+" 的:"+this.getOperation().getName()+" 方法时响应的　soap 消息为:\n"+postSoapMessage);
+		log.info("调用 {} 的: {} 方法响应的　soap 消息为:\n{}",postMessageUrl,this.getOperation().getName(),postSoapMessage);
 		return postSoapMessage;
 	}
 

@@ -1,6 +1,3 @@
-### 看子模块的 resource 能不能加载
-GET {{baseUrl}}/version/random
-
 ### 创建数据库连接
 POST {{baseUrl}}/connect/create/database
 Content-Type: application/json
@@ -24,7 +21,6 @@ Content-Type: application/json
 
 ### 获取所有数据库连接
 GET {{baseUrl}}/db/metadata/connections
-
 
 ### 获取所有 catalogs
 GET {{baseUrl}}/db/metadata/catalogs?connName=localhost
@@ -79,6 +75,18 @@ Content-Type: application/json
       "relation": "ONE_ONE"
     }
   ]
+}
+
+### 单表随机数据生成
+POST {{baseUrl}}/db/data/singleTableRandomData
+Content-Type: application/json
+
+{
+  "connName": "localhost",
+  "schemaName": "test",
+  "tableName": "test",
+  "columnMappers":[{"columnName": "name","random": "T(com.sanri.tools.modules.core.utils.RandomUtil).chinese(64,null)"},
+    {"columnName": "idcard","random": "T(com.sanri.tools.modules.core.utils.RandomUtil).idcard()"}]
 }
 
 ### 创建 zookeeper 连接
@@ -168,23 +176,27 @@ GET {{baseUrl}}/connect/redis/10.101.72.43
 ### 连接管理-获取所有连接
 GET {{baseUrl}}/connect/all
 
-### 单表随机数据生成
-POST {{baseUrl}}/db/data/singleTableRandomData
-Content-Type: application/json
-
-{
-  "connName": "localhost",
-  "schemaName": "test",
-  "tableName": "test",
-  "columnMappers":[{"columnName": "name","random": "T(com.sanri.tools.modules.core.utils.RandomUtil).chinese(64,null)"},
-    {"columnName": "idcard","random": "T(com.sanri.tools.modules.core.utils.RandomUtil).idcard()"}]
-}
-
 ### google 翻译
 GET http://translate.google.cn/translate_a/single?client=gtx&sl=zh-CN&tl=en&dt=t&q=算法
 
-### 翻译替换工具
+### 翻译取名工具
 GET {{baseUrl}}/name/translate?orginChars=我是中国人&splitToolName=ik&tranlates=baidu
+
+### 所有的英语翻译
+GET {{baseUrl}}/name/englishs
+
+### 所有的业务词
+GET {{baseUrl}}/name/bizs
+
+### 业务词详情
+GET {{baseUrl}}/name/detail/common
+
+### 写入业务词
+POST {{baseUrl}}/name/mirror/write/common
+Content-Type: application/x-www-form-urlencoded
+
+用户=user
+人=people
 
 ### 创建 kafka 连接
 POST {{baseUrl}}/kafka/connect/create
@@ -236,4 +248,39 @@ GET {{baseUrl}}/kafka/group/topic/data/nearby?clusterName=192.168.72.42_2181&top
 ### 发送 json 数据
 POST {{baseUrl}}/kafka/topic/data/send/json
 Content-Type: application/json
+
+### soap工具 - 加载一个 webservice port
+GET {{baseUrl}}/soap/ports?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
+
+### soap工具 - 查看某一个 port 的所有方法列表
+GET {{baseUrl}}/soap/WeatherWebServiceSoap/methods?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
+
+### soap工具 - 获取某个方法入参
+GET {{baseUrl}}/soap/WeatherWebServiceSoap/getWeatherbyCityName/input?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
+
+### soap 工具 - 获取某个方法出参
+GET {{baseUrl}}/soap/WeatherWebServiceSoap/getWeatherbyCityName/output?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
+
+### soap 工具 - 构建 soap 参数
+GET {{baseUrl}}/soap/WeatherWebServiceSoap/getWeatherbyCityName/build?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
+
+### soap 工具 - 发起查询
+POST {{baseUrl}}/soap/WeatherWebServiceSoap/getWeatherbyCityName/request?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
+Content-Type: text/plain
+
+<?xml version="1.0" encoding="UTF-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <soap:Body xmlns="http://WebXml.com.cn/">
+  <getWeatherbyCityName>
+            <theCityName>深圳</theCityName>
+        </getWeatherbyCityName>
+    </soap:Body>
+</soap:Envelope>
+
+###
+
+
+
+
+
+
 

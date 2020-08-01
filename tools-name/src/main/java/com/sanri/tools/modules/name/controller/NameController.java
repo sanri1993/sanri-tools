@@ -20,8 +20,8 @@ public class NameController {
     private NameService nameService;
 
     @GetMapping("/translate")
-    public Set<String> translate(String orginChars, String splitToolName, String[] tranlates){
-        return nameService.translate(orginChars,splitToolName, Arrays.asList(tranlates));
+    public Set<String> translate(String orginChars, String splitToolName, String[] tranlates,String[] bizs){
+        return nameService.translate(orginChars,splitToolName, bizs,tranlates);
     }
 
     @GetMapping("/bizs")
@@ -29,13 +29,18 @@ public class NameController {
         return bizTranslate.bizs();
     }
 
+    @GetMapping("/englishs")
+    public List<String> supportEnglishs(){
+        return nameService.englishTranslate();
+    }
+
     @GetMapping("/detail/{biz}")
     public List<String> bizMirrors(@PathVariable("biz") String biz) throws IOException {
         return bizTranslate.mirrors(biz);
     }
 
-    @PostMapping("/mirror/write")
-    public void writeMirror(String biz,String content) throws IOException {
+    @PostMapping("/mirror/write/{biz}")
+    public void writeMirror(@PathVariable("biz") String biz,@RequestBody String content) throws IOException {
         bizTranslate.writeMirror(biz,content);
     }
 }
