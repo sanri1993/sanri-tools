@@ -1,5 +1,6 @@
 package com.sanri.tools.modules.core.service.classloader;
 
+import com.sanri.tools.modules.core.service.file.FileManager;
 import jdk.internal.org.objectweb.asm.ClassReader;
 import jdk.internal.org.objectweb.asm.tree.ClassNode;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
+import javax.annotation.PostConstruct;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
@@ -26,6 +28,8 @@ public class ClassloaderService {
 
     @Autowired
     private CompileService compileService;
+    @Autowired
+    private FileManager fileManager;
 
     /**
      * 加载指定目录的类,使用指定名称的类加载器
@@ -153,10 +157,31 @@ public class ClassloaderService {
      * @return
      */
     public Set<String> listLoadedClasses(String classloaderName){
-        ClassLoader classLoader = null;
+        ClassLoader classLoader = getClassloader(classloaderName);
         Field classes = FieldUtils.getField(ClassLoader.class, "classes", true);
         Vector<Class<?>> classVector = (Vector<Class<?>>)  ReflectionUtils.getField(classes, classLoader);
         Set<String> collect = classVector.stream().map(Class::getName).collect(Collectors.toSet());
         return collect;
+    }
+
+    /**
+     * 初始化加载以前加载过的类加载器
+     */
+    @PostConstruct
+    public void init(){
+        try {
+            File classloaderDir = fileManager.mkTmpDir("classloader");
+            File[] files = classloaderDir.listFiles();
+            for (File file : files) {
+                String name = file.getName();
+                try {
+                    loadClasses(file,name);
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }catch (Exception e){
+            log.warn("之前的类加载器加载失败,考虑是否需要清理以前的类加载器");
+        }
     }
 }

@@ -1,9 +1,9 @@
 package com.sanri.tools.modules.name.service;
 
-public interface SplitWord extends ToolName{
+public interface TokenizerTool extends ToolName{
     /**
      * 分词操作
      * @param translateCharSequence
      */
-    void doSplit(TranslateCharSequence translateCharSequence);
+    void doTokenizer(TranslateCharSequence translateCharSequence);
 }

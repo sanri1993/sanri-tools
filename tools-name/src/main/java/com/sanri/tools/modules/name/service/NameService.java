@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -21,7 +21,7 @@ public class NameService {
 
     // 分词器
     @Autowired(required = false)
-    private List<SplitWord> splitWords = new ArrayList<>();
+    private List<TokenizerTool> tokenizerTools = new ArrayList<>();
 
     // 翻译工具, 包含业务翻译,英语翻译
     @Autowired(required = false)
@@ -40,16 +40,16 @@ public class NameService {
     /**
      * 变量或方法取名
      * @param orginChars
-     * @param splitToolName
+     * @param tokenizer
      * @param bizs 业务翻译列表
      * @param translates 英语翻译列表
      * @return
      */
-    public Set<String> translate(String orginChars, String splitToolName, String [] bizs,String [] translates){
+    public Set<String> translate(String orginChars, String tokenizer, String [] bizs,String [] translates){
         TranslateCharSequence translateCharSequence = new TranslateCharSequence(orginChars);
 
         // 先找到使用的分词器,进行分词
-        firstSplitWord(splitToolName, translateCharSequence);
+        firstTokenizer(tokenizer, translateCharSequence);
 
         // 然后使用翻译工具进行翻译; 找到需要使用的翻译工具; 这里包含业务词和通用词,最后才是英语翻译
         secondTranslate(bizs,translates, translateCharSequence);
@@ -122,29 +122,37 @@ public class NameService {
 
     /**
      * 第一步,使用分词工具进行分词
-     * @param splitToolName
+     * @param tokenizerToolName
      * @param translateCharSequence
      */
-    private void firstSplitWord(String splitToolName, TranslateCharSequence translateCharSequence) {
-        if (CollectionUtils.isEmpty(splitWords)){
+    private void firstTokenizer(String tokenizerToolName, TranslateCharSequence translateCharSequence) {
+        if (CollectionUtils.isEmpty(tokenizerTools)){
             throw new ToolException("未找到可用的分词器");
         }
-        SplitWord splitTool = null;
-        for (SplitWord tool : splitWords) {
-            String name = tool.getName();
-            if (name.equals(splitToolName)){
-                splitTool = tool;
+        TokenizerTool findTokenizerTool = null;
+        for (TokenizerTool tokenizerTool : tokenizerTools) {
+            String name = tokenizerTool.getName();
+            if (name.equals(tokenizerToolName)){
+                findTokenizerTool = tokenizerTool;
                 break;
             }
         }
-        if (splitTool == null){
-            throw new ToolException("找不到分词器:"+splitToolName);
+        if (findTokenizerTool == null){
+            throw new ToolException("找不到分词器:"+tokenizerToolName);
         }
-        splitTool.doSplit(translateCharSequence);
+        findTokenizerTool.doTokenizer(translateCharSequence);
     }
 
     @PostConstruct
     public void register(){
         pluginManager.register(PluginDto.builder().module(BizTranslate.module).name("main").build());
+    }
+
+    /**
+     * 获取所有的分词器
+     * @return
+     */
+    public List<String> tokenizers() {
+        return tokenizerTools.stream().map(ToolName::getName).collect(Collectors.toList());
     }
 }

@@ -17,6 +17,7 @@
         <module>tools-swagger-doc</module>
         <module>tools-mybatis</module>
         <module>tools-name</module>
+        <module>tools-dubbo</module>
     </modules>
 
     <parent>

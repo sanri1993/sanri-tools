@@ -21,7 +21,7 @@ import java.util.List;
  */
 @Service
 @Slf4j
-public class ParticipleIKTranslate implements SplitWord {
+public class ParticipleIKTranslate implements TokenizerTool {
     Analyzer ikAnalyzer = new IKAnalyzer(true); // true　用智能分词，false细粒度
     Configuration cfg = DefaultConfig.getInstance();
     {
@@ -29,7 +29,7 @@ public class ParticipleIKTranslate implements SplitWord {
     }
 
     @Override
-    public void doSplit(TranslateCharSequence translateCharSequence) {
+    public void doTokenizer(TranslateCharSequence translateCharSequence) {
         StringReader reader = new StringReader(translateCharSequence.getOriginSequence().toString());
         // 分词
         TokenStream tokenStream = null;

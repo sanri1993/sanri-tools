@@ -20,8 +20,13 @@ public class NameController {
     private NameService nameService;
 
     @GetMapping("/translate")
-    public Set<String> translate(String orginChars, String splitToolName, String[] tranlates,String[] bizs){
-        return nameService.translate(orginChars,splitToolName, bizs,tranlates);
+    public Set<String> translate(String orginChars, String tokenizer, String[] tranlates,String[] bizs){
+        return nameService.translate(orginChars,tokenizer, bizs,tranlates);
+    }
+
+    @GetMapping("/tokenizers")
+    public List<String> tokenizers(){
+       return nameService.tokenizers();
     }
 
     @GetMapping("/bizs")

@@ -3,6 +3,7 @@ package com.sanri.tools.modules.soap.service;
 import com.ibm.wsdl.extensions.schema.SchemaImpl;
 import com.sanri.tools.modules.soap.dtos.WsdlParam;
 import com.sanri.tools.modules.soap.dtos.WsdlType;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -28,6 +29,7 @@ import java.util.Map;
  * 功能: wsdl 上下文环境,对于每一个 WsdlService 会有一个 <br/>
  * 思路:读取 wsdl 前面的 types 节点,把类型存入 typesMap 中,把节点存入参数映射 paramMap 
  */
+@Slf4j
 public class WsdlContext {
 	private URL wsdlURL ;
 //	private String postMessageUrl;
@@ -35,7 +37,7 @@ public class WsdlContext {
 	private Definition definition;
 	private Map<String, WsdlType> typesMap = new HashMap<String, WsdlType>();
 	private Map<String, WsdlParam> paramMap = new HashMap<String, WsdlParam>();
-	private final static Log logger = LogFactory.getLog(WsdlContext.class);
+//	private final static Log log = LogFactory.getLog(WsdlContext.class);
 //	private final static String [] BASE_TYPES = {"string","decimal","integer","int","float","long","boolean","time","date","datetime","array","anyType"};
 	
 	public static String BASE_SOAP11_DOCUMENT;		//soap11 的模板字符串
@@ -247,13 +249,13 @@ public class WsdlContext {
 						parserXmlSchemaType(childSchemaType, childWsdlType);		//递归解析子类型
 					}else if(nextChildElement instanceof XmlSchemaAny) {
 						XmlSchemaAny xmlSchemaAny = (XmlSchemaAny) nextChildElement;
-						logger.debug("any 元素:"+xmlSchemaAny);
+						log.debug("any 元素:"+xmlSchemaAny);
 					}else{
-						logger.debug("其它元素");
+						log.debug("其它元素");
 					}
 				}
 			}else{
-				logger.debug("其它类型,对于空的复杂类型也会进这里");
+				log.debug("其它类型,对于空的复杂类型也会进这里");
 			}
 		}else if(xmlSchemaType instanceof XmlSchemaSimpleType){
 			XmlSchemaSimpleType xmlSchemaSimpleType = (XmlSchemaSimpleType) xmlSchemaType;

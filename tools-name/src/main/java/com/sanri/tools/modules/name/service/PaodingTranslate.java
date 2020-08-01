@@ -3,10 +3,10 @@ package com.sanri.tools.modules.name.service;
 /**
  * 庖丁分词器
  */
-public class PaodingTranslate implements SplitWord {
+public class PaodingTranslate implements TokenizerTool {
 
     @Override
-    public void doSplit(TranslateCharSequence translateCharSequence) {
+    public void doTokenizer(TranslateCharSequence translateCharSequence) {
         
     }
 

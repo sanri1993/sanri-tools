@@ -1,3 +1,24 @@
+### 类加载器 - 所有的类加载器
+GET {{baseUrl}}/classloader/classloaders
+
+### 类加载器 - 查看类加载器加载的类
+GET {{baseUrl}}/classloader/listLoadedClasses?classloaderName=mmc-dubbo-api
+
+### 类加载器 - 上传 zip 包, 需要类有严格的目录结构
+POST {{baseUrl}}/classloader/uploadClassesZip
+Content-Type: multipart/form-data; boundary=uploadClassesZip
+
+--uploadClassesZip
+Content-Disposition: form-data; name="file"; filename="mmc-dubbo-api.zip"
+Content-Type: application/octet-stream
+
+< d:/test/mmc-dubbo-api.zip
+--uploadClassesZip
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+mmc-dubbo-api
+
 ### 创建数据库连接
 POST {{baseUrl}}/connect/create/database
 Content-Type: application/json
@@ -96,10 +117,10 @@ Content-Type: application/json
 {
   "connectIdParam": {
     "module": "zookeeper",
-    "connName": "192.168.72.42_2181"
+    "connName": "192.168.2.134_2181"
   },
   "connectParam": {
-    "host": "10.101.72.42",
+    "host": "192.168.2.134",
     "port": 2181
   }
 }
@@ -180,10 +201,13 @@ GET {{baseUrl}}/connect/all
 GET http://translate.google.cn/translate_a/single?client=gtx&sl=zh-CN&tl=en&dt=t&q=算法
 
 ### 翻译取名工具
-GET {{baseUrl}}/name/translate?orginChars=我是中国人&splitToolName=ik&tranlates=baidu
+GET {{baseUrl}}/name/translate?orginChars=我是中国人&tokenizer=ik&tranlates=baidu
 
 ### 所有的英语翻译
 GET {{baseUrl}}/name/englishs
+
+### 所有的分词器
+GET {{baseUrl}}/name/tokenizers
 
 ### 所有的业务词
 GET {{baseUrl}}/name/bizs
@@ -276,8 +300,32 @@ Content-Type: text/plain
     </soap:Body>
 </soap:Envelope>
 
-###
+### dubbo - 获取所有的服务
+GET {{baseUrl}}/dubbo/services?connName=192.168.2.134_2181
 
+### dubbo - 获取所有提供者
+GET {{baseUrl}}/dubbo/providers?connName=192.168.2.134_2181&serviceName=com.mmc.dubbo.api.user.UserService
+
+### dubbo - 获取方法信息
+GET {{baseUrl}}/dubbo/methods?connName=192.168.2.134_2181&serviceName=com.mmc.dubbo.api.user.UserService&methods=getCurrentById,insert&classloaderName=mmc-dubbo-api
+
+### dubbo - 调用方法
+POST {{baseUrl}}/dubbo/invoke
+Content-Type: application/json
+
+{
+  "connName": "192.168.2.134_2181",
+  "serviceClassName": "com.mmc.dubbo.api.user.UserService",
+  "classloaderName": "mmc-dubbo-api",
+  "methodInfo": {
+    "name": "getCurrentById",
+    "parameterTypeNames": ["long"]
+  },
+  "providerURL": "dubbo://192.168.2.101:30880/com.mmc.dubbo.api.user.UserService?anyhost=true&application=mmc-dubbo-provider&dubbo=2.6.2&generic=false&interface=com.mmc.dubbo.api.user.UserService&methods=getCurrentById,insert&pid=35288&side=provider&timestamp=1596275905147",
+  "args": ["18"]
+}
+
+###
 
 
 
