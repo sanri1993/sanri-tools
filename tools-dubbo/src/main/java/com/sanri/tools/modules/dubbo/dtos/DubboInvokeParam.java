@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 public class DubboInvokeParam  {
     private String connName;
-    private String serviceClassName;
+    private String serviceName;
     private String classloaderName;
     private MethodInfo methodInfo;
     private List<String> args;

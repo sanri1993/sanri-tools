@@ -20,9 +20,7 @@ import com.sanri.tools.modules.zookeeper.service.ZookeeperService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.ReflectUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ReflectionUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -127,7 +125,7 @@ public class MainDubboService {
 
     public Object invoke(DubboInvokeParam dubboInvokeParam) throws ClassNotFoundException, NoSuchMethodException, RemotingException, ExecutionException, InterruptedException {
         String classloaderName = dubboInvokeParam.getClassloaderName();
-        String serviceClassName = dubboInvokeParam.getServiceClassName();
+        String serviceClassName = dubboInvokeParam.getServiceName();
 
         // 解析出 class
         ClassLoader classloader = classloaderService.getClassloader(classloaderName);

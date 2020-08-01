@@ -315,7 +315,7 @@ Content-Type: application/json
 
 {
   "connName": "192.168.2.134_2181",
-  "serviceClassName": "com.mmc.dubbo.api.user.UserService",
+  "serviceName": "com.mmc.dubbo.api.user.UserService",
   "classloaderName": "mmc-dubbo-api",
   "methodInfo": {
     "name": "getCurrentById",
