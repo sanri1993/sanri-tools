@@ -2,7 +2,7 @@
 GET {{baseUrl}}/classloader/classloaders
 
 ### 类加载器 - 查看类加载器加载的类
-GET {{baseUrl}}/classloader/listLoadedClasses?classloaderName=mmc-dubbo-api
+GET {{baseUrl}}/classloader/listLoadedClasses?classloaderName=po
 
 ### 类加载器 - 上传 zip 包, 需要类有严格的目录结构
 POST {{baseUrl}}/classloader/uploadClassesZip
@@ -18,6 +18,20 @@ Content-Disposition: form-data; name="classloaderName"
 Content-Type: application/x-www-form-urlencoded
 
 mmc-dubbo-api
+### 类加载器 - 上传 zip 包, 不需要严格的目录结构
+POST {{baseUrl}}/classloader/uploadClassesZipSimple
+Content-Type: multipart/form-data; boundary=uploadClassesZip
+
+--uploadClassesZip
+Content-Disposition: form-data; name="file"; filename="po.zip"
+Content-Type: application/octet-stream
+
+< d:/test/po.zip
+--uploadClassesZip
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+po
 
 ### 创建数据库连接
 POST {{baseUrl}}/connect/create/database
@@ -325,10 +339,38 @@ Content-Type: application/json
   "args": ["18"]
 }
 
+### mybatis - 上传 mapper 文件
+POST {{baseUrl}}/mybatis/uploadMapperFile
+Content-Type: multipart/form-data; boundary=uploadMapperFile
+
+--uploadMapperFile
+Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
+Content-Type: application/octet-stream
+
+< d:/test/BatchMapper.xml
+--uploadMapperFile
+Content-Disposition: form-data; name="project"
+Content-Type: application/x-www-form-urlencoded
+
+test-mybatis
+--uploadMapperFile
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+po
+### mybatis 获取加载到的 sqlId
+GET {{baseUrl}}/mybatis/statementIds?project=test-mybatis
+
+### 执行获取绑定的 sql
+POST {{baseUrl}}/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "test-mybatis",
+  "statementId": "com.sanri.test.testmybatis.mapper.BatchMapper.selectByName",
+  "className": "java.util.HashMap",
+  "arg": "{\"ename\": \"mm\"}"
+}
+
 ###
-
-
-
-
-
 

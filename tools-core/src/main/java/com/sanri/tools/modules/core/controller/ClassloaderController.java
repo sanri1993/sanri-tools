@@ -102,12 +102,12 @@ public class ClassloaderController {
      * @throws IOException
      */
     private File unzipFile(MultipartFile file, String classloaderName) throws IOException {
-        File dir = fileManager.mkTmpDir("classloader/" + classloaderName);
+        File dir = fileManager.mkTmpDir("classloader");
         File zipFile = new File(dir, file.getOriginalFilename());
         file.transferTo(zipFile);
         ZipUtil.unzip(zipFile,dir.getAbsolutePath());
         FileUtils.deleteQuietly(zipFile);
-        return dir;
+        return new File(dir,classloaderName);
     }
 
 }

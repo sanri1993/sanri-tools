@@ -102,7 +102,7 @@ public class ClassloaderService {
      * @param classloaderName
      */
     public void loadParallalClassesFile(File baseDir,String classloaderName) throws IOException {
-        Collection<File> files = FileUtils.listFiles(baseDir, new String[]{"class"}, false);
+        Collection<File> files = FileUtils.listFiles(baseDir, new String[]{"class"}, true);
         for (File file : files) {
             FileInputStream fileInputStream = new FileInputStream(file);
             ClassReader reader = new ClassReader(fileInputStream);
