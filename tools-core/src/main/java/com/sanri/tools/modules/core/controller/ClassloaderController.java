@@ -95,7 +95,7 @@ public class ClassloaderController {
     }
 
     /**
-     * 解压文件
+     * 解压文件 ,直接把压缩包里的东西拿出来到 classloader/classloaderName 路径
      * @param file
      * @param classloaderName
      * @return
@@ -105,9 +105,11 @@ public class ClassloaderController {
         File dir = fileManager.mkTmpDir("classloader");
         File zipFile = new File(dir, file.getOriginalFilename());
         file.transferTo(zipFile);
-        ZipUtil.unzip(zipFile,dir.getAbsolutePath());
+
+        File uncompressDir = new File(dir, classloaderName);uncompressDir.mkdir();
+        ZipUtil.unzip(zipFile,uncompressDir.getAbsolutePath());
         FileUtils.deleteQuietly(zipFile);
-        return new File(dir,classloaderName);
+        return uncompressDir;
     }
 
 }

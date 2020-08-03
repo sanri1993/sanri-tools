@@ -12,17 +12,12 @@
     <artifactId>tools-mybatis</artifactId>
 
     <dependencies>
-<!--        <dependency>-->
-<!--            <groupId>${project.groupId}</groupId>-->
-<!--            <artifactId>tools-database</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
-
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>tools-core</artifactId>
+            <artifactId>tools-database</artifactId>
             <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>

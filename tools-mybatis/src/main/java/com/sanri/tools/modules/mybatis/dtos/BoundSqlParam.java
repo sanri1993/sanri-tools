@@ -1,5 +1,6 @@
 package com.sanri.tools.modules.mybatis.dtos;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 
 @Data
@@ -8,5 +9,6 @@ public class BoundSqlParam {
    private String statementId;
    private String className;
    private String classloaderName;
-   private String arg;
+   private JSONObject arg;
+   private String connName;
 }

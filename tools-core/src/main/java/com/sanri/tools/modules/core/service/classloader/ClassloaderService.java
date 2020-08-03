@@ -8,15 +8,19 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.ReflectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -169,6 +173,10 @@ public class ClassloaderService {
      */
     @PostConstruct
     public void init(){
+        ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
+        // 加载 默认需要的 jar 包 pom 配置
+        Method addURL = MethodUtils.getAccessibleMethod(ClassLoader.class, "addURL", URL.class);
+
         try {
             File classloaderDir = fileManager.mkTmpDir("classloader");
             File[] files = classloaderDir.listFiles();

@@ -1,3 +1,576 @@
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "connName": "lo",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": {
+    "value": {
+      "scheduleMode": "normal",
+      "pageSize": 10,
+      "start": 0,
+      "isExamine": 1
+    }
+  }
+}
+
+<> 2020-08-03T114000.200.txt
+
+###
+
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "connName": "lo",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": {
+    "value": {
+      "scheduleMode": "normal",
+      "pageSize": 10,
+      "start": 0,
+      "is_examine": 1
+    }
+  }
+}
+
+<> 2020-08-03T113953.200.txt
+
+###
+
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "connName": "lo",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": {
+   "value": {
+     "scheduleMode": "normal",
+     "pageSize": 10,
+     "start": 0
+   }
+  }
+}
+
+<> 2020-08-03T113941.200.txt
+
+###
+
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "connName": "lo",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": {
+    "scheduleMode": "normal",
+    "pageSize": 10,
+    "start": 0
+  }
+}
+
+<> 2020-08-03T113924.200.txt
+
+###
+
+POST http://localhost:8081/mybatis/uploadMapperFile
+Content-Type: multipart/form-data; boundary=uploadMapperFile
+
+--uploadMapperFile
+Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
+Content-Type: application/octet-stream
+
+< d:\test\ScheduleMapper.xml
+--uploadMapperFile
+Content-Disposition: form-data; name="project"
+Content-Type: application/x-www-form-urlencoded
+
+ir
+--uploadMapperFile
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+irdao
+--uploadMapperFile--
+
+###
+
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "connName": "lo",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": "{\"scheduleMode\": \"normal\",\"pageSize\":10,\"start\":0,\"is_examine\":1}"
+}
+
+<> 2020-08-03T111433.200.txt
+
+###
+
+POST http://localhost:8081/mybatis/uploadMapperFile
+Content-Type: multipart/form-data; boundary=uploadMapperFile
+
+--uploadMapperFile
+Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
+Content-Type: application/octet-stream
+
+< d:\test\ScheduleMapper.xml
+--uploadMapperFile
+Content-Disposition: form-data; name="project"
+Content-Type: application/x-www-form-urlencoded
+
+ir
+--uploadMapperFile
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+irdao
+--uploadMapperFile--
+
+###
+
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "connName": "lo",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": "{\"scheduleMode\": \"normal\",\"pageSize\":10,\"start\":0,\"is_examine\":1}"
+}
+
+###
+
+POST http://localhost:8081/mybatis/uploadMapperFile
+Content-Type: multipart/form-data; boundary=uploadMapperFile
+
+--uploadMapperFile
+Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
+Content-Type: application/octet-stream
+
+< d:\test\ScheduleMapper.xml
+--uploadMapperFile
+Content-Disposition: form-data; name="project"
+Content-Type: application/x-www-form-urlencoded
+
+ir
+--uploadMapperFile
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+irdao
+--uploadMapperFile--
+
+###
+
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": "{\"scheduleMode\": \"normal\",\"pageSize\":10,\"start\":0,\"is_examine\":1}"
+}
+
+###
+
+POST http://localhost:8081/mybatis/uploadMapperFile
+Content-Type: multipart/form-data; boundary=uploadMapperFile
+
+--uploadMapperFile
+Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
+Content-Type: application/octet-stream
+
+< d:\test\ScheduleMapper.xml
+--uploadMapperFile
+Content-Disposition: form-data; name="project"
+Content-Type: application/x-www-form-urlencoded
+
+ir
+--uploadMapperFile
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+irdao
+--uploadMapperFile--
+
+###
+
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": "{\"scheduleMode\": \"normal\",\"pageSize\":10,\"start\":0,\"is_examine\":1}"
+}
+
+###
+
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": "{\"scheduleMode\": \"normal\",\"pageSize\":10,\"start\":0,\"is_examine\":1}"
+}
+
+<> 2020-08-03T104849.200.txt
+
+###
+
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": "{\"scheduleMode\": \"normal\",\"pageSize\":10,\"start\":0}"
+}
+
+<> 2020-08-03T104647.200.txt
+
+###
+
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": "{\"scheduleMode\": \"normal\",\"pageSize\":10,\"start\":0}"
+}
+
+<> 2020-08-03T104618.200.txt
+
+###
+
+POST http://localhost:8081/mybatis/uploadMapperFile
+Content-Type: multipart/form-data; boundary=uploadMapperFile
+
+--uploadMapperFile
+Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
+Content-Type: application/octet-stream
+
+< d:\test\ScheduleMapper.xml
+--uploadMapperFile
+Content-Disposition: form-data; name="project"
+Content-Type: application/x-www-form-urlencoded
+
+ir
+--uploadMapperFile
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+irdao
+--uploadMapperFile--
+
+###
+
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": "{\"scheduleMode\": \"normal\",\"pageSize\":10,\"start\":0}"
+}
+
+<> 2020-08-03T104300.200.txt
+
+###
+
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "test-mybatis",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": "{\"scheduleMode\": \"normal\",\"pageSize\":10,\"start\":0}"
+}
+
+<> 2020-08-03T104155.500.json
+
+###
+
+GET http://localhost:8081/mybatis/statementIds?project=ir
+
+<> 2020-08-03T103957.200.json
+
+###
+
+POST http://localhost:8081/mybatis/uploadMapperFile
+Content-Type: multipart/form-data; boundary=uploadMapperFile
+
+--uploadMapperFile
+Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
+Content-Type: application/octet-stream
+
+< d:\test\ScheduleMapper.xml
+--uploadMapperFile
+Content-Disposition: form-data; name="project"
+Content-Type: application/x-www-form-urlencoded
+
+ir
+--uploadMapperFile
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+irdao
+--uploadMapperFile--
+
+###
+
+GET http://localhost:8081/mybatis/statementIds?project=ir
+
+<> 2020-08-03T103548.500.json
+
+###
+
+POST http://localhost:8081/mybatis/uploadMapperFile
+Content-Type: multipart/form-data; boundary=uploadMapperFile
+
+--uploadMapperFile
+Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
+Content-Type: application/octet-stream
+
+< d:\test\ScheduleMapper.xml
+--uploadMapperFile
+Content-Disposition: form-data; name="project"
+Content-Type: application/x-www-form-urlencoded
+
+ir
+--uploadMapperFile
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+irdao
+--uploadMapperFile--
+
+###
+
+GET http://localhost:8081/mybatis/statementIds?project=ir
+
+<> 2020-08-03T103206.500.json
+
+###
+
+POST http://localhost:8081/mybatis/uploadMapperFile
+Content-Type: multipart/form-data; boundary=uploadMapperFile
+
+--uploadMapperFile
+Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
+Content-Type: application/octet-stream
+
+< d:\test\ScheduleMapper.xml
+--uploadMapperFile
+Content-Disposition: form-data; name="project"
+Content-Type: application/x-www-form-urlencoded
+
+ir
+--uploadMapperFile
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+irdao
+--uploadMapperFile--
+
+###
+
+POST http://localhost:8081/mybatis/uploadMapperFile
+Content-Type: multipart/form-data; boundary=uploadMapperFile
+
+--uploadMapperFile
+Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
+Content-Type: application/octet-stream
+
+< d:\test\ScheduleMapper.xml
+--uploadMapperFile
+Content-Disposition: form-data; name="project"
+Content-Type: application/x-www-form-urlencoded
+
+ir
+--uploadMapperFile
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+irdao
+--uploadMapperFile--
+
+###
+
+POST http://localhost:8081/mybatis/uploadMapperFile
+Content-Type: multipart/form-data; boundary=uploadMapperFile
+
+--uploadMapperFile
+Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
+Content-Type: application/octet-stream
+
+< d:\test\ScheduleMapper.xml
+--uploadMapperFile
+Content-Disposition: form-data; name="project"
+Content-Type: application/x-www-form-urlencoded
+
+ir
+--uploadMapperFile
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+irdao
+--uploadMapperFile--
+
+###
+
+GET http://localhost:8081/mybatis/statementIds?project=ir
+
+<> 2020-08-03T102600.500.json
+
+###
+
+POST http://localhost:8081/mybatis/uploadMapperFile
+Content-Type: multipart/form-data; boundary=uploadMapperFile
+
+--uploadMapperFile
+Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
+Content-Type: application/octet-stream
+
+< d:\test\ScheduleMapper.xml
+--uploadMapperFile
+Content-Disposition: form-data; name="project"
+Content-Type: application/x-www-form-urlencoded
+
+ir
+--uploadMapperFile
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+irdao
+--uploadMapperFile--
+
+###
+
+GET http://localhost:8081/mybatis/statementIds?project=ir
+
+<> 2020-08-03T101709.200.json
+
+###
+
+GET http://localhost:8081/mybatis/statementIds?project=ir
+
+<> 2020-08-03T100525.500.json
+
+###
+
+GET http://localhost:8081/mybatis/statementIds?project=test-mybatis
+
+<> 2020-08-03T100511.200.json
+
+###
+
+POST http://localhost:8081/mybatis/uploadMapperFile
+Content-Type: multipart/form-data; boundary=uploadMapperFile
+
+--uploadMapperFile
+Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
+Content-Type: application/octet-stream
+
+< d:\test\ScheduleMapper.xml
+--uploadMapperFile
+Content-Disposition: form-data; name="project"
+Content-Type: application/x-www-form-urlencoded
+
+ir
+--uploadMapperFile
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+irdao
+--uploadMapperFile--
+
+###
+
+GET http://localhost:8081/classloader/classloaders
+
+<> 2020-08-03T100355.200.json
+
+###
+
+POST http://localhost:8081/classloader/uploadClassesZipSimple
+Content-Type: multipart/form-data; boundary=uploadClassesZip
+
+--uploadClassesZip
+Content-Disposition: form-data; name="file"; filename="irdao.zip"
+Content-Type: application/octet-stream
+
+< d:\test\entity.zip
+--uploadClassesZip
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+irdao
+--uploadClassesZip--
+
+###
+
+POST http://localhost:8081/classloader/uploadClassesZip
+Content-Type: multipart/form-data; boundary=uploadClassesZip
+
+--uploadClassesZip
+Content-Disposition: form-data; name="file"; filename="messagecenterdao.zip"
+Content-Type: application/octet-stream
+
+< d:\test\messagecenterdao.zip
+--uploadClassesZip
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+messagecenterdao
+--uploadClassesZip--
+
+<> 2020-08-03T085155.500.json
+
+###
+
+POST http://localhost:8081/classloader/uploadClassesZip
+Content-Type: multipart/form-data; boundary=uploadClassesZip
+
+--uploadClassesZip
+Content-Disposition: form-data; name="file"; filename="messagecenterdao.zip"
+Content-Type: application/octet-stream
+
+< d:\test\messagecenterdao.zip
+--uploadClassesZip
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+messagecenterdao
+--uploadClassesZip--
+
+<> 2020-08-03T084639.500.json
+
+###
+
 POST http://localhost:8081/dubbo/invoke
 Content-Type: application/json
 
@@ -183,324 +756,6 @@ GET http://localhost:8081/dubbo/providers?connName=192.168.2.134_2181&serviceNam
 GET http://localhost:8081/classloader/listLoadedClasses?classloaderName=mmc-dubbo-api
 
 <> 2020-08-01T092254.200.json
-
-###
-
-GET http://localhost:8081/classloader/listLoadedClasses?classloaderName=mmc-dubbo-api
-
-<> 2020-08-01T092213.500.json
-
-###
-
-GET http://localhost:8081/classloader/classloaders
-
-<> 2020-08-01T092128.200.json
-
-###
-
-POST http://localhost:8081/classloader/uploadClassesZip
-Content-Type: multipart/form-data; boundary=uploadClassesZip
-
---uploadClassesZip
-Content-Disposition: form-data; name="file"; filename="mmc-dubbo-api.zip"
-Content-Type: application/octet-stream
-
-< d:\test\mmc-dubbo-api.zip
---uploadClassesZip
-Content-Disposition: form-data; name="classloaderName"
-Content-Type: application/x-www-form-urlencoded
-
-mmc-dubbo-api
---uploadClassesZip--
-
-###
-
-GET http://localhost:8081/classloader/classloaders
-
-<> 2020-08-01T091058.200.json
-
-###
-
-GET http://localhost:8081/dubbo/providers?connName=192.168.2.134_2181&serviceName=com.mmc.dubbo.api.user.UserService
-
-<> 2020-08-01T074842.200.json
-
-###
-
-GET http://localhost:8081/dubbo/providers?connName=192.168.2.134_2181&serviceName=com.mmc.dubbo.api.user.UserService
-
-<> 2020-08-01T074635.200.json
-
-###
-
-GET http://localhost:8081/dubbo/providers?connName=192.168.2.134_2181&serviceName=com.mmc.dubbo.api.user.UserService
-
-<> 2020-08-01T074514.200.json
-
-###
-
-GET http://localhost:8081/dubbo/providers?connName=192.168.2.134_2181&serviceName=com.mmc.dubbo.api.user.UserService
-
-<> 2020-08-01T074355.200.json
-
-###
-
-GET http://localhost:8081/dubbo/providers?connName=192.168.2.134_2181&serviceName=com.mmc.dubbo.api.user.UserService
-
-<> 2020-08-01T074326.200.json
-
-###
-
-GET http://localhost:8081/dubbo/providers?connName=192.168.2.134_2181&serviceName=com.mmc.dubbo.api.user.UserService
-
-<> 2020-08-01T055938.500.json
-
-###
-
-GET http://localhost:8081/dubbo/providers?connName=192.168.2.134_2181&serviceName=com.mmc.dubbo.api.user.UserService
-
-<> 2020-08-01T055831.500.json
-
-###
-
-GET http://localhost:8081/dubbo/providers?connName=192.168.2.134_2181&serviceName=com.mmc.dubbo.api.user.UserService
-
-<> 2020-08-01T055806.200.json
-
-###
-
-GET http://localhost:8081/dubbo/providers?connName=192.168.2.134_2181&serviceName=com.mmc.dubbo.api.user.UserService
-
-<> 2020-08-01T055747.500.json
-
-###
-
-GET http://localhost:8081/dubbo/providers?connName=192.168.2.134_2181&serviceName=com.mmc.dubbo.api.user.UserService
-
-<> 2020-08-01T055701.500.json
-
-###
-
-GET http://localhost:8081/dubbo/services?connName=192.168.2.134_2181
-
-<> 2020-08-01T055624.200.json
-
-###
-
-POST http://localhost:8081/connect/create/zookeeper
-Content-Type: application/json
-
-{
-  "connectIdParam": {
-    "module": "zookeeper",
-    "connName": "192.168.2.134_2181"
-  },
-  "connectParam": {
-    "host": "192.168.2.134",
-    "port": 2181
-  }
-}
-
-###
-
-POST http://localhost:8081/soap/WeatherWebServiceSoap/getWeatherbyCityName/request?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
-Content-Type: text/plain
-
-<?xml version="1.0" encoding="UTF-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <soap:Body xmlns="http://WebXml.com.cn/">
-  <getWeatherbyCityName>
-            <theCityName>深圳</theCityName>
-        </getWeatherbyCityName>
-    </soap:Body>
-</soap:Envelope>
-
-<> 2020-08-01T054016.404.json
-
-###
-
-GET http://localhost:8081/name/translate?orginChars=我是中国人&tokenizer=ik&tranlates=baidu
-
-<> 2020-08-01T053954.200.json
-
-###
-
-GET http://localhost:8081/name/translate?orginChars=我是中国人&tokenizer=ik&tranlates=baidu
-
-<> 2020-08-01T053922.500.json
-
-###
-
-GET http://localhost:8081/name/tokenizers
-
-<> 2020-08-01T053912.200.json
-
-###
-
-GET http://localhost:8081/name/translate?orginChars=我是中国人&tokenizer=ik&tranlates=baidu
-
-<> 2020-08-01T053717.500.json
-
-###
-
-POST http://localhost:8081/soap/WeatherWebServiceSoap/getWeatherbyCityName/request?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
-Content-Type: text/plain
-
-<?xml version="1.0" encoding="UTF-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <soap:Body xmlns="http://WebXml.com.cn/">
-  <getWeatherbyCityName>
-            <theCityName>深圳</theCityName>
-        </getWeatherbyCityName>
-    </soap:Body>
-</soap:Envelope>
-
-<> 2020-08-01T072748.200.txt
-
-###
-
-POST http://localhost:8081/soap/WeatherWebServiceSoap/getWeatherbyCityName/request?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
-Content-Type: text/plain
-
-<?xml version="1.0" encoding="UTF-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <soap:Body xmlns="http://WebXml.com.cn/">
-  <getWeatherbyCityName>
-            <theCityName>深圳</theCityName>
-        </getWeatherbyCityName>
-    </soap:Body>
-</soap:Envelope>
-
-<> 2020-08-01T072650.500.json
-
-###
-
-POST http://localhost:8081/soap/WeatherWebServiceSoap/getWeatherbyCityName/request?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
-Content-Type: text/plain
-
-<?xml version="1.0" encoding="UTF-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <soap:Body xmlns="http://WebXml.com.cn/">
-  <getWeatherbyCityName>
-            <theCityName>深圳</theCityName>
-        </getWeatherbyCityName>
-    </soap:Body>
-</soap:Envelope>
-
-<> 2020-08-01T072514.500.json
-
-###
-
-POST http://localhost:8081/soap/WeatherWebServiceSoap/getWeatherbyCityName/request?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
-Content-Type: text/plain
-
-<?xml version="1.0" encoding="UTF-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <soap:Body xmlns="http://WebXml.com.cn/">
-  <getWeatherbyCityName>
-            <theCityName>--theCityName--</theCityName>
-        </getWeatherbyCityName>
-    </soap:Body>
-</soap:Envelope>
-
-<> 2020-08-01T072453.500.json
-
-###
-
-POST http://localhost:8081/soap/WeatherWebServiceSoap/getWeatherbyCityName/request?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
-Content-Type: text/plain
-
-<?xml version="1.0" encoding="UTF-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <soap:Body xmlns="http://WebXml.com.cn/">
-  <getWeatherbyCityName>
-            <theCityName>--theCityName--</theCityName>
-        </getWeatherbyCityName>
-    </soap:Body>
-</soap:Envelope>
-
-<> 2020-08-01T072219.500.json
-
-###
-
-POST http://localhost:8081/soap/WeatherWebServiceSoap/getWeatherbyCityName/request?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
-Content-Type: text/plain
-
-<?xml version="1.0" encoding="UTF-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <soap:Body xmlns="http://WebXml.com.cn/">
-  <getWeatherbyCityName>
-            <theCityName>--theCityName--</theCityName>
-        </getWeatherbyCityName>
-    </soap:Body>
-</soap:Envelope>
-
-<> 2020-08-01T071937.500.json
-
-###
-
-POST http://localhost:8081/soap/WeatherWebServiceSoap/getWeatherbyCityName/request?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
-Content-Type: text/plain
-
-<?xml version="1.0" encoding="UTF-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <soap:Body xmlns="http://WebXml.com.cn/">
-  <getWeatherbyCityName>
-            <theCityName>--theCityName--</theCityName>
-        </getWeatherbyCityName>
-    </soap:Body>
-</soap:Envelope>
-
-<> 2020-08-01T071807.500.json
-
-###
-
-GET http://localhost:8081/soap/WeatherWebServiceSoap/getWeatherbyCityName/request?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
-Content-Type: text/plain
-
-<?xml version="1.0" encoding="UTF-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <soap:Body xmlns="http://WebXml.com.cn/">
-  <getWeatherbyCityName>
-            <theCityName>--theCityName--</theCityName>
-        </getWeatherbyCityName>
-    </soap:Body>
-</soap:Envelope>
-
-<> 2020-08-01T071755.405.json
-
-###
-
-GET http://localhost:8081/soap/WeatherWebServiceSoap/getWeatherbyCityName/build?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
-
-<> 2020-08-01T071455.200.txt
-
-###
-
-GET http://localhost:8081/soap/WeatherWebServiceSoap/getWeatherbyCityName/output?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
-
-<> 2020-08-01T071413.200.json
-
-###
-
-GET http://localhost:8081/soap/WeatherWebServiceSoap/getWeatherbyCityName/input?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
-
-<> 2020-08-01T071350.200.json
-
-###
-
-GET http://localhost:8081/soap/WeatherWebServiceSoap/methods?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
-
-<> 2020-08-01T071241.200.json
-
-###
-
-GET http://localhost:8081/WeatherWebServiceSoap/methods?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
-
-<> 2020-08-01T071231.404.json
-
-###
-
-GET http://localhost:8081/soap/methods?port=WeatherWebServiceSoap&wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
-
-<> 2020-08-01T071209.404.json
-
-###
-
-GET http://localhost:8081/soap/ports?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
-
-<> 2020-08-01T071105.200.json
 
 ###
 

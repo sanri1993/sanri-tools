@@ -572,6 +572,17 @@ public class JdbcService {
         }
     }
 
+    /**
+     * 获取 jdbc 连接
+     * @param connName
+     * @return
+     */
+    public Connection connection(String connName) throws IOException, SQLException {
+        DataSource dataSource = dataSource(connName);
+        Connection connection = dataSource.getConnection();
+        return connection;
+    }
+
     DatabaseMetaData databaseMetaData(String connName) throws SQLException, IOException {
         DataSource dataSource = dataSource(connName);
 

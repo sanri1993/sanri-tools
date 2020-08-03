@@ -9,29 +9,29 @@ POST {{baseUrl}}/classloader/uploadClassesZip
 Content-Type: multipart/form-data; boundary=uploadClassesZip
 
 --uploadClassesZip
-Content-Disposition: form-data; name="file"; filename="mmc-dubbo-api.zip"
+Content-Disposition: form-data; name="file"; filename="messagecenterdao.zip"
 Content-Type: application/octet-stream
 
-< d:/test/mmc-dubbo-api.zip
+< d:/test/messagecenterdao.zip
 --uploadClassesZip
 Content-Disposition: form-data; name="classloaderName"
 Content-Type: application/x-www-form-urlencoded
 
-mmc-dubbo-api
+messagecenterdao
 ### 类加载器 - 上传 zip 包, 不需要严格的目录结构
 POST {{baseUrl}}/classloader/uploadClassesZipSimple
 Content-Type: multipart/form-data; boundary=uploadClassesZip
 
 --uploadClassesZip
-Content-Disposition: form-data; name="file"; filename="po.zip"
+Content-Disposition: form-data; name="file"; filename="irdao.zip"
 Content-Type: application/octet-stream
 
-< d:/test/po.zip
+< d:/test/entity.zip
 --uploadClassesZip
 Content-Disposition: form-data; name="classloaderName"
 Content-Type: application/x-www-form-urlencoded
 
-po
+irdao
 
 ### 创建数据库连接
 POST {{baseUrl}}/connect/create/database
@@ -347,29 +347,37 @@ Content-Type: multipart/form-data; boundary=uploadMapperFile
 Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
 Content-Type: application/octet-stream
 
-< d:/test/BatchMapper.xml
+< d:/test/ScheduleMapper.xml
 --uploadMapperFile
 Content-Disposition: form-data; name="project"
 Content-Type: application/x-www-form-urlencoded
 
-test-mybatis
+ir
 --uploadMapperFile
 Content-Disposition: form-data; name="classloaderName"
 Content-Type: application/x-www-form-urlencoded
 
-po
+irdao
 ### mybatis 获取加载到的 sqlId
-GET {{baseUrl}}/mybatis/statementIds?project=test-mybatis
+GET {{baseUrl}}/mybatis/statementIds?project=ir
 
 ### 执行获取绑定的 sql
 POST {{baseUrl}}/mybatis/boundSql
 Content-Type: application/json
 
 {
-  "project": "test-mybatis",
-  "statementId": "com.sanri.test.testmybatis.mapper.BatchMapper.selectByName",
+  "project": "ir",
+  "connName": "lo",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
   "className": "java.util.HashMap",
-  "arg": "{\"ename\": \"mm\"}"
+  "arg": {
+    "value": {
+      "scheduleMode": "normal",
+      "pageSize": 10,
+      "start": 0,
+      "isExamine": 1
+    }
+  }
 }
 
 ###

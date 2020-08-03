@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.SQLException;
 import java.util.List;
 
 @RestController
@@ -18,7 +19,7 @@ public class MybatisController {
 
     @GetMapping("/reload")
     public void reload(){
-
+        mybatisService.reload();
     }
 
     /**
@@ -44,7 +45,7 @@ public class MybatisController {
     }
 
     @PostMapping("/boundSql")
-    public String boundSql(@RequestBody BoundSqlParam boundSqlParam) throws ClassNotFoundException {
+    public String boundSql(@RequestBody BoundSqlParam boundSqlParam) throws ClassNotFoundException, IOException, SQLException {
         return mybatisService.boundSql(boundSqlParam);
     }
 }

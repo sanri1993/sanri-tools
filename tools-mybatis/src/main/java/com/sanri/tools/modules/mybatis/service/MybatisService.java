@@ -1,17 +1,23 @@
 package com.sanri.tools.modules.mybatis.service;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
 import com.sanri.tools.modules.core.service.classloader.ExtendClassloader;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
+import com.sanri.tools.modules.database.service.JdbcService;
 import com.sanri.tools.modules.mybatis.dtos.BoundSqlParam;
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.mapping.ParameterMapping;
+import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 import org.apache.ibatis.session.Configuration;
+import org.apache.ibatis.type.TypeHandlerRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -21,10 +27,12 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.DateFormat;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -38,6 +46,9 @@ public class MybatisService {
 
     @Autowired
     private ClassloaderService classloaderService;
+
+    @Autowired
+    private JdbcService jdbcService;
 
     public static final String module = "mybatis";
 
@@ -70,7 +81,8 @@ public class MybatisService {
         Resource resource = fileManager.relativeResource(module + "/" + project + "/" + fileName);
         InputStream inputStream = resource.getInputStream();
         Configuration configuration = projectConfigurationMap.computeIfAbsent(project, k -> new Configuration());
-        XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource.getFilename(),new HashMap<>());
+
+        XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource.getFilename(),configuration.getSqlFragments());
         mapperParser.parse();
         inputStream.close();
 
@@ -93,7 +105,7 @@ public class MybatisService {
      * 获取绑定的 sql 语句
      * @return
      */
-    public String boundSql(BoundSqlParam boundSqlParam) throws ClassNotFoundException {
+    public String boundSql(BoundSqlParam boundSqlParam) throws ClassNotFoundException, IOException, SQLException {
         String project = boundSqlParam.getProject();
         String statementId = boundSqlParam.getStatementId();
         Configuration configuration = projectConfigurationMap.computeIfAbsent(project, k -> new Configuration());
@@ -103,18 +115,27 @@ public class MybatisService {
         ClassLoader classloader = classloaderService.getClassloader(classloaderName);
         if (classloader == null)classloader = ClassLoader.getSystemClassLoader();
 
-        String arg = boundSqlParam.getArg();
+        JSONObject arg = boundSqlParam.getArg();
         String className = boundSqlParam.getClassName();
         Class<?> clazz = classloader.loadClass(className);
         BoundSql boundSql = null;
         if (clazz.isPrimitive() || clazz == String.class){
+            String value = arg.getString("value");
             boundSql= mappedStatement.getBoundSql(arg);
         }else {
-            Object parameterObject = JSON.parseObject(arg, clazz);
+            Object parameterObject = arg.getObject("value", clazz);
             boundSql = mappedStatement.getBoundSql(parameterObject);
         }
 
-        return boundSql.getSql();
+        // 获取 sql 语句, 需要依赖于数据库连接
+        Connection connection = jdbcService.connection(boundSqlParam.getConnName());
+        DefaultParameterHandler defaultParameterHandler = new DefaultParameterHandler(mappedStatement,boundSql.getParameterObject(),boundSql);
+        PreparedStatement statement = connection.prepareStatement(boundSql.getSql());
+        defaultParameterHandler.setParameters(statement);
+        String sql = statement.toString();
+        statement.close();
+        connection.close();
+        return sql;
     }
 
     /**
