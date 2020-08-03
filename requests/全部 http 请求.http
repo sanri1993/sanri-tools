@@ -2,7 +2,13 @@
 GET {{baseUrl}}/classloader/classloaders
 
 ### 类加载器 - 查看类加载器加载的类
-GET {{baseUrl}}/classloader/listLoadedClasses?classloaderName=po
+GET {{baseUrl}}/classloader/listLoadedClasses?classloaderName=messagecenterdao
+
+### 类加载器 - 查看某个类的所有字段信息
+GET {{baseUrl}}/classloader/messagecenterdao/com.eg.egsc.scp.messagecenter.dto.PushChannelParam/fields
+
+### 类加载器 - 查看某个类的所有方法信息
+GET {{baseUrl}}/classloader/messagecenterdao/com.eg.egsc.scp.messagecenter.dto.PushChannelParam/methods
 
 ### 类加载器 - 上传 zip 包, 需要类有严格的目录结构
 POST {{baseUrl}}/classloader/uploadClassesZip

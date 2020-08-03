@@ -2,11 +2,13 @@ package com.sanri.tools.modules.core.utils;
 
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.ResourceUtils;
+import sun.net.www.protocol.ftp.FtpURLConnection;
 
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import javax.net.ssl.HttpsURLConnection;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -135,5 +137,17 @@ public class URLUtil {
         String host = origin.getHost();
         int port = origin.getPort();
         return new URL(protocol,host,port,null);
+    }
+
+    /**
+     * 主要用于下载资源 , 不需要使用到 httpclient 等工具类,支持 https ftp
+     * @param url
+     * @return
+     * @throws IOException
+     */
+    public InputStream openInputStream(URL url) throws IOException {
+        URLConnection urlConnection = url.openConnection();
+        InputStream inputStream = urlConnection.getInputStream();
+        return inputStream;
     }
 }

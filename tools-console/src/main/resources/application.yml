@@ -22,6 +22,7 @@ data:
   path:
     config: d:/test/config
     tmp: d:/tmp
+    libs: d:/libs
 translate:
   baidu:
     appId: appid

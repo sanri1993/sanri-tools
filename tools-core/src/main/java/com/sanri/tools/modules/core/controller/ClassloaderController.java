@@ -4,22 +4,15 @@ import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.protocol.utils.ZipUtil;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.ReflectionUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.List;
+import java.lang.reflect.Method;
 import java.util.Set;
-import java.util.Vector;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/classloader")
@@ -92,6 +85,18 @@ public class ClassloaderController {
     @GetMapping("/listLoadedClasses")
     public Set<String> listLoadedClasses(String classloaderName){
         return classloaderService.listLoadedClasses(classloaderName);
+    }
+
+    @GetMapping("/{classloaderName}/{className}/fields")
+    public Field [] fields(@PathVariable("classloaderName") String classloaderName, @PathVariable("className") String className) throws ClassNotFoundException {
+        return classloaderService.classFields(classloaderName,className);
+    }
+
+    @GetMapping("/{classloaderName}/{className}/methods")
+    public Method [] methods(@PathVariable("classloaderName") String classloaderName, @PathVariable("className") String className) throws ClassNotFoundException{
+        // 不能直接返回这个数据
+//        return classloaderService.classMethods(classloaderName,className);
+        return null;
     }
 
     /**

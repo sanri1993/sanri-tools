@@ -2,6 +2,8 @@ package com.sanri.tools.modules.soap.service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.sanri.tools.modules.core.utils.MybatisXNode;
+import com.sanri.tools.modules.core.utils.MybatisXPathParser;
 import com.sanri.tools.modules.soap.dtos.WsdlParam;
 import com.sanri.tools.modules.soap.dtos.WsdlType;
 import com.sanri.tools.modules.soap.exception.WsdlCallException;

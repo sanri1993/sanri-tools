@@ -36,7 +36,7 @@ public class RandomDataController {
      */
     @GetMapping("/random")
     public Object randomData(String className,String classloaderName) throws ClassNotFoundException {
-        ExtendClassloader classloader = classloaderService.getClassloader(classloaderName);
+        ClassLoader classloader = classloaderService.getClassloader(classloaderName);
         return randomDataService.randomData(className,classloader);
     }
 
@@ -49,7 +49,7 @@ public class RandomDataController {
      */
     @GetMapping("/random/regex")
     public Object regexRandomData(String className,String classloaderName) throws ClassNotFoundException {
-        ExtendClassloader classloader = classloaderService.getClassloader(classloaderName);
+        ClassLoader classloader = classloaderService.getClassloader(classloaderName);
         return regexRandomDataService.randomData(className,classloader);
     }
 
@@ -63,7 +63,7 @@ public class RandomDataController {
     @GetMapping("/random/list")
     public List<Object> randomListData(String className, String classloaderName) throws ClassNotFoundException {
         List<Object> list = new ArrayList<>();
-        ExtendClassloader classloader = classloaderService.getClassloader(classloaderName);
+        ClassLoader classloader = classloaderService.getClassloader(classloaderName);
         for (int i = 0; i < 10; i++) {
             Object randomData = randomDataService.randomData(className, classloader);
             list.add(randomData);
@@ -83,7 +83,7 @@ public class RandomDataController {
         String className = spiderDataParam.getClassName();
         Map<String, String> params = spiderDataParam.getParams();
 
-        ExtendClassloader classloader = classloaderService.getClassloader(classloaderName);
+        ClassLoader classloader = classloaderService.getClassloader(classloaderName);
         return jsoupSpiderDataService.spiderData(className,classloader,params);
     }
 }
