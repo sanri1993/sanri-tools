@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
 import com.sanri.tools.modules.core.service.file.ConnectService;
 import com.sanri.tools.modules.kafka.dtos.*;
-import com.sanri.tools.modules.protocol.param.KafkaConnectParam;
+import com.sanri.tools.modules.core.dtos.param.KafkaConnectParam;
 import com.sanri.tools.modules.serializer.service.Serializer;
 import com.sanri.tools.modules.serializer.service.SerializerChoseService;
 import lombok.extern.slf4j.Slf4j;

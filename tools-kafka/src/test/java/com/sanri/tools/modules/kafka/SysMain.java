@@ -2,9 +2,8 @@ package com.sanri.tools.modules.kafka;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.parser.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sanri.tools.modules.protocol.param.KafkaConnectParam;
+import com.sanri.tools.modules.core.dtos.param.KafkaConnectParam;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;

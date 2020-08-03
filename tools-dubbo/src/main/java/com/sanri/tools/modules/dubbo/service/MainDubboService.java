@@ -15,7 +15,7 @@ import com.sanri.tools.modules.dubbo.DubboProviderDto;
 import com.sanri.tools.modules.dubbo.dtos.DubboInvokeParam;
 import com.sanri.tools.modules.dubbo.dtos.DubboLoadMethodParam;
 import com.sanri.tools.modules.dubbo.dtos.MethodInfo;
-import com.sanri.tools.modules.protocol.exception.ToolException;
+import com.sanri.tools.modules.core.exception.ToolException;
 import com.sanri.tools.modules.zookeeper.service.ZookeeperService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;

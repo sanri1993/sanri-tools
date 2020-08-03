@@ -2,7 +2,7 @@ package com.sanri.tools.modules.name.service;
 
 import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
-import com.sanri.tools.modules.protocol.exception.ToolException;
+import com.sanri.tools.modules.core.exception.ToolException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;

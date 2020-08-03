@@ -1,6 +1,6 @@
 package com.sanri.tools.modules.core.utils;
 
-import com.sanri.tools.modules.protocol.exception.ToolException;
+import com.sanri.tools.modules.core.exception.ToolException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;

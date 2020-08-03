@@ -1,3 +1,76 @@
+GET http://localhost:8081/classloader/listLoadedClasses?classloaderName=messagecenterdao
+
+<> 2020-08-03T051853.200.json
+
+###
+
+GET http://localhost:8081/classloader/messagecenterdao/com.eg.egsc.scp.messagecenter.dto.PushChannelParam/methods
+
+<> 2020-08-03T041605.200.json
+
+###
+
+GET http://localhost:8081/classloader/messagecenterdao/com.eg.egsc.scp.messagecenter.dto.PushChannelParam/fields
+
+<> 2020-08-03T041531.200.json
+
+###
+
+GET http://localhost:8081/classloader/listLoadedClasses?classloaderName=messagecenterdao
+
+<> 2020-08-03T041521.200.json
+
+###
+
+GET http://localhost:8081/classloader/messagecenterdao/com.eg.egsc.scp.messagecenter.dto.RecordBizAndAuditUsersDto/fields
+
+<> 2020-08-03T041438.200.json
+
+###
+
+GET http://localhost:8081/classloader/listLoadedClasses?classloaderName=messagecenterdao
+
+<> 2020-08-03T041342.200.json
+
+###
+
+GET http://localhost:8081/classloader/listLoadedClasses?classloaderName=messagecenterdao
+
+<> 2020-08-03T035621.200.json
+
+###
+
+GET http://localhost:8081/classloader/classloaders
+
+<> 2020-08-03T035614.200.json
+
+###
+
+GET http://localhost:8081/classloader/listLoadedClasses?classloaderName=po
+
+<> 2020-08-03T035608.500.json
+
+###
+
+POST http://localhost:8081/classloader/uploadClassesZip
+Content-Type: multipart/form-data; boundary=uploadClassesZip
+
+--uploadClassesZip
+Content-Disposition: form-data; name="file"; filename="messagecenterdao.zip"
+Content-Type: application/octet-stream
+
+< d:\test\messagecenterdao.zip
+--uploadClassesZip
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+messagecenterdao
+--uploadClassesZip--
+
+<> 2020-08-03T034237.500.json
+
+###
+
 POST http://localhost:8081/mybatis/boundSql
 Content-Type: application/json
 
@@ -618,144 +691,6 @@ GET http://localhost:8081/dubbo/methods?connName=192.168.2.134_2181&serviceName=
 GET http://localhost:8081/dubbo/methods?connName=192.168.2.134_2181&serviceName=com.mmc.dubbo.api.user.UserService&methods=getCurrentById,insert&classloaderName=mmc-dubbo-api
 
 <> 2020-08-01T093847.500.json
-
-###
-
-POST http://localhost:8081/dubbo/invoke
-Content-Type: application/json
-
-{
-  "connName": "192.168.2.134_2181",
-  "serviceClassName": "com.mmc.dubbo.api.user.UserService",
-  "classloaderName": "mmc-dubbo-api",
-  "methodInfo": {
-    "name": "getCurrentById",
-    "parameterTypeNames": ["long"]
-  },
-  "providerURL": "dubbo://192.168.2.101:30880/com.mmc.dubbo.api.user.UserService?anyhost=true&application=mmc-dubbo-provider&dubbo=2.6.2&generic=false&interface=com.mmc.dubbo.api.user.UserService&methods=getCurrentById,insert&pid=35288&side=provider&timestamp=1596275905147",
-  "args": ["18"]
-}
-
-<> 2020-08-01T093826.500.json
-
-###
-
-POST http://localhost:8081/dubbo/invoke
-Content-Type: application/json
-
-{
-  "connName": "192.168.2.134_2181",
-  "serviceClassName": "com.mmc.dubbo.api.user.UserService",
-  "classloaderName": "mmc-dubbo-api",
-  "methodInfo": {
-    "name": "getCurrentById",
-    "parameterTypeNames": ["java.lang.Long"]
-  },
-  "providerURL": "dubbo://192.168.2.101:30880/com.mmc.dubbo.api.user.UserService?anyhost=true&application=mmc-dubbo-provider&dubbo=2.6.2&generic=false&interface=com.mmc.dubbo.api.user.UserService&methods=getCurrentById,insert&pid=35288&side=provider&timestamp=1596275905147",
-  "args": ["18"]
-}
-
-<> 2020-08-01T093031.500.json
-
-###
-
-POST http://localhost:8081/dubbo/invoke
-Content-Type: application/json
-
-{
-  "connName": "192.168.2.134_2181",
-  "serviceClassName": "com.mmc.dubbo.api.user.UserService",
-  "classloaderName": "mmc-dubbo-api",
-  "methodInfo": {
-    "name": "getCurrentById",
-    "parameterTypeNames": ["java.lang.long"]
-  },
-  "providerURL": "dubbo://192.168.2.101:30880/com.mmc.dubbo.api.user.UserService?anyhost=true&application=mmc-dubbo-provider&dubbo=2.6.2&generic=false&interface=com.mmc.dubbo.api.user.UserService&methods=getCurrentById,insert&pid=35288&side=provider&timestamp=1596275905147",
-  "args": ["18"]
-}
-
-<> 2020-08-01T093018.500.json
-
-###
-
-POST http://localhost:8081/dubbo/invoke
-Content-Type: application/json
-
-{
-  "connName": "192.168.2.134_2181",
-  "serviceClassName": "com.mmc.dubbo.api.user.UserService",
-  "classloaderName": "mmc-dubbo-api",
-  "methodInfo": {
-    "name": "getCurrentById",
-    "parameterTypeNames": ["long"]
-  },
-  "providerURL": "dubbo://192.168.2.101:30880/com.mmc.dubbo.api.user.UserService?anyhost=true&application=mmc-dubbo-provider&dubbo=2.6.2&generic=false&interface=com.mmc.dubbo.api.user.UserService&methods=getCurrentById,insert&pid=35288&side=provider&timestamp=1596275905147",
-  "args": ["18"]
-}
-
-<> 2020-08-01T092954.500.json
-
-###
-
-POST http://localhost:8081/dubbo/invoke
-Content-Type: application/json
-
-{
-  "connName": "192.168.2.134_2181",
-  "serviceClassName": "com.mmc.dubbo.api.user.UserService",
-  "classloaderName": "mmc-dubbo-api",
-  "methodInfo": {
-    "name": "getCurrentById",
-    "parameterTypeNames": "long"
-  },
-  "providerURL": "dubbo://192.168.2.101:30880/com.mmc.dubbo.api.user.UserService?anyhost=true&application=mmc-dubbo-provider&dubbo=2.6.2&generic=false&interface=com.mmc.dubbo.api.user.UserService&methods=getCurrentById,insert&pid=35288&side=provider&timestamp=1596275905147",
-  "args": ["18"]
-}
-
-<> 2020-08-01T092927.400.json
-
-###
-
-POST http://localhost:8081/dubbo/invoke
-Content-Type: application/json
-
-{
-  "connName": "192.168.2.134_2181",
-  "serviceClassName": "com.mmc.dubbo.api.user.UserService",
-  "classloaderName": "mmc-dubbo-api",
-  "methodInfo": {
-    "name": "getCurrentById",
-    "parameterTypeNames": "long"
-  },
-  "providerURL": "dubbo://192.168.2.101:30880/com.mmc.dubbo.api.user.UserService?anyhost=true&application=mmc-dubbo-provider&dubbo=2.6.2&generic=false&interface=com.mmc.dubbo.api.user.UserService&methods=getCurrentById,insert&pid=35288&side=provider&timestamp=1596275905147",
-  "args": [18]
-}
-
-<> 2020-08-01T092851.400.json
-
-###
-
-GET http://localhost:8081/dubbo/providers?connName=192.168.2.134_2181&serviceName=com.mmc.dubbo.api.user.UserService
-
-<> 2020-08-01T092804.200.json
-
-###
-
-GET http://localhost:8081/dubbo/methods?connName=192.168.2.134_2181&serviceName=com.mmc.dubbo.api.user.UserService&methods=getCurrentById,insert&classloaderName=mmc-dubbo-api
-
-<> 2020-08-01T092509.200.json
-
-###
-
-GET http://localhost:8081/dubbo/providers?connName=192.168.2.134_2181&serviceName=com.mmc.dubbo.api.user.UserService
-
-<> 2020-08-01T092321.200.json
-
-###
-
-GET http://localhost:8081/classloader/listLoadedClasses?classloaderName=mmc-dubbo-api
-
-<> 2020-08-01T092254.200.json
 
 ###
 

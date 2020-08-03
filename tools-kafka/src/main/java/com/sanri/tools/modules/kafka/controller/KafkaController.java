@@ -1,10 +1,9 @@
 package com.sanri.tools.modules.kafka.controller;
 
-import com.dtflys.forest.annotation.Request;
 import com.sanri.tools.modules.kafka.dtos.*;
 import com.sanri.tools.modules.kafka.service.KafkaDataService;
 import com.sanri.tools.modules.kafka.service.KafkaService;
-import com.sanri.tools.modules.protocol.param.KafkaConnectParam;
+import com.sanri.tools.modules.core.dtos.param.KafkaConnectParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Binder;

@@ -1,6 +1,6 @@
 package com.sanri.tools.modules.core.service.classloader;
 
-import com.sanri.tools.modules.protocol.utils.RegexValidate;
+import com.sanri.tools.modules.core.utils.RegexValidate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;

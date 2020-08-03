@@ -2,6 +2,7 @@ package com.sanri.tools.modules.core.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.sanri.tools.modules.core.dtos.ConnectDto;
+import com.sanri.tools.modules.core.dtos.param.AbstractConnectParam;
 import com.sanri.tools.modules.core.service.file.ConnectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -57,7 +58,7 @@ public class ConnectController {
     /**
      * 创建连接
      * @param module
-     * @param data 动态数据 ; {@link  com.sanri.tools.modules.protocol.param.AbstractConnectParam}
+     * @param data 动态数据 ; {@link  AbstractConnectParam}
      * @throws IOException
      */
     @PostMapping("/create/{module}")
