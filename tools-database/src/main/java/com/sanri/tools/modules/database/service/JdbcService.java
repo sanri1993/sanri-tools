@@ -185,15 +185,14 @@ public class JdbcService {
      * @throws IOException
      * @throws SQLException
      */
-    public List<Table> refreshTables(String connName, String catalog, String schema) throws IOException, SQLException {
+    public Collection<TableMetaData> refreshTables(String connName, String catalog, String schema) throws IOException, SQLException {
         Map<ActualTableName, TableMetaData> newTableMetaData = refreshTableInfo(connName, catalog, schema);
 
         // 刷新缓存
         Map<ActualTableName, TableMetaData> oldTableMetaData = tableMetaDataMap.get(connName);
         oldTableMetaData.putAll(newTableMetaData);
 
-        List<Table> collect = newTableMetaData.values().stream().map(TableMetaData::getTable).collect(Collectors.toList());
-        return collect;
+        return newTableMetaData.values();
     }
 
     public List<Column> refreshTableColumns(String connName, ActualTableName actualTableName) throws IOException, SQLException {
@@ -396,6 +395,17 @@ public class JdbcService {
             }
         }
         return dynamicQueryDtos;
+    }
+
+    /**
+     * 对比两个连接的结构差异,并生成 alter 语句
+     * @param fromConnName
+     * @param toConnName
+     */
+    public void compareMetaData(String fromConnName,String fromCatalog,String toConnName,String toCatalog) throws IOException, SQLException {
+        Collection<TableMetaData> fromTables = tables(fromConnName, fromCatalog);
+        Collection<TableMetaData> toTables = tables(toConnName, toCatalog);
+
     }
 
     protected Map<ActualTableName, TableMetaData> refreshTableInfo(String connName, String catalog, String schema) throws IOException, SQLException {

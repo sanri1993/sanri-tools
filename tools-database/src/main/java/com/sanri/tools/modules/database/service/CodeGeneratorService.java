@@ -84,7 +84,7 @@ public class CodeGeneratorService {
     }
 
     @PostMapping("/projectBuild")
-    public void projectBuild(@RequestBody CodeGeneratorConfig codeGeneratorConfig) throws IOException, SQLException {
+    public String projectBuild(@RequestBody CodeGeneratorConfig codeGeneratorConfig) throws IOException, SQLException {
         File targetDir = fileManager.mkTmpDir("code/project/buildSpringBoot");
         //项目基本目录
         File projectDir = new File(targetDir, codeGeneratorConfig.getProjectName()+System.currentTimeMillis());
@@ -128,9 +128,12 @@ public class CodeGeneratorService {
 
         Template javaMapperTemplate = configuration.getTemplate("code/mapper.java.ftl");
         Template xmlMapperTemplate = configuration.getTemplate("code/mapper.xml.ftl");
+        // 循环所有 table 生成 mybatis orm 映射 , 这里生成 tkmybatis 框架的 mybatis
+
 
         // 然后生成所有表的 service , controller 信息, 这个做合并处理
 
+        return null;
     }
 
     private void generaterJavaBean(File entityDir, JavaBeanBuildConfig javaBeanBuildConfig, TableMetaData tableMetaData, JavaBeanInfo javaBeanInfo) throws IOException {

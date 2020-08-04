@@ -10,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,11 +29,23 @@ public class NameService {
     @Autowired(required = false)
     private List<CharHandler> charHandlers = new ArrayList<>();
 
+    private Map<String,EnglishTranslate> englishTranslateHashMap = new HashMap<>();
+
     @Autowired
     private BizTranslate bizTranslate;
 
     @Autowired
     private PluginManager pluginManager;
+
+    @Autowired(required = false)
+    public NameService(List<EnglishTranslate> englishTranslates) {
+        if (CollectionUtils.isNotEmpty(englishTranslates)){
+            for (EnglishTranslate englishTranslate : englishTranslates) {
+                String name = ((ToolName) englishTranslate).getName();
+                englishTranslateHashMap.put(name,englishTranslate);
+            }
+        }
+    }
 
     /**
      * 变量或方法取名
@@ -154,5 +164,21 @@ public class NameService {
      */
     public List<String> tokenizers() {
         return tokenizerTools.stream().map(ToolName::getName).collect(Collectors.toList());
+    }
+
+    /**
+     * 多列翻译
+     * @param words
+     * @param english
+     * @return
+     */
+    public List<String> multiTranslate(String[] words, String english) {
+        List<String> results = new ArrayList<>();
+        EnglishTranslate englishTranslate = englishTranslateHashMap.get(english);
+        for (String word : words) {
+            Set<String> wordResult = englishTranslate.directTranslate(word);
+            results.addAll(wordResult);
+        }
+        return results;
     }
 }

@@ -237,6 +237,10 @@ public class ClassloaderService {
 
             for (String libPath : libPaths) {
                 File dirOrFile = ResourceUtils.getFile(libPath);
+                if (!dirOrFile.exists()){
+                    log.warn("[{}] 目录不存在,如不需要加载外部包请忽略",dirOrFile);
+                    continue;
+                }
                 if (dirOrFile.isFile() && dirOrFile.getName().endsWith("jar")) {
                     addURL.invoke(systemClassLoader, dirOrFile.toURI().toURL());
                 }else{

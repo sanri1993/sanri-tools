@@ -2,7 +2,7 @@
 GET {{baseUrl}}/classloader/classloaders
 
 ### 类加载器 - 查看类加载器加载的类
-GET {{baseUrl}}/classloader/listLoadedClasses?classloaderName=messagecenterdao
+GET {{baseUrl}}/classloader/listLoadedClasses?classloaderName=jsoup
 
 ### 类加载器 - 查看某个类的所有字段信息
 GET {{baseUrl}}/classloader/messagecenterdao/com.eg.egsc.scp.messagecenter.dto.PushChannelParam/fields
@@ -29,15 +29,75 @@ POST {{baseUrl}}/classloader/uploadClassesZipSimple
 Content-Type: multipart/form-data; boundary=uploadClassesZip
 
 --uploadClassesZip
-Content-Disposition: form-data; name="file"; filename="irdao.zip"
+Content-Disposition: form-data; name="file"; filename="jsoup.zip"
 Content-Type: application/octet-stream
 
-< d:/test/entity.zip
+< d:/test/jsoup.zip
 --uploadClassesZip
 Content-Disposition: form-data; name="classloaderName"
 Content-Type: application/x-www-form-urlencoded
 
-irdao
+jsoup
+### 类加载器 - 上传单个 class 文件(还没测试)
+POST {{baseUrl}}/classloader/uploadSingleClass
+Content-Type: multipart/form-data; boundary=uploadSingleClass
+
+--uploadSingleClass
+Content-Disposition: form-data; name="file"; filename="xx.class"
+Content-Type: application/octet-stream
+
+< d:/test/xx.class
+--uploadSingleClass
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+abc
+### 数据 - 类加载器随机数据生成
+GET {{baseUrl}}/data/random?className=com.sanri.tools.modules.core.dtos.param.DatabaseConnectParam&classloaderName=
+
+### 数据 - 类加载器随机数据生成 List
+GET {{baseUrl}}/data/random/list?className=com.sanri.tools.modules.core.dtos.param.DatabaseConnectParam&classloaderName=
+
+### 数据 - 正则表达式生成数据
+GET {{baseUrl}}/data/random/regex?regex=\d{10}[a-z]{2}\s\w{5}
+
+### 数据 - 爬虫数据(还没测试通过 , 需要有 Request 标记的类)
+POST {{baseUrl}}/data/spider
+Content-Type: application/json
+
+{
+  "className": "com.sanri.app.jsoup.biquge1.NovelSearch",
+  "classloaderName": "jsoup",
+  "params": {
+  "keyword": "校花的贴身高手"
+  }
+}
+### 序列化 - 可用的序列化列表
+GET {{baseUrl}}/serializer/names
+
+### 插件 - 获取所有插件名称
+GET {{baseUrl}}/plugin/names
+
+### 插件 - 获取插件详情
+GET {{baseUrl}}/plugin/detail?key=kafka:main
+
+### 插件 - 访问插件
+GET {{baseUrl}}/plugin/visited?key=kafka:main
+
+### 插件 - 序列化数据到文件
+GET {{baseUrl}}/plugin/serializer
+
+### 连接管理-获取所有模块
+GET {{baseUrl}}/connect/modules
+
+### 连接管理-获取某个模块的连接列表
+GET {{baseUrl}}/connect/redis/names
+
+### 连接管理-获取某个连接详情
+GET {{baseUrl}}/connect/redis/10.101.72.43
+
+### 连接管理-获取所有连接
+GET {{baseUrl}}/connect/all
 
 ### 创建数据库连接
 POST {{baseUrl}}/connect/create/database
@@ -68,6 +128,9 @@ GET {{baseUrl}}/db/metadata/catalogs?connName=localhost
 
 ### 获取 catalog 的所有表
 GET {{baseUrl}}/db/metadata/tables?connName=localhost&catalog=test
+
+### 刷新所有的表 (没测试)
+GET {{baseUrl}}/db/metadata/refreshTables?connName=localhost&catalog=test&schema=
 
 ### 刷新表的列
 GET {{baseUrl}}/db/metadata/refreshColumns?connName=localhost&catalog=test&tableName=batch
@@ -200,13 +263,13 @@ Content-Type: application/json
   }
 }
 
-### 查看 redis 的节点列表
+### redis - 查看 redis 的节点列表
 GET {{baseUrl}}/redis/nodes?connName=10.101.72.43
 
-### scan 某个 key ,可以模糊查询
+### redis - scan 某个 key ,可以模糊查询
 GET {{baseUrl}}/redis/scan?connName=10.101.72.43&pattern=PLC:PARKINGLOT.CACHE&limit=10
 
-### 读取某个具体的 key; 这个数据有点复杂,本来是用 GET 请求的,换 POST
+### redis - 读取某个具体的 key; 这个数据有点复杂,本来是用 GET 请求的,换 POST
 POST {{baseUrl}}/redis/data
 Content-Type: application/json
 
@@ -221,29 +284,11 @@ Content-Type: application/json
 
 }
 
-### 获取所有插件名称
-GET {{baseUrl}}/plugin/names
+### redis -  扫描 hashKey (还没测试)
+GET {{baseUrl}}/redis/hashKeys?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE&pattern=xxx&limit=10
 
-### 获取插件详情
-GET {{baseUrl}}/plugin/detail?key=kafka:main
-
-### 访问插件
-GET {{baseUrl}}/plugin/visited?key=kafka:main
-
-### 插件-序列化数据到文件
-GET {{baseUrl}}/plugin/serializer
-
-### 连接管理-获取所有模块
-GET {{baseUrl}}/connect/modules
-
-### 连接管理-获取某个模块的连接列表
-GET {{baseUrl}}/connect/redis/names
-
-### 连接管理-获取某个连接详情
-GET {{baseUrl}}/connect/redis/10.101.72.43
-
-### 连接管理-获取所有连接
-GET {{baseUrl}}/connect/all
+### redis -  key 长度 (还没测试)
+GET {{baseUrl}}/redis/keyLength?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE
 
 ### google 翻译
 GET http://translate.google.cn/translate_a/single?client=gtx&sl=zh-CN&tl=en&dt=t&q=算法

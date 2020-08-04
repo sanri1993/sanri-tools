@@ -50,8 +50,8 @@ public class RedisController {
      * @return
      * @throws IOException
      */
-    @GetMapping("/length")
-    public Long length(RedisCommandParam redisCommandParam) throws IOException{
+    @GetMapping("/keyLength")
+    public Long keyLength(RedisCommandParam redisCommandParam) throws IOException{
         return redisService.queryKeyLength(redisCommandParam);
     }
 

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class SerializerChoseService {
@@ -17,6 +18,15 @@ public class SerializerChoseService {
             serializerMap.put(serializer.name(),serializer);
         }
     }
+
+    /**
+     * 可用的序列化工具列表
+     * @return
+     */
+    public Set<String> serializers(){
+        return serializerMap.keySet();
+    }
+
     /**
      * 获取一个序列化工具
      * @param serializer

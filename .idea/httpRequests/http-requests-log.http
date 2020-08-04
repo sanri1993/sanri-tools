@@ -1,3 +1,175 @@
+GET http://localhost:8081/redis/hashKeys?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE&pattern=xxx&limit=10
+
+<> 2020-08-04T094933.404.json
+
+###
+
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "connName": "lo",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": {
+    "value": {
+      "scheduleMode": "normal",
+      "pageSize": 10,
+      "start": 0,
+      "isExamine": 1
+    }
+  }
+}
+
+<> 2020-08-04T094541.200.json
+
+###
+
+POST http://localhost:8081/data/spider
+Content-Type: application/json
+
+{
+  "className": "com.sanri.app.jsoup.biquge1.NovelSearch",
+  "classloaderName": "jsoup",
+  "params": {
+  "keyword": "校花的贴身高手"
+  }
+}
+
+###
+
+GET http://localhost:8081/classloader/listLoadedClasses?classloaderName=jsoup
+
+<> 2020-08-04T094235.200.json
+
+###
+
+GET http://localhost:8081/classloader/classloaders
+
+<> 2020-08-04T094227.200.json
+
+###
+
+POST http://localhost:8081/classloader/uploadClassesZipSimple
+Content-Type: multipart/form-data; boundary=uploadClassesZip
+
+--uploadClassesZip
+Content-Disposition: form-data; name="file"; filename="jsoup.zip"
+Content-Type: application/octet-stream
+
+< d:\test\jsoup.zip
+--uploadClassesZip
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+jsoup
+--uploadClassesZip--
+
+###
+
+GET http://localhost:8081/data/random/regex?regex=\d{10}[a-z]{2}\s\w{5}
+
+<> 2020-08-04T093418.200.txt
+
+###
+
+GET http://localhost:8081/data/regex?regex=\d{10}[a-z]{2}\s\w{5}
+
+<> 2020-08-04T093404.404.json
+
+###
+
+GET http://localhost:8081/data/random/list?className=com.sanri.tools.modules.core.dtos.param.DatabaseConnectParam&classloaderName=
+
+<> 2020-08-04T092944.200.json
+
+###
+
+GET http://localhost:8081/data/random?className=com.sanri.tools.modules.core.dtos.param.DatabaseConnectParam&classloaderName=
+
+<> 2020-08-04T092844.200.json
+
+###
+
+GET http://localhost:8081/data/random?className=com.sanri.tools.modules.core.dtos.param.KafkaConnectParam&classloaderName=
+
+<> 2020-08-04T092804.200.json
+
+###
+
+GET http://localhost:8081/data/random?className=com.sanri.tools.modules.core.dtos.param.KafkaConnectParam&classloaderName=
+
+<> 2020-08-04T092357.200.json
+
+###
+
+GET http://localhost:8081/data/random?className=com.sanri.tools.modules.core.dtos.param.KafkaConnectParam&classloaderName=
+
+<> 2020-08-04T092244.200.json
+
+###
+
+GET http://localhost:8081/data/random?className=com.sanri.tools.modules.core.dtos.param.KafkaConnectParam&classloaderName=
+
+<> 2020-08-04T092205.200.json
+
+###
+
+GET http://localhost:8081/classloader/classloaders
+
+<> 2020-08-04T092100.200.json
+
+###
+
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "connName": "lo",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": {
+    "value": {
+      "scheduleMode": "normal",
+      "pageSize": 10,
+      "start": 0,
+      "isExamine": 1
+    }
+  }
+}
+
+<> 2020-08-04T091806.200.json
+
+###
+
+GET http://localhost:8081/serializer/names
+
+<> 2020-08-04T091102.200.json
+
+###
+
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "connName": "lo",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": {
+    "value": {
+      "scheduleMode": "normal",
+      "pageSize": 10,
+      "start": 0,
+      "isExamine": 1
+    }
+  }
+}
+
+###
+
 POST http://localhost:8081/db/code/javaBeanBuild
 Content-Type: application/json
 
@@ -471,295 +643,6 @@ GET http://localhost:8081/classloader/messagecenterdao/com.eg.egsc.scp.messagece
 GET http://localhost:8081/classloader/listLoadedClasses?classloaderName=messagecenterdao
 
 <> 2020-08-03T041342.200.json
-
-###
-
-GET http://localhost:8081/classloader/listLoadedClasses?classloaderName=messagecenterdao
-
-<> 2020-08-03T035621.200.json
-
-###
-
-GET http://localhost:8081/classloader/classloaders
-
-<> 2020-08-03T035614.200.json
-
-###
-
-GET http://localhost:8081/classloader/listLoadedClasses?classloaderName=po
-
-<> 2020-08-03T035608.500.json
-
-###
-
-POST http://localhost:8081/classloader/uploadClassesZip
-Content-Type: multipart/form-data; boundary=uploadClassesZip
-
---uploadClassesZip
-Content-Disposition: form-data; name="file"; filename="messagecenterdao.zip"
-Content-Type: application/octet-stream
-
-< d:\test\messagecenterdao.zip
---uploadClassesZip
-Content-Disposition: form-data; name="classloaderName"
-Content-Type: application/x-www-form-urlencoded
-
-messagecenterdao
---uploadClassesZip--
-
-<> 2020-08-03T034237.500.json
-
-###
-
-POST http://localhost:8081/mybatis/boundSql
-Content-Type: application/json
-
-{
-  "project": "ir",
-  "connName": "lo",
-  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
-  "className": "java.util.HashMap",
-  "arg": {
-    "value": {
-      "scheduleMode": "normal",
-      "pageSize": 10,
-      "start": 0,
-      "isExamine": 1
-    }
-  }
-}
-
-<> 2020-08-03T114000.200.txt
-
-###
-
-POST http://localhost:8081/mybatis/boundSql
-Content-Type: application/json
-
-{
-  "project": "ir",
-  "connName": "lo",
-  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
-  "className": "java.util.HashMap",
-  "arg": {
-    "value": {
-      "scheduleMode": "normal",
-      "pageSize": 10,
-      "start": 0,
-      "is_examine": 1
-    }
-  }
-}
-
-<> 2020-08-03T113953.200.txt
-
-###
-
-POST http://localhost:8081/mybatis/boundSql
-Content-Type: application/json
-
-{
-  "project": "ir",
-  "connName": "lo",
-  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
-  "className": "java.util.HashMap",
-  "arg": {
-   "value": {
-     "scheduleMode": "normal",
-     "pageSize": 10,
-     "start": 0
-   }
-  }
-}
-
-<> 2020-08-03T113941.200.txt
-
-###
-
-POST http://localhost:8081/mybatis/boundSql
-Content-Type: application/json
-
-{
-  "project": "ir",
-  "connName": "lo",
-  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
-  "className": "java.util.HashMap",
-  "arg": {
-    "scheduleMode": "normal",
-    "pageSize": 10,
-    "start": 0
-  }
-}
-
-<> 2020-08-03T113924.200.txt
-
-###
-
-POST http://localhost:8081/mybatis/uploadMapperFile
-Content-Type: multipart/form-data; boundary=uploadMapperFile
-
---uploadMapperFile
-Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
-Content-Type: application/octet-stream
-
-< d:\test\ScheduleMapper.xml
---uploadMapperFile
-Content-Disposition: form-data; name="project"
-Content-Type: application/x-www-form-urlencoded
-
-ir
---uploadMapperFile
-Content-Disposition: form-data; name="classloaderName"
-Content-Type: application/x-www-form-urlencoded
-
-irdao
---uploadMapperFile--
-
-###
-
-POST http://localhost:8081/mybatis/boundSql
-Content-Type: application/json
-
-{
-  "project": "ir",
-  "connName": "lo",
-  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
-  "className": "java.util.HashMap",
-  "arg": "{\"scheduleMode\": \"normal\",\"pageSize\":10,\"start\":0,\"is_examine\":1}"
-}
-
-<> 2020-08-03T111433.200.txt
-
-###
-
-POST http://localhost:8081/mybatis/uploadMapperFile
-Content-Type: multipart/form-data; boundary=uploadMapperFile
-
---uploadMapperFile
-Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
-Content-Type: application/octet-stream
-
-< d:\test\ScheduleMapper.xml
---uploadMapperFile
-Content-Disposition: form-data; name="project"
-Content-Type: application/x-www-form-urlencoded
-
-ir
---uploadMapperFile
-Content-Disposition: form-data; name="classloaderName"
-Content-Type: application/x-www-form-urlencoded
-
-irdao
---uploadMapperFile--
-
-###
-
-POST http://localhost:8081/mybatis/boundSql
-Content-Type: application/json
-
-{
-  "project": "ir",
-  "connName": "lo",
-  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
-  "className": "java.util.HashMap",
-  "arg": "{\"scheduleMode\": \"normal\",\"pageSize\":10,\"start\":0,\"is_examine\":1}"
-}
-
-###
-
-POST http://localhost:8081/mybatis/uploadMapperFile
-Content-Type: multipart/form-data; boundary=uploadMapperFile
-
---uploadMapperFile
-Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
-Content-Type: application/octet-stream
-
-< d:\test\ScheduleMapper.xml
---uploadMapperFile
-Content-Disposition: form-data; name="project"
-Content-Type: application/x-www-form-urlencoded
-
-ir
---uploadMapperFile
-Content-Disposition: form-data; name="classloaderName"
-Content-Type: application/x-www-form-urlencoded
-
-irdao
---uploadMapperFile--
-
-###
-
-POST http://localhost:8081/mybatis/boundSql
-Content-Type: application/json
-
-{
-  "project": "ir",
-  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
-  "className": "java.util.HashMap",
-  "arg": "{\"scheduleMode\": \"normal\",\"pageSize\":10,\"start\":0,\"is_examine\":1}"
-}
-
-###
-
-POST http://localhost:8081/mybatis/uploadMapperFile
-Content-Type: multipart/form-data; boundary=uploadMapperFile
-
---uploadMapperFile
-Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
-Content-Type: application/octet-stream
-
-< d:\test\ScheduleMapper.xml
---uploadMapperFile
-Content-Disposition: form-data; name="project"
-Content-Type: application/x-www-form-urlencoded
-
-ir
---uploadMapperFile
-Content-Disposition: form-data; name="classloaderName"
-Content-Type: application/x-www-form-urlencoded
-
-irdao
---uploadMapperFile--
-
-###
-
-POST http://localhost:8081/mybatis/boundSql
-Content-Type: application/json
-
-{
-  "project": "ir",
-  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
-  "className": "java.util.HashMap",
-  "arg": "{\"scheduleMode\": \"normal\",\"pageSize\":10,\"start\":0,\"is_examine\":1}"
-}
-
-###
-
-POST http://localhost:8081/mybatis/boundSql
-Content-Type: application/json
-
-{
-  "project": "ir",
-  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
-  "className": "java.util.HashMap",
-  "arg": "{\"scheduleMode\": \"normal\",\"pageSize\":10,\"start\":0,\"is_examine\":1}"
-}
-
-<> 2020-08-03T104849.200.txt
-
-###
-
-POST http://localhost:8081/mybatis/boundSql
-Content-Type: application/json
-
-{
-  "project": "ir",
-  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
-  "className": "java.util.HashMap",
-  "arg": "{\"scheduleMode\": \"normal\",\"pageSize\":10,\"start\":0}"
-}
-
-<> 2020-08-03T104647.200.txt
 
 ###
 

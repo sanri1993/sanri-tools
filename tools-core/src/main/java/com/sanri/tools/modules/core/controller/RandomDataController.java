@@ -6,6 +6,10 @@ import com.sanri.tools.modules.core.service.classloader.ExtendClassloader;
 import com.sanri.tools.modules.core.service.data.JsoupSpiderDataService;
 import com.sanri.tools.modules.core.service.data.RandomDataService;
 import com.sanri.tools.modules.core.service.data.RegexRandomDataService;
+import com.sanri.tools.modules.core.service.data.regex.OrdinaryNode;
+import com.sanri.tools.modules.core.service.data.regex.exception.RegexpIllegalException;
+import com.sanri.tools.modules.core.service.data.regex.exception.TypeNotMatchException;
+import com.sanri.tools.modules.core.service.data.regex.exception.UninitializedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,19 +45,6 @@ public class RandomDataController {
     }
 
     /**
-     * 使用正则表达式随机填充数据
-     * @param className
-     * @param classloaderName
-     * @return
-     * @throws ClassNotFoundException
-     */
-    @GetMapping("/random/regex")
-    public Object regexRandomData(String className,String classloaderName) throws ClassNotFoundException {
-        ClassLoader classloader = classloaderService.getClassloader(classloaderName);
-        return regexRandomDataService.randomData(className,classloader);
-    }
-
-    /**
      * 随机填充列表数据
      * @param className
      * @param classloaderName
@@ -72,7 +63,22 @@ public class RandomDataController {
     }
 
     /**
+     * 使用正则表达式随机填充数据
+     * @param className
+     * @param classloaderName
+     * @return
+     */
+    @GetMapping("/random/regex")
+    public String regexRandomData(String regex) throws RegexpIllegalException, TypeNotMatchException, UninitializedException {
+        OrdinaryNode ordinaryNode = new OrdinaryNode(regex);
+        String random = ordinaryNode.random();
+        return random;
+    }
+
+
+    /**
      * 爬取数据
+     * 这里提供的类 需要有 @Request 标记
      * @param className
      * @param classloaderName
      * @return

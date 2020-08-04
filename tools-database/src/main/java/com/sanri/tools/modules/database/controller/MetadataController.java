@@ -59,6 +59,20 @@ public class MetadataController {
     }
 
     /**
+     * 刷新数据表
+     * @param connName
+     * @param catalog
+     * @param schema
+     * @return
+     * @throws IOException
+     * @throws SQLException
+     */
+    @GetMapping("/refreshTables")
+    public Collection<TableMetaData> refreshTables(String connName,String catalog,String schema) throws IOException, SQLException {
+        return jdbcService.refreshTables(connName,catalog,schema);
+    }
+
+    /**
      *  刷新表格列
      * @param connName
      * @param catalog

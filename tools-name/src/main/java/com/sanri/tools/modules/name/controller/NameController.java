@@ -1,5 +1,7 @@
 package com.sanri.tools.modules.name.controller;
 
+import com.google.common.base.CaseFormat;
+import com.google.common.base.Converter;
 import com.sanri.tools.modules.name.service.BizTranslate;
 import com.sanri.tools.modules.name.service.NameService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/name")
@@ -47,5 +50,27 @@ public class NameController {
     @PostMapping("/mirror/write/{biz}")
     public void writeMirror(@PathVariable("biz") String biz,@RequestBody String content) throws IOException {
         bizTranslate.writeMirror(biz,content);
+    }
+
+    /**
+     * 多列翻译
+     * @param words
+     * @param english
+     * @return
+     */
+    @GetMapping("/multiTranslate")
+    public List<String> multiTranslate(String [] words,String english){
+        return nameService.multiTranslate(words,english);
+    }
+
+    /**
+     * 多列翻译 , 转下划线版本
+     */
+    Converter<String, String> converter = CaseFormat.LOWER_CAMEL.converterTo(CaseFormat.LOWER_UNDERSCORE);
+    @GetMapping("/mutiTranslateUnderline")
+    public List<String> mutiTranslateUnderline(String [] words,String english){
+        List<String> results = nameService.multiTranslate(words, english);
+        List<String> collect = results.stream().map(converter::convert).collect(Collectors.toList());
+        return collect;
     }
 }
