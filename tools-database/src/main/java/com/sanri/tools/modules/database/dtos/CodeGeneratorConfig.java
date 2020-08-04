@@ -33,7 +33,7 @@ public class CodeGeneratorConfig {
         private String connName;
         private String catalog;
         private String schema;
-        private String [] tableNames;
+        private List<String> tableNames;
     }
 
     @Data
@@ -52,7 +52,7 @@ public class CodeGeneratorConfig {
     }
 
     @Data
-    private static class GlobalConfig{
+    public static class GlobalConfig{
         // entity 配置 可以支持 swagger2 , lombok , persistenceApi
         private boolean swagger2;
         private boolean lombok;

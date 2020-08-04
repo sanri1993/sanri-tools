@@ -51,10 +51,13 @@ public class JdbcService {
      */
     public Collection<TableMetaData> tables(String connName, String catalog) throws IOException, SQLException {
         Map<ActualTableName, TableMetaData> actualTableNameTableMetaDataMap = tableMetaDataMap.get(connName);
-        if (actualTableNameTableMetaDataMap == null || StringUtils.isBlank(catalog)){
+        if (actualTableNameTableMetaDataMap == null){
             actualTableNameTableMetaDataMap = refreshTableInfo(connName, catalog, null);
             tableMetaDataMap.put(connName,actualTableNameTableMetaDataMap);
 
+            return actualTableNameTableMetaDataMap.values();
+        }
+        if (StringUtils.isBlank(catalog)){
             return actualTableNameTableMetaDataMap.values();
         }
 
@@ -101,6 +104,32 @@ public class JdbcService {
                 if (!schema.equals(actualTableName.getSchema())){
                     iterator.remove();
                 }
+            }
+        }
+        return filterTables;
+    }
+
+    /**
+     * 过滤出需要的表格元数据
+     * @param connName
+     * @param catalog
+     * @param schema
+     * @param tableNames
+     * @return
+     * @throws IOException
+     * @throws SQLException
+     */
+    public List<TableMetaData> filterChoseTables(String connName, String catalog, String schema,List<String> tableNames) throws IOException, SQLException {
+        List<TableMetaData> tableMetaDataList = filterSchemaTables(connName, catalog, schema);
+
+        List<TableMetaData> filterTables = new ArrayList<>();
+        Iterator<TableMetaData> iterator = tableMetaDataList.iterator();
+        while (iterator.hasNext()){
+            TableMetaData tableMetaData = iterator.next();
+            ActualTableName actualTableName = tableMetaData.getActualTableName();
+            String tableName = actualTableName.getTableName();
+            if (tableNames.contains(tableName)){
+                filterTables.add(tableMetaData);
             }
         }
         return filterTables;
@@ -346,16 +375,16 @@ public class JdbcService {
      * @return
      * @throws SQLException
      */
-    public <T> T executeQuery(String connName,String sql,ResultSetHandler<T> resultSetHandler,Object...params) throws SQLException {
-        DataSource dataSource = dataSourceMap.get(connName);
+    public <T> T executeQuery(String connName,String sql,ResultSetHandler<T> resultSetHandler,Object...params) throws SQLException, IOException {
+        DataSource dataSource = dataSource(connName);
         QueryRunner queryRunner = new QueryRunner(dataSource);
         return queryRunner.query(sql,resultSetHandler,params);
     }
 
     // 动态查询, 以前用于 sql 客户端的,就是前端动态给出 sql 查出结果; 不知道还要不要
-    public List<DynamicQueryDto> executeDynamicQuery(String connName,List<String> sqls){
+    public List<DynamicQueryDto> executeDynamicQuery(String connName,List<String> sqls) throws IOException, SQLException {
         List<DynamicQueryDto> dynamicQueryDtos = new ArrayList<>();
-        DataSource dataSource = dataSourceMap.get(connName);
+        DataSource dataSource = dataSource(connName);
         QueryRunner queryRunner = new QueryRunner(dataSource);
         for (String sql : sqls) {
             try {

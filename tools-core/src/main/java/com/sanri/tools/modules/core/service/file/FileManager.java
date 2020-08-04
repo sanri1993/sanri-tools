@@ -12,6 +12,7 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.nio.file.Path;
 import java.util.*;
 
 @Service
@@ -205,5 +206,15 @@ public class FileManager {
         if (!configFile.exists()){
             FileUtils.deleteQuietly(configFile);
         }
+    }
+
+    /**
+     * 获取路径相对于基础路径的路径
+     * @param path
+     * @return
+     */
+    public Path relativePath(Path path) {
+        Path relativize = tmpBase.toPath().relativize(path);
+        return relativize;
     }
 }

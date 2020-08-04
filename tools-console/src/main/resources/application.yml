@@ -21,7 +21,7 @@ spring:
 data:
   path:
     config: d:/test/config
-    tmp: d:/tmp
+    tmp: d:/tmp/sanritools
     libs: d:/libs
 translate:
   baidu:

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class ConfigDataService {
      * @return
      * @throws SQLException
      */
-    public List<String> groups(String connName, String schemaName) throws SQLException {
+    public List<String> groups(String connName, String schemaName) throws SQLException, IOException {
         String sql = "select group_id from "+schemaName+".config_info group by group_id ";
         return listQuery(connName,sql);
     }
@@ -39,7 +40,7 @@ public class ConfigDataService {
      * @param group
      * @return
      */
-    public List<String> dataIds(String connName, String schemaName,String group) throws SQLException {
+    public List<String> dataIds(String connName, String schemaName,String group) throws SQLException, IOException {
         String sql = "select data_id from "+schemaName+".config_info where group_id='"+group+"'";
         return listQuery(connName,sql);
     }
@@ -50,10 +51,10 @@ public class ConfigDataService {
      * @param dataId
      * @return
      */
-    public String content(String connName,String schemaName,String group,String dataId) throws SQLException {
+    public String content(String connName,String schemaName,String group,String dataId) throws SQLException, IOException {
         String sql = "select content from "+schemaName+".config_info where group_id='%s' and data_id = '%s'";
         String formatSql = String.format(sql, group, dataId);
-        String executeQuery = jdbcService.executeQuery(connName, sql, new ScalarHandler<String>(1));
+        String executeQuery = jdbcService.executeQuery(connName, formatSql, new ScalarHandler<String>(1));
         return executeQuery;
     }
 
@@ -63,7 +64,7 @@ public class ConfigDataService {
      * @param sql
      * @return
      */
-    private List<String> listQuery(String connName,String sql) throws SQLException {
+    private List<String> listQuery(String connName,String sql) throws SQLException, IOException {
         ResultSetHandler<List<String>> resultSetHandler = new ColumnListHandler<String>(1);
         List<String> executeQuery = jdbcService.executeQuery(connName, sql, resultSetHandler);
         return executeQuery;

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * 简单实体构建
+ * 简单实体构建,可用于类加载器
  */
 public class SimpleJavaBeanBuilder {
 

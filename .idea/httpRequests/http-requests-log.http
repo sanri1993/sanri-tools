@@ -1,3 +1,443 @@
+POST http://localhost:8081/db/code/javaBeanBuild
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "catalog": null,
+  "schema": "mct",
+  "tableNames": [
+    "mct_event_record_common","mct_event_record","mct_event_handler"
+  ],
+  "lombok": true,
+  "swagger2": false,
+  "persistence": false,
+  "serializer": false,
+  "packageName": "com.sanri.entity",
+  "renameStrategy": "defaultRenameStragtegy"
+}
+
+<> 2020-08-04T051231.200.txt
+
+###
+
+POST http://localhost:8081/db/code/javaBeanBuild
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "catalog": null,
+  "schema": "mct",
+  "tableNames": [
+    "mct_event_record_common","mct_event_record","mct_event_handler"
+  ],
+  "lombok": true,
+  "swagger2": false,
+  "persistence": false,
+  "serializer": false,
+  "supperClass": "com.sanri.entity.Base",
+  "packageName": "com.sanri.entity",
+  "renameStrategy": "defaultRenameStragtegy"
+}
+
+<> 2020-08-04T051207.200.txt
+
+###
+
+POST http://localhost:8081/db/code/javaBeanBuild
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "catalog": null,
+  "schema": "mct",
+  "tableNames": [
+    "mct_event_record_common","mct_event_record","mct_event_handler"
+  ],
+  "lombok": false,
+  "swagger2": true,
+  "persistence": true,
+  "serializer": true,
+  "supperClass": "com.sanri.entity.Base",
+  "packageName": "com.sanri.entity",
+  "renameStrategy": "defaultRenameStragtegy"
+}
+
+<> 2020-08-04T051126.200.txt
+
+###
+
+POST http://localhost:8081/db/code/javaBeanBuild
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "catalog": null,
+  "schema": "mct",
+  "tableNames": [
+    "mct_event_record_common","mct_event_record","mct_event_handler"
+  ],
+  "lombok": false,
+  "swagger2": true,
+  "persistence": true,
+  "serializer": true,
+  "supperClass": "com.sanri.entity.Base",
+  "packageName": "com.sanri.entity",
+  "renameStrategy": "defaultRenameStragtegy"
+}
+
+<> 2020-08-04T051010.200.txt
+
+###
+
+POST http://localhost:8081/db/code/javaBeanBuild
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "catalog": null,
+  "schema": "mct",
+  "tableNames": [
+    "mct_event_record_common","mct_event_record","mct_event_handler"
+  ],
+  "lombok": false,
+  "swagger2": true,
+  "persistence": true,
+  "serializer": true,
+  "supperClass": "com.sanri.entity.Base",
+  "packageName": "com.sanri.entity",
+  "renameStrategy": "defaultRenameStragtegy"
+}
+
+<> 2020-08-04T050816.200.txt
+
+###
+
+POST http://localhost:8081/db/code/javaBeanBuild
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "catalog": null,
+  "schema": "mct",
+  "tableNames": [
+    "mct_event_record_common","mct_event_record","mct_event_handler"
+  ],
+  "lombok": false,
+  "swagger2": true,
+  "persistence": true,
+  "serializer": true,
+  "supperClass": "com.sanri.entity.Base",
+  "packageName": "com.sanri.entity",
+  "renameStrategy": "defaultRenameStragtegy"
+}
+
+<> 2020-08-04T050600.200.txt
+
+###
+
+POST http://localhost:8081/db/code/javaBeanBuild
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "catalog": null,
+  "schema": "mct",
+  "tableNames": [
+    "mct_event_record_common","mct_event_record","mct_event_handler"
+  ],
+  "lombok": false,
+  "swagger2": true,
+  "persistence": true,
+  "serializer": true,
+  "supperClass": "com.sanri.entity.Base",
+  "packageName": "com.sanri.entity",
+  "renameStrategy": "defaultRenameStragtegy"
+}
+
+<> 2020-08-04T050511.200.txt
+
+###
+
+POST http://localhost:8081/db/code/javaBeanBuild
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "catalog": null,
+  "schema": "mct",
+  "tableNames": [
+    "mct_event_record_common","mct_event_record","mct_event_handler"
+  ],
+  "lombok": true,
+  "swagger2": true,
+  "persistence": true,
+  "serializer": true,
+  "supperClass": "com.sanri.entity.Base",
+  "packageName": "com.sanri.entity",
+  "renameStrategy": "defaultRenameStragtegy"
+}
+
+<> 2020-08-04T050325.200.txt
+
+###
+
+POST http://localhost:8081/db/code/javaBeanBuild
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "catalog": null,
+  "schema": "mct",
+  "tableNames": [
+    "mct_event_record_common","mct_event_record","mct_event_handler"
+  ],
+  "lombok": true,
+  "swagger2": true,
+  "persistence": true,
+  "serializer": true,
+  "supperClass": "com.sanri.entity.Base",
+  "packageName": "com.sanri.entity",
+  "renameStrategy": "defaultRenameStragtegy"
+}
+
+<> 2020-08-04T050114.200.txt
+
+###
+
+POST http://localhost:8081/db/code/javaBeanBuild
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "catalog": null,
+  "schema": "mct",
+  "tableNames": [
+    "mct_event_record_common"
+  ],
+  "lombok": true,
+  "swagger2": true,
+  "persistence": true,
+  "serializer": true,
+  "supperClass": "com.sanri.entity.Base",
+  "packageName": "com.sanri.entity",
+  "renameStrategy": "defaultRenameStragtegy"
+}
+
+<> 2020-08-04T045850.200.txt
+
+###
+
+POST http://localhost:8081/db/code/javaBeanBuild
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "catalog": null,
+  "schema": "mct",
+  "tableNames": [
+    "mct_event_record_common"
+  ],
+  "lombok": true,
+  "swagger2": true,
+  "persistence": true,
+  "serializer": true,
+  "supperClass": "com.sanri.entity.Base",
+  "packageName": "com.sanri.entity",
+  "renameStrategy": "defaultRenameStragtegy"
+}
+
+<> 2020-08-04T045735.200.txt
+
+###
+
+POST http://localhost:8081/db/code/javaBeanBuild
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "catalog": null,
+  "schema": "mct",
+  "tableNames": [
+    "mct_event_record_common"
+  ],
+  "lombok": true,
+  "swagger2": true,
+  "persistence": true,
+  "serializer": true,
+  "supperClass": "com.sanri.entity.Base",
+  "packageName": "com.sanri.entity",
+  "renameStrategy": "defaultRenameStragtegy"
+}
+
+<> 2020-08-04T045656.200.txt
+
+###
+
+POST http://localhost:8081/db/code/javaBeanBuild
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "catalog": null,
+  "schema": "mct",
+  "tableNames": [
+    "mct_event_record_common"
+  ],
+  "lombok": true,
+  "swagger2": true,
+  "persistence": true,
+  "serializer": true,
+  "supperClass": "com.sanri.entity.Base",
+  "packageName": "com.sanri.entity",
+  "renameStrategy": "defaultRenameStragtegy"
+}
+
+<> 2020-08-04T045047.200.txt
+
+###
+
+POST http://localhost:8081/db/code/javaBeanBuild
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "catalog": null,
+  "schema": "mct",
+  "tableNames": [
+    "mct_event_record_common"
+  ],
+  "lombok": true,
+  "swagger2": true,
+  "persistence": true,
+  "serializer": true,
+  "supperClass": "com.sanri.entity.Base",
+  "packageName": "com.sanri.entity",
+  "renameStrategy": "defaultRenameStragtegy"
+}
+
+<> 2020-08-04T044418.200.txt
+
+###
+
+POST http://localhost:8081/db/code/javaBeanBuild
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "catalog": "hdsc_db",
+  "schema": "mct",
+  "tableNames": [
+    "mct_event_record_common"
+  ],
+  "lombok": true,
+  "swagger2": true,
+  "persistence": true,
+  "serializer": true,
+  "supperClass": "com.sanri.entity.Base",
+  "packageName": "com.sanri.entity",
+  "renameStrategy": "defaultRenameStragtegy"
+}
+
+<> 2020-08-04T044317.200.json
+
+###
+
+POST http://localhost:8081/db/code/javaBeanBuild
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "catalog": "hdsc_db",
+  "schema": "mct",
+  "tableNames": [
+    "mct_event_record_common"
+  ],
+  "lombok": true,
+  "swagger2": true,
+  "persistence": true,
+  "serializer": true,
+  "supperClass": "com.sanri.entity.Base",
+  "packageName": "com.sanri.entity",
+  "renameStrategy": "defaultRenameStragtegy"
+}
+
+<> 2020-08-04T044221.200.json
+
+###
+
+POST http://localhost:8081/db/code/javaBeanBuild
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "catalog": "hdsc_db",
+  "schema": "mct",
+  "tableNames": [
+    "mct_event_record_common"
+  ],
+  "lombok": true,
+  "swagger2": true,
+  "persistence": true,
+  "serializer": true,
+  "supperClass": "com.sanri.entity.Base",
+  "packageName": "com.sanri.entity",
+  "renameStrategy": "defaultRenameStragtegy"
+}
+
+<> 2020-08-04T044117.200.json
+
+###
+
+GET http://localhost:8081/db/data/config/content?connName=lo&schemaName=nacos&groupId=scp-st-messagecenter-component&dataId=scp-st-messagecenter-component-dev.properties
+
+<> 2020-08-04T113115.200.txt
+
+###
+
+GET http://localhost:8081/db/data/config/content?connName=lo&schemaName=nacos&groupId=scp-st-messagecenter-component&dataId=scp-st-messagecenter-component-dev.properties
+
+###
+
+GET http://localhost:8081/db/data/config/content?connName=lo&schemaName=nacos&groupId=scp-st-messagecenter-component&dataId=scp-st-messagecenter-component-dev.properties
+
+###
+
+GET http://localhost:8081/db/data/config/content?connName=lo&schemaName=nacos&groupId=scp-st-messagecenter-component&dataId=scp-st-messagecenter-component-dev.properties
+
+<> 2020-08-04T112819.200.json
+
+###
+
+GET http://localhost:8081/db/data/config/content?connName=lo&schemaName=nacos&groupId=scp-st-messagecenter-component&dataId=scp-st-messagecenter-component-dev.properties
+
+<> 2020-08-04T112605.200.json
+
+###
+
+GET http://localhost:8081/db/data/config/dataIds?connName=lo&schemaName=nacos&groupId=scp-st-messagecenter-component
+
+<> 2020-08-04T112511.200.json
+
+###
+
+GET http://localhost:8081/db/data/config/groups?connName=lo&schemaName=nacos
+
+<> 2020-08-04T112348.200.json
+
+###
+
+GET http://localhost:8081/db/data/config/groups?connName=lo&schemaName=nacos
+
+<> 2020-08-04T112232.200.json
+
+###
+
+GET http://localhost:8081/db/data/config/groups?connName=lo&schemaName=nacos
+
+<> 2020-08-04T112003.200.json
+
+###
+
 GET http://localhost:8081/classloader/listLoadedClasses?classloaderName=messagecenterdao
 
 <> 2020-08-03T051853.200.json
@@ -320,377 +760,6 @@ Content-Type: application/json
 }
 
 <> 2020-08-03T104647.200.txt
-
-###
-
-POST http://localhost:8081/mybatis/boundSql
-Content-Type: application/json
-
-{
-  "project": "ir",
-  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
-  "className": "java.util.HashMap",
-  "arg": "{\"scheduleMode\": \"normal\",\"pageSize\":10,\"start\":0}"
-}
-
-<> 2020-08-03T104618.200.txt
-
-###
-
-POST http://localhost:8081/mybatis/uploadMapperFile
-Content-Type: multipart/form-data; boundary=uploadMapperFile
-
---uploadMapperFile
-Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
-Content-Type: application/octet-stream
-
-< d:\test\ScheduleMapper.xml
---uploadMapperFile
-Content-Disposition: form-data; name="project"
-Content-Type: application/x-www-form-urlencoded
-
-ir
---uploadMapperFile
-Content-Disposition: form-data; name="classloaderName"
-Content-Type: application/x-www-form-urlencoded
-
-irdao
---uploadMapperFile--
-
-###
-
-POST http://localhost:8081/mybatis/boundSql
-Content-Type: application/json
-
-{
-  "project": "ir",
-  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
-  "className": "java.util.HashMap",
-  "arg": "{\"scheduleMode\": \"normal\",\"pageSize\":10,\"start\":0}"
-}
-
-<> 2020-08-03T104300.200.txt
-
-###
-
-POST http://localhost:8081/mybatis/boundSql
-Content-Type: application/json
-
-{
-  "project": "test-mybatis",
-  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
-  "className": "java.util.HashMap",
-  "arg": "{\"scheduleMode\": \"normal\",\"pageSize\":10,\"start\":0}"
-}
-
-<> 2020-08-03T104155.500.json
-
-###
-
-GET http://localhost:8081/mybatis/statementIds?project=ir
-
-<> 2020-08-03T103957.200.json
-
-###
-
-POST http://localhost:8081/mybatis/uploadMapperFile
-Content-Type: multipart/form-data; boundary=uploadMapperFile
-
---uploadMapperFile
-Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
-Content-Type: application/octet-stream
-
-< d:\test\ScheduleMapper.xml
---uploadMapperFile
-Content-Disposition: form-data; name="project"
-Content-Type: application/x-www-form-urlencoded
-
-ir
---uploadMapperFile
-Content-Disposition: form-data; name="classloaderName"
-Content-Type: application/x-www-form-urlencoded
-
-irdao
---uploadMapperFile--
-
-###
-
-GET http://localhost:8081/mybatis/statementIds?project=ir
-
-<> 2020-08-03T103548.500.json
-
-###
-
-POST http://localhost:8081/mybatis/uploadMapperFile
-Content-Type: multipart/form-data; boundary=uploadMapperFile
-
---uploadMapperFile
-Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
-Content-Type: application/octet-stream
-
-< d:\test\ScheduleMapper.xml
---uploadMapperFile
-Content-Disposition: form-data; name="project"
-Content-Type: application/x-www-form-urlencoded
-
-ir
---uploadMapperFile
-Content-Disposition: form-data; name="classloaderName"
-Content-Type: application/x-www-form-urlencoded
-
-irdao
---uploadMapperFile--
-
-###
-
-GET http://localhost:8081/mybatis/statementIds?project=ir
-
-<> 2020-08-03T103206.500.json
-
-###
-
-POST http://localhost:8081/mybatis/uploadMapperFile
-Content-Type: multipart/form-data; boundary=uploadMapperFile
-
---uploadMapperFile
-Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
-Content-Type: application/octet-stream
-
-< d:\test\ScheduleMapper.xml
---uploadMapperFile
-Content-Disposition: form-data; name="project"
-Content-Type: application/x-www-form-urlencoded
-
-ir
---uploadMapperFile
-Content-Disposition: form-data; name="classloaderName"
-Content-Type: application/x-www-form-urlencoded
-
-irdao
---uploadMapperFile--
-
-###
-
-POST http://localhost:8081/mybatis/uploadMapperFile
-Content-Type: multipart/form-data; boundary=uploadMapperFile
-
---uploadMapperFile
-Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
-Content-Type: application/octet-stream
-
-< d:\test\ScheduleMapper.xml
---uploadMapperFile
-Content-Disposition: form-data; name="project"
-Content-Type: application/x-www-form-urlencoded
-
-ir
---uploadMapperFile
-Content-Disposition: form-data; name="classloaderName"
-Content-Type: application/x-www-form-urlencoded
-
-irdao
---uploadMapperFile--
-
-###
-
-POST http://localhost:8081/mybatis/uploadMapperFile
-Content-Type: multipart/form-data; boundary=uploadMapperFile
-
---uploadMapperFile
-Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
-Content-Type: application/octet-stream
-
-< d:\test\ScheduleMapper.xml
---uploadMapperFile
-Content-Disposition: form-data; name="project"
-Content-Type: application/x-www-form-urlencoded
-
-ir
---uploadMapperFile
-Content-Disposition: form-data; name="classloaderName"
-Content-Type: application/x-www-form-urlencoded
-
-irdao
---uploadMapperFile--
-
-###
-
-GET http://localhost:8081/mybatis/statementIds?project=ir
-
-<> 2020-08-03T102600.500.json
-
-###
-
-POST http://localhost:8081/mybatis/uploadMapperFile
-Content-Type: multipart/form-data; boundary=uploadMapperFile
-
---uploadMapperFile
-Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
-Content-Type: application/octet-stream
-
-< d:\test\ScheduleMapper.xml
---uploadMapperFile
-Content-Disposition: form-data; name="project"
-Content-Type: application/x-www-form-urlencoded
-
-ir
---uploadMapperFile
-Content-Disposition: form-data; name="classloaderName"
-Content-Type: application/x-www-form-urlencoded
-
-irdao
---uploadMapperFile--
-
-###
-
-GET http://localhost:8081/mybatis/statementIds?project=ir
-
-<> 2020-08-03T101709.200.json
-
-###
-
-GET http://localhost:8081/mybatis/statementIds?project=ir
-
-<> 2020-08-03T100525.500.json
-
-###
-
-GET http://localhost:8081/mybatis/statementIds?project=test-mybatis
-
-<> 2020-08-03T100511.200.json
-
-###
-
-POST http://localhost:8081/mybatis/uploadMapperFile
-Content-Type: multipart/form-data; boundary=uploadMapperFile
-
---uploadMapperFile
-Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
-Content-Type: application/octet-stream
-
-< d:\test\ScheduleMapper.xml
---uploadMapperFile
-Content-Disposition: form-data; name="project"
-Content-Type: application/x-www-form-urlencoded
-
-ir
---uploadMapperFile
-Content-Disposition: form-data; name="classloaderName"
-Content-Type: application/x-www-form-urlencoded
-
-irdao
---uploadMapperFile--
-
-###
-
-GET http://localhost:8081/classloader/classloaders
-
-<> 2020-08-03T100355.200.json
-
-###
-
-POST http://localhost:8081/classloader/uploadClassesZipSimple
-Content-Type: multipart/form-data; boundary=uploadClassesZip
-
---uploadClassesZip
-Content-Disposition: form-data; name="file"; filename="irdao.zip"
-Content-Type: application/octet-stream
-
-< d:\test\entity.zip
---uploadClassesZip
-Content-Disposition: form-data; name="classloaderName"
-Content-Type: application/x-www-form-urlencoded
-
-irdao
---uploadClassesZip--
-
-###
-
-POST http://localhost:8081/classloader/uploadClassesZip
-Content-Type: multipart/form-data; boundary=uploadClassesZip
-
---uploadClassesZip
-Content-Disposition: form-data; name="file"; filename="messagecenterdao.zip"
-Content-Type: application/octet-stream
-
-< d:\test\messagecenterdao.zip
---uploadClassesZip
-Content-Disposition: form-data; name="classloaderName"
-Content-Type: application/x-www-form-urlencoded
-
-messagecenterdao
---uploadClassesZip--
-
-<> 2020-08-03T085155.500.json
-
-###
-
-POST http://localhost:8081/classloader/uploadClassesZip
-Content-Type: multipart/form-data; boundary=uploadClassesZip
-
---uploadClassesZip
-Content-Disposition: form-data; name="file"; filename="messagecenterdao.zip"
-Content-Type: application/octet-stream
-
-< d:\test\messagecenterdao.zip
---uploadClassesZip
-Content-Disposition: form-data; name="classloaderName"
-Content-Type: application/x-www-form-urlencoded
-
-messagecenterdao
---uploadClassesZip--
-
-<> 2020-08-03T084639.500.json
-
-###
-
-POST http://localhost:8081/dubbo/invoke
-Content-Type: application/json
-
-{
-  "connName": "192.168.2.134_2181",
-  "serviceClassName": "com.mmc.dubbo.api.user.UserService",
-  "classloaderName": "mmc-dubbo-api",
-  "methodInfo": {
-    "name": "getCurrentById",
-    "parameterTypeNames": ["long"]
-  },
-  "providerURL": "dubbo://192.168.2.101:30880/com.mmc.dubbo.api.user.UserService?anyhost=true&application=mmc-dubbo-provider&dubbo=2.6.2&generic=false&interface=com.mmc.dubbo.api.user.UserService&methods=getCurrentById,insert&pid=35288&side=provider&timestamp=1596275905147",
-  "args": ["18"]
-}
-
-<> 2020-08-01T095344.200.json
-
-###
-
-POST http://localhost:8081/dubbo/invoke
-Content-Type: application/json
-
-{
-  "connName": "192.168.2.134_2181",
-  "serviceClassName": "com.mmc.dubbo.api.user.UserService",
-  "classloaderName": "mmc-dubbo-api",
-  "methodInfo": {
-    "name": "getCurrentById",
-    "parameterTypeNames": ["long"]
-  },
-  "providerURL": "dubbo://192.168.2.101:30880/com.mmc.dubbo.api.user.UserService?anyhost=true&application=mmc-dubbo-provider&dubbo=2.6.2&generic=false&interface=com.mmc.dubbo.api.user.UserService&methods=getCurrentById,insert&pid=35288&side=provider&timestamp=1596275905147",
-  "args": ["18"]
-}
-
-<> 2020-08-01T094414.500.json
-
-###
-
-GET http://localhost:8081/dubbo/methods?connName=192.168.2.134_2181&serviceName=com.mmc.dubbo.api.user.UserService&methods=getCurrentById,insert&classloaderName=mmc-dubbo-api
-
-<> 2020-08-01T094408.200.json
-
-###
-
-GET http://localhost:8081/dubbo/methods?connName=192.168.2.134_2181&serviceName=com.mmc.dubbo.api.user.UserService&methods=getCurrentById,insert&classloaderName=mmc-dubbo-api
-
-<> 2020-08-01T093847.500.json
 
 ###
 

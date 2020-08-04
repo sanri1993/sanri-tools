@@ -1,11 +1,12 @@
 package com.sanri.tools.modules.database.controller;
 
-import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
 import com.sanri.tools.modules.database.dtos.TableDataParam;
+import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
 import com.sanri.tools.modules.database.service.TableDataService;
 import com.sanri.tools.modules.database.service.TableMarkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -45,7 +46,7 @@ public class DataController {
     }
 
     @PostMapping("/import/excel")
-    public void importDataFromExcel(){
+    public void importDataFromExcel(MultipartFile file) throws IOException {
 
     }
 }

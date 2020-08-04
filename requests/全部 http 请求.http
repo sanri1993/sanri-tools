@@ -130,6 +130,34 @@ Content-Type: application/json
     {"columnName": "idcard","random": "T(com.sanri.tools.modules.core.utils.RandomUtil).idcard()"}]
 }
 
+### 数据表 - 配置数据(nacos,diamond) - 所有分组信息
+GET {{baseUrl}}/db/data/config/groups?connName=lo&schemaName=nacos
+
+### 数据表 - 配置数据 - 分组的 dataIds
+GET {{baseUrl}}/db/data/config/dataIds?connName=lo&schemaName=nacos&groupId=scp-st-messagecenter-component
+
+### 数据表 - 配置数据 - 获取配置数据详情
+GET {{baseUrl}}/db/data/config/content?connName=lo&schemaName=nacos&groupId=scp-st-messagecenter-component&dataId=scp-st-messagecenter-component-dev.properties
+
+### 数据表 - 代码生成 - 生成 javaBean
+POST {{baseUrl}}/db/code/javaBeanBuild
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "catalog": null,
+  "schema": "mct",
+  "tableNames": [
+    "mct_event_record_common","mct_event_record","mct_event_handler"
+  ],
+  "lombok": true,
+  "swagger2": false,
+  "persistence": false,
+  "serializer": false,
+  "packageName": "com.sanri.entity",
+  "renameStrategy": "defaultRenameStragtegy"
+}
+
 ### 创建 zookeeper 连接
 POST {{baseUrl}}/connect/create/zookeeper
 Content-Type: application/json
