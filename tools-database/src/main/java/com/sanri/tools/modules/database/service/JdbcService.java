@@ -406,6 +406,7 @@ public class JdbcService {
 
     /**
      * 对比两个连接的结构差异,并生成 alter 语句
+     * 假设 from 为开发 to 到测试 , 则为 开发到测试的结构变更
      * @param fromConnName
      * @param toConnName
      */
@@ -413,6 +414,28 @@ public class JdbcService {
         Collection<TableMetaData> fromTables = tables(fromConnName, fromCatalog);
         Collection<TableMetaData> toTables = tables(toConnName, toCatalog);
 
+        List<String> alters = new ArrayList<>();
+
+        // 这一个循环无法检测出 from 有 to 没有的数据
+        Map<ActualTableName, TableMetaData> fromMeta = fromTables.stream().collect(Collectors.toMap(TableMetaData::getActualTableName, t -> t));
+        for (TableMetaData toTable : toTables) {
+            ActualTableName actualTableName = toTable.getActualTableName();
+            TableMetaData fromTable = fromMeta.get(actualTableName);
+            if (fromTable == null){
+                // from 没有 to 有 ; 则需要删除结构
+                String schema = actualTableName.getSchema();
+                if (StringUtils.isNotBlank(schema)) {
+                    alters.add("drop table " + schema + "." + actualTableName.getTableName());
+                }else{
+                    alters.add("drop table " + actualTableName.getTableName());
+                }
+                continue;
+            }
+            // 比较两个表的数据列
+            List<Column> toTableColumns = toTable.getColumns();
+            List<Column> fromTableColumns = fromTable.getColumns();
+
+        }
     }
 
     protected Map<ActualTableName, TableMetaData> refreshTableInfo(String connName, String catalog, String schema) throws IOException, SQLException {

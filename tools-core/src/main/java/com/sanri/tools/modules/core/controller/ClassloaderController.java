@@ -88,15 +88,14 @@ public class ClassloaderController {
     }
 
     @GetMapping("/{classloaderName}/{className}/fields")
-    public Field [] fields(@PathVariable("classloaderName") String classloaderName, @PathVariable("className") String className) throws ClassNotFoundException {
-        return classloaderService.classFields(classloaderName,className);
+    public void fields(@PathVariable("classloaderName") String classloaderName, @PathVariable("className") String className) throws ClassNotFoundException {
+        classloaderService.classFields(classloaderName,className);
     }
 
     @GetMapping("/{classloaderName}/{className}/methods")
-    public Method [] methods(@PathVariable("classloaderName") String classloaderName, @PathVariable("className") String className) throws ClassNotFoundException{
+    public void methods(@PathVariable("classloaderName") String classloaderName, @PathVariable("className") String className) throws ClassNotFoundException{
         // 不能直接返回这个数据
 //        return classloaderService.classMethods(classloaderName,className);
-        return null;
     }
 
     /**
