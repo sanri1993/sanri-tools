@@ -14,7 +14,7 @@ import java.util.Set;
 
 @Slf4j
 @Component
-public class YoudaoEnglishTranslate implements  Translate ,EnglishTranslate{
+public class YoudaoEnglishTranslate extends EnglishTranslate implements  Translate {
 
     @Autowired
     private TranslateApi translateApi;
@@ -37,10 +37,10 @@ public class YoudaoEnglishTranslate implements  Translate ,EnglishTranslate{
         }
 
         //添加直译结果
-        Set<String> results = directTranslate(translateCharSequence.getOriginSequence().toString());
-        for (String result : results) {
-            translateCharSequence.addDirectTranslate(result);
-        }
+//        Set<String> results = directTranslate(translateCharSequence.getOriginSequence().toString());
+//        for (String result : results) {
+//            translateCharSequence.addDirectTranslate(result);
+//        }
     }
 
     /**
@@ -64,7 +64,7 @@ public class YoudaoEnglishTranslate implements  Translate ,EnglishTranslate{
     }
 
     @Override
-    public Set<String> directTranslate(String source) {
+    public Set<String> innerDirectTranslate(String source) {
         Set<String> translate = translateWord(source);
         return translate;
     }

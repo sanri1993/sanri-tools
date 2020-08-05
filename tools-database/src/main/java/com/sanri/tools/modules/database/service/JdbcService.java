@@ -380,7 +380,14 @@ public class JdbcService {
         return queryRunner.query(sql,resultSetHandler,params);
     }
 
-    // 动态查询, 以前用于 sql 客户端的,就是前端动态给出 sql 查出结果; 不知道还要不要
+    /**
+     * 给出 sql ,查询出数据,将头信息和结果一并给出
+     * @param connName
+     * @param sqls
+     * @return
+     * @throws IOException
+     * @throws SQLException
+     */
     public List<DynamicQueryDto> executeDynamicQuery(String connName,List<String> sqls) throws IOException, SQLException {
         List<DynamicQueryDto> dynamicQueryDtos = new ArrayList<>();
         DataSource dataSource = dataSource(connName);

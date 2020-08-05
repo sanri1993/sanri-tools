@@ -25,8 +25,8 @@ data:
     libs: d:/libs
 translate:
   baidu:
-    appId: appid
-    secret: secret
+    appId: 20181123000238271
+    secret: PoT5TnMl_4pVIhosG_Fk
   youdao:
-    appId: appKey
-    secret: appSecret
+    appId: 28a343197650d05a
+    secret: hioXXfQjbWnRDuLrvbvx3tGpo7hDUpHt

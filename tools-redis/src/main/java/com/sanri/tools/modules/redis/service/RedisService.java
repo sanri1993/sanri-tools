@@ -219,7 +219,7 @@ public class RedisService {
      * @param hashKeyCommandParam
      * @return
      */
-    public List<String> hashKeys(HashScanParam hashScanParam) throws IOException, ClassNotFoundException {
+    public List<String> hashKeyScan(HashScanParam hashScanParam) throws IOException, ClassNotFoundException {
         String connName = hashScanParam.getConnName();
         String hashKeySerizlizer = hashScanParam.getHashKeySerizlizer();
         Serializer serializer = serializerChoseService.choseSerializer(hashKeySerizlizer);
@@ -249,10 +249,10 @@ public class RedisService {
         String cursor = "0";
         List<String> hashKeyResult = new ArrayList<>();
         do {
-            ScanResult scanResult = jedis.hscan(keyBytes,cursor.getBytes(), scanParams);
-            List<byte[]> result = scanResult.getResult();
-            for (byte[] bytes : result) {
-                hashKeyResult.add(Objects.toString(serializer.deserialize(bytes, ClassLoader.getSystemClassLoader())));
+            ScanResult<Map.Entry<byte[], byte[]>> scanResult = jedis.hscan(keyBytes,cursor.getBytes(), scanParams);
+            List<Map.Entry<byte[],byte[]>> result = scanResult.getResult();
+            for (Map.Entry<byte[], byte[]> entry : result) {
+                hashKeyResult.add(Objects.toString(serializer.deserialize(entry.getKey(), ClassLoader.getSystemClassLoader())));
             }
             cursor = scanResult.getStringCursor();
         }while (hashKeyResult.size() < limit && NumberUtils.toLong(cursor) != 0L);

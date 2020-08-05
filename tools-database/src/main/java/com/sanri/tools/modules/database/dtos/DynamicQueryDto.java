@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 public class DynamicQueryDto {
     private String sql;
-    private List<Header> headers;
+    private List<Header> headers = new ArrayList<>();
     private List<List<Object>> rows = new ArrayList<>();
 
     public DynamicQueryDto() {

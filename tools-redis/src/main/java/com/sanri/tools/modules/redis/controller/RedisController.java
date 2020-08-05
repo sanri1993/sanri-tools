@@ -61,9 +61,9 @@ public class RedisController {
      * @return
      * @throws IOException
      */
-    @GetMapping("/hashKeys")
-    public List<String> hashKeys(HashScanParam hashScanParam) throws IOException, ClassNotFoundException {
-        return redisService.hashKeys(hashScanParam);
+    @GetMapping("/hashKeyScan")
+    public List<String> hashKeyScan(HashScanParam hashScanParam) throws IOException, ClassNotFoundException {
+        return redisService.hashKeyScan(hashScanParam);
     }
 
     /**

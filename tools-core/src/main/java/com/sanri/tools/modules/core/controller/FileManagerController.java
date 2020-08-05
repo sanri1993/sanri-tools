@@ -1,5 +1,6 @@
 package com.sanri.tools.modules.core.controller;
 
+import com.sanri.tools.modules.core.exception.ToolException;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -31,13 +32,15 @@ public class FileManagerController {
      */
     @GetMapping("/download")
     public ResponseEntity download(String baseName, HttpServletResponse response) throws IOException {
-        String fileName = "中文下载测试";
-        String filenames = new String(fileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1);
-
         Resource resource = fileManager.relativeResource(baseName);
+        if (resource == null){
+            throw new ToolException("未找到资源 "+baseName);
+        }
+
+        String filenameEncode = new String(resource.getFilename().getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentDispositionFormData("attachment", filenames);
+        headers.setContentDispositionFormData("attachment", filenameEncode);
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 
         ResponseEntity<Resource> body = ResponseEntity.ok()

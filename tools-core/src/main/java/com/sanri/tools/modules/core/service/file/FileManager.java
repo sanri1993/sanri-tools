@@ -1,6 +1,7 @@
 package com.sanri.tools.modules.core.service.file;
 
 import com.sanri.tools.modules.core.dtos.ConfigPath;
+import com.sanri.tools.modules.core.utils.ZipUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -179,9 +180,8 @@ public class FileManager {
             return new FileSystemResource(new File(file, fileName));
         }
 
-        // 打包下载
-
-        return null;
+        File zip = ZipUtil.zip(file);
+        return new FileSystemResource(zip);
     }
 
     /**

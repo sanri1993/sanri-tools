@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-public class BaiduEnglishTranslate implements Translate,EnglishTranslate {
+public class BaiduEnglishTranslate extends EnglishTranslate implements Translate {
 
     @Autowired
     private TranslateApi translateApi;
@@ -40,10 +40,10 @@ public class BaiduEnglishTranslate implements Translate,EnglishTranslate {
         }
 
         //添加直译结果
-        Set<String> results = directTranslate(translateCharSequence.getOriginSequence().toString());
-        for (String result : results) {
-            translateCharSequence.addDirectTranslate(result);
-        }
+//        Set<String> results = directTranslate(translateCharSequence.getOriginSequence().toString());
+//        for (String result : results) {
+//            translateCharSequence.addDirectTranslate(result);
+//        }
     }
 
     /**
@@ -68,7 +68,7 @@ public class BaiduEnglishTranslate implements Translate,EnglishTranslate {
     }
 
     @Override
-    public Set<String> directTranslate(String source) {
+    public Set<String> innerDirectTranslate(String source) {
         Set<String> translate = translateWord(source);
         return translate;
     }

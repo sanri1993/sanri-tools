@@ -1,3 +1,432 @@
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "connName": "lo",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": {
+    "value": {
+      "scheduleMode": "normal",
+      "pageSize": 10,
+      "start": 0,
+      "isExamine": 1
+    }
+  }
+}
+
+<> 2020-08-05T033629.200.json
+
+###
+
+POST http://localhost:8081/mybatis/uploadMapperFile
+Content-Type: multipart/form-data; boundary=uploadMapperFile
+
+--uploadMapperFile
+Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
+Content-Type: application/octet-stream
+
+< d:\test\ScheduleMapper.xml
+--uploadMapperFile
+Content-Disposition: form-data; name="project"
+Content-Type: application/x-www-form-urlencoded
+
+ir
+--uploadMapperFile
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+irdao
+--uploadMapperFile--
+
+<> 2020-08-05T033551.200.json
+
+###
+
+GET http://localhost:8081/mybatis/statementIds?project=ir
+
+<> 2020-08-05T033543.200.json
+
+###
+
+GET http://localhost:8081/mybatis/reload
+
+###
+
+GET http://localhost:8081/mybatis/reload
+
+###
+
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "connName": "lo",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": {
+    "value": {
+      "scheduleMode": "normal",
+      "pageSize": 10,
+      "start": 0,
+      "isExamine": 1
+    }
+  }
+}
+
+<> 2020-08-05T032856.200.json
+
+###
+
+POST http://localhost:8081/db/data/exportData
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "sql": "select * from mct.mct_event_record_common",
+  "traceId": "abc"
+}
+
+<> 2020-08-05T032330.200.txt
+
+###
+
+POST http://localhost:8081/db/data/exportData
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "sql": "select * from mct.mct_event_record_common",
+  "traceId": "abc"
+}
+
+<> 2020-08-05T032208.200.txt
+
+###
+
+POST http://localhost:8081/db/data/exportPreview
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "sql": "select * from mct.mct_event_record_common"
+}
+
+<> 2020-08-05T032024.200.json
+
+###
+
+POST http://localhost:8081/db/data/exportPreview
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "sql": "select * from mct.mct_event_record_common"
+}
+
+<> 2020-08-05T031954.200.json
+
+###
+
+POST http://localhost:8081/db/data/exportPreview
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "sql": "select * from mct.mct_event_record_common"
+}
+
+<> 2020-08-05T031940.200.json
+
+###
+
+POST http://localhost:8081/db/data/exportPreview
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "sql": "select * from mct.mct_event_record_common"
+}
+
+<> 2020-08-05T031850.200.json
+
+###
+
+GET http://localhost:8081/db/data/exportPreview?connName=lo&sql=select * from mct.mct_event_record_common
+
+<> 2020-08-05T020735.200.json
+
+###
+
+GET http://localhost:8081/db/data/exportPreview?connName=lo&sql=select * from mct.mct_event_record_common
+
+<> 2020-08-05T020705.200.json
+
+###
+
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "connName": "lo",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": {
+    "value": {
+      "scheduleMode": "normal",
+      "pageSize": 10,
+      "start": 0,
+      "isExamine": 1
+    }
+  }
+}
+
+<> 2020-08-05T102832.200.json
+
+###
+
+POST http://localhost:8081/soap/WeatherWebServiceSoap/getWeatherbyCityName/request?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
+Content-Type: text/plain
+
+<?xml version="1.0" encoding="UTF-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <soap:Body xmlns="http://WebXml.com.cn/">
+  <getWeatherbyCityName>
+            <theCityName>深圳</theCityName>
+        </getWeatherbyCityName>
+    </soap:Body>
+</soap:Envelope>
+
+<> 2020-08-05T102755.200.txt
+
+###
+
+GET http://localhost:8081/name/mutiTranslateUnderline?words=审核人&words=消息中心&words=查询当前组织下的审核人&english=baidu
+
+<> 2020-08-05T102721.200.json
+
+###
+
+GET http://localhost:8081/name/multiTranslate?words=审核人&words=消息中心&words=查询当前组织下的审核人&english=baidu
+
+<> 2020-08-05T102646.200.json
+
+###
+
+GET http://localhost:8081/name/translate?orginChars=查询当前组织下的审核人&tokenizer=ik&tranlates=baidu
+
+<> 2020-08-05T102546.200.json
+
+###
+
+GET http://localhost:8081/name/translate?orginChars=查询当前组织下的审核人&tokenizer=ik&tranlates=baidu
+
+<> 2020-08-05T101142.200.json
+
+###
+
+GET http://translate.google.cn/translate_a/single?client=gtx&sl=zh-CN&tl=en&dt=t&q=查询当前组织下的审核人
+
+<> 2020-08-05T101125.200.json
+
+###
+
+GET http://localhost:8081/name/multiTranslate?words=审核人&words=消息中心&words=查询当前组织下的审核人&english=baidu
+
+<> 2020-08-05T101021.200.json
+
+###
+
+GET http://localhost:8081/name/multiTranslate?words=中国&words=明天&english=baidu
+
+<> 2020-08-05T100914.200.json
+
+###
+
+GET http://localhost:8081/name/multiTranslate?words=中国&words=明天&english=baidu
+
+<> 2020-08-05T100748.200.json
+
+###
+
+POST http://localhost:8081/redis/data
+Content-Type: application/json
+
+{
+  "connName": "10.101.72.43",
+  "key": "PLC:PARKINGLOT.CACHE",
+  "serializerChose": {
+    "value": "jdk",
+    "hashKey": "jdk",
+    "hashValue": "jdk"
+  },
+  "classloaderName": "singleClasses",
+  "extraQueryParam": {
+    "hashKey": "22"
+  }
+}
+
+<> 2020-08-05T100559.200.json
+
+###
+
+POST http://localhost:8081/redis/data
+Content-Type: application/json
+
+{
+  "connName": "10.101.72.43",
+  "key": "PLC:PARKINGLOT.CACHE",
+  "serializerChose": {
+    "value": "jdk",
+    "hashKey": "jdk",
+    "hashValue": "jdk"
+  },
+  "classloaderName": "singleClasses"
+}
+
+<> 2020-08-05T100441.200.json
+
+###
+
+GET http://localhost:8081/classloader/listLoadedClasses?classloaderName=singleClasses
+
+<> 2020-08-05T100400.200.json
+
+###
+
+GET http://localhost:8081/classloader/classloaders
+
+<> 2020-08-05T100350.200.json
+
+###
+
+POST http://localhost:8081/classloader/uploadSingleClass
+Content-Type: multipart/form-data; boundary=uploadSingleClass
+
+--uploadSingleClass
+Content-Disposition: form-data; name="file"; filename="ParkingLotBean.class"
+Content-Type: application/octet-stream
+
+< d:\test\ParkingLotBean.class
+--uploadSingleClass
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+park
+--uploadSingleClass--
+
+###
+
+GET http://localhost:8081/redis/keyLength?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE
+
+<> 2020-08-05T095829.200.json
+
+###
+
+GET http://localhost:8081/redis/hashKeyScan?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE&pattern=&limit=100&hashKeySerizlizer=jdk
+
+<> 2020-08-05T095814.200.json
+
+###
+
+GET http://localhost:8081/redis/hashKeyScan?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE&pattern=&limit=10&hashKeySerizlizer=jdk
+
+<> 2020-08-05T095801.200.json
+
+###
+
+GET http://localhost:8081/redis/hashKeyScan?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE&pattern=&limit=10&hashKeySerizlizer=string
+
+<> 2020-08-05T095752.200.json
+
+###
+
+GET http://localhost:8081/redis/hashKeyScan?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE&pattern=&limit=10
+
+<> 2020-08-05T095708.200.json
+
+###
+
+GET http://localhost:8081/redis/hashKeys?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE&pattern=&limit=10
+
+<> 2020-08-05T095227.200.json
+
+###
+
+GET http://localhost:8081/redis/hashKeys?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE&pattern=xxx&limit=10
+
+<> 2020-08-05T095214.200.json
+
+###
+
+GET http://localhost:8081/redis/hashKeys?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE&pattern=xxx&limit=10
+
+<> 2020-08-05T095122.200.json
+
+###
+
+POST http://localhost:8081/redis/data
+Content-Type: application/json
+
+{
+  "connName": "10.101.72.43",
+  "key": "PLC:PARKINGLOT.CACHE",
+  "serializerChose": {
+    "value": "jdk",
+    "hashKey": "jdk",
+    "hashValue": "jdk"
+  }
+
+}
+
+<> 2020-08-05T094906.200.json
+
+###
+
+GET http://localhost:8081/redis/scan?connName=10.101.72.43&pattern=PLC:PARKINGLOT.CACHE&limit=10
+
+<> 2020-08-05T094846.200.json
+
+###
+
+GET http://localhost:8081/redis/nodes?connName=10.101.72.43
+
+<> 2020-08-05T094838.200.json
+
+###
+
+GET http://localhost:8081/connect/all
+
+<> 2020-08-05T094818.200.json
+
+###
+
+GET http://localhost:8081/connect/redis/10.101.72.43
+
+<> 2020-08-05T094810.200.txt
+
+###
+
+GET http://localhost:8081/connect/redis/names
+
+<> 2020-08-05T094802.200.json
+
+###
+
+GET http://localhost:8081/connect/modules
+
+<> 2020-08-05T094757.200.json
+
+###
+
+GET http://localhost:8081/connect/modules
+
+<> 2020-08-05T094630.200.json
+
+###
+
 GET http://localhost:8081/redis/hashKeys?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE&pattern=xxx&limit=10
 
 <> 2020-08-04T094933.404.json
@@ -48,601 +477,6 @@ GET http://localhost:8081/classloader/listLoadedClasses?classloaderName=jsoup
 GET http://localhost:8081/classloader/classloaders
 
 <> 2020-08-04T094227.200.json
-
-###
-
-POST http://localhost:8081/classloader/uploadClassesZipSimple
-Content-Type: multipart/form-data; boundary=uploadClassesZip
-
---uploadClassesZip
-Content-Disposition: form-data; name="file"; filename="jsoup.zip"
-Content-Type: application/octet-stream
-
-< d:\test\jsoup.zip
---uploadClassesZip
-Content-Disposition: form-data; name="classloaderName"
-Content-Type: application/x-www-form-urlencoded
-
-jsoup
---uploadClassesZip--
-
-###
-
-GET http://localhost:8081/data/random/regex?regex=\d{10}[a-z]{2}\s\w{5}
-
-<> 2020-08-04T093418.200.txt
-
-###
-
-GET http://localhost:8081/data/regex?regex=\d{10}[a-z]{2}\s\w{5}
-
-<> 2020-08-04T093404.404.json
-
-###
-
-GET http://localhost:8081/data/random/list?className=com.sanri.tools.modules.core.dtos.param.DatabaseConnectParam&classloaderName=
-
-<> 2020-08-04T092944.200.json
-
-###
-
-GET http://localhost:8081/data/random?className=com.sanri.tools.modules.core.dtos.param.DatabaseConnectParam&classloaderName=
-
-<> 2020-08-04T092844.200.json
-
-###
-
-GET http://localhost:8081/data/random?className=com.sanri.tools.modules.core.dtos.param.KafkaConnectParam&classloaderName=
-
-<> 2020-08-04T092804.200.json
-
-###
-
-GET http://localhost:8081/data/random?className=com.sanri.tools.modules.core.dtos.param.KafkaConnectParam&classloaderName=
-
-<> 2020-08-04T092357.200.json
-
-###
-
-GET http://localhost:8081/data/random?className=com.sanri.tools.modules.core.dtos.param.KafkaConnectParam&classloaderName=
-
-<> 2020-08-04T092244.200.json
-
-###
-
-GET http://localhost:8081/data/random?className=com.sanri.tools.modules.core.dtos.param.KafkaConnectParam&classloaderName=
-
-<> 2020-08-04T092205.200.json
-
-###
-
-GET http://localhost:8081/classloader/classloaders
-
-<> 2020-08-04T092100.200.json
-
-###
-
-POST http://localhost:8081/mybatis/boundSql
-Content-Type: application/json
-
-{
-  "project": "ir",
-  "connName": "lo",
-  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
-  "className": "java.util.HashMap",
-  "arg": {
-    "value": {
-      "scheduleMode": "normal",
-      "pageSize": 10,
-      "start": 0,
-      "isExamine": 1
-    }
-  }
-}
-
-<> 2020-08-04T091806.200.json
-
-###
-
-GET http://localhost:8081/serializer/names
-
-<> 2020-08-04T091102.200.json
-
-###
-
-POST http://localhost:8081/mybatis/boundSql
-Content-Type: application/json
-
-{
-  "project": "ir",
-  "connName": "lo",
-  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
-  "className": "java.util.HashMap",
-  "arg": {
-    "value": {
-      "scheduleMode": "normal",
-      "pageSize": 10,
-      "start": 0,
-      "isExamine": 1
-    }
-  }
-}
-
-###
-
-POST http://localhost:8081/db/code/javaBeanBuild
-Content-Type: application/json
-
-{
-  "connName": "lo",
-  "catalog": null,
-  "schema": "mct",
-  "tableNames": [
-    "mct_event_record_common","mct_event_record","mct_event_handler"
-  ],
-  "lombok": true,
-  "swagger2": false,
-  "persistence": false,
-  "serializer": false,
-  "packageName": "com.sanri.entity",
-  "renameStrategy": "defaultRenameStragtegy"
-}
-
-<> 2020-08-04T051231.200.txt
-
-###
-
-POST http://localhost:8081/db/code/javaBeanBuild
-Content-Type: application/json
-
-{
-  "connName": "lo",
-  "catalog": null,
-  "schema": "mct",
-  "tableNames": [
-    "mct_event_record_common","mct_event_record","mct_event_handler"
-  ],
-  "lombok": true,
-  "swagger2": false,
-  "persistence": false,
-  "serializer": false,
-  "supperClass": "com.sanri.entity.Base",
-  "packageName": "com.sanri.entity",
-  "renameStrategy": "defaultRenameStragtegy"
-}
-
-<> 2020-08-04T051207.200.txt
-
-###
-
-POST http://localhost:8081/db/code/javaBeanBuild
-Content-Type: application/json
-
-{
-  "connName": "lo",
-  "catalog": null,
-  "schema": "mct",
-  "tableNames": [
-    "mct_event_record_common","mct_event_record","mct_event_handler"
-  ],
-  "lombok": false,
-  "swagger2": true,
-  "persistence": true,
-  "serializer": true,
-  "supperClass": "com.sanri.entity.Base",
-  "packageName": "com.sanri.entity",
-  "renameStrategy": "defaultRenameStragtegy"
-}
-
-<> 2020-08-04T051126.200.txt
-
-###
-
-POST http://localhost:8081/db/code/javaBeanBuild
-Content-Type: application/json
-
-{
-  "connName": "lo",
-  "catalog": null,
-  "schema": "mct",
-  "tableNames": [
-    "mct_event_record_common","mct_event_record","mct_event_handler"
-  ],
-  "lombok": false,
-  "swagger2": true,
-  "persistence": true,
-  "serializer": true,
-  "supperClass": "com.sanri.entity.Base",
-  "packageName": "com.sanri.entity",
-  "renameStrategy": "defaultRenameStragtegy"
-}
-
-<> 2020-08-04T051010.200.txt
-
-###
-
-POST http://localhost:8081/db/code/javaBeanBuild
-Content-Type: application/json
-
-{
-  "connName": "lo",
-  "catalog": null,
-  "schema": "mct",
-  "tableNames": [
-    "mct_event_record_common","mct_event_record","mct_event_handler"
-  ],
-  "lombok": false,
-  "swagger2": true,
-  "persistence": true,
-  "serializer": true,
-  "supperClass": "com.sanri.entity.Base",
-  "packageName": "com.sanri.entity",
-  "renameStrategy": "defaultRenameStragtegy"
-}
-
-<> 2020-08-04T050816.200.txt
-
-###
-
-POST http://localhost:8081/db/code/javaBeanBuild
-Content-Type: application/json
-
-{
-  "connName": "lo",
-  "catalog": null,
-  "schema": "mct",
-  "tableNames": [
-    "mct_event_record_common","mct_event_record","mct_event_handler"
-  ],
-  "lombok": false,
-  "swagger2": true,
-  "persistence": true,
-  "serializer": true,
-  "supperClass": "com.sanri.entity.Base",
-  "packageName": "com.sanri.entity",
-  "renameStrategy": "defaultRenameStragtegy"
-}
-
-<> 2020-08-04T050600.200.txt
-
-###
-
-POST http://localhost:8081/db/code/javaBeanBuild
-Content-Type: application/json
-
-{
-  "connName": "lo",
-  "catalog": null,
-  "schema": "mct",
-  "tableNames": [
-    "mct_event_record_common","mct_event_record","mct_event_handler"
-  ],
-  "lombok": false,
-  "swagger2": true,
-  "persistence": true,
-  "serializer": true,
-  "supperClass": "com.sanri.entity.Base",
-  "packageName": "com.sanri.entity",
-  "renameStrategy": "defaultRenameStragtegy"
-}
-
-<> 2020-08-04T050511.200.txt
-
-###
-
-POST http://localhost:8081/db/code/javaBeanBuild
-Content-Type: application/json
-
-{
-  "connName": "lo",
-  "catalog": null,
-  "schema": "mct",
-  "tableNames": [
-    "mct_event_record_common","mct_event_record","mct_event_handler"
-  ],
-  "lombok": true,
-  "swagger2": true,
-  "persistence": true,
-  "serializer": true,
-  "supperClass": "com.sanri.entity.Base",
-  "packageName": "com.sanri.entity",
-  "renameStrategy": "defaultRenameStragtegy"
-}
-
-<> 2020-08-04T050325.200.txt
-
-###
-
-POST http://localhost:8081/db/code/javaBeanBuild
-Content-Type: application/json
-
-{
-  "connName": "lo",
-  "catalog": null,
-  "schema": "mct",
-  "tableNames": [
-    "mct_event_record_common","mct_event_record","mct_event_handler"
-  ],
-  "lombok": true,
-  "swagger2": true,
-  "persistence": true,
-  "serializer": true,
-  "supperClass": "com.sanri.entity.Base",
-  "packageName": "com.sanri.entity",
-  "renameStrategy": "defaultRenameStragtegy"
-}
-
-<> 2020-08-04T050114.200.txt
-
-###
-
-POST http://localhost:8081/db/code/javaBeanBuild
-Content-Type: application/json
-
-{
-  "connName": "lo",
-  "catalog": null,
-  "schema": "mct",
-  "tableNames": [
-    "mct_event_record_common"
-  ],
-  "lombok": true,
-  "swagger2": true,
-  "persistence": true,
-  "serializer": true,
-  "supperClass": "com.sanri.entity.Base",
-  "packageName": "com.sanri.entity",
-  "renameStrategy": "defaultRenameStragtegy"
-}
-
-<> 2020-08-04T045850.200.txt
-
-###
-
-POST http://localhost:8081/db/code/javaBeanBuild
-Content-Type: application/json
-
-{
-  "connName": "lo",
-  "catalog": null,
-  "schema": "mct",
-  "tableNames": [
-    "mct_event_record_common"
-  ],
-  "lombok": true,
-  "swagger2": true,
-  "persistence": true,
-  "serializer": true,
-  "supperClass": "com.sanri.entity.Base",
-  "packageName": "com.sanri.entity",
-  "renameStrategy": "defaultRenameStragtegy"
-}
-
-<> 2020-08-04T045735.200.txt
-
-###
-
-POST http://localhost:8081/db/code/javaBeanBuild
-Content-Type: application/json
-
-{
-  "connName": "lo",
-  "catalog": null,
-  "schema": "mct",
-  "tableNames": [
-    "mct_event_record_common"
-  ],
-  "lombok": true,
-  "swagger2": true,
-  "persistence": true,
-  "serializer": true,
-  "supperClass": "com.sanri.entity.Base",
-  "packageName": "com.sanri.entity",
-  "renameStrategy": "defaultRenameStragtegy"
-}
-
-<> 2020-08-04T045656.200.txt
-
-###
-
-POST http://localhost:8081/db/code/javaBeanBuild
-Content-Type: application/json
-
-{
-  "connName": "lo",
-  "catalog": null,
-  "schema": "mct",
-  "tableNames": [
-    "mct_event_record_common"
-  ],
-  "lombok": true,
-  "swagger2": true,
-  "persistence": true,
-  "serializer": true,
-  "supperClass": "com.sanri.entity.Base",
-  "packageName": "com.sanri.entity",
-  "renameStrategy": "defaultRenameStragtegy"
-}
-
-<> 2020-08-04T045047.200.txt
-
-###
-
-POST http://localhost:8081/db/code/javaBeanBuild
-Content-Type: application/json
-
-{
-  "connName": "lo",
-  "catalog": null,
-  "schema": "mct",
-  "tableNames": [
-    "mct_event_record_common"
-  ],
-  "lombok": true,
-  "swagger2": true,
-  "persistence": true,
-  "serializer": true,
-  "supperClass": "com.sanri.entity.Base",
-  "packageName": "com.sanri.entity",
-  "renameStrategy": "defaultRenameStragtegy"
-}
-
-<> 2020-08-04T044418.200.txt
-
-###
-
-POST http://localhost:8081/db/code/javaBeanBuild
-Content-Type: application/json
-
-{
-  "connName": "lo",
-  "catalog": "hdsc_db",
-  "schema": "mct",
-  "tableNames": [
-    "mct_event_record_common"
-  ],
-  "lombok": true,
-  "swagger2": true,
-  "persistence": true,
-  "serializer": true,
-  "supperClass": "com.sanri.entity.Base",
-  "packageName": "com.sanri.entity",
-  "renameStrategy": "defaultRenameStragtegy"
-}
-
-<> 2020-08-04T044317.200.json
-
-###
-
-POST http://localhost:8081/db/code/javaBeanBuild
-Content-Type: application/json
-
-{
-  "connName": "lo",
-  "catalog": "hdsc_db",
-  "schema": "mct",
-  "tableNames": [
-    "mct_event_record_common"
-  ],
-  "lombok": true,
-  "swagger2": true,
-  "persistence": true,
-  "serializer": true,
-  "supperClass": "com.sanri.entity.Base",
-  "packageName": "com.sanri.entity",
-  "renameStrategy": "defaultRenameStragtegy"
-}
-
-<> 2020-08-04T044221.200.json
-
-###
-
-POST http://localhost:8081/db/code/javaBeanBuild
-Content-Type: application/json
-
-{
-  "connName": "lo",
-  "catalog": "hdsc_db",
-  "schema": "mct",
-  "tableNames": [
-    "mct_event_record_common"
-  ],
-  "lombok": true,
-  "swagger2": true,
-  "persistence": true,
-  "serializer": true,
-  "supperClass": "com.sanri.entity.Base",
-  "packageName": "com.sanri.entity",
-  "renameStrategy": "defaultRenameStragtegy"
-}
-
-<> 2020-08-04T044117.200.json
-
-###
-
-GET http://localhost:8081/db/data/config/content?connName=lo&schemaName=nacos&groupId=scp-st-messagecenter-component&dataId=scp-st-messagecenter-component-dev.properties
-
-<> 2020-08-04T113115.200.txt
-
-###
-
-GET http://localhost:8081/db/data/config/content?connName=lo&schemaName=nacos&groupId=scp-st-messagecenter-component&dataId=scp-st-messagecenter-component-dev.properties
-
-###
-
-GET http://localhost:8081/db/data/config/content?connName=lo&schemaName=nacos&groupId=scp-st-messagecenter-component&dataId=scp-st-messagecenter-component-dev.properties
-
-###
-
-GET http://localhost:8081/db/data/config/content?connName=lo&schemaName=nacos&groupId=scp-st-messagecenter-component&dataId=scp-st-messagecenter-component-dev.properties
-
-<> 2020-08-04T112819.200.json
-
-###
-
-GET http://localhost:8081/db/data/config/content?connName=lo&schemaName=nacos&groupId=scp-st-messagecenter-component&dataId=scp-st-messagecenter-component-dev.properties
-
-<> 2020-08-04T112605.200.json
-
-###
-
-GET http://localhost:8081/db/data/config/dataIds?connName=lo&schemaName=nacos&groupId=scp-st-messagecenter-component
-
-<> 2020-08-04T112511.200.json
-
-###
-
-GET http://localhost:8081/db/data/config/groups?connName=lo&schemaName=nacos
-
-<> 2020-08-04T112348.200.json
-
-###
-
-GET http://localhost:8081/db/data/config/groups?connName=lo&schemaName=nacos
-
-<> 2020-08-04T112232.200.json
-
-###
-
-GET http://localhost:8081/db/data/config/groups?connName=lo&schemaName=nacos
-
-<> 2020-08-04T112003.200.json
-
-###
-
-GET http://localhost:8081/classloader/listLoadedClasses?classloaderName=messagecenterdao
-
-<> 2020-08-03T051853.200.json
-
-###
-
-GET http://localhost:8081/classloader/messagecenterdao/com.eg.egsc.scp.messagecenter.dto.PushChannelParam/methods
-
-<> 2020-08-03T041605.200.json
-
-###
-
-GET http://localhost:8081/classloader/messagecenterdao/com.eg.egsc.scp.messagecenter.dto.PushChannelParam/fields
-
-<> 2020-08-03T041531.200.json
-
-###
-
-GET http://localhost:8081/classloader/listLoadedClasses?classloaderName=messagecenterdao
-
-<> 2020-08-03T041521.200.json
-
-###
-
-GET http://localhost:8081/classloader/messagecenterdao/com.eg.egsc.scp.messagecenter.dto.RecordBizAndAuditUsersDto/fields
-
-<> 2020-08-03T041438.200.json
-
-###
-
-GET http://localhost:8081/classloader/listLoadedClasses?classloaderName=messagecenterdao
-
-<> 2020-08-03T041342.200.json
 
 ###
 

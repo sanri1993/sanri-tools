@@ -2,7 +2,7 @@
 GET {{baseUrl}}/classloader/classloaders
 
 ### 类加载器 - 查看类加载器加载的类
-GET {{baseUrl}}/classloader/listLoadedClasses?classloaderName=jsoup
+GET {{baseUrl}}/classloader/listLoadedClasses?classloaderName=singleClasses
 
 ### 类加载器 - 查看某个类的所有字段信息
 GET {{baseUrl}}/classloader/messagecenterdao/com.eg.egsc.scp.messagecenter.dto.PushChannelParam/fields
@@ -38,20 +38,20 @@ Content-Disposition: form-data; name="classloaderName"
 Content-Type: application/x-www-form-urlencoded
 
 jsoup
-### 类加载器 - 上传单个 class 文件(还没测试)
+### 类加载器 - 上传单个 class 文件
 POST {{baseUrl}}/classloader/uploadSingleClass
 Content-Type: multipart/form-data; boundary=uploadSingleClass
 
 --uploadSingleClass
-Content-Disposition: form-data; name="file"; filename="xx.class"
+Content-Disposition: form-data; name="file"; filename="ParkingLotBean.class"
 Content-Type: application/octet-stream
 
-< d:/test/xx.class
+< d:/test/ParkingLotBean.class
 --uploadSingleClass
 Content-Disposition: form-data; name="classloaderName"
 Content-Type: application/x-www-form-urlencoded
 
-abc
+park
 ### 数据 - 类加载器随机数据生成
 GET {{baseUrl}}/data/random?className=com.sanri.tools.modules.core.dtos.param.DatabaseConnectParam&classloaderName=
 
@@ -221,6 +221,24 @@ Content-Type: application/json
   "renameStrategy": "defaultRenameStragtegy"
 }
 
+### 数据表 - 数据 - 导出数据预览
+POST {{baseUrl}}/db/data/exportPreview
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "sql": "select * from mct.mct_event_record_common"
+}
+
+### 数据表 - 数据 - 导出数据 (单线程)
+POST {{baseUrl}}/db/data/exportData
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "sql": "select * from mct.mct_event_record_common",
+  "traceId": "abc"
+}
 ### 创建 zookeeper 连接
 POST {{baseUrl}}/connect/create/zookeeper
 Content-Type: application/json
@@ -280,21 +298,24 @@ Content-Type: application/json
     "value": "jdk",
     "hashKey": "jdk",
     "hashValue": "jdk"
+  },
+  "classloaderName": "singleClasses",
+  "extraQueryParam": {
+    "hashKey": "22"
   }
-
 }
 
-### redis -  扫描 hashKey (还没测试)
-GET {{baseUrl}}/redis/hashKeys?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE&pattern=xxx&limit=10
+### redis -  扫描 hashKey
+GET {{baseUrl}}/redis/hashKeyScan?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE&pattern=&limit=100&hashKeySerizlizer=jdk
 
-### redis -  key 长度 (还没测试)
+### redis -  key 长度
 GET {{baseUrl}}/redis/keyLength?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE
 
 ### google 翻译
-GET http://translate.google.cn/translate_a/single?client=gtx&sl=zh-CN&tl=en&dt=t&q=算法
+GET http://translate.google.cn/translate_a/single?client=gtx&sl=zh-CN&tl=en&dt=t&q=查询当前组织下的审核人
 
 ### 翻译取名工具
-GET {{baseUrl}}/name/translate?orginChars=我是中国人&tokenizer=ik&tranlates=baidu
+GET {{baseUrl}}/name/translate?orginChars=查询当前组织下的审核人&tokenizer=ik&tranlates=baidu
 
 ### 所有的英语翻译
 GET {{baseUrl}}/name/englishs
@@ -314,6 +335,11 @@ Content-Type: application/x-www-form-urlencoded
 
 用户=user
 人=people
+### 多列翻译
+GET {{baseUrl}}/name/multiTranslate?words=审核人&words=消息中心&words=查询当前组织下的审核人&english=baidu
+
+### 多列翻译下划线方式
+GET {{baseUrl}}/name/mutiTranslateUnderline?words=审核人&words=消息中心&words=查询当前组织下的审核人&english=baidu
 
 ### 创建 kafka 连接
 POST {{baseUrl}}/kafka/connect/create
@@ -437,6 +463,9 @@ Content-Disposition: form-data; name="classloaderName"
 Content-Type: application/x-www-form-urlencoded
 
 irdao
+### mybatis 的 mapper 文件不会在启动的时候加载, 需要手动 reload
+GET {{baseUrl}}/mybatis/reload
+
 ### mybatis 获取加载到的 sqlId
 GET {{baseUrl}}/mybatis/statementIds?project=ir
 
