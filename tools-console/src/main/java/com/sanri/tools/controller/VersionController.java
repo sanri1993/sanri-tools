@@ -1,5 +1,6 @@
 package com.sanri.tools.controller;
 
+import com.sanri.tools.modules.core.exception.BusinessException;
 import com.sanri.tools.service.VersionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

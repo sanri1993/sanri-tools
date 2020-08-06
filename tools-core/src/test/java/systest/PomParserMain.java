@@ -12,10 +12,15 @@ import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
+import javax.management.MBeanServerConnection;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -24,6 +29,20 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class PomParserMain {
+
+    @Test
+    public void testJmx() throws IOException {
+        JMXServiceURL jmxServiceURL = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://10.101.72.42:59949/jmxrmi");
+        JMXConnector connect = JMXConnectorFactory.connect(jmxServiceURL, null);
+
+        MBeanServerConnection mBeanServerConnection = connect.getMBeanServerConnection();
+        String[] domains = mBeanServerConnection.getDomains();
+        for (String domain : domains) {
+            System.out.println(domain);
+        }
+
+        connect.close();
+    }
 
     @Test
     public void testPom() throws IOException, URISyntaxException {

@@ -13,6 +13,7 @@ import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.mapping.ParameterMap;
 import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
@@ -110,6 +111,9 @@ public class MybatisService {
         String statementId = boundSqlParam.getStatementId();
         Configuration configuration = projectConfigurationMap.computeIfAbsent(project, k -> new Configuration());
         MappedStatement mappedStatement = configuration.getMappedStatement(statementId);
+
+        BoundSql boundSql1 = mappedStatement.getBoundSql(new HashMap<>());
+        List<ParameterMapping> parameterMappings = boundSql1.getParameterMappings();
 
         String classloaderName = boundSqlParam.getClassloaderName();
         ClassLoader classloader = classloaderService.getClassloader(classloaderName);

@@ -1,8 +1,11 @@
+### 版本管理 - 当前版本
+GET {{baseUrl}}/version/v
+
 ### 类加载器 - 所有的类加载器
 GET {{baseUrl}}/classloader/classloaders
 
 ### 类加载器 - 查看类加载器加载的类
-GET {{baseUrl}}/classloader/listLoadedClasses?classloaderName=singleClasses
+GET {{baseUrl}}/classloader/listLoadedClasses?classloaderName=park
 
 ### 类加载器 - 查看某个类的所有字段信息
 GET {{baseUrl}}/classloader/messagecenterdao/com.eg.egsc.scp.messagecenter.dto.PushChannelParam/fields
@@ -24,20 +27,21 @@ Content-Disposition: form-data; name="classloaderName"
 Content-Type: application/x-www-form-urlencoded
 
 messagecenterdao
+
 ### 类加载器 - 上传 zip 包, 不需要严格的目录结构
 POST {{baseUrl}}/classloader/uploadClassesZipSimple
 Content-Type: multipart/form-data; boundary=uploadClassesZip
 
 --uploadClassesZip
-Content-Disposition: form-data; name="file"; filename="jsoup.zip"
+Content-Disposition: form-data; name="file"; filename="entity.zip"
 Content-Type: application/octet-stream
 
-< d:/test/jsoup.zip
+< d:/test/entity.zip
 --uploadClassesZip
 Content-Disposition: form-data; name="classloaderName"
 Content-Type: application/x-www-form-urlencoded
 
-jsoup
+entity
 ### 类加载器 - 上传单个 class 文件
 POST {{baseUrl}}/classloader/uploadSingleClass
 Content-Type: multipart/form-data; boundary=uploadSingleClass
@@ -61,7 +65,7 @@ GET {{baseUrl}}/data/random/list?className=com.sanri.tools.modules.core.dtos.par
 ### 数据 - 正则表达式生成数据
 GET {{baseUrl}}/data/random/regex?regex=\d{10}[a-z]{2}\s\w{5}
 
-### 数据 - 爬虫数据(还没测试通过 , 需要有 Request 标记的类)
+### 数据 - 爬虫数据
 POST {{baseUrl}}/data/spider
 Content-Type: application/json
 
@@ -462,7 +466,7 @@ ir
 Content-Disposition: form-data; name="classloaderName"
 Content-Type: application/x-www-form-urlencoded
 
-irdao
+entity
 ### mybatis 的 mapper 文件不会在启动的时候加载, 需要手动 reload
 GET {{baseUrl}}/mybatis/reload
 
