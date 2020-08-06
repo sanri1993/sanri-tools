@@ -1,24 +1,26 @@
 package com.sanri.tools.modules.mybatis.service;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
-import com.sanri.tools.modules.core.service.classloader.ExtendClassloader;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
+import com.sanri.tools.modules.database.dtos.DynamicQueryDto;
 import com.sanri.tools.modules.database.service.JdbcService;
 import com.sanri.tools.modules.mybatis.dtos.BoundSqlParam;
+import com.sanri.tools.modules.mybatis.dtos.BoundSqlResponse;
+import com.sanri.tools.modules.mybatis.dtos.ProjectDto;
+import org.apache.commons.dbutils.DbUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
-import org.apache.ibatis.mapping.ParameterMap;
 import org.apache.ibatis.mapping.ParameterMapping;
-import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 import org.apache.ibatis.session.Configuration;
-import org.apache.ibatis.type.TypeHandlerRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -28,11 +30,11 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.DateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -55,6 +57,24 @@ public class MybatisService {
 
     // projectName => Configuration
     private Map<String, Configuration> projectConfigurationMap = new ConcurrentHashMap<>();
+
+    // projectName ==> classloaderName 类加载器绑定, 主要用于下次重新加载的时候能拿到是哪个类加载器
+    private Map<String,String> classloaderBind = new ConcurrentHashMap<>();
+
+    /**
+     * 拿到所有的项目,和绑定的类加载器
+     */
+    public List<ProjectDto> projects(){
+        List<ProjectDto> projectDtos = new ArrayList<>();
+        Iterator<String> iterator = projectConfigurationMap.keySet().iterator();
+        while (iterator.hasNext()){
+            String project = iterator.next();
+            String classloaderName = classloaderBind.get(project);
+            ProjectDto projectDto = new ProjectDto(project, classloaderName);
+            projectDtos.add(projectDto);
+        }
+        return projectDtos;
+    }
 
     /**
      * 上传一个新的 mapper 文件到指定项目
@@ -81,13 +101,31 @@ public class MybatisService {
 
         Resource resource = fileManager.relativeResource(module + "/" + project + "/" + fileName);
         InputStream inputStream = resource.getInputStream();
-        Configuration configuration = projectConfigurationMap.computeIfAbsent(project, k -> new Configuration());
+        Configuration configuration = projectConfigurationMap.computeIfAbsent(project, k -> {
+            classloaderBind.put(k,classloaderName);
+            serializer();
+            return new Configuration();
+        });
 
         XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource.getFilename(),configuration.getSqlFragments());
         mapperParser.parse();
         inputStream.close();
 
         Resources.setDefaultClassLoader(ClassLoader.getSystemClassLoader());
+    }
+
+    /**
+     * 将类加载器绑定序列化到文件,方便下次读取
+     */
+    private void serializer() {
+        String collect = classloaderBind.entrySet().stream().map(entry -> StringUtils.join(Arrays.asList(entry.getKey(), entry.getValue()), ':')).collect(Collectors.joining("\n"));
+        File moduleDir = fileManager.mkTmpDir(module);
+        File bindClassloader = new File(moduleDir, "bindClassloader");
+        try {
+            FileUtils.writeStringToFile(bindClassloader,collect);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -103,17 +141,29 @@ public class MybatisService {
     }
 
     /**
-     * 获取绑定的 sql 语句
+     * 获取 statement 需要填的参数
+     * @param project
+     * @param statementId
      * @return
      */
-    public String boundSql(BoundSqlParam boundSqlParam) throws ClassNotFoundException, IOException, SQLException {
-        String project = boundSqlParam.getProject();
-        String statementId = boundSqlParam.getStatementId();
+    public List<ParameterMapping> statemenetParams(String project, String statementId){
         Configuration configuration = projectConfigurationMap.computeIfAbsent(project, k -> new Configuration());
         MappedStatement mappedStatement = configuration.getMappedStatement(statementId);
 
         BoundSql boundSql1 = mappedStatement.getBoundSql(new HashMap<>());
         List<ParameterMapping> parameterMappings = boundSql1.getParameterMappings();
+        return parameterMappings;
+    }
+
+    /**
+     * 获取绑定的 sql 语句
+     * @return
+     */
+    public BoundSqlResponse boundSql(BoundSqlParam boundSqlParam) throws ClassNotFoundException, IOException, SQLException {
+        String project = boundSqlParam.getProject();
+        String statementId = boundSqlParam.getStatementId();
+        Configuration configuration = projectConfigurationMap.computeIfAbsent(project, k -> new Configuration());
+        MappedStatement mappedStatement = configuration.getMappedStatement(statementId);
 
         String classloaderName = boundSqlParam.getClassloaderName();
         ClassLoader classloader = classloaderService.getClassloader(classloaderName);
@@ -133,30 +183,53 @@ public class MybatisService {
 
         // 获取 sql 语句, 需要依赖于数据库连接
         Connection connection = jdbcService.connection(boundSqlParam.getConnName());
-        DefaultParameterHandler defaultParameterHandler = new DefaultParameterHandler(mappedStatement,boundSql.getParameterObject(),boundSql);
-        PreparedStatement statement = connection.prepareStatement(boundSql.getSql());
-        defaultParameterHandler.setParameters(statement);
-        String sql = statement.toString();
-        statement.close();
-        connection.close();
-        return sql;
+        PreparedStatement statement = null;ResultSet resultSet = null;
+        BoundSqlResponse boundSqlResponse;
+        try {
+            DefaultParameterHandler defaultParameterHandler = new DefaultParameterHandler(mappedStatement,boundSql.getParameterObject(),boundSql);
+            statement = connection.prepareStatement(boundSql.getSql());
+            defaultParameterHandler.setParameters(statement);
+
+            // 如果为 select 语句 ,则执行得出查询结果,否则告诉前端 sql 语句
+            boundSqlResponse = null;
+            SqlCommandType sqlCommandType = mappedStatement.getSqlCommandType();
+            if (sqlCommandType == SqlCommandType.SELECT){
+                resultSet = statement.executeQuery();
+                DynamicQueryDto dynamicQueryDto = jdbcService.dynamicQueryProcessor.handle(resultSet);
+                boundSqlResponse = new BoundSqlResponse(sqlCommandType,dynamicQueryDto,statement.toString());
+            }else{
+                boundSqlResponse = new BoundSqlResponse(sqlCommandType,null,statement.toString());
+            }
+        } finally {
+            DbUtils.closeQuietly(connection,statement,resultSet);
+        }
+
+        return boundSqlResponse;
     }
 
     /**
      * 当重启项目后,需要手动重新加载所有的 mybatis 配置文件
      * 不做启动加载是因为会延长加载时间,但这个功能用到的可能性并不是太高
-     * TODO classloader
      */
-    public void reload(){
+    public void reload() throws IOException {
         projectConfigurationMap.clear();
         File moduleDir = fileManager.mkTmpDir(module);
+        // 获取类加载器绑定
+        File bind = new File(moduleDir, "bindClassloader");
+        List<String> lines = FileUtils.readLines(bind, StandardCharsets.UTF_8);
+        this.classloaderBind = lines.stream().map(line -> StringUtils.split(line, ':')).collect(Collectors.toMap(arr -> arr[0], arr -> arr[1]));
+
         File[] files = moduleDir.listFiles();
         for (File project : files) {
+            if (project.isFile()){
+                continue;
+            }
             String projectName = project.getName();
+            String classloaderName = classloaderBind.get(projectName);
             File[] mapperFiles = project.listFiles();
             for (File mapperFile : mapperFiles) {
                 try {
-                    loadMapperFile(projectName,mapperFile.getName(),null);
+                    loadMapperFile(projectName,mapperFile.getName(),classloaderName);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

@@ -1,13 +1,15 @@
 package com.sanri.tools.modules.mybatis.controller;
 
 import com.sanri.tools.modules.mybatis.dtos.BoundSqlParam;
+import com.sanri.tools.modules.mybatis.dtos.BoundSqlResponse;
+import com.sanri.tools.modules.mybatis.dtos.ProjectDto;
 import com.sanri.tools.modules.mybatis.service.MybatisService;
+import org.apache.ibatis.mapping.ParameterMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -18,8 +20,17 @@ public class MybatisController {
     private MybatisService mybatisService;
 
     @GetMapping("/reload")
-    public void reload(){
+    public void reload() throws IOException {
         mybatisService.reload();
+    }
+
+    /**
+     * 获取当前已经加载的项目
+     * @return
+     */
+    @GetMapping("/projects")
+    public List<ProjectDto> projects(){
+        return mybatisService.projects();
     }
 
     /**
@@ -44,8 +55,27 @@ public class MybatisController {
         return mybatisService.statementIds(project);
     }
 
+    /**
+     * 获取某个 statement 语句需要填写的参数
+     * @param project
+     * @param statementId
+     * @return
+     */
+    @GetMapping("/statementParams")
+    public List<ParameterMapping> statementParams(String project, String statementId){
+        return mybatisService.statemenetParams(project,statementId);
+    }
+
+    /**
+     * 填写参数,执行 statement ,得到绑定的 sql 语句
+     * @param boundSqlParam
+     * @return
+     * @throws ClassNotFoundException
+     * @throws IOException
+     * @throws SQLException
+     */
     @PostMapping("/boundSql")
-    public String boundSql(@RequestBody BoundSqlParam boundSqlParam) throws ClassNotFoundException, IOException, SQLException {
+    public BoundSqlResponse boundSql(@RequestBody BoundSqlParam boundSqlParam) throws ClassNotFoundException, IOException, SQLException {
         return mybatisService.boundSql(boundSqlParam);
     }
 }

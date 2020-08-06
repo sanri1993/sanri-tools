@@ -508,7 +508,7 @@ public class JdbcService {
     static ColumnListProcessor columnListProcessor = new ColumnListProcessor();
     static IndexListProcessor indexListProcessor = new IndexListProcessor();
     static PrimaryKeyListProcessor primaryKeyListProcessor = new PrimaryKeyListProcessor();
-    static DynamicQueryProcessor dynamicQueryProcessor = new DynamicQueryProcessor();
+    public static DynamicQueryProcessor dynamicQueryProcessor = new DynamicQueryProcessor();
 
     private static class SchemaListProcessor implements ResultSetHandler<List<Schema>>{
         @Override
@@ -610,7 +610,7 @@ public class JdbcService {
         }
     }
 
-    private static class DynamicQueryProcessor implements ResultSetHandler<DynamicQueryDto>{
+    public static class DynamicQueryProcessor implements ResultSetHandler<DynamicQueryDto>{
         @Override
         public DynamicQueryDto handle(ResultSet resultSet) throws SQLException {
             DynamicQueryDto dynamicQueryDto = new DynamicQueryDto();

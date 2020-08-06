@@ -470,8 +470,14 @@ entity
 ### mybatis 的 mapper 文件不会在启动的时候加载, 需要手动 reload
 GET {{baseUrl}}/mybatis/reload
 
+### mybatis - 列出所有当前加载的项目
+GET {{baseUrl}}/mybatis/projects
+
 ### mybatis 获取加载到的 sqlId
 GET {{baseUrl}}/mybatis/statementIds?project=ir
+
+### mybatis - 获取 sqlId 需要的参数
+GET {{baseUrl}}/mybatis/statementParams?project=ir&statementId=com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition
 
 ### 执行获取绑定的 sql
 POST {{baseUrl}}/mybatis/boundSql
@@ -487,7 +493,7 @@ Content-Type: application/json
       "scheduleMode": "normal",
       "pageSize": 10,
       "start": 0,
-      "isExamine": 1
+      "isExamine": 0
     }
   }
 }

@@ -11,6 +11,505 @@ Content-Type: application/json
       "scheduleMode": "normal",
       "pageSize": 10,
       "start": 0,
+      "isExamine": 0
+    }
+  }
+}
+
+<> 2020-08-06T093522.200.json
+
+###
+
+GET http://localhost:8081/mybatis/statementIds?project=ir
+
+<> 2020-08-06T093502.200.json
+
+###
+
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "connName": "lo",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": {
+    "value": {
+      "scheduleMode": "normal",
+      "pageSize": 10,
+      "start": 0,
+      "isExamine": 0
+    }
+  }
+}
+
+<> 2020-08-06T093053.200.json
+
+###
+
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "connName": "lo",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": {
+    "value": {
+      "scheduleMode": "normal",
+      "pageSize": 10,
+      "start": 0,
+      "isExamine": 1
+    }
+  }
+}
+
+<> 2020-08-06T092820.200.json
+
+###
+
+GET http://localhost:8081/mybatis/reload
+
+<> 2020-08-06T092813.200.json
+
+###
+
+GET http://localhost:8081/mybatis/statementParams?project=ir&statementId=com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition
+
+<> 2020-08-06T091938.200.json
+
+###
+
+GET http://localhost:8081/mybatis/statementIds?project=ir
+
+<> 2020-08-06T091838.200.json
+
+###
+
+GET http://localhost:8081/mybatis/projects
+
+<> 2020-08-06T091829.200.json
+
+###
+
+POST http://localhost:8081/mybatis/uploadMapperFile
+Content-Type: multipart/form-data; boundary=uploadMapperFile
+
+--uploadMapperFile
+Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
+Content-Type: application/octet-stream
+
+< d:\test\ScheduleMapper.xml
+--uploadMapperFile
+Content-Disposition: form-data; name="project"
+Content-Type: application/x-www-form-urlencoded
+
+ir
+--uploadMapperFile
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+entity
+--uploadMapperFile--
+
+<> 2020-08-06T091737.200.json
+
+###
+
+GET http://localhost:8081/mybatis/reload
+
+<> 2020-08-06T084639.200.json
+
+###
+
+GET http://localhost:8081/mybatis/statementIds?project=ir
+
+<> 2020-08-06T084633.200.json
+
+###
+
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "connName": "lo",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": {
+    "value": {
+      "scheduleMode": "normal",
+      "pageSize": 10,
+      "start": 0,
+      "isExamine": 1
+    }
+  }
+}
+
+<> 2020-08-06T083159.200.json
+
+###
+
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "connName": "lo",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": {
+    "value": {
+      "scheduleMode": "normal",
+      "pageSize": 10,
+      "start": 0,
+      "isExamine": 1
+    }
+  }
+}
+
+<> 2020-08-06T083031.200.json
+
+###
+
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "connName": "lo",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": {
+    "value": {
+      "scheduleMode": "normal",
+      "pageSize": 10,
+      "start": 0,
+      "isExamine": 1
+    }
+  }
+}
+
+<> 2020-08-05T083036.200.json
+
+###
+
+POST http://localhost:8081/mybatis/uploadMapperFile
+Content-Type: multipart/form-data; boundary=uploadMapperFile
+
+--uploadMapperFile
+Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
+Content-Type: application/octet-stream
+
+< d:\test\ScheduleMapper.xml
+--uploadMapperFile
+Content-Disposition: form-data; name="project"
+Content-Type: application/x-www-form-urlencoded
+
+ir
+--uploadMapperFile
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+entity
+--uploadMapperFile--
+
+<> 2020-08-05T082903.200.json
+
+###
+
+POST http://localhost:8081/mybatis/uploadMapperFile
+Content-Type: multipart/form-data; boundary=uploadMapperFile
+
+--uploadMapperFile
+Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
+Content-Type: application/octet-stream
+
+< d:\test\ScheduleMapper.xml
+--uploadMapperFile
+Content-Disposition: form-data; name="project"
+Content-Type: application/x-www-form-urlencoded
+
+ir
+--uploadMapperFile
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+entity
+--uploadMapperFile--
+
+<> 2020-08-05T082833.200.json
+
+###
+
+GET http://localhost:8081/mybatis/reload
+
+<> 2020-08-05T082828.200.json
+
+###
+
+GET http://localhost:8081/mybatis/reload
+
+<> 2020-08-05T082759.200.json
+
+###
+
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "connName": "lo",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": {
+    "value": {
+      "scheduleMode": "normal",
+      "pageSize": 10,
+      "start": 0,
+      "isExamine": 1
+    }
+  }
+}
+
+<> 2020-08-05T082752.200.json
+
+###
+
+GET http://localhost:8081/mybatis/statementIds?project=ir
+
+<> 2020-08-05T081102.200.json
+
+###
+
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "connName": "lo",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": {
+    "value": {
+      "scheduleMode": "normal",
+      "pageSize": 10,
+      "start": 0,
+      "isExamine": 1
+    }
+  }
+}
+
+<> 2020-08-05T081042.200.json
+
+###
+
+GET http://localhost:8081/mybatis/statementIds?project=ir
+
+<> 2020-08-05T081038.200.json
+
+###
+
+POST http://localhost:8081/mybatis/uploadMapperFile
+Content-Type: multipart/form-data; boundary=uploadMapperFile
+
+--uploadMapperFile
+Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
+Content-Type: application/octet-stream
+
+< d:\test\ScheduleMapper.xml
+--uploadMapperFile
+Content-Disposition: form-data; name="project"
+Content-Type: application/x-www-form-urlencoded
+
+ir
+--uploadMapperFile
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+entity
+--uploadMapperFile--
+
+<> 2020-08-05T081031.200.json
+
+###
+
+POST http://localhost:8081/mybatis/uploadMapperFile
+Content-Type: multipart/form-data; boundary=uploadMapperFile
+
+--uploadMapperFile
+Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
+Content-Type: application/octet-stream
+
+< d:\test\ScheduleMapper.xml
+--uploadMapperFile
+Content-Disposition: form-data; name="project"
+Content-Type: application/x-www-form-urlencoded
+
+ir
+--uploadMapperFile
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+irdao
+--uploadMapperFile--
+
+<> 2020-08-05T081011.200.json
+
+###
+
+POST http://localhost:8081/classloader/uploadClassesZipSimple
+Content-Type: multipart/form-data; boundary=uploadClassesZip
+
+--uploadClassesZip
+Content-Disposition: form-data; name="file"; filename="entity.zip"
+Content-Type: application/octet-stream
+
+< d:\test\entity.zip
+--uploadClassesZip
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+entity
+--uploadClassesZip--
+
+<> 2020-08-05T080949.200.json
+
+###
+
+GET http://localhost:8081/version/v
+
+<> 2020-08-05T073806.200.json
+
+###
+
+POST http://localhost:8081/classloader/uploadClassesZipSimple
+Content-Type: multipart/form-data; boundary=uploadClassesZip
+
+--uploadClassesZip
+Content-Disposition: form-data; name="file"; filename="jsoup.zip"
+Content-Type: application/octet-stream
+
+< d:\test\jsoup.zip
+--uploadClassesZip
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+jsoup
+--uploadClassesZip--
+
+<> 2020-08-05T073801.200.json
+
+###
+
+POST http://localhost:8081/classloader/uploadClassesZipSimple
+Content-Type: multipart/form-data; boundary=uploadClassesZip
+
+--uploadClassesZip
+Content-Disposition: form-data; name="file"; filename="jsoup.zip"
+Content-Type: application/octet-stream
+
+< d:\test\jsoup.zip
+--uploadClassesZip
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+jsoup
+--uploadClassesZip--
+
+<> 2020-08-05T073641.200.json
+
+###
+
+GET http://localhost:8081/version/v
+
+<> 2020-08-05T073629.200.json
+
+###
+
+POST http://localhost:8081/data/spider
+Content-Type: application/json
+
+{
+  "className": "com.sanri.app.jsoup.biquge1.NovelSearch",
+  "classloaderName": "jsoup",
+  "params": {
+  "keyword": "校花的贴身高手"
+  }
+}
+
+<> 2020-08-05T073415.200.json
+
+###
+
+GET http://localhost:8081/classloader/classloaders
+
+<> 2020-08-05T073402.200.json
+
+###
+
+POST http://localhost:8081/classloader/uploadClassesZipSimple
+Content-Type: multipart/form-data; boundary=uploadClassesZip
+
+--uploadClassesZip
+Content-Disposition: form-data; name="file"; filename="jsoup.zip"
+Content-Type: application/octet-stream
+
+< d:\test\jsoup.zip
+--uploadClassesZip
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+jsoup
+--uploadClassesZip--
+
+<> 2020-08-05T073313.200.json
+
+###
+
+GET http://localhost:8081/classloader/listLoadedClasses?classloaderName=park
+
+<> 2020-08-05T071523.200.json
+
+###
+
+GET http://localhost:8081/classloader/classloaders
+
+<> 2020-08-05T071509.200.json
+
+###
+
+GET http://localhost:8081/version/current
+
+<> 2020-08-05T071435.200.json
+
+###
+
+GET http://localhost:8081/version/current
+
+###
+
+GET http://localhost:8081/version/current
+
+<> 2020-08-05T063757.200.json
+
+###
+
+POST http://localhost:8081/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "connName": "lo",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": {
+    "value": {
+      "scheduleMode": "normal",
+      "pageSize": 10,
+      "start": 0,
       "isExamine": 1
     }
   }
@@ -157,326 +656,6 @@ Content-Type: application/json
 GET http://localhost:8081/db/data/exportPreview?connName=lo&sql=select * from mct.mct_event_record_common
 
 <> 2020-08-05T020735.200.json
-
-###
-
-GET http://localhost:8081/db/data/exportPreview?connName=lo&sql=select * from mct.mct_event_record_common
-
-<> 2020-08-05T020705.200.json
-
-###
-
-POST http://localhost:8081/mybatis/boundSql
-Content-Type: application/json
-
-{
-  "project": "ir",
-  "connName": "lo",
-  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
-  "className": "java.util.HashMap",
-  "arg": {
-    "value": {
-      "scheduleMode": "normal",
-      "pageSize": 10,
-      "start": 0,
-      "isExamine": 1
-    }
-  }
-}
-
-<> 2020-08-05T102832.200.json
-
-###
-
-POST http://localhost:8081/soap/WeatherWebServiceSoap/getWeatherbyCityName/request?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
-Content-Type: text/plain
-
-<?xml version="1.0" encoding="UTF-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <soap:Body xmlns="http://WebXml.com.cn/">
-  <getWeatherbyCityName>
-            <theCityName>深圳</theCityName>
-        </getWeatherbyCityName>
-    </soap:Body>
-</soap:Envelope>
-
-<> 2020-08-05T102755.200.txt
-
-###
-
-GET http://localhost:8081/name/mutiTranslateUnderline?words=审核人&words=消息中心&words=查询当前组织下的审核人&english=baidu
-
-<> 2020-08-05T102721.200.json
-
-###
-
-GET http://localhost:8081/name/multiTranslate?words=审核人&words=消息中心&words=查询当前组织下的审核人&english=baidu
-
-<> 2020-08-05T102646.200.json
-
-###
-
-GET http://localhost:8081/name/translate?orginChars=查询当前组织下的审核人&tokenizer=ik&tranlates=baidu
-
-<> 2020-08-05T102546.200.json
-
-###
-
-GET http://localhost:8081/name/translate?orginChars=查询当前组织下的审核人&tokenizer=ik&tranlates=baidu
-
-<> 2020-08-05T101142.200.json
-
-###
-
-GET http://translate.google.cn/translate_a/single?client=gtx&sl=zh-CN&tl=en&dt=t&q=查询当前组织下的审核人
-
-<> 2020-08-05T101125.200.json
-
-###
-
-GET http://localhost:8081/name/multiTranslate?words=审核人&words=消息中心&words=查询当前组织下的审核人&english=baidu
-
-<> 2020-08-05T101021.200.json
-
-###
-
-GET http://localhost:8081/name/multiTranslate?words=中国&words=明天&english=baidu
-
-<> 2020-08-05T100914.200.json
-
-###
-
-GET http://localhost:8081/name/multiTranslate?words=中国&words=明天&english=baidu
-
-<> 2020-08-05T100748.200.json
-
-###
-
-POST http://localhost:8081/redis/data
-Content-Type: application/json
-
-{
-  "connName": "10.101.72.43",
-  "key": "PLC:PARKINGLOT.CACHE",
-  "serializerChose": {
-    "value": "jdk",
-    "hashKey": "jdk",
-    "hashValue": "jdk"
-  },
-  "classloaderName": "singleClasses",
-  "extraQueryParam": {
-    "hashKey": "22"
-  }
-}
-
-<> 2020-08-05T100559.200.json
-
-###
-
-POST http://localhost:8081/redis/data
-Content-Type: application/json
-
-{
-  "connName": "10.101.72.43",
-  "key": "PLC:PARKINGLOT.CACHE",
-  "serializerChose": {
-    "value": "jdk",
-    "hashKey": "jdk",
-    "hashValue": "jdk"
-  },
-  "classloaderName": "singleClasses"
-}
-
-<> 2020-08-05T100441.200.json
-
-###
-
-GET http://localhost:8081/classloader/listLoadedClasses?classloaderName=singleClasses
-
-<> 2020-08-05T100400.200.json
-
-###
-
-GET http://localhost:8081/classloader/classloaders
-
-<> 2020-08-05T100350.200.json
-
-###
-
-POST http://localhost:8081/classloader/uploadSingleClass
-Content-Type: multipart/form-data; boundary=uploadSingleClass
-
---uploadSingleClass
-Content-Disposition: form-data; name="file"; filename="ParkingLotBean.class"
-Content-Type: application/octet-stream
-
-< d:\test\ParkingLotBean.class
---uploadSingleClass
-Content-Disposition: form-data; name="classloaderName"
-Content-Type: application/x-www-form-urlencoded
-
-park
---uploadSingleClass--
-
-###
-
-GET http://localhost:8081/redis/keyLength?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE
-
-<> 2020-08-05T095829.200.json
-
-###
-
-GET http://localhost:8081/redis/hashKeyScan?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE&pattern=&limit=100&hashKeySerizlizer=jdk
-
-<> 2020-08-05T095814.200.json
-
-###
-
-GET http://localhost:8081/redis/hashKeyScan?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE&pattern=&limit=10&hashKeySerizlizer=jdk
-
-<> 2020-08-05T095801.200.json
-
-###
-
-GET http://localhost:8081/redis/hashKeyScan?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE&pattern=&limit=10&hashKeySerizlizer=string
-
-<> 2020-08-05T095752.200.json
-
-###
-
-GET http://localhost:8081/redis/hashKeyScan?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE&pattern=&limit=10
-
-<> 2020-08-05T095708.200.json
-
-###
-
-GET http://localhost:8081/redis/hashKeys?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE&pattern=&limit=10
-
-<> 2020-08-05T095227.200.json
-
-###
-
-GET http://localhost:8081/redis/hashKeys?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE&pattern=xxx&limit=10
-
-<> 2020-08-05T095214.200.json
-
-###
-
-GET http://localhost:8081/redis/hashKeys?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE&pattern=xxx&limit=10
-
-<> 2020-08-05T095122.200.json
-
-###
-
-POST http://localhost:8081/redis/data
-Content-Type: application/json
-
-{
-  "connName": "10.101.72.43",
-  "key": "PLC:PARKINGLOT.CACHE",
-  "serializerChose": {
-    "value": "jdk",
-    "hashKey": "jdk",
-    "hashValue": "jdk"
-  }
-
-}
-
-<> 2020-08-05T094906.200.json
-
-###
-
-GET http://localhost:8081/redis/scan?connName=10.101.72.43&pattern=PLC:PARKINGLOT.CACHE&limit=10
-
-<> 2020-08-05T094846.200.json
-
-###
-
-GET http://localhost:8081/redis/nodes?connName=10.101.72.43
-
-<> 2020-08-05T094838.200.json
-
-###
-
-GET http://localhost:8081/connect/all
-
-<> 2020-08-05T094818.200.json
-
-###
-
-GET http://localhost:8081/connect/redis/10.101.72.43
-
-<> 2020-08-05T094810.200.txt
-
-###
-
-GET http://localhost:8081/connect/redis/names
-
-<> 2020-08-05T094802.200.json
-
-###
-
-GET http://localhost:8081/connect/modules
-
-<> 2020-08-05T094757.200.json
-
-###
-
-GET http://localhost:8081/connect/modules
-
-<> 2020-08-05T094630.200.json
-
-###
-
-GET http://localhost:8081/redis/hashKeys?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE&pattern=xxx&limit=10
-
-<> 2020-08-04T094933.404.json
-
-###
-
-POST http://localhost:8081/mybatis/boundSql
-Content-Type: application/json
-
-{
-  "project": "ir",
-  "connName": "lo",
-  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
-  "className": "java.util.HashMap",
-  "arg": {
-    "value": {
-      "scheduleMode": "normal",
-      "pageSize": 10,
-      "start": 0,
-      "isExamine": 1
-    }
-  }
-}
-
-<> 2020-08-04T094541.200.json
-
-###
-
-POST http://localhost:8081/data/spider
-Content-Type: application/json
-
-{
-  "className": "com.sanri.app.jsoup.biquge1.NovelSearch",
-  "classloaderName": "jsoup",
-  "params": {
-  "keyword": "校花的贴身高手"
-  }
-}
-
-###
-
-GET http://localhost:8081/classloader/listLoadedClasses?classloaderName=jsoup
-
-<> 2020-08-04T094235.200.json
-
-###
-
-GET http://localhost:8081/classloader/classloaders
-
-<> 2020-08-04T094227.200.json
 
 ###
 
