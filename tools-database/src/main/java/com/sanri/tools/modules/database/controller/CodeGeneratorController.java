@@ -2,8 +2,11 @@ package com.sanri.tools.modules.database.controller;
 
 import com.sanri.tools.modules.database.dtos.CodeGeneratorConfig;
 import com.sanri.tools.modules.database.dtos.JavaBeanBuildConfig;
+import com.sanri.tools.modules.database.dtos.TemplateContent;
 import com.sanri.tools.modules.database.service.CodeGeneratorService;
+import com.sanri.tools.modules.database.service.PreviewCodeParam;
 import com.sanri.tools.modules.database.service.TemplateService;
+import freemarker.template.TemplateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -90,7 +93,22 @@ public class CodeGeneratorController {
      * @param content
      */
     @PostMapping("/override")
-    public void override(String name,String content) throws IOException {
+    public void override(@RequestBody TemplateContent templateContent) throws IOException {
+        String name = templateContent.getName();
+        String content = templateContent.getContent();
         templateService.writeContent(name,content);
+    }
+
+    /**
+     * 使用模板生成代码的预览
+     * @param previewCodeParam
+     * @return
+     * @throws SQLException
+     * @throws IOException
+     * @throws TemplateException
+     */
+    @PostMapping("/template/code/preview")
+    public String previewCode(@RequestBody PreviewCodeParam previewCodeParam) throws SQLException, IOException, TemplateException {
+        return codeGeneratorService.previewCode(previewCodeParam);
     }
 }

@@ -197,6 +197,19 @@ public class FileManager {
     }
 
     /**
+     * 创建一个配置路径
+     * @param baseName
+     * @return
+     */
+    public File mkConfigDir(String baseName){
+        File file = new File(configBase, baseName);
+        if(!file.exists()){
+            file.mkdirs();
+        }
+        return file;
+    }
+
+    /**
      * 删除配置文件
      * @param module
      * @param baseName

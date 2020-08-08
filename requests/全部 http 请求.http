@@ -110,18 +110,18 @@ Content-Type: application/json
 {
   "connectIdParam": {
     "module": "database",
-    "connName": "lo"
+    "connName": "localhost"
   },
   "connectParam": {
-    "host": "10.101.72.43",
-    "port": 5432
+    "host": "localhost",
+    "port": 3306
   },
   "authParam": {
-    "username": "postgres",
-    "password": "postgres"
+    "username": "root",
+    "password": "h123"
   },
-  "dbType": "postgresql",
-  "database": "hdsc_db"
+  "dbType": "mysql",
+  "database": "test"
 }
 
 ### 获取所有数据库连接
@@ -206,6 +206,27 @@ GET {{baseUrl}}/db/data/config/dataIds?connName=lo&schemaName=nacos&groupId=scp-
 ### 数据表 - 配置数据 - 获取配置数据详情
 GET {{baseUrl}}/db/data/config/content?connName=lo&schemaName=nacos&groupId=scp-st-messagecenter-component&dataId=scp-st-messagecenter-component-dev.properties
 
+### 数据表 - 数据 - 导出数据预览
+POST {{baseUrl}}/db/data/exportPreview
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "sql": "select * from mct.mct_event_record_common"
+}
+
+### 数据表 - 数据 - 导出数据 (单线程)
+POST {{baseUrl}}/db/data/exportData
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "sql": "select * from mct.mct_event_record_common",
+  "traceId": "abc"
+}
+### 数据库 - 代码生成 - 列出所有重命名策略
+GET {{baseUrl}}/db/code/renameStrategies
+
 ### 数据表 - 代码生成 - 生成 javaBean
 POST {{baseUrl}}/db/code/javaBeanBuild
 Content-Type: application/json
@@ -225,24 +246,41 @@ Content-Type: application/json
   "renameStrategy": "defaultRenameStragtegy"
 }
 
-### 数据表 - 数据 - 导出数据预览
-POST {{baseUrl}}/db/data/exportPreview
+### 数据库 - 代码生成 - 列出所有模板
+GET {{baseUrl}}/db/code/templates
+
+### 数据库 - 代码生成 - 查询某个模板详情
+GET {{baseUrl}}/db/code/mybatis.vm/content
+
+### 数据库 - 代码生成 - 生成一个方案
+POST {{baseUrl}}/db/code/override
 Content-Type: application/json
 
 {
-  "connName": "lo",
-  "sql": "select * from mct.mct_event_record_common"
+  "name": "base.schema",
+  "content": "mybatis.vm\r\npojojpa.vm\r\nservice.vm"
 }
 
-### 数据表 - 数据 - 导出数据 (单线程)
-POST {{baseUrl}}/db/data/exportData
+### 数据库 - 代码生成 - 列出所有方案
+GET {{baseUrl}}/db/code/schemas
+
+### 数据库 - 代码生成 - 列出某个方案的模板列表
+GET {{baseUrl}}/db/code/base.schema/templates
+
+### 数据库 - 代码生成 - 预览模板代码
+POST {{baseUrl}}/db/code/template/code/preview
 Content-Type: application/json
 
 {
-  "connName": "lo",
-  "sql": "select * from mct.mct_event_record_common",
-  "traceId": "abc"
+  "template": "mybatis.vm",
+  "connName": "localhost",
+  "renameStrategyName": "defaultRenameStragtegy",
+  "actualTableName": {
+    "catalog": "test",
+    "tableName": "batch"
+  }
 }
+
 ### 创建 zookeeper 连接
 POST {{baseUrl}}/connect/create/zookeeper
 Content-Type: application/json

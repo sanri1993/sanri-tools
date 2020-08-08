@@ -89,6 +89,7 @@
                         <exclude>com.oracle:ojdbc6</exclude>
                         <exclude>com.microsoft.sqlserver:sqljdbc4</exclude>
                         <exclude>org.wltea.analyzer:IKAnalyzer</exclude>
+                        <exclude>org.mybatis:mybatis</exclude>
                     </excludes>
                 </configuration>
                 <executions>

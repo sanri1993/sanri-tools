@@ -29,6 +29,7 @@
             <version>1.5</version>
         </dependency>
 
+        <!-- 模板引擎 velociy 和 freemarker -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-freemarker</artifactId>
@@ -39,6 +40,13 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- springboot 1.4 之后不再支持 velocity ; 所以本工具也不再支持 velocity  -->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-velocity</artifactId>-->
+<!--            <version>1.4.6.RELEASE</version>-->
+<!--        </dependency>-->
+
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>

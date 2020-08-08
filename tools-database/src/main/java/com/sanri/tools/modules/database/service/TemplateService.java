@@ -2,7 +2,6 @@ package com.sanri.tools.modules.database.service;
 
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
-import com.sanri.tools.modules.database.dtos.meta.Column;
 import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
 import com.sanri.tools.modules.database.service.rename.JavaBeanInfo;
 import freemarker.template.Configuration;
@@ -11,11 +10,13 @@ import freemarker.template.TemplateException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
-import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.thymeleaf.TemplateSpec;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +38,9 @@ public class TemplateService {
     private FileManager fileManager;
     @Autowired
     private Configuration configuration;
+    @Autowired
+    private SpringTemplateEngine springTemplateEngine;
+
     private FreeMarkerTemplate freeMarkerTemplate = new FreeMarkerTemplate();
 
     // 数据都存储在这个路径下,使用后缀来区分是方案还是模板 *.schema 是方案 , *.ftl 是 freemarker 模板 ,*.vm 是 velocity 模板
@@ -46,33 +50,37 @@ public class TemplateService {
 
     /** 方案,模板的增删改查 **/
     public List<String> schemas(){
-        File dir = fileManager.mkTmpDir(basePath);
+        File dir = fileManager.mkConfigDir(basePath);
         Collection<File> files = FileUtils.listFiles(dir, SCHEMA_EXTENSION, false);
         List<String> collect = files.stream().map(File::getName).collect(Collectors.toList());
         return collect;
     }
     public List<String> templates(){
-        File dir = fileManager.mkTmpDir(basePath);
+        File dir = fileManager.mkConfigDir(basePath);
         Collection<File> files = FileUtils.listFiles(dir, TEMPLATE_EXTENSION, false);
         List<String> collect = files.stream().map(File::getName).collect(Collectors.toList());
         return collect;
     }
     // 模板或者方案内容
     public String content(String name) throws IOException {
-        return  FileUtils.readFileToString(new File(basePath, name));
+        File dir = fileManager.mkConfigDir(basePath);
+        return  FileUtils.readFileToString(new File(dir, name));
     }
     // 方案依赖的模板列表
     public List<String> schemaTemplates(String name) throws IOException {
-        return FileUtils.readLines(new File(basePath,name), StandardCharsets.UTF_8);
+        File dir = fileManager.mkConfigDir(basePath);
+        return FileUtils.readLines(new File(dir,name), StandardCharsets.UTF_8);
     }
     // 写入模板或方案
     public void writeContent(String name,String content) throws IOException {
-        File file = new File(basePath, name);
+        File dir = fileManager.mkConfigDir(basePath);
+        File file = new File(dir, name);
         FileUtils.writeStringToFile(file,content);
     }
     // 上传一个模板
     public void uploadTemplate(MultipartFile file) throws IOException {
-        File templateFile = new File(basePath, file.getName());
+        File dir = fileManager.mkConfigDir(basePath);
+        File templateFile = new File(dir, file.getName());
         file.transferTo(templateFile);
     }
 
@@ -92,7 +100,9 @@ public class TemplateService {
         context.put("date", DateFormatUtils.ISO_DATE_FORMAT.format(System.currentTimeMillis()));
         context.put("time",DateFormatUtils.ISO_TIME_NO_T_FORMAT.format(System.currentTimeMillis()));
         context.put("author",System.getProperty("user.name"));
-        Template template = configuration.getTemplate(templateName+".ftl");
+
+        String content = content(templateName);
+        Template template = new Template(FilenameUtils.getBaseName(templateName), content, configuration);
         return freeMarkerTemplate.process(template,context);
     }
 

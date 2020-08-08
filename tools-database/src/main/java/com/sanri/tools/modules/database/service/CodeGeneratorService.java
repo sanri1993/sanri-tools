@@ -3,7 +3,6 @@ package com.sanri.tools.modules.database.service;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.database.dtos.CodeGeneratorConfig;
 import com.sanri.tools.modules.database.dtos.JavaBeanBuildConfig;
-import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
 import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
 import com.sanri.tools.modules.database.service.rename.JavaBeanInfo;
 import freemarker.template.Configuration;
@@ -16,6 +15,7 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.ReflectUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -181,18 +181,16 @@ public class CodeGeneratorService {
 
     /**
      * 使用某一张表进行代码的预览
-     * @param template
-     * @param actualTableName
+     * @param previewCodeParam
      */
-    public String codePreview(String template,String connName, ActualTableName actualTableName,String renameStrategyName) throws IOException, SQLException, TemplateException {
+    public String previewCode(PreviewCodeParam previewCodeParam) throws IOException, SQLException, TemplateException {
         // 获取表元数据
-        List<TableMetaData> tableMetaData = jdbcService.filterSchemaTables(connName, actualTableName.getCatalog(), actualTableName.getSchema());
-        Optional<TableMetaData> first = tableMetaData.stream().filter(table -> table.getActualTableName().equals(actualTableName)).findFirst();
-        if (first.isPresent()){
-            TableMetaData currentTable = first.get();
-            RenameStrategy renameStrategy = renameStrategyMap.get(renameStrategyName);
+        List<TableMetaData> tableMetaData = jdbcService.filterChoseTables(previewCodeParam.getConnName(), previewCodeParam.getActualTableName().getCatalog(), previewCodeParam.getActualTableName().getSchema(),Collections.singletonList(previewCodeParam.getActualTableName().getTableName()));
+        if (!CollectionUtils.isEmpty(tableMetaData)){
+            TableMetaData previewTable = tableMetaData.get(0);
+            RenameStrategy renameStrategy = renameStrategyMap.get(previewCodeParam.getRenameStrategyName());
             // 生成代码
-            return templateService.preview(template,currentTable,renameStrategy);
+            return templateService.preview(previewCodeParam.getTemplate(),previewTable,renameStrategy);
         }
         return "";
     }
@@ -205,7 +203,7 @@ public class CodeGeneratorService {
      * @param renameStrategyName
      * @return
      */
-    public String codeGenerator(String template,CodeGeneratorConfig.DataSourceConfig dataSourceConfig, String renameStrategyName) throws IOException, SQLException {
+    public String codeGenerator(String template,CodeGeneratorConfig.DataSourceConfig dataSourceConfig, String renameStrategyName) throws IOException, SQLException, TemplateException {
         String connName = dataSourceConfig.getConnName();
         String catalog = dataSourceConfig.getCatalog();
         String schema = dataSourceConfig.getSchema();

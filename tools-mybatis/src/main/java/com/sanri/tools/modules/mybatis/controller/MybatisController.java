@@ -59,6 +59,7 @@ public class MybatisController {
      * 获取某个 statement 语句需要填写的参数
      * @param project
      * @param statementId
+     * @ignore
      * @return
      */
     @GetMapping("/statementParams")
