@@ -12,6 +12,7 @@ import java.util.Set;
 @Data
 public class JavaBeanInfo {
     private String className;
+    private String lowerClassName;
     private Set<String> imports = new HashSet<>();
     private List<BeanField> fields = new ArrayList<>();
 

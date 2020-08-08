@@ -3,6 +3,7 @@ package com.sanri.tools.modules.database.service;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.database.dtos.CodeGeneratorConfig;
 import com.sanri.tools.modules.database.dtos.JavaBeanBuildConfig;
+import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
 import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
 import com.sanri.tools.modules.database.service.rename.JavaBeanInfo;
 import freemarker.template.Configuration;
@@ -172,5 +173,44 @@ public class CodeGeneratorService {
                 }
             }
         }
+    }
+
+    /** 使用模板生成代码 **/
+    @Autowired
+    private TemplateService templateService;
+
+    /**
+     * 使用某一张表进行代码的预览
+     * @param template
+     * @param actualTableName
+     */
+    public String codePreview(String template,String connName, ActualTableName actualTableName,String renameStrategyName) throws IOException, SQLException, TemplateException {
+        // 获取表元数据
+        List<TableMetaData> tableMetaData = jdbcService.filterSchemaTables(connName, actualTableName.getCatalog(), actualTableName.getSchema());
+        Optional<TableMetaData> first = tableMetaData.stream().filter(table -> table.getActualTableName().equals(actualTableName)).findFirst();
+        if (first.isPresent()){
+            TableMetaData currentTable = first.get();
+            RenameStrategy renameStrategy = renameStrategyMap.get(renameStrategyName);
+            // 生成代码
+            return templateService.preview(template,currentTable,renameStrategy);
+        }
+        return "";
+    }
+
+    /**
+     * 代码生成
+     * @param template
+     * @param connName
+     * @param actualTableName
+     * @param renameStrategyName
+     * @return
+     */
+    public String codeGenerator(String template,CodeGeneratorConfig.DataSourceConfig dataSourceConfig, String renameStrategyName) throws IOException, SQLException {
+        String connName = dataSourceConfig.getConnName();
+        String catalog = dataSourceConfig.getCatalog();
+        String schema = dataSourceConfig.getSchema();
+        List<TableMetaData> filterTables = jdbcService.filterChoseTables(connName, catalog, schema,dataSourceConfig.getTableNames());
+
+        return templateService.processBatch(template,renameStrategyMap.get(renameStrategyName),filterTables);
     }
 }
