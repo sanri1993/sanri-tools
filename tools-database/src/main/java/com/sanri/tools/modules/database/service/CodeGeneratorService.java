@@ -2,6 +2,7 @@ package com.sanri.tools.modules.database.service;
 
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.database.dtos.CodeGeneratorConfig;
+import com.sanri.tools.modules.database.dtos.CodeGeneratorParam;
 import com.sanri.tools.modules.database.dtos.JavaBeanBuildConfig;
 import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
 import com.sanri.tools.modules.database.service.rename.JavaBeanInfo;
@@ -203,12 +204,17 @@ public class CodeGeneratorService {
      * @param renameStrategyName
      * @return
      */
-    public String codeGenerator(String template,CodeGeneratorConfig.DataSourceConfig dataSourceConfig, String renameStrategyName) throws IOException, SQLException, TemplateException {
+    public Path codeGenerator(CodeGeneratorParam codeGeneratorParam) throws IOException, SQLException, TemplateException {
+        CodeGeneratorConfig.DataSourceConfig dataSourceConfig = codeGeneratorParam.getDataSourceConfig();
         String connName = dataSourceConfig.getConnName();
         String catalog = dataSourceConfig.getCatalog();
         String schema = dataSourceConfig.getSchema();
         List<TableMetaData> filterTables = jdbcService.filterChoseTables(connName, catalog, schema,dataSourceConfig.getTableNames());
 
-        return templateService.processBatch(template,renameStrategyMap.get(renameStrategyName),filterTables);
+        String renameStrategyName = codeGeneratorParam.getRenameStrategyName();
+        RenameStrategy renameStrategy = renameStrategyMap.get(renameStrategyName);
+
+        File file = templateService.processBatch(codeGeneratorParam.getTemplates(), renameStrategy, filterTables);
+        return fileManager.relativePath(file.toPath());
     }
 }

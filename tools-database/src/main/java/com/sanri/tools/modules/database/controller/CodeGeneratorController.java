@@ -1,6 +1,7 @@
 package com.sanri.tools.modules.database.controller;
 
 import com.sanri.tools.modules.database.dtos.CodeGeneratorConfig;
+import com.sanri.tools.modules.database.dtos.CodeGeneratorParam;
 import com.sanri.tools.modules.database.dtos.JavaBeanBuildConfig;
 import com.sanri.tools.modules.database.dtos.TemplateContent;
 import com.sanri.tools.modules.database.service.CodeGeneratorService;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
@@ -110,5 +112,11 @@ public class CodeGeneratorController {
     @PostMapping("/template/code/preview")
     public String previewCode(@RequestBody PreviewCodeParam previewCodeParam) throws SQLException, IOException, TemplateException {
         return codeGeneratorService.previewCode(previewCodeParam);
+    }
+
+    @PostMapping("/template/code/generator")
+    public String generator(@RequestBody CodeGeneratorParam codeGeneratorParam) throws SQLException, IOException, TemplateException {
+        Path path = codeGeneratorService.codeGenerator(codeGeneratorParam);
+        return path.toString();
     }
 }

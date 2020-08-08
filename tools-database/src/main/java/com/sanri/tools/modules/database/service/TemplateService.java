@@ -15,16 +15,11 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.thymeleaf.TemplateSpec;
-import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -38,8 +33,6 @@ public class TemplateService {
     private FileManager fileManager;
     @Autowired
     private Configuration configuration;
-    @Autowired
-    private SpringTemplateEngine springTemplateEngine;
 
     private FreeMarkerTemplate freeMarkerTemplate = new FreeMarkerTemplate();
 
@@ -115,22 +108,40 @@ public class TemplateService {
      * @throws IOException
      * @throws TemplateException
      */
-    public String processBatch(String templateName, RenameStrategy renameStrategy, List<TableMetaData> filterTables) throws IOException, TemplateException {
-        Template template = configuration.getTemplate(templateName+".ftl");
-        for (TableMetaData filterTable : filterTables) {
-            ActualTableName actualTableName = filterTable.getActualTableName();
-            Map<String, Object> context = new HashMap<>();
-            context.put("meta",filterTable);
-            JavaBeanInfo mapping = renameStrategy.mapping(filterTable);
-            context.put("mapping",mapping);
-            context.put("date", DateFormatUtils.ISO_DATE_FORMAT.format(System.currentTimeMillis()));
-            context.put("time",DateFormatUtils.ISO_TIME_NO_T_FORMAT.format(System.currentTimeMillis()));
-            context.put("author",System.getProperty("user.name"));
-            String process = freeMarkerTemplate.process(template, context);
-
-            // 写入目标文件
+    public File processBatch(List<String> templateNames, RenameStrategy renameStrategy, List<TableMetaData> filterTables) throws IOException, TemplateException {
+        List<Template> templates = new ArrayList<>(templateNames.size());
+        for (String templateName : templateNames) {
+            String content = content(templateName);
+            Template template = new Template(FilenameUtils.getBaseName(templateName), content, configuration);
+            templates.add(template);
         }
-        return null;
+
+        File dir = fileManager.mkTmpDir("code/generator");
+        File generatorDir = new File(dir,System.currentTimeMillis()+"");
+
+        for (Template template : templates) {
+            for (TableMetaData filterTable : filterTables) {
+                ActualTableName actualTableName = filterTable.getActualTableName();
+                Map<String, Object> context = new HashMap<>();
+                context.put("meta",filterTable);
+                JavaBeanInfo mapping = renameStrategy.mapping(filterTable);
+                context.put("mapping",mapping);
+                context.put("date", DateFormatUtils.ISO_DATE_FORMAT.format(System.currentTimeMillis()));
+                context.put("time",DateFormatUtils.ISO_TIME_NO_T_FORMAT.format(System.currentTimeMillis()));
+                context.put("author",System.getProperty("user.name"));
+                String process = freeMarkerTemplate.process(template, context);
+
+                // 写入目标文件
+                String className = mapping.getClassName();
+                String name = template.getName();
+                String extension = FilenameUtils.getExtension(name);
+                String fileName = className+"."+extension;
+                File file = new File(generatorDir, fileName);
+                FileUtils.writeStringToFile(file,process);
+            }
+        }
+
+        return generatorDir;
     }
 
     private class FreeMarkerTemplate {
