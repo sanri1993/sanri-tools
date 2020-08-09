@@ -1,6 +1,8 @@
 package com.sanri.tools.modules.database.service;
 
 import com.sanri.tools.modules.core.service.file.FileManager;
+import com.sanri.tools.modules.database.dtos.CodeGeneratorConfig;
+import com.sanri.tools.modules.database.dtos.CodeGeneratorParam;
 import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
 import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
 import com.sanri.tools.modules.database.service.rename.JavaBeanInfo;
@@ -64,17 +66,38 @@ public class TemplateService {
         File dir = fileManager.mkConfigDir(basePath);
         return FileUtils.readLines(new File(dir,name), StandardCharsets.UTF_8);
     }
-    // 写入模板或方案
+    // 写入模板或方案 最终于生成的模板名称是这样子的 真实名.扩展名.时间戳.模板类型;  如果为新加的,则为 真实名.扩展名.模板类型
     public void writeContent(String name,String content) throws IOException {
         File dir = fileManager.mkConfigDir(basePath);
-        File file = new File(dir, name);
+        String fileName = trueFileName(name);
+
+        File file = new File(dir, fileName);
         FileUtils.writeStringToFile(file,content);
     }
+
     // 上传一个模板
     public void uploadTemplate(MultipartFile file) throws IOException {
         File dir = fileManager.mkConfigDir(basePath);
-        File templateFile = new File(dir, file.getName());
+        String name = file.getName();
+        String fileName = trueFileName(name);
+
+        File templateFile = new File(dir, fileName);
         file.transferTo(templateFile);
+    }
+
+    private String trueFileName(String name) {
+        String extension = FilenameUtils.getExtension(name);
+        if ("schema".equals(extension)){
+            // 方案是唯一的,直接覆盖,不用加时间戳
+            return name;
+        }
+        String[] split = StringUtils.split(name, '.');
+        String fileName = name;
+        if (split.length == 3){
+            // 新加一个模板
+            fileName = StringUtils.join(Arrays.asList(split[0], split[1], System.currentTimeMillis(), split[2]), '.');
+        }
+        return fileName;
     }
 
     /**
@@ -84,7 +107,7 @@ public class TemplateService {
      * @param renameStrategy
      * @return
      */
-    public String preview(String templateName, TableMetaData currentTable, RenameStrategy renameStrategy) throws IOException, TemplateException {
+    public String preview(PreviewCodeParam previewCodeParam, TableMetaData currentTable, RenameStrategy renameStrategy) throws IOException, TemplateException {
         ActualTableName actualTableName = currentTable.getActualTableName();
         Map<String, Object> context = new HashMap<>();
         context.put("meta",currentTable);
@@ -93,7 +116,9 @@ public class TemplateService {
         context.put("date", DateFormatUtils.ISO_DATE_FORMAT.format(System.currentTimeMillis()));
         context.put("time",DateFormatUtils.ISO_TIME_NO_T_FORMAT.format(System.currentTimeMillis()));
         context.put("author",System.getProperty("user.name"));
+        context.put("package",previewCodeParam.getPackageConfig());
 
+        String templateName = previewCodeParam.getTemplate();
         String content = content(templateName);
         Template template = new Template(FilenameUtils.getBaseName(templateName), content, configuration);
         return freeMarkerTemplate.process(template,context);
@@ -108,7 +133,8 @@ public class TemplateService {
      * @throws IOException
      * @throws TemplateException
      */
-    public File processBatch(List<String> templateNames, RenameStrategy renameStrategy, List<TableMetaData> filterTables) throws IOException, TemplateException {
+    public File processBatch(CodeGeneratorParam codeGeneratorParam,List<TableMetaData> filterTables,RenameStrategy renameStrategy) throws IOException, TemplateException {
+        List<String> templateNames = codeGeneratorParam.getTemplates();
         List<Template> templates = new ArrayList<>(templateNames.size());
         for (String templateName : templateNames) {
             String content = content(templateName);
@@ -116,9 +142,11 @@ public class TemplateService {
             templates.add(template);
         }
 
+        // 获取生成文件的临时目录
         File dir = fileManager.mkTmpDir("code/generator");
         File generatorDir = new File(dir,System.currentTimeMillis()+"");
 
+        CodeGeneratorConfig.PackageConfig packageConfig = codeGeneratorParam.getPackageConfig();
         for (Template template : templates) {
             for (TableMetaData filterTable : filterTables) {
                 ActualTableName actualTableName = filterTable.getActualTableName();
@@ -129,14 +157,15 @@ public class TemplateService {
                 context.put("date", DateFormatUtils.ISO_DATE_FORMAT.format(System.currentTimeMillis()));
                 context.put("time",DateFormatUtils.ISO_TIME_NO_T_FORMAT.format(System.currentTimeMillis()));
                 context.put("author",System.getProperty("user.name"));
+                context.put("package",packageConfig);
                 String process = freeMarkerTemplate.process(template, context);
 
-                // 写入目标文件
+                // 写入目标文件,文件名规则为 类名+模板名(mapper.xml.时间戳)
                 String className = mapping.getClassName();
                 String name = template.getName();
-                String extension = FilenameUtils.getExtension(name);
-                String fileName = className+"."+extension;
-                File file = new File(generatorDir, fileName);
+                String fileNameSuffix = StringUtils.capitalize(FilenameUtils.getBaseName(name));
+
+                File file = new File(generatorDir, className+fileNameSuffix);
                 FileUtils.writeStringToFile(file,process);
             }
         }

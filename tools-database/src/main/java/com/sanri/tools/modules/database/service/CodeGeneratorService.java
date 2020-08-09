@@ -191,7 +191,7 @@ public class CodeGeneratorService {
             TableMetaData previewTable = tableMetaData.get(0);
             RenameStrategy renameStrategy = renameStrategyMap.get(previewCodeParam.getRenameStrategyName());
             // 生成代码
-            return templateService.preview(previewCodeParam.getTemplate(),previewTable,renameStrategy);
+            return templateService.preview(previewCodeParam,previewTable,renameStrategy);
         }
         return "";
     }
@@ -214,7 +214,7 @@ public class CodeGeneratorService {
         String renameStrategyName = codeGeneratorParam.getRenameStrategyName();
         RenameStrategy renameStrategy = renameStrategyMap.get(renameStrategyName);
 
-        File file = templateService.processBatch(codeGeneratorParam.getTemplates(), renameStrategy, filterTables);
+        File file = templateService.processBatch(codeGeneratorParam,filterTables,renameStrategy);
         return fileManager.relativePath(file.toPath());
     }
 }

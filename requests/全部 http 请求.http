@@ -82,6 +82,9 @@ GET {{baseUrl}}/serializer/names
 ### 插件 - 获取所有插件名称
 GET {{baseUrl}}/plugin/names
 
+### 插件 - 插件列表,经过排序的
+GET {{baseUrl}}/plugin/list
+
 ### 插件 - 获取插件详情
 GET {{baseUrl}}/plugin/detail?key=kafka:main
 
@@ -250,15 +253,15 @@ Content-Type: application/json
 GET {{baseUrl}}/db/code/templates
 
 ### 数据库 - 代码生成 - 查询某个模板详情
-GET {{baseUrl}}/db/code/mybatis.vm/content
+GET {{baseUrl}}/db/code/mapper.xml.32322.ftl/content
 
-### 数据库 - 代码生成 - 生成一个方案
+### 数据库 - 代码生成 - 建立一个方案
 POST {{baseUrl}}/db/code/override
 Content-Type: application/json
 
 {
   "name": "base.schema",
-  "content": "mybatis.vm\r\npojojpa.vm\r\nservice.vm"
+  "content": "mapper.xml.32322.ftl"
 }
 
 ### 数据库 - 代码生成 - 列出所有方案
@@ -272,15 +275,36 @@ POST {{baseUrl}}/db/code/template/code/preview
 Content-Type: application/json
 
 {
-  "template": "mybatis.vm",
+  "template": "mapper.xml.32322.ftl",
   "connName": "localhost",
   "renameStrategyName": "defaultRenameStragtegy",
   "actualTableName": {
     "catalog": "test",
     "tableName": "batch"
+  },
+  "packageConfig": {
+  "mapper": "com.sanri.test.mapper"
   }
 }
 
+### 数据库 - 代码生成  - 生成代码
+POST {{baseUrl}}/db/code/template/code/generator
+Content-Type: application/json
+
+{
+  "renameStrategyName": "defaultRenameStragtegy",
+  "templates": [
+    "mapper.xml.32322.ftl"
+  ],
+  "dataSourceConfig": {
+    "connName": "localhost",
+    "catalog": "test",
+    "tableNames": ["batch"]
+  },
+  "packageConfig": {
+    "mapper": "com.sanri.test.mapper"
+  }
+}
 ### 创建 zookeeper 连接
 POST {{baseUrl}}/connect/create/zookeeper
 Content-Type: application/json

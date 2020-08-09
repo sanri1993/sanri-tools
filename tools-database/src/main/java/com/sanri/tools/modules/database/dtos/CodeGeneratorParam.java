@@ -8,5 +8,6 @@ import java.util.List;
 public class CodeGeneratorParam {
    private List<String> templates;
    private CodeGeneratorConfig.DataSourceConfig dataSourceConfig;
+   private CodeGeneratorConfig.PackageConfig packageConfig;
    private String renameStrategyName;
 }

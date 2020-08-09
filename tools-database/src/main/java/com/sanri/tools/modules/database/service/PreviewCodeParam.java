@@ -1,5 +1,6 @@
 package com.sanri.tools.modules.database.service;
 
+import com.sanri.tools.modules.database.dtos.CodeGeneratorConfig;
 import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
 import lombok.Data;
 
@@ -9,6 +10,7 @@ public class PreviewCodeParam {
     private String connName;
     private ActualTableName actualTableName;
     private String renameStrategyName;
+    private CodeGeneratorConfig.PackageConfig packageConfig;
 
     public PreviewCodeParam() {
     }
