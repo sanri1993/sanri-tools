@@ -1,10 +1,21 @@
 package com.sanri.tools.modules.database.dtos;
 
+import com.sanri.tools.modules.core.exception.ToolException;
 import lombok.Data;
+import org.apache.commons.collections.CollectionUtils;
+
+import java.util.List;
 
 @Data
 public class DataQueryParam {
     private String connName;
-    private String sql;
+    private List<String> sqls;
     private String traceId;
+
+    public String getFirstSql(){
+        if (CollectionUtils.isNotEmpty(sqls)){
+            return sqls.get(0);
+        }
+        throw new ToolException("必须要有一句 sql 做为查询条件");
+    }
 }

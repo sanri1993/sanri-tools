@@ -82,7 +82,7 @@ public class DataController {
     public ExportPreviewDto exportPreview(@RequestBody DataQueryParam dataQueryParam) throws IOException, SQLException, JSQLParserException {
         DynamicQueryDto dynamicQueryDto = dataService.exportPreview(dataQueryParam);
         String connName = dataQueryParam.getConnName();
-        String sql = dataQueryParam.getSql();
+        String sql = dataQueryParam.getFirstSql();
 
         // 数据总数查询
         String countSql = "select count(*) from (" + sql + ") b";
@@ -102,5 +102,30 @@ public class DataController {
     public String exportData(@RequestBody DataQueryParam dataQueryParam) throws JSQLParserException, SQLException, IOException {
         String fileRelativePath = dataService.exportLowMemoryMutiProcessor(dataQueryParam);
         return fileRelativePath;
+    }
+
+    /**
+     * 执行查询 sql
+     * @param dataQueryParam
+     * @return
+     * @throws IOException
+     * @throws SQLException
+     */
+    @PostMapping("/executeQuery")
+    public List<DynamicQueryDto> executeQuery(@RequestBody DataQueryParam dataQueryParam) throws IOException, SQLException {
+        List<DynamicQueryDto> dynamicQueryDtos = jdbcService.executeDynamicQuery(dataQueryParam.getConnName(), dataQueryParam.getSqls());
+        return dynamicQueryDtos;
+    }
+
+    /**
+     * 执行更新操作, 包含 ddl
+     * @param dataQueryParam
+     * @return
+     * @throws SQLException
+     */
+    @PostMapping("/executeUpdate")
+    public List<Integer> executeUpdate(@RequestBody DataQueryParam dataQueryParam) throws SQLException, IOException {
+        List<Integer> updates = jdbcService.executeUpdate(dataQueryParam.getConnName(), dataQueryParam.getSqls());
+        return updates;
     }
 }

@@ -357,11 +357,16 @@ public class JdbcService {
      * @param sql
      * @return
      */
-    public int executeUpdate(String connName, String sql) throws SQLException {
-        DataSource dataSource = dataSourceMap.get(connName);
+    public List<Integer> executeUpdate(String connName, List<String> sqls) throws SQLException, IOException {
+        List<Integer> updates = new ArrayList<>();
+        DataSource dataSource = dataSource(connName);
         QueryRunner queryRunner = new QueryRunner(dataSource);
-        int update = queryRunner.update(sql);
-        return update;
+        for (String sql : sqls) {
+            int update = queryRunner.update(sql);
+            updates.add(update);
+        }
+
+        return updates;
     }
 
     /**

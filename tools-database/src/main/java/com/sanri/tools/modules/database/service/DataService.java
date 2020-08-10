@@ -52,7 +52,7 @@ public class DataService {
      */
     public DynamicQueryDto exportPreview(DataQueryParam dataQueryParam) throws JSQLParserException, IOException, SQLException {
         String connName = dataQueryParam.getConnName();
-        String sql = dataQueryParam.getSql();
+        String sql = dataQueryParam.getFirstSql();
         // sql 解析,加上 limit 限制条数
         Select select = (Select) parserManager.parse(new StringReader(sql));
         PlainSelect plainSelect = (PlainSelect) select.getSelectBody();
@@ -72,7 +72,7 @@ public class DataService {
      */
     public String exportSingleProcessor(DataQueryParam dataQueryParam) throws IOException, SQLException {
         String connName = dataQueryParam.getConnName();
-        String sql = dataQueryParam.getSql();
+        String sql = dataQueryParam.getFirstSql();
 
         File exportDir = fileManager.mkTmpDir("database/data/export/" + dataQueryParam.getTraceId());
 
@@ -105,7 +105,7 @@ public class DataService {
      */
     public String exportLowMemoryMutiProcessor(DataQueryParam dataQueryParam) throws IOException, SQLException, JSQLParserException {
         String connName = dataQueryParam.getConnName();
-        String sql = dataQueryParam.getSql();
+        String sql = dataQueryParam.getFirstSql();
 
         // 查询数据总数
         String countSql = "select count(*) from (" + sql + ") b";

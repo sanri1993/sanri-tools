@@ -13,11 +13,9 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 // TODO 需要考虑类型映射 , 占位符冲突问题
@@ -86,9 +84,9 @@ public class TableDataService {
             String finalSql = stringSubstitutor.replace(insertSql);
             log.info("将要执行的语句为 {}",finalSql);
             try {
-                int executeUpdate = jdbcService.executeUpdate(connName, finalSql);
+                List<Integer> executeUpdate = jdbcService.executeUpdate(connName, Arrays.asList(finalSql));
                 log.info("影响行数 {}",executeUpdate);
-            } catch (SQLException e) {
+            } catch (SQLException | IOException e) {
                 log.error("当前 sql 执行错误 {}",finalSql);
             }
         }

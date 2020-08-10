@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class ClassloaderService {
+public class ClassloaderService  {
     // classloaderName ==> ClassLoader
     private Map<String,ExtendClassloader> CACHED_CLASSLOADER = new HashMap<>();
 
@@ -76,7 +76,7 @@ public class ClassloaderService {
      * @param targetClassFile
      * @param title
      */
-    public void loadSingleClass(File targetClassFile) throws MalformedURLException {
+    public void loadSingleClass(File targetClassFile,String classloaderName) throws MalformedURLException {
         // 使用 asm 工具读取文件包路径
         FileInputStream fileInputStream = null;
         File classFileNoSuffix = null;
@@ -106,7 +106,7 @@ public class ClassloaderService {
         }
 
         // 使用正规结构加载类
-        loadClasses(targetClassFile.getParentFile(),"singleClasses");
+        loadClasses(targetClassFile.getParentFile(),classloaderName);
     }
 
     /**
@@ -141,7 +141,7 @@ public class ClassloaderService {
      * 使用单个  java 文件加载类
      * @param targetJavaFile
      */
-    public void loadSingleJavaFile(File targetJavaFile) throws IOException {
+    public void loadSingleJavaFile(File targetJavaFile,String classloaderName) throws IOException {
         String content = FileUtils.readFileToString(targetJavaFile);
         FileUtils.deleteQuietly(targetJavaFile);
 
@@ -150,8 +150,7 @@ public class ClassloaderService {
         compileService.compile(simpleJavaBeanBuilder,targetJavaFile.getParentFile());
         String baseName = FilenameUtils.getBaseName(targetJavaFile.getName());
 
-        File singleClassFile = new File(targetJavaFile.getParentFile(), baseName + ".class");
-        loadSingleClass(singleClassFile);
+        loadClasses(targetJavaFile.getParentFile(),classloaderName);
     }
 
     public Set<String> classloaders(){

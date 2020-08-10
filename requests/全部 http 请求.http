@@ -5,7 +5,7 @@ GET {{baseUrl}}/version/v
 GET {{baseUrl}}/classloader/classloaders
 
 ### 类加载器 - 查看类加载器加载的类
-GET {{baseUrl}}/classloader/listLoadedClasses?classloaderName=park
+GET {{baseUrl}}/classloader/listLoadedClasses?classloaderName=park2
 
 ### 类加载器 - 查看某个类的所有字段信息
 GET {{baseUrl}}/classloader/messagecenterdao/com.eg.egsc.scp.messagecenter.dto.PushChannelParam/fields
@@ -55,7 +55,21 @@ Content-Type: application/octet-stream
 Content-Disposition: form-data; name="classloaderName"
 Content-Type: application/x-www-form-urlencoded
 
-park
+park2
+### 类加载器 - 上传单个 java 文件,将自动编译
+POST {{baseUrl}}/classloader/uploadSingleJavaFile
+Content-Type: multipart/form-data; boundary=uploadSingleJavaFile
+
+--uploadSingleJavaFile
+Content-Disposition: form-data; name="file"; filename="McAreaInfo.java"
+Content-Type: application/octet-stream
+
+< d:/test/McAreaInfo.java
+--uploadSingleJavaFile
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+park2
 ### 数据 - 类加载器随机数据生成
 GET {{baseUrl}}/data/random?className=com.sanri.tools.modules.core.dtos.param.DatabaseConnectParam&classloaderName=
 
@@ -218,13 +232,31 @@ Content-Type: application/json
   "sql": "select * from mct.mct_event_record_common"
 }
 
-### 数据表 - 数据 - 导出数据 (单线程)
+### 数据表 - 数据 - 导出数据
 POST {{baseUrl}}/db/data/exportData
 Content-Type: application/json
 
 {
   "connName": "lo",
-  "sql": "select * from mct.mct_event_record_common",
+  "sqls": ["select * from mct.mct_event_record_common"],
+  "traceId": "abc"
+}
+### 数据表 - 数据 - 执行查询
+POST {{baseUrl}}/db/data/executeQuery
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "sqls": ["select * from mct.mct_event_record_common limit 10"],
+  "traceId": "abc"
+}
+### 数据表 - 数据 - 执行 ddl
+POST {{baseUrl}}/db/data/executeUpdate
+Content-Type: application/json
+
+{
+  "connName": "localhost",
+  "sqls": ["create table abc(name varchar(32))"],
   "traceId": "abc"
 }
 ### 数据库 - 代码生成 - 列出所有重命名策略
@@ -541,7 +573,7 @@ GET {{baseUrl}}/mybatis/statementIds?project=ir
 ### mybatis - 获取 sqlId 需要的参数
 GET {{baseUrl}}/mybatis/statementParams?project=ir&statementId=com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition
 
-### 执行获取绑定的 sql
+### mybatis 执行获取绑定的 sql
 POST {{baseUrl}}/mybatis/boundSql
 Content-Type: application/json
 

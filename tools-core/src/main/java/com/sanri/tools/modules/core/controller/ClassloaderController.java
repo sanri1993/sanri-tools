@@ -52,7 +52,7 @@ public class ClassloaderController {
         File dir = fileManager.mkTmpDir("classloader/"+classloaderName);
         File classFile = new File(dir, file.getOriginalFilename());
         file.transferTo(classFile);
-        classloaderService.loadSingleClass(classFile);
+        classloaderService.loadSingleClass(classFile,classloaderName);
     }
 
     /**
@@ -65,7 +65,7 @@ public class ClassloaderController {
         File dir = fileManager.mkTmpDir("classloader/"+classloaderName);
         File javaFile = new File(dir, file.getOriginalFilename());
         file.transferTo(javaFile);
-        classloaderService.loadSingleJavaFile(javaFile);
+        classloaderService.loadSingleJavaFile(javaFile,classloaderName);
     }
 
     /**
