@@ -196,9 +196,11 @@ public class MybatisService {
             if (sqlCommandType == SqlCommandType.SELECT){
                 resultSet = statement.executeQuery();
                 DynamicQueryDto dynamicQueryDto = jdbcService.dynamicQueryProcessor.handle(resultSet);
-                boundSqlResponse = new BoundSqlResponse(sqlCommandType,dynamicQueryDto,statement.toString());
+                dynamicQueryDto.setSql(statement.toString());
+                boundSqlResponse = new BoundSqlResponse(sqlCommandType,dynamicQueryDto);
             }else{
-                boundSqlResponse = new BoundSqlResponse(sqlCommandType,null,statement.toString());
+                DynamicQueryDto dynamicQueryDto = new DynamicQueryDto(statement.toString());
+                boundSqlResponse = new BoundSqlResponse(sqlCommandType,dynamicQueryDto);
             }
         } finally {
             DbUtils.closeQuietly(connection,statement,resultSet);
