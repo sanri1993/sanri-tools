@@ -598,5 +598,16 @@ Content-Type: application/x-www-form-urlencoded
 
 expression=0 1-6/2 14 ? * ?
 
+### 生成数据库文档
+POST {{baseUrl}}//db/metadata/generate?connName=lo&schema=mct
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "catalog": null,
+  "schema": "mct",
+  "tableNames": ["mct_event_record_biz_audit_user","mct_event_record_biz_bc"]
+}
+
 ###
 

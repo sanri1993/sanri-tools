@@ -31,3 +31,5 @@ build/
 .vscode/
 
 velocity.log
+
+http-requests-log.http

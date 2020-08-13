@@ -1,7 +1,9 @@
 package com.sanri.tools.modules.database.controller;
 
 import com.sanri.tools.modules.core.service.file.FileManager;
+import com.sanri.tools.modules.database.dtos.CodeGeneratorConfig;
 import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
+import com.sanri.tools.modules.database.service.ExcelDocService;
 import com.sanri.tools.modules.database.service.JdbcService;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -15,13 +17,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -125,4 +127,13 @@ public class MetadataControllerShow {
         return body;
     }
 
+    @Autowired
+    private ExcelDocService excelDocService;
+
+    @PostMapping("/generate")
+    @ResponseBody
+    public String generate(@RequestBody CodeGeneratorConfig.DataSourceConfig dataSourceConfig) throws IOException, SQLException {
+        Path generate = excelDocService.generate(dataSourceConfig);
+        return generate.toString();
+    }
 }
