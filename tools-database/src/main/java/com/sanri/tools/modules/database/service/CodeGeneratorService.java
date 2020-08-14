@@ -3,6 +3,7 @@ package com.sanri.tools.modules.database.service;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.database.dtos.CodeGeneratorConfig;
 import com.sanri.tools.modules.database.dtos.CodeGeneratorParam;
+import com.sanri.tools.modules.database.dtos.ConnectionMetaData;
 import com.sanri.tools.modules.database.dtos.JavaBeanBuildConfig;
 import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
 import com.sanri.tools.modules.database.service.rename.JavaBeanInfo;
@@ -110,6 +111,8 @@ public class CodeGeneratorService {
         String schema = dataSourceConfig.getSchema();
         List<TableMetaData> tableMetaDataList = jdbcService.filterChoseTables(connName, catalog, schema, dataSourceConfig.getTableNames());
 
+        ConnectionMetaData databaseConnection = jdbcService.connectionMetaData(connName);
+
         // 先生成实体信息
         String renameStrategy = globalConfig.getRenameStrategy();
         RenameStrategy renameStrategyImpl = renameStrategyMap.get(renameStrategy);
@@ -128,25 +131,27 @@ public class CodeGeneratorService {
             generaterJavaBean(entityDir, javaBeanBuildConfig, tableMetaData, javaBeanInfo);
         }
 
-        Template javaMapperTemplate = configuration.getTemplate("code/mapper.java.ftl");
-        Template xmlMapperTemplate = configuration.getTemplate("code/mapper.xml.ftl");
-        // 循环所有 table 生成 mybatis orm 映射 , 这里生成 tkmybatis 框架的 mybatis
+        // mapper 文件生成,
 
-
-        // 然后生成所有表的 service , controller 信息, 这个做合并处理
 
         return null;
     }
 
+    /**
+     * 单个 java 实体类生成
+     * @param entityDir
+     * @param javaBeanBuildConfig
+     * @param tableMetaData
+     * @param javaBeanInfo
+     * @throws IOException
+     */
     private void generaterJavaBean(File entityDir, JavaBeanBuildConfig javaBeanBuildConfig, TableMetaData tableMetaData, JavaBeanInfo javaBeanInfo) throws IOException {
         Template entityTemplate = configuration.getTemplate("code/entity.xml.ftl");
         Map<String, Object> context = new HashMap<>();
-        context.put("beanInfo", javaBeanInfo);
-        context.put("config", javaBeanBuildConfig);
-        context.put("tableMeta", tableMetaData);
-        context.put("author", System.getProperty("user.name"));
-        context.put("date", DateFormatUtils.ISO_DATE_FORMAT.format(System.currentTimeMillis()));
-        context.put("time", DateFormatUtils.ISO_TIME_NO_T_FORMAT.format(System.currentTimeMillis()));
+        context.put("bean", javaBeanInfo);
+        context.put("beanConfig", javaBeanBuildConfig);
+        context.put("table", tableMetaData);
+        commonTemplateData(context);
         // 准备 context
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(new File(entityDir, javaBeanInfo.getClassName() + ".java")));
         try {
@@ -158,6 +163,21 @@ public class CodeGeneratorService {
         }
     }
 
+    /**
+     * 通用数据
+     * @param context
+     */
+    private void commonTemplateData(Map<String, Object> context) {
+        context.put("author", System.getProperty("user.name"));
+        context.put("date", DateFormatUtils.ISO_DATE_FORMAT.format(System.currentTimeMillis()));
+        context.put("time", DateFormatUtils.ISO_TIME_NO_T_FORMAT.format(System.currentTimeMillis()));
+    }
+
+    /**
+     * 用于创建 PackageConfig 中的所有目录 , 基于基本目录 {@param javaDir}
+     * @param javaDir
+     * @param packageConfig
+     */
     private void mkdirs(File javaDir, CodeGeneratorConfig.PackageConfig packageConfig) {
         PropertyDescriptor[] beanGetters = ReflectUtils.getBeanGetters(CodeGeneratorConfig.PackageConfig.class);
         for (int i = 0; i < beanGetters.length; i++) {
@@ -182,6 +202,7 @@ public class CodeGeneratorService {
 
     /**
      * 使用某一张表进行代码的预览
+     * 模板代码预览
      * @param previewCodeParam
      */
     public String previewCode(PreviewCodeParam previewCodeParam) throws IOException, SQLException, TemplateException {
@@ -197,7 +218,7 @@ public class CodeGeneratorService {
     }
 
     /**
-     * 代码生成
+     * 使用模板方案代码生成
      * @param template
      * @param connName
      * @param actualTableName

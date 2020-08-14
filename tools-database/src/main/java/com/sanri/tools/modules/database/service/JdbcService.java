@@ -3,6 +3,7 @@ package com.sanri.tools.modules.database.service;
 import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.service.file.ConnectService;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
+import com.sanri.tools.modules.database.dtos.ConnectionMetaData;
 import com.sanri.tools.modules.database.dtos.DynamicQueryDto;
 import com.sanri.tools.modules.database.dtos.meta.*;
 import com.sanri.tools.modules.core.dtos.param.AuthParam;
@@ -441,6 +442,20 @@ public class JdbcService {
             List<Column> fromTableColumns = fromTable.getColumns();
 
         }
+    }
+
+
+    /**
+     * 获取数据库连接的详细信息
+     * @param connName
+     * @return
+     */
+    public ConnectionMetaData connectionMetaData(String connName) throws IOException, SQLException {
+        DatabaseConnectParam databaseConnectParam = (DatabaseConnectParam) connectService.readConnParams(module, connName);
+        AuthParam authParam = databaseConnectParam.getAuthParam();
+        String driverClass = databaseConnectParam.driverClass();
+        String connectionURL = databaseConnectParam.connectionURL();
+        return new ConnectionMetaData(authParam,driverClass,connectionURL);
     }
 
     protected Map<ActualTableName, TableMetaData> refreshTableInfo(String connName, String catalog, String schema) throws IOException, SQLException {

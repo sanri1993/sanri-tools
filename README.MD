@@ -147,3 +147,35 @@ public void register(){
 * 微信扫码并关注我，获得项目最新动态及更新提醒,拉你进入微信技术群
 
 ![我的微信](https://images.gitee.com/uploads/images/2020/0802/183913_c89fb735_409739.jpeg)
+
+## 代码生成的元数据结构
+尽管我已经提供了相当多的模板，但还是有需要自定义模板代码生成的用户，不可能全部穷尽，这里我把可以给到模板中的元数据结构
+
+1. 通用数据,不管是 javaBean、模板代码、还是项目构建都会有这个数据 
+```
+author      : 当前作者，取计算机名 
+date        : 当前日期 yyyy-MM-dd 
+time        : 当前时间 HH:mm:ss
+```
+
+2. javaBean 构建时数据 
+```
+bean        : 当前表对应的 java 实体类信息 ,引用类 JavaBeanInfo
+beanConfig  : bean 的配置信息,引用类 JavaBeanBuildConfig
+table       : 表元数据信息,引用类 TableMetaData
+```
+
+3. 模板代码生成(每一个模板都是针对单张表的生成)
+```
+bean        : 当前表对应的 java 实体类信息 ,引用类 JavaBeanInfo
+table       : 表元数据信息,引用类 TableMetaData
+codeConfig  : 如果是模板代码生成 ,引用 CodeGeneratorParam
+```
+
+4. 项目构建数据
+```
+tables      : 表元数据信息,引用类 TableMetaData:List
+beans       : 当前表对应的 java 实体类信息 ,引用类 JavaBeanInfo:List
+config      : 如果是项目构建,引用 CodeGeneratorConfig
+dataSource  : 数据源,引用类 ConnectionMetaData
+```

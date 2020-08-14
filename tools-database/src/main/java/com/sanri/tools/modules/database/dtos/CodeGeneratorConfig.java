@@ -72,6 +72,9 @@ public class CodeGeneratorConfig {
         // 重命名策略
         private String renameStrategy;
 
+        // 如果使用 tk.mybatis , 则可以给出基础 Mapper
+        private String mappers;
+
     }
 
     @Data

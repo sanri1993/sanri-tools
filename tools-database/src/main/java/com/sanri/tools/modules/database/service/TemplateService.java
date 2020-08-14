@@ -110,18 +110,22 @@ public class TemplateService {
     public String preview(PreviewCodeParam previewCodeParam, TableMetaData currentTable, RenameStrategy renameStrategy) throws IOException, TemplateException {
         ActualTableName actualTableName = currentTable.getActualTableName();
         Map<String, Object> context = new HashMap<>();
-        context.put("meta",currentTable);
+        commonTemplateData(context);
         JavaBeanInfo mapping = renameStrategy.mapping(currentTable);
-        context.put("mapping",mapping);
-        context.put("date", DateFormatUtils.ISO_DATE_FORMAT.format(System.currentTimeMillis()));
-        context.put("time",DateFormatUtils.ISO_TIME_NO_T_FORMAT.format(System.currentTimeMillis()));
-        context.put("author",System.getProperty("user.name"));
-        context.put("package",previewCodeParam.getPackageConfig());
+        context.put("table",currentTable);
+        context.put("bean",mapping);
+        context.put("codeConfig",previewCodeParam);
 
         String templateName = previewCodeParam.getTemplate();
         String content = content(templateName);
         Template template = new Template(FilenameUtils.getBaseName(templateName), content, configuration);
         return freeMarkerTemplate.process(template,context);
+    }
+
+    private void commonTemplateData(Map<String, Object> context) {
+        context.put("date", DateFormatUtils.ISO_DATE_FORMAT.format(System.currentTimeMillis()));
+        context.put("time", DateFormatUtils.ISO_TIME_NO_T_FORMAT.format(System.currentTimeMillis()));
+        context.put("author", System.getProperty("user.name"));
     }
 
     /**
@@ -151,12 +155,10 @@ public class TemplateService {
             for (TableMetaData filterTable : filterTables) {
                 ActualTableName actualTableName = filterTable.getActualTableName();
                 Map<String, Object> context = new HashMap<>();
-                context.put("meta",filterTable);
+                context.put("table",filterTable);
                 JavaBeanInfo mapping = renameStrategy.mapping(filterTable);
                 context.put("mapping",mapping);
-                context.put("date", DateFormatUtils.ISO_DATE_FORMAT.format(System.currentTimeMillis()));
-                context.put("time",DateFormatUtils.ISO_TIME_NO_T_FORMAT.format(System.currentTimeMillis()));
-                context.put("author",System.getProperty("user.name"));
+                commonTemplateData(context);
                 context.put("package",packageConfig);
                 String process = freeMarkerTemplate.process(template, context);
 

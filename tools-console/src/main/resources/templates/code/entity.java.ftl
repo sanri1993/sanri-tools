@@ -1,18 +1,18 @@
-package ${config.packageName};
+package ${beanConfig.packageName};
 
-<#list beanInfo.imports as pkg>
+<#list bean.imports as pkg>
 import ${pkg};
 </#list>
-<#if config.swagger2>
+<#if beanConfig.swagger2>
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 </#if>
-<#if config.lombok>
+<#if beanConfig.lombok>
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 </#if>
-<#if config.persistence>
+<#if beanConfig.persistence>
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Id;
@@ -23,39 +23,39 @@ import javax.persistence.Column;
 
 /**
 * <p>
-* ${tableMeta.actualTableName.catalog!} ${tableMeta.actualTableName.schema!} ${tableMeta.actualTableName.tableName}
-* ${tableMeta.table.remark!}
+* ${table.actualTableName.catalog!} ${table.actualTableName.schema!} ${table.actualTableName.tableName}
+* ${table.table.remark!}
 * </p>
 *
 * @author ${author}
 * @since ${date} ${time}
 */
-<#if config.lombok>
+<#if beanConfig.lombok>
 @Data
 </#if>
-<#if config.persistence>
+<#if beanConfig.persistence>
 @Entity
-@Table(name="${tableMeta.actualTableName.tableName}")
+@Table(name="${table.actualTableName.tableName}")
 </#if>
-<#if config.swagger2>
-@ApiModel(value="${beanInfo.className}", description="${tableMeta.table.remark!}")
+<#if beanConfig.swagger2>
+@ApiModel(value="${bean.className}", description="${table.table.remark!}")
 </#if>
-<#if config.supperClass??>
-public class ${beanInfo.className} extends ${config.supperClass} <#if config.serializer>implements Serializable</#if> {
+<#if beanConfig.supperClass??>
+public class ${bean.className} extends ${beanConfig.supperClass} <#if beanConfig.serializer>implements Serializable</#if> {
 <#else>
-public class ${beanInfo.className} <#if config.serializer>implements Serializable</#if> {
+public class ${bean.className} <#if beanConfig.serializer>implements Serializable</#if> {
 </#if>
 <#-- ----------  BEGIN 字段循环遍历  ---------->
-<#list beanInfo.fields as field>
+<#list bean.fields as field>
     /*
     * <p>
     * ${field.comment!}
     * </p>
     */
-    <#if config.persistence>
+    <#if beanConfig.persistence>
     @Column(name="${field.column.columnName}",length=${field.column.columnSize},precision=${field.column.decimalDigits})
     </#if>
-    <#if config.swagger2>
+    <#if beanConfig.swagger2>
     @ApiModelProperty(value = "${field.comment!}")
     </#if>
     <#if field.key>
@@ -67,8 +67,8 @@ public class ${beanInfo.className} <#if config.serializer>implements Serializabl
 <#------------  END 字段循环遍历  ---------->
 
 <#----- 如果不是 lombok ,则需要生成 get set 方法 --->
-<#if !config.lombok>
-    <#list beanInfo.fields as field>
+<#if !beanConfig.lombok>
+    <#list bean.fields as field>
         <#if field.typeName == "boolean">
             <#assign getprefix="is"/>
         <#else>

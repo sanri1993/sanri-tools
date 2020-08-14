@@ -26,7 +26,7 @@ public class DatabaseConnectParam extends AbstractConnectParam{
         return null;
     }
 
-    public String url(){
+    public String connectionURL(){
         switch (dbType){
             case dbType_mysql:
 
