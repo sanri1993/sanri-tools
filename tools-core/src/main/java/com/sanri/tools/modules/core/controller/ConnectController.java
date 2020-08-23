@@ -27,6 +27,15 @@ public class ConnectController {
     }
 
     /**
+     * 创建一个新模块
+     * @param name
+     */
+    @PostMapping("/createModule")
+    public void createModule(String name){
+        connectService.createModule(name);
+    }
+
+    /**
      * 指定模块下的连接列表
      * @param module
      * @return

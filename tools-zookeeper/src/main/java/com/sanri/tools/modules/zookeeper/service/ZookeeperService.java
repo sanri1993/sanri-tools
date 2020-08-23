@@ -176,6 +176,9 @@ public class ZookeeperService {
         }else if(!path.startsWith("/")){
             path = "/"+path;
         }
+        if(path.startsWith("//")){
+            path = path.substring(1);
+        }
         String cleanPath = org.springframework.util.StringUtils.cleanPath(path);
         return cleanPath;
     }

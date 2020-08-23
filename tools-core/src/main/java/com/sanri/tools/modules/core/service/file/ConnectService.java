@@ -141,4 +141,12 @@ public class ConnectService {
     public void dropConnect(String module, String connName) {
         fileManager.dropConfig(MODULE,module+"/"+connName);
     }
+
+    /**
+     * 建立新模块
+     * @param name
+     */
+    public void createModule(String name) {
+        fileManager.mkConfigDir(MODULE+"/"+name);
+    }
 }

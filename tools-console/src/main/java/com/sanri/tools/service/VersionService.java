@@ -21,7 +21,7 @@ public class VersionService {
         try {
             versionString = FileUtils.readFileToString(version.getFile(), "utf-8");
             log.info("当前工具版本:{}",versionString);
-        } catch (IOException e) {}
+        } catch (IOException e) {log.error("获取当前工具版本失败:{}",e.getMessage());}
     }
 
     /**
