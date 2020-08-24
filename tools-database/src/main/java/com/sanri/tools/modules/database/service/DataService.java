@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
 
 @Service
@@ -195,11 +196,11 @@ public class DataService {
             headCell.setCellType(Cell.CELL_TYPE_STRING);
         }
         //创建数据列
-        List<List<Object>> rows = sqlExecuteResult.getRows();
+        List<Map<String,Object>> rows = sqlExecuteResult.getRows();
 
         for (int i = 0; i < rows.size(); i++) {
             //设置进度
-            List<Object> objects = rows.get(i);
+            Map<String,Object> objects = rows.get(i);
             Row dataRow = sheet.createRow(i + 1);
             for (int j = 0; j < objects.size(); j++) {
                 DynamicQueryDto.Header colTypeHeader = headers.get(j);

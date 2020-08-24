@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class ConnectDto {
+public class ConnectDto { // {module:[{},{}],module2:[{},{}]}
     private String module;
     private String name;
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")

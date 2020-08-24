@@ -647,11 +647,11 @@ public class JdbcService {
 
             // 添加数据
             while (resultSet.next()) {
-                List<Object> row = new ArrayList<Object>();
+                Map<String,Object> row = new LinkedHashMap();
                 for (int i = 1; i <= columnCount; i++) {
-
+                    String columnLabel = metaData.getColumnLabel(i);
                     Object columnData = resultSet.getObject(i);
-                    row.add(columnData);
+                    row.put(columnLabel,columnData);
                 }
 
                 dynamicQueryDto.addRow(row);

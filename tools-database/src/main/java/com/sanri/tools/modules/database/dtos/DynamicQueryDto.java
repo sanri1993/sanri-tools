@@ -4,12 +4,13 @@ import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class DynamicQueryDto {
     private String sql;
     private List<Header> headers = new ArrayList<>();
-    private List<List<Object>> rows = new ArrayList<>();
+    private List<Map<String,Object>> rows = new ArrayList<>();
 
     public DynamicQueryDto() {
     }
@@ -18,7 +19,7 @@ public class DynamicQueryDto {
         this.sql = sql;
     }
 
-    public void addRow(List<Object> row){
+    public void addRow(Map<String,Object> row){
         rows.add(row);
     }
 

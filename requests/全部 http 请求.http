@@ -631,5 +631,8 @@ Content-Type: application/json
   "tableNames": ["mct_event_record_biz_audit_user","mct_event_record_biz_bc"]
 }
 
+### 添加注释
+GET {{baseUrl}}/comments
+
 ###
 
