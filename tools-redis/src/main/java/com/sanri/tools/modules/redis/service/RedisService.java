@@ -74,6 +74,7 @@ public class RedisService {
 
         int limit = redisScanParam.getLimit();
         String pattern = redisScanParam.getPattern();
+        String cursor = redisScanParam.getCursor();
 
         JedisCommands client = jedis;
 
@@ -84,7 +85,7 @@ public class RedisService {
         if(!cluster){
             int index = redisScanParam.getIndex();
             jedis.select(index);
-            keys.addAll(nodeScan(jedis, pattern, limit,serializer));
+            keys.addAll(nodeScan(jedis, pattern, limit,cursor,serializer));
         }else{
             JedisCluster jedisCluster = jedisCluster(jedis);
             client = jedisCluster;
@@ -95,7 +96,7 @@ public class RedisService {
                 JedisPool jedisPool = iterator.next();
                 Jedis currentJedis = jedisPool.getResource();
                 // 判断当前节点是否为 master ,只从 master 取数据; 目前还是从所有节点中找数据
-                List<String> currentKeys = nodeScan(currentJedis, pattern, limit,serializer);
+                List<String> currentKeys = nodeScan(currentJedis, pattern, limit,cursor,serializer);
                 keys.addAll(currentKeys);
                 if(keys.size() >= limit){break;}
             }
@@ -438,14 +439,12 @@ public class RedisService {
      * @param keySerializer
      * @return
      */
-    private List<String> nodeScan(Jedis jedis, String pattern, int limit, Serializer serializer) throws IOException, ClassNotFoundException {
+    private List<String> nodeScan(Jedis jedis, String pattern, int limit,String cursor, Serializer serializer) throws IOException, ClassNotFoundException {
         ScanParams scanParams = new ScanParams();
         scanParams.count(limit);
         if(StringUtils.isNotBlank(pattern)) {
             scanParams.match(pattern);
         }
-        // 开始搜索
-        String cursor = "0" ;
         //如果搜索结果为空,则继续搜索,直到有值或搜索到末尾
         List<String> keyAllReuslts = new ArrayList<>();
         do {

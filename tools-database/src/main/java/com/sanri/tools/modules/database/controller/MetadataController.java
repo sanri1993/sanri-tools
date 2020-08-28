@@ -4,12 +4,14 @@ import com.sanri.tools.modules.core.service.file.ConnectService;
 import com.sanri.tools.modules.database.dtos.meta.*;
 import com.sanri.tools.modules.database.service.JdbcService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.sql.Array;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -102,8 +104,14 @@ public class MetadataController {
         return jdbcService.refreshTablePrimaryKeys(connName,actualTableName);
     }
 
+    @GetMapping("/refreshTable")
+    public TableMetaData refreshTable(String connName, String catalog, String schema, String tableName) throws IOException, SQLException {
+        ActualTableName actualTableName = new ActualTableName(catalog,schema,tableName);
+        return jdbcService.refreshTable(connName,actualTableName);
+    }
+
     @GetMapping("/searchTables")
-    public List<TableMetaData> searchTables(String connName,String catalog,String schema,String keyword){
-        return jdbcService.searchTables(connName,catalog,schema,keyword);
+    public List<TableMetaData> searchTables(String connName, String catalog, String[] schemas, String keyword) throws IOException, SQLException {
+        return jdbcService.searchTables(connName,catalog,Arrays.asList(schemas),keyword);
     }
 }

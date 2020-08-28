@@ -80,7 +80,7 @@ public class ConnectController {
      * @param module
      * @param connName
      */
-    @PostMapping("/{module}/{connName}")
+    @PostMapping("/dropConnect/{module}/{connName}")
     public void dropConnect(@PathVariable("module") String module,@PathVariable("connName")String connName){
         connectService.dropConnect(module,connName);
     }

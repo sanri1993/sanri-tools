@@ -1,6 +1,8 @@
 package com.sanri.tools.modules.zookeeper.controller;
 
+import com.sanri.tools.modules.zookeeper.dtos.PathFavorite;
 import com.sanri.tools.modules.zookeeper.dtos.ZooNodeACL;
+import com.sanri.tools.modules.zookeeper.service.ZookeeperExtendService;
 import com.sanri.tools.modules.zookeeper.service.ZookeeperService;
 import org.apache.zookeeper.data.Stat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,31 @@ public class ZookeeperController {
 
     @Autowired
     private ZookeeperService zookeeperService;
+
+    @Autowired
+    private ZookeeperExtendService zookeeperExtendService;
+
+    /**
+     * 添加路径收藏
+     * @param connName
+     * @param name
+     * @param path
+     */
+    @PostMapping("/addFavorite")
+    public void addFavorite(String connName,String name,String path){
+        PathFavorite pathFavorite = new PathFavorite(name, path);
+        zookeeperExtendService.addFavorite(connName,pathFavorite);
+    }
+
+    /**
+     * 列出收藏夹
+     * @param connName
+     * @return
+     */
+    @GetMapping("/favorites")
+    public List<PathFavorite> favorites(String connName){
+        return zookeeperExtendService.favorites(connName);
+    }
 
     @GetMapping("/childrens")
     public List<String> childrens(String connName, String path) throws IOException {

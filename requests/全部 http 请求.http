@@ -175,14 +175,17 @@ GET {{baseUrl}}/db/metadata/tables?connName=localhost&catalog=test
 ### 刷新所有的表 (没测试)
 GET {{baseUrl}}/db/metadata/refreshTables?connName=localhost&catalog=test&schema=
 
-### 刷新表的列
+### 表元数据 - 刷新表的列
 GET {{baseUrl}}/db/metadata/refreshColumns?connName=localhost&catalog=test&tableName=batch
 
-### 刷新表的主键
+### 表元数据 - 刷新表的主键
 GET {{baseUrl}}/db/metadata/refreshPrimaryKeys?connName=localhost&catalog=test&tableName=batch
 
-### 刷新表的索引
+### 表元数据 - 刷新表的索引
 GET {{baseUrl}}/db/metadata/refreshIndexs?connName=localhost&catalog=test&tableName=batch
+
+### 表元数据 - 搜索表
+GET {{baseUrl}}/db/metadata/searchTables?connName=lo&catalog=hdsc_db&schemas=mct&keyword=mct_push_rule_config_event_items
 
 ### 标记表-常用标记
 GET {{baseUrl}}/db/metadata/extend/mark/tags
@@ -366,11 +369,11 @@ Content-Type: application/json
 {
   "connectIdParam": {
     "module": "zookeeper",
-    "connName": "192.168.2.134_2181"
+    "connName": "10.101.72.43_2182"
   },
   "connectParam": {
-    "host": "192.168.2.134",
-    "port": 2181
+    "host": "10.101.72.43",
+    "port": 2182
   }
 }
 

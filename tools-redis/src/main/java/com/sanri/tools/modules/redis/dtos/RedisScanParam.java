@@ -6,4 +6,5 @@ import lombok.Data;
 public class RedisScanParam extends RedisCommandParam {
     private String pattern;
     private int limit;
+    private String cursor = "0";
 }

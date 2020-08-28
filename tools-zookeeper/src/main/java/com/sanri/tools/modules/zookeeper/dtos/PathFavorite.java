@@ -9,4 +9,12 @@ import lombok.Data;
 public class PathFavorite {
     private String name;
     private String path;
+
+    public PathFavorite() {
+    }
+
+    public PathFavorite(String name, String path) {
+        this.name = name;
+        this.path = path;
+    }
 }

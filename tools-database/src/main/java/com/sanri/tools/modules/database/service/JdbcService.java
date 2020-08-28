@@ -16,6 +16,7 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.ColumnListHandler;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,7 +66,7 @@ public class JdbcService {
         // 需要判断指定的 catalog 是否已经加载,对于 mysql 数据库来说
         // 查找所有的 catalog ,如果没有就加载一下,最后返回指定的 catalog 数据
         Set<String> existCatalogs = actualTableNameTableMetaDataMap.keySet().stream().map(ActualTableName::getCatalog).collect(Collectors.toSet());
-        if (!existCatalogs.contains(catalog)){
+        if (!existCatalogs.contains(null) && !existCatalogs.contains(catalog)){
             Map<ActualTableName, TableMetaData> newCatalogTables = refreshTableInfo(connName, catalog, null);
             actualTableNameTableMetaDataMap.putAll(newCatalogTables);
         }
@@ -76,7 +77,7 @@ public class JdbcService {
         while (iterator.hasNext()){
             TableMetaData tableMetaData = iterator.next();
             String currentCatalog = tableMetaData.getActualTableName().getCatalog();
-            if (catalog.contains(currentCatalog)){
+            if (currentCatalog == null || catalog.contains(currentCatalog)){
                 catalogTables.add(tableMetaData);
             }
         }
@@ -259,6 +260,41 @@ public class JdbcService {
     }
 
     /**
+     * 数据表信息刷新,同时更新缓存
+     * @param connName
+     * @param actualTableName
+     * @return
+     */
+    public TableMetaData refreshTable(String connName, ActualTableName actualTableName) throws IOException, SQLException {
+        DatabaseMetaData databaseMetaData = databaseMetaData(connName);
+        List<PrimaryKey> primaryKeys;ResultSet resultSet = null;
+        try {
+            String catalog = actualTableName.getCatalog();
+            String schema = actualTableName.getSchema();
+            String tableName = actualTableName.getTableName();
+
+            resultSet = databaseMetaData.getPrimaryKeys(catalog, schema, tableName);
+            primaryKeys = primaryKeyListProcessor.handle(resultSet);
+
+            resultSet = databaseMetaData.getIndexInfo(catalog, schema, tableName, false,true);
+            List<Index> indices = indexListProcessor.handle(resultSet);
+
+            resultSet = databaseMetaData.getColumns(catalog, schema, tableName, "%");
+            List<Column> columns = columnListProcessor.handle(resultSet);
+
+            TableMetaData tableMetaData = tableMetaDataMap.get(connName).get(actualTableName);
+            tableMetaData.setPrimaryKeys(primaryKeys);
+            tableMetaData.setIndexs(indices);
+            tableMetaData.setColumns(columns);
+
+            return tableMetaData;
+        } finally {
+            DbUtils.closeQuietly(resultSet);
+            DbUtils.closeQuietly(databaseMetaData.getConnection());
+        }
+    }
+
+    /**
      * 表搜索 , 可根据 schema 表名 , 表注释 , 字段名 , 字段注释进行搜索
      * 支持精确搜索和模糊搜索
      *   table:xx
@@ -269,21 +305,30 @@ public class JdbcService {
      * @param keyword
      * @return
      */
-    public List<TableMetaData> searchTables(String connName,String catalog,String schema,String keyword){
-        Map<ActualTableName, TableMetaData> tableNameTableMetaDataMap = tableMetaDataMap.get(connName);
+    public List<TableMetaData> searchTables(String connName,String catalog,List<String> schemas,String keyword) throws IOException, SQLException {
+        Collection<TableMetaData> tables = tables(connName, catalog);
+
         // 首次过滤, 过滤 catalog 和 schema
-        List<TableMetaData> firstFilterTables = new ArrayList<>(tableNameTableMetaDataMap.values());
+        List<TableMetaData> firstFilterTables = new ArrayList<>(tables);
         Iterator<TableMetaData> iterator = firstFilterTables.iterator();
         while (iterator.hasNext()){
             TableMetaData tableMetaData = iterator.next();
             ActualTableName actualTableName = tableMetaData.getActualTableName();
-            if (StringUtils.isNotBlank(catalog) && !catalog.equals(actualTableName.getCatalog())){
-                iterator.remove();
-                continue;
+            String currentCatalog = actualTableName.getCatalog();
+            String currentSchema = actualTableName.getSchema();
+
+            if (StringUtils.isNotBlank(currentCatalog)){
+                if (StringUtils.isNotBlank(catalog) && !catalog.equals(currentCatalog)){
+                    iterator.remove();
+                    continue;
+                }
             }
-            if (StringUtils.isNotBlank(schema) && !schema.equals(actualTableName.getSchema())){
-                iterator.remove();
-                continue;
+
+            if (StringUtils.isNotBlank(currentSchema)){
+                if (CollectionUtils.isNotEmpty(schemas) && !schemas.contains(currentSchema)){
+                    iterator.remove();
+                    continue;
+                }
             }
         }
 
@@ -460,13 +505,12 @@ public class JdbcService {
 
     protected Map<ActualTableName, TableMetaData> refreshTableInfo(String connName, String catalog, String schema) throws IOException, SQLException {
         DatabaseMetaData databaseMetaData = databaseMetaData(connName);
-        List<Table> tables;
         ResultSet tablesResultSet = null;
 
         Map<ActualTableName, TableMetaData> tableNameTableMetaDataMap;
         try {
             tablesResultSet = databaseMetaData.getTables(catalog, schema, "%", new String[]{"TABLE"});
-            tables = tableListProcessor.handle(tablesResultSet);
+            List<Table> tables = tableListProcessor.handle(tablesResultSet);
 
             Map<ActualTableName, List<Column>> tableColumnsMap = refreshColumns(databaseMetaData, catalog, schema);
             Map<ActualTableName, List<Index>> tableIndexMap = refreshIndexs(databaseMetaData, catalog, schema,tables);

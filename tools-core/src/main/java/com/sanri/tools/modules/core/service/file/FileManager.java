@@ -216,7 +216,7 @@ public class FileManager {
      */
     public void dropConfig(String module, String baseName) {
         File configFile = new File(configBase, module+"/"+baseName);
-        if (!configFile.exists()){
+        if (configFile.exists()){
             FileUtils.deleteQuietly(configFile);
         }
     }
