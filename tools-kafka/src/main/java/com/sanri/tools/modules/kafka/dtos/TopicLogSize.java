@@ -7,6 +7,8 @@ public class TopicLogSize {
     private String topic;
     private int partition;
     private long logSize;
+    private long minOffset;
+    private long timestamp;
 
     public TopicLogSize() {
     }
@@ -20,5 +22,12 @@ public class TopicLogSize {
         this.topic = topic;
         this.partition = partition;
         this.logSize = logSize;
+    }
+
+    public TopicLogSize(String topic, int partition, long logSize, long minOffset) {
+        this.topic = topic;
+        this.partition = partition;
+        this.logSize = logSize;
+        this.minOffset = minOffset;
     }
 }

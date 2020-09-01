@@ -5,7 +5,7 @@ GET {{baseUrl}}/version/current
 GET {{baseUrl}}/classloader/classloaders
 
 ### 类加载器 - 查看类加载器加载的类
-GET {{baseUrl}}/classloader/listLoadedClasses?classloaderName=park2
+GET {{baseUrl}}/classloader/listLoadedClasses?classloaderName=park
 
 ### 类加载器 - 查看某个类的所有字段信息
 GET {{baseUrl}}/classloader/messagecenterdao/com.eg.egsc.scp.messagecenter.dto.PushChannelParam/fields
@@ -55,21 +55,21 @@ Content-Type: application/octet-stream
 Content-Disposition: form-data; name="classloaderName"
 Content-Type: application/x-www-form-urlencoded
 
-park2
+park
 ### 类加载器 - 上传单个 java 文件,将自动编译
 POST {{baseUrl}}/classloader/uploadSingleJavaFile
 Content-Type: multipart/form-data; boundary=uploadSingleJavaFile
 
 --uploadSingleJavaFile
-Content-Disposition: form-data; name="file"; filename="McAreaInfo.java"
+Content-Disposition: form-data; name="file"; filename="ParkMessageDto.java"
 Content-Type: application/octet-stream
 
-< d:/test/McAreaInfo.java
+< d:/test/ParkMessageDto.java
 --uploadSingleJavaFile
 Content-Disposition: form-data; name="classloaderName"
 Content-Type: application/x-www-form-urlencoded
 
-park2
+park
 ### 数据 - 类加载器随机数据生成
 GET {{baseUrl}}/data/random?className=com.sanri.tools.modules.core.dtos.param.DatabaseConnectParam&classloaderName=
 

@@ -40,6 +40,65 @@ public class KafkaDataService {
     private ConnectService connectService;
 
     /**
+     * 加载一条数据,用于数据模拟
+     * @param dataConsumerParam
+     * @return
+     */
+    public KafkaData onlyOneData(DataConsumerParam dataConsumerParam) throws InterruptedException, ExecutionException, IOException, ClassNotFoundException {
+        String clusterName = dataConsumerParam.getClusterName();
+        String topic = dataConsumerParam.getTopic();
+
+        int partitions = kafkaService.partitions(clusterName, topic);
+        List<TopicPartition> topicPartitions = new ArrayList<>();
+        for (int i = 0; i < partitions; i++) {
+            TopicPartition topicPartition = new TopicPartition(topic, i);
+            topicPartitions.add(topicPartition);
+        }
+        KafkaConsumer<byte[], byte[]> consumer = kafkaService.loadConsumerClient(clusterName);
+        boolean findAssign = false;
+        try{
+            Map<TopicPartition, Long> beginningOffsets = consumer.beginningOffsets(topicPartitions);
+            Map<TopicPartition, Long> endOffsets = consumer.endOffsets(topicPartitions);
+            Iterator<Map.Entry<TopicPartition, Long>> iterator = beginningOffsets.entrySet().iterator();
+            while (iterator.hasNext()){
+                Map.Entry<TopicPartition, Long> entry = iterator.next();
+                TopicPartition key = entry.getKey();
+                Long logSize = endOffsets.get(key);
+                Long minOffset = entry.getValue();
+                if (logSize != minOffset){
+                    consumer.assign(Collections.singletonList(key));
+                    consumer.seek(key,logSize - 1);
+                    findAssign = true;
+                    break;
+                }
+            }
+
+            if (!findAssign){   // 无数据可消费,直接返回
+                return null;
+            }
+
+            String classloaderName = dataConsumerParam.getClassloaderName();
+            String serializer = dataConsumerParam.getSerializer();
+            ClassLoader classloader = classloaderService.getClassloader(classloaderName);
+            if(classloader == null){classloader = ClassLoader.getSystemClassLoader();}
+            Serializer choseSerializer = serializerChoseService.choseSerializer(serializer);
+
+            ConsumerRecords<byte[], byte[]> consumerRecords = consumer.poll(Duration.ofMillis(10));
+            Iterator<ConsumerRecord<byte[], byte[]>> consumerRecordIterator = consumerRecords.iterator();
+
+            List<KafkaData> kafkaData = wrapKafkaDatas(classloader, choseSerializer, consumerRecordIterator);
+            if (CollectionUtils.isNotEmpty(kafkaData)){
+                return kafkaData.get(0);
+            }
+        }finally {
+            if (consumer != null){
+                consumer.close();
+            }
+        }
+        return null;
+    }
+
+    /**
      * 消费主题最后面的数据
      * @param clusterName
      * @param topic
@@ -108,13 +167,8 @@ public class KafkaDataService {
                     log.info("[{}][{}][{}] 尾部[{}]条数据读取到数据量为 0 ",clusterName,topic,partition,dataConsumerParam.getPerPartitionSize());
                     break;
                 }
-                while (consumerRecordIterator.hasNext()) {
-                    ConsumerRecord<byte[], byte[]> consumerRecord = consumerRecordIterator.next();
-                    byte[] value = consumerRecord.value();
-                    Object deserialize = choseSerializer.deserialize(value, classloader);
-                    PartitionKafkaData partitionKafkaData = new PartitionKafkaData(consumerRecord.offset(), deserialize, consumerRecord.timestamp(), consumerRecord.partition());
-                    datas.add(partitionKafkaData);
-                }
+                List<KafkaData> kafkaData = wrapKafkaDatas(classloader, choseSerializer, consumerRecordIterator);
+                datas.addAll(kafkaData);
 
                 currentFetchCount+= consumerRecords.count();
                 if(currentFetchCount >= seekCount){
@@ -126,6 +180,19 @@ public class KafkaDataService {
                 consumer.close();
         }
 
+        Collections.sort(datas);
+        return datas;
+    }
+
+    private List<KafkaData> wrapKafkaDatas(ClassLoader classloader, Serializer choseSerializer, Iterator<ConsumerRecord<byte[], byte[]>> consumerRecordIterator) throws IOException, ClassNotFoundException {
+        List<KafkaData> datas = new ArrayList<>();
+        while (consumerRecordIterator.hasNext()) {
+            ConsumerRecord<byte[], byte[]> consumerRecord = consumerRecordIterator.next();
+            byte[] value = consumerRecord.value();
+            Object deserialize = choseSerializer.deserialize(value, classloader);
+            PartitionKafkaData partitionKafkaData = new PartitionKafkaData(consumerRecord.offset(), deserialize, consumerRecord.timestamp(), consumerRecord.partition());
+            datas.add(partitionKafkaData);
+        }
         return datas;
     }
 
@@ -174,19 +241,21 @@ public class KafkaDataService {
 
             while (true) {
                 ConsumerRecords<byte[], byte[]> consumerRecords = consumer.poll(Duration.ofMillis(10));       // 100ms 内抓取的数据，不是抓取的数据量
-                List<ConsumerRecord<byte[], byte[]>> records = consumerRecords.records(topicPartition);
+                Iterator<ConsumerRecord<byte[], byte[]>> consumerRecordIterator = consumerRecords.iterator();
                 long currOffset = seekOffset;
-                if (CollectionUtils.isEmpty(records)) {
+                if (!consumerRecordIterator.hasNext()) {
                     log.info("[" + clusterName + "][" + topic + "][" + partition + "][" + seekOffset + "]读取到数据量为 0 ");
                     break;
                 }
-                for (ConsumerRecord<byte[], byte[]> record : records) {
-                    long timestamp = record.timestamp();
-                    currOffset = record.offset();
-                    byte[] value = record.value();
-                    Object deserialize = choseSerializer.deserialize(value, classloader);
-                    datas.add(new KafkaData(currOffset,deserialize,timestamp));
-                }
+//                for (ConsumerRecord<byte[], byte[]> record : records) {
+//                    long timestamp = record.timestamp();
+//                    currOffset = record.offset();
+//                    byte[] value = record.value();
+//                    Object deserialize = choseSerializer.deserialize(value, classloader);
+//                    datas.add(new KafkaData(currOffset,deserialize,timestamp));
+//                }
+                List<KafkaData> kafkaData = wrapKafkaDatas(classloader, choseSerializer, consumerRecordIterator);
+                datas.addAll(kafkaData);
                 if (currOffset >= seekEndOffset) {
                     break;
                 }

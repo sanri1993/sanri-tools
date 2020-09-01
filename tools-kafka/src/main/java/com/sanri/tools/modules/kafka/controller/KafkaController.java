@@ -75,6 +75,11 @@ public class KafkaController {
         return kafkaDataService.lastDatas(dataConsumerParam);
     }
 
+    @GetMapping("/topic/data/one")
+    public KafkaData topicOnlyOneData(DataConsumerParam dataConsumerParam) throws InterruptedException, ExecutionException, ClassNotFoundException, IOException {
+        return kafkaDataService.onlyOneData(dataConsumerParam);
+    }
+
     @PostMapping("/topic/data/send/json")
     public void topicSendJsonData(@RequestBody SendJsonDataParam sendJsonDataParam) throws InterruptedException, ExecutionException, IOException {
         kafkaDataService.sendJsonData(sendJsonDataParam);

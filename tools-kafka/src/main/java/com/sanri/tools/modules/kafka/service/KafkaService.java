@@ -15,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.kafka.clients.admin.*;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.*;
@@ -32,6 +34,7 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -126,7 +129,12 @@ public class KafkaService {
             List<TopicPartitionInfo> partitions = topicDescription.partitions();
             for (TopicPartitionInfo partition : partitions) {
                 Node leader = partition.leader();
-                BrokerInfo leaderBroker = new BrokerInfo(leader.id(), leader.host(), leader.port());
+                BrokerInfo leaderBroker = null;
+                if (leader != null){
+                    leaderBroker = new BrokerInfo(leader.id(), leader.host(), leader.port());
+                }else{
+                    log.warn("主题[{}],分区[{}] 的 leader 为空",topic,partition.partition());
+                }
 
                 List<Node> replicas = partition.replicas();
                 List<BrokerInfo> replicaBrokers = new ArrayList<>();
@@ -354,18 +362,21 @@ public class KafkaService {
         Map<TopicPartition, OffsetAndMetadata> offsetAndMetadataMap = adminClient.listConsumerGroupOffsets(group,listConsumerGroupOffsetsOptions).partitionsToOffsetAndMetadata().get();
 
         Map<TopicPartition, Long> topicPartitionLongMap = consumer.endOffsets(topicPartitions);
+        Map<TopicPartition, Long> beginningTopicPartitionLongMap = consumer.beginningOffsets(topicPartitions);
         consumer.close();
 
         Iterator<Map.Entry<TopicPartition, Long>> iterator = topicPartitionLongMap.entrySet().iterator();
         while (iterator.hasNext()){
             Map.Entry<TopicPartition, Long> entry = iterator.next();
             TopicPartition topicPartition = entry.getKey();
+            Long minOffset = beginningTopicPartitionLongMap.get(topicPartition);
             Long logSize = entry.getValue();
             OffsetAndMetadata offsetAndMetadata = offsetAndMetadataMap.get(topicPartition);
             long offset = offsetAndMetadata.offset();
             int partition = topicPartition.partition();
             long lag = logSize - offset;
             OffsetShow offsetShow = new OffsetShow(topic, partition, offset, logSize);
+            offsetShow.setMinOffset(minOffset);
             offsetShows.add(offsetShow);
         }
 
@@ -395,19 +406,46 @@ public class KafkaService {
             }
 
             Map<TopicPartition, Long> topicPartitionLongMap = consumer.endOffsets(topicPartitions);
+            Map<TopicPartition, Long> beginningTopicPartitionLongMap = consumer.beginningOffsets(topicPartitions);
+            consumer.assign(topicPartitions);
+
             Iterator<Map.Entry<TopicPartition, Long>> iterator = topicPartitionLongMap.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<TopicPartition, Long> entry = iterator.next();
                 TopicPartition topicPartition = entry.getKey();
+                Long minOffset = beginningTopicPartitionLongMap.get(topicPartition);
                 Long logSize = entry.getValue();
 
-                topicLogSizes.add(new TopicLogSize(topic,topicPartition.partition(),logSize));
+                // 如果有数据,消费最后一条数据 ,主要得到最后一条数据时间
+                if (logSize != minOffset){
+                    consumer.seek(topicPartition,logSize - 1);
+                }
+
+                topicLogSizes.add(new TopicLogSize(topic,topicPartition.partition(),logSize,minOffset));
+            }
+
+            // 最后一条数据的更新时间
+            ConsumerRecords<byte[], byte[]> consumerRecords = consumer.poll(Duration.ofMillis(10));
+            Iterator<ConsumerRecord<byte[], byte[]>> recordIterator = consumerRecords.iterator();
+            Map<Integer,Long> partitionLastTime = new HashMap<>();
+            while (recordIterator.hasNext()){
+                ConsumerRecord<byte[], byte[]> consumerRecord = recordIterator.next();
+                int partition = consumerRecord.partition();
+                long timestamp = consumerRecord.timestamp();
+                partitionLastTime.put(partition,timestamp);
+            }
+            for (TopicLogSize topicLogSize : topicLogSizes) {
+                int partition = topicLogSize.getPartition();
+                Long timestamp = partitionLastTime.get(partition);
+                if (timestamp != null) {
+                    topicLogSize.setTimestamp(timestamp);
+                }
             }
         }finally {
             if(consumer != null)
                 consumer.close();
         }
-
+        Collections.sort(topicLogSizes,(a,b) -> a.getPartition() - b.getPartition());
         return topicLogSizes;
     }
 
