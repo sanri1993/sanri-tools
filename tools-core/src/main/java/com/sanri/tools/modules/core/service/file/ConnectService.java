@@ -149,4 +149,13 @@ public class ConnectService {
     public void createModule(String name) {
         fileManager.mkConfigDir(MODULE+"/"+name);
     }
+
+    /**
+     * 删除模块, 会把下面的连接一并删除
+     * 注: 不会关闭连接
+     * @param name
+     */
+    public void dropModule(String name) throws IOException {
+        fileManager.dropConfig(MODULE + "/" + name);
+    }
 }

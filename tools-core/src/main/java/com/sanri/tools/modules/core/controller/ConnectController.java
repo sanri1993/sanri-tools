@@ -2,12 +2,16 @@ package com.sanri.tools.modules.core.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.sanri.tools.modules.core.dtos.ConnectDto;
-import com.sanri.tools.modules.core.dtos.param.AbstractConnectParam;
+import com.sanri.tools.modules.core.dtos.param.*;
 import com.sanri.tools.modules.core.service.file.ConnectService;
+import com.sanri.tools.modules.core.utils.URLUtil;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -34,6 +38,9 @@ public class ConnectController {
     public void createModule(String name){
         connectService.createModule(name);
     }
+
+    @PostMapping("/deleteModule")
+    public void deleteModule(String name) throws IOException {connectService.dropModule(name);}
 
     /**
      * 指定模块下的连接列表
@@ -85,4 +92,19 @@ public class ConnectController {
         connectService.dropConnect(module,connName);
     }
 
+    /**
+     * 获取连接示例
+     * @param module
+     * @param format
+     * @return
+     * @throws IOException
+     */
+    @GetMapping("/{module}/{format}/example")
+    public String connectExampleClass(@PathVariable String module,@PathVariable String format) throws IOException {
+        ClassPathResource classPathResource = new ClassPathResource("examples/"+module + "." + format + ".example");
+        if (classPathResource.exists()){
+            return IOUtils.toString(classPathResource.getInputStream(), "utf-8");
+        }
+        return "";
+    }
 }

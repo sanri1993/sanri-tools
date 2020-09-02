@@ -126,6 +126,9 @@ GET {{baseUrl}}/connect/redis/10.101.72.43
 ### 连接管理-获取所有连接
 GET {{baseUrl}}/connect/all
 
+### 连接管理- 获取连接示例
+GET {{baseUrl}}/connect/kafka/yaml/example
+
 ### 创建 redis 连接
 POST {{baseUrl}}/connect/create/redis
 Content-Type: application/json
@@ -470,7 +473,7 @@ Content-Type: application/yaml
 
 connectIdParam:
   module: kafka
-  connName: 192.168.72.42_2181
+  connName: 192.168.72.76_2181
 chroot: /hd/kafka
 kafka:
   properties:

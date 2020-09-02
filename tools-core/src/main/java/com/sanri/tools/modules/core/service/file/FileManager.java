@@ -222,6 +222,18 @@ public class FileManager {
     }
 
     /**
+     * 删除模块
+     * @param module
+     * @throws IOException
+     */
+    public void dropConfig(String module) throws IOException {
+        File configFile = new File(configBase, module);
+        if (configFile.exists()){
+            FileUtils.deleteQuietly(configFile);
+        }
+    }
+
+    /**
      * 获取路径相对于基础路径的路径
      * @param path
      * @return
