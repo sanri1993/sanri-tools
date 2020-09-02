@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/zookeeper")
@@ -36,13 +37,18 @@ public class ZookeeperController {
         zookeeperExtendService.addFavorite(connName,pathFavorite);
     }
 
+    @PostMapping("/removeFavorite")
+    public void removeFavorite(String connName,String name){
+        zookeeperExtendService.removeFavorite(connName,name);
+    }
+
     /**
      * 列出收藏夹
      * @param connName
      * @return
      */
     @GetMapping("/favorites")
-    public List<PathFavorite> favorites(String connName){
+    public Set<PathFavorite> favorites(String connName){
         return zookeeperExtendService.favorites(connName);
     }
 

@@ -1,6 +1,7 @@
 package com.sanri.tools.modules.zookeeper.service;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.zookeeper.dtos.PathFavorite;
 import com.sanri.tools.modules.zookeeper.dtos.PathFavoriteParam;
@@ -8,11 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 扩展功能 : 收藏路径,几个重要的路径可以初始化加载
@@ -21,7 +20,7 @@ import java.util.Map;
 @Slf4j
 public class ZookeeperExtendService {
     // 路径收藏  connName ==> PathFavorite
-    private Map<String, List<PathFavorite>> pathFavorites = new HashMap<>();
+    private Map<String, Set<PathFavorite>> pathFavorites = new HashMap<>();
 
     @Autowired
     FileManager fileManager;
@@ -31,8 +30,21 @@ public class ZookeeperExtendService {
      * @param pathFavoriteParam
      */
     public void addFavorite(String connName, PathFavorite pathFavorite){
-        List<PathFavorite> pathFavorites = this.pathFavorites.computeIfAbsent(connName, k -> new ArrayList<>());
+        Set<PathFavorite> pathFavorites = this.pathFavorites.computeIfAbsent(connName, k -> new LinkedHashSet<>());
         pathFavorites.add(pathFavorite);
+        serializer();
+    }
+
+    public void removeFavorite(String connName,String name){
+        Set<PathFavorite> pathFavorites = this.pathFavorites.computeIfAbsent(connName, k -> new LinkedHashSet<>());
+        Iterator<PathFavorite> iterator = pathFavorites.iterator();
+        while (iterator.hasNext()){
+            PathFavorite next = iterator.next();
+            if (next.getName().equals(name)){
+                iterator.remove();break;
+            }
+        }
+
         serializer();
     }
 
@@ -41,8 +53,8 @@ public class ZookeeperExtendService {
      * @param connName
      * @return
      */
-    public List<PathFavorite> favorites(String connName){
-        List<PathFavorite> pathFavorites = this.pathFavorites.computeIfAbsent(connName, k -> new ArrayList<>());
+    public Set<PathFavorite> favorites(String connName){
+        Set<PathFavorite> pathFavorites = this.pathFavorites.computeIfAbsent(connName, k -> new LinkedHashSet<PathFavorite>());
         return pathFavorites;
     }
 
@@ -52,6 +64,17 @@ public class ZookeeperExtendService {
     private void serializer() {
         try {
             fileManager.writeConfig(ZookeeperService.module,"favorites", JSON.toJSONString(pathFavorites));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @PostConstruct
+    void loadFavorites(){
+        try {
+            String favorites = fileManager.readConfig(ZookeeperService.module, "favorites");
+            TypeReference<Map<String,Set<PathFavorite>>> typeReference =  new TypeReference<Map<String,Set<PathFavorite>>>(){};
+            this.pathFavorites = JSON.parseObject(favorites,typeReference);
         } catch (IOException e) {
             e.printStackTrace();
         }
