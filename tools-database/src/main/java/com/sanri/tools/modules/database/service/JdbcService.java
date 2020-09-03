@@ -375,6 +375,7 @@ public class JdbcService {
                         if(StringUtils.isBlank(searchSchema) || "column".equalsIgnoreCase(searchSchema)) {
                             if (columnName.contains(keyword) || (StringUtils.isNotBlank(columnComments) && columnComments.contains(keyword))) {
                                 findTables.add(tableMetaData);
+                                break;
                             }
                         }
                     }
@@ -768,6 +769,6 @@ public class JdbcService {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module(module).name("main").author("sanri").envs("default").build());
+//        pluginManager.register(PluginDto.builder().module(module).name("meta").author("sanri").envs("default").build());
     }
 }

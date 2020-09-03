@@ -1,6 +1,8 @@
 package com.sanri.tools.modules.core.service.classloader;
 
+import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.service.file.FileManager;
+import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.core.utils.MybatisXNode;
 import com.sanri.tools.modules.core.utils.MybatisXPathParser;
 import jdk.internal.org.objectweb.asm.ClassReader;
@@ -41,6 +43,8 @@ public class ClassloaderService  {
     private CompileService compileService;
     @Autowired
     private FileManager fileManager;
+    @Autowired
+    private PluginManager pluginManager;
     @Autowired
     private Environment environment;
 
@@ -222,6 +226,9 @@ public class ClassloaderService  {
         }catch (Exception e){
             log.warn("之前的类加载器加载失败,考虑是否需要清理以前的类加载器");
         }
+
+        // 注册基础服务
+        pluginManager.register(PluginDto.builder().module("core").name("classloader").author("9420").build());
     }
 
     /**

@@ -241,6 +241,6 @@ public class MybatisService {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module(module).name("main").build());
+        pluginManager.register(PluginDto.builder().module("call").name("mybatis").build());
     }
 }

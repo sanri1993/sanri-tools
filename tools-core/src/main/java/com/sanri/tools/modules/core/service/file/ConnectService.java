@@ -3,7 +3,9 @@ package com.sanri.tools.modules.core.service.file;
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanri.tools.modules.core.dtos.ConnectDto;
+import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.dtos.param.*;
+import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.core.utils.NetUtil;
 import com.sanri.tools.modules.core.dtos.ConfigPath;
 import com.sanri.tools.modules.core.exception.ToolException;
@@ -11,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,6 +27,9 @@ import java.util.stream.Collectors;
 public class ConnectService {
     @Autowired
     private FileManager fileManager;
+    @Autowired
+    private PluginManager pluginManager;
+
     // 连接都保存在这个目录
     public static final String MODULE = "connect";
 
@@ -157,5 +163,10 @@ public class ConnectService {
      */
     public void dropModule(String name) throws IOException {
         fileManager.dropConfig(MODULE + "/" + name);
+    }
+
+    @PostConstruct
+    public void register(){
+        pluginManager.register(PluginDto.builder().module("core").name("connect").build());
     }
 }

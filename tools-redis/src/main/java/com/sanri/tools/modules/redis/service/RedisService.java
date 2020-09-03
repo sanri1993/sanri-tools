@@ -530,7 +530,8 @@ public class RedisService {
         List<RedisNode> redisNodes = nodeCommandLines.stream().map(line -> {
             RedisNode redisNode = new RedisNode();
             redisNode.setId(line[0]);
-            redisNode.setHostAndPort(HostAndPort.parseString(line[1]));
+            String[] split1 = line[1].split("@");
+            redisNode.setHostAndPort(HostAndPort.parseString(split1[0]));
             String flags = line[2];
             redisNode.setRole(flags.replace("myself,", ""));
             redisNode.setMaster(line[3]);
@@ -605,7 +606,7 @@ public class RedisService {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module(module).name("main").author("sanri").envs("default").build());
+        pluginManager.register(PluginDto.builder().module("monitor").name(module).author("sanri").envs("default").build());
     }
 
     @PreDestroy

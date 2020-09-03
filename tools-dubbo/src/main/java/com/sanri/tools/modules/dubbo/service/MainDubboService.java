@@ -207,6 +207,6 @@ public class MainDubboService {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module("dubbo").name("main").build());
+        pluginManager.register(PluginDto.builder().module("call").name("dubbo").build());
     }
 }

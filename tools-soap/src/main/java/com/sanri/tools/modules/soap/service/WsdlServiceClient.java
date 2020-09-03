@@ -72,6 +72,6 @@ public class WsdlServiceClient {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module("soap").name("main").build());
+        pluginManager.register(PluginDto.builder().module("call").name("soap").build());
     }
 }

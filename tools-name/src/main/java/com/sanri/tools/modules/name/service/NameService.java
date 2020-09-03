@@ -155,7 +155,7 @@ public class NameService {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module(BizTranslate.module).name("main").build());
+        pluginManager.register(PluginDto.builder().module("call").name(BizTranslate.module).build());
     }
 
     /**

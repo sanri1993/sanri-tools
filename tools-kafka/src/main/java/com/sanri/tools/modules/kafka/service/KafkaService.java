@@ -409,6 +409,7 @@ public class KafkaService {
             Map<TopicPartition, Long> beginningTopicPartitionLongMap = consumer.beginningOffsets(topicPartitions);
             consumer.assign(topicPartitions);
 
+            int hasDataPartitions = 0 ;
             Iterator<Map.Entry<TopicPartition, Long>> iterator = topicPartitionLongMap.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<TopicPartition, Long> entry = iterator.next();
@@ -419,20 +420,28 @@ public class KafkaService {
                 // 如果有数据,消费最后一条数据 ,主要得到最后一条数据时间
                 if (logSize != minOffset){
                     consumer.seek(topicPartition,logSize - 1);
+                    // 如果不相等，则一定有一条数据, 后面一定要获取到
+                    hasDataPartitions ++;
                 }
 
                 topicLogSizes.add(new TopicLogSize(topic,topicPartition.partition(),logSize,minOffset));
             }
 
-            // 最后一条数据的更新时间
-            ConsumerRecords<byte[], byte[]> consumerRecords = consumer.poll(Duration.ofMillis(10));
-            Iterator<ConsumerRecord<byte[], byte[]>> recordIterator = consumerRecords.iterator();
-            Map<Integer,Long> partitionLastTime = new HashMap<>();
-            while (recordIterator.hasNext()){
-                ConsumerRecord<byte[], byte[]> consumerRecord = recordIterator.next();
-                int partition = consumerRecord.partition();
-                long timestamp = consumerRecord.timestamp();
-                partitionLastTime.put(partition,timestamp);
+            // 最后一条数据的更新时间,如果有这样的分区
+            int loadTimes = 5; // 加载 5 次,每次 10 ms 实在加载不到就放弃
+            Map<Integer, Long> partitionLastTime = new HashMap<>();
+            while (hasDataPartitions != 0 && loadTimes -- > 0) {
+                log.info("第 [{}] 次加载 [{}] 主题的分区最后一条数据 ",(5 - loadTimes),topic);
+                ConsumerRecords<byte[], byte[]> consumerRecords = consumer.poll(Duration.ofMillis(20));
+                Iterator<ConsumerRecord<byte[], byte[]>> recordIterator = consumerRecords.iterator();
+                while (recordIterator.hasNext()) {
+                    ConsumerRecord<byte[], byte[]> consumerRecord = recordIterator.next();
+                    int partition = consumerRecord.partition();
+                    long timestamp = consumerRecord.timestamp();
+                    partitionLastTime.put(partition, timestamp);
+                    // 如果有一个分区加载到数据了
+                    hasDataPartitions--;
+                }
             }
             for (TopicLogSize topicLogSize : topicLogSizes) {
                 int partition = topicLogSize.getPartition();
@@ -580,7 +589,8 @@ public class KafkaService {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module(module).name("main").author("sanri").envs("default").build());
+        pluginManager.register(PluginDto.builder().module("monitor").name("kafkaGroup").author("sanri").envs("default").build());
+        pluginManager.register(PluginDto.builder().module("monitor").name("kafkaTopic").author("sanri").envs("default").build());
     }
 
     @PreDestroy

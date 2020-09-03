@@ -185,7 +185,7 @@ public class ZookeeperService {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module(module).name("main").author("sanri").build());
+        pluginManager.register(PluginDto.builder().module("monitor").name(module).author("sanri").build());
     }
 
     @PreDestroy

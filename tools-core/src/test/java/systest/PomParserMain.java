@@ -45,6 +45,16 @@ public class PomParserMain {
     }
 
     @Test
+    public void test222(){
+        boolean su = true;
+        for (int i = 0; i < 10; i+=1) {
+            boolean current = i % 2 == 0;
+            su &= current;
+        }
+        System.out.println(su);
+    }
+
+    @Test
     public void testPom() throws IOException, URISyntaxException {
         File baseDir = new File("d:/test/repository");baseDir.mkdir();
         String repository = "https://mirrors.huaweicloud.com/repository/maven/";
