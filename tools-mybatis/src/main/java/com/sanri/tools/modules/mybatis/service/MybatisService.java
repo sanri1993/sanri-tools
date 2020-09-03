@@ -12,6 +12,7 @@ import com.sanri.tools.modules.mybatis.dtos.BoundSqlResponse;
 import com.sanri.tools.modules.mybatis.dtos.ProjectDto;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.io.Resources;
@@ -107,9 +108,12 @@ public class MybatisService {
             return new Configuration();
         });
 
-        XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource.getFilename(),configuration.getSqlFragments());
-        mapperParser.parse();
-        inputStream.close();
+        try {
+            XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource.getFilename(),configuration.getSqlFragments());
+            mapperParser.parse();
+        }finally {
+            IOUtils.closeQuietly(inputStream);
+        }
 
         Resources.setDefaultClassLoader(ClassLoader.getSystemClassLoader());
     }
@@ -136,7 +140,12 @@ public class MybatisService {
     public List<String> statementIds(String project){
         Configuration configuration = projectConfigurationMap.computeIfAbsent(project, k -> new Configuration());
         Collection<MappedStatement> mappedStatements = configuration.getMappedStatements();
-        List<String> collect = mappedStatements.stream().map(MappedStatement::getId).collect(Collectors.toList());
+        List<String> collect = new ArrayList<>();
+        for (Object mappedStatement : mappedStatements) {
+            if (mappedStatement instanceof MappedStatement){
+                collect.add(((MappedStatement) mappedStatement).getId());
+            }
+        }
         return collect;
     }
 
