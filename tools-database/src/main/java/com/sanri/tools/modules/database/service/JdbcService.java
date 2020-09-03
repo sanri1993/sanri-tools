@@ -769,6 +769,6 @@ public class JdbcService {
 
     @PostConstruct
     public void register(){
-//        pluginManager.register(PluginDto.builder().module(module).name("meta").author("sanri").envs("default").build());
+        pluginManager.register(PluginDto.builder().module(module).name("metadata").author("sanri").envs("default").build());
     }
 }

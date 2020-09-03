@@ -211,18 +211,23 @@ public class KafkaDataService {
                     log.info("第 [{}] 次加载 [{}-{}] 的数据,还剩[{}] 条数据,当前加载时间[{} ms]",(5 - currentLoadTimes),key.topic(),key.partition(),loadSizeComputed,perLoadTimeInMillis);
                     ConsumerRecords<byte[], byte[]> consumerRecords = consumer.poll(Duration.ofMillis(perLoadTimeInMillis));
                     Iterator<ConsumerRecord<byte[], byte[]>> consumerRecordIterator = consumerRecords.iterator();
+                    long currentLoadCount = 0 ;
                     while (consumerRecordIterator.hasNext()){
                         ConsumerRecord<byte[], byte[]> consumerRecord = consumerRecordIterator.next();
                         byte[] value = consumerRecord.value();
                         Object deserialize = choseSerializer.deserialize(value, classloader);
                         PartitionKafkaData partitionKafkaData = new PartitionKafkaData(consumerRecord.offset(), deserialize, consumerRecord.timestamp(), consumerRecord.partition());
                         datas.add(partitionKafkaData);
-                        loadSizeComputed--;
+                        currentLoadCount ++;
                     }
 
-                    if (loadSizeComputed != 0){
+                    loadSizeComputed -= currentLoadCount;
+                    if (currentLoadCount == 0){
                         // 动态修改加载时间,微调 , 每次增长 1.2 倍
                         perLoadTimeInMillis = Math.round(perLoadTimeInMillis * 1.2);
+                    }else{
+                        // 本次查询有加载数据,则以此为基础计算剩余数据的加载时间
+                        perLoadTimeInMillis = Math.round(perLoadTimeInMillis / currentLoadCount ) * loadSizeComputed;
                     }
                 }
 
