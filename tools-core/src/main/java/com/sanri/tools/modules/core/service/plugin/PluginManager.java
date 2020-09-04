@@ -25,8 +25,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PluginManager {
     private List<EnhancePluginDto> enhancePlugins = new ArrayList<>();
-    // 为了能快速找到插件,在每次访问的时候,加一个插件索引  module:name => index
-    private Map<String,Integer> indexPlugins = new HashMap<>();
     @Autowired
     private FileManager fileManager;
 
@@ -44,7 +42,6 @@ public class PluginManager {
             return ;
         }
         log.info("注册插件[{}]",pluginDto);
-        indexPlugins.put(pluginDto.key(),enhancePlugins.size());
         SerializerPlugin serializerPlugin = serializerPluginMap.get(pluginDto.key());
         if(serializerPlugin == null) {
             enhancePlugins.add(new EnhancePluginDto(pluginDto));
@@ -137,11 +134,7 @@ public class PluginManager {
      * @return
      */
     public EnhancePluginDto detail(String key) {
-        Integer integer = indexPlugins.get(key);
-        if (integer != null){
-            return enhancePlugins.get(integer);
-        }
-        return null;
+       return  enhancePlugins.stream().filter(item -> item.getPluginDto().key().equals(key)).findFirst().get();
     }
 
     @Getter

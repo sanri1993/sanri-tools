@@ -250,6 +250,6 @@ public class MybatisService {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module("call").name("mybatis").build());
+        pluginManager.register(PluginDto.builder().module("call").name("mybatis").author("9420").logo("mybatis.png").desc("mybatis 快速调用").build());
     }
 }

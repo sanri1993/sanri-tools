@@ -15,6 +15,7 @@ public class PluginDto {
     private String envs;
     private String desc;
     private String help;
+    private String helpContent;
     private String dependencies;
 
     @Tolerate

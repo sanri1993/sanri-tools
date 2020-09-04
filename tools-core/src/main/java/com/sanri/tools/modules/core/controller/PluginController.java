@@ -3,11 +3,16 @@ package com.sanri.tools.modules.core.controller;
 import com.sanri.tools.modules.core.service.plugin.EnhancePluginDto;
 import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.*;
 import java.util.List;
 import java.util.Set;
 
@@ -52,7 +57,22 @@ public class PluginController {
     public PluginDto detail(String key){
         EnhancePluginDto detail = pluginManager.detail(key);
         if(detail != null) {
-            return detail.getPluginDto();
+            PluginDto pluginDto = detail.getPluginDto();
+            String help = pluginDto.getHelp();
+            if (StringUtils.isNotBlank(help)){
+                ClassPathResource classPathResource = new ClassPathResource(help);
+                InputStream inputStream = null;
+                try {
+                   inputStream = classPathResource.getInputStream();
+                   String content = IOUtils.toString(inputStream, "utf-8");
+                   pluginDto.setHelpContent(content);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }finally {
+                    IOUtils.closeQuietly(inputStream);
+                }
+            }
+            return pluginDto;
         }
         return null;
     }

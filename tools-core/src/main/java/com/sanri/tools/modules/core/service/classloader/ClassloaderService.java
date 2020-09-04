@@ -228,7 +228,7 @@ public class ClassloaderService  {
         }
 
         // 注册基础服务
-        pluginManager.register(PluginDto.builder().module("core").name("classloader").author("9420").build());
+        pluginManager.register(PluginDto.builder().module("core").name("classloader").author("9420").desc("类加载器,支撑模块").build());
     }
 
     /**

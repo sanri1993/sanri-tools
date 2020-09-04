@@ -72,6 +72,6 @@ public class WsdlServiceClient {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module("call").name("soap").build());
+        pluginManager.register(PluginDto.builder().module("call").name("soap").author("9420").logo("soap.jpg").desc("快速调用soap 接口").build());
     }
 }

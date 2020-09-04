@@ -769,6 +769,11 @@ public class JdbcService {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module(module).name("metadata").author("sanri").envs("default").build());
+        pluginManager.register(PluginDto.builder()
+                .module(module).name("metadata").author("sanri").envs("default")
+                .logo("mysql.jpg")
+                .desc("数据库元数据,支持mysql,postgresql,oracle 和支持元数据据的数据库,可扩展功能数据库文档,代码生成")
+                .help("数据表处理工具.md")
+                .build());
     }
 }

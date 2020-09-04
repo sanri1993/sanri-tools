@@ -167,6 +167,6 @@ public class ConnectService {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module("core").name("connect").build());
+        pluginManager.register(PluginDto.builder().module("core").name("connect").author("9420").desc("管理所有连接,支撑模块").build());
     }
 }

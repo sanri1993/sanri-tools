@@ -42,9 +42,10 @@ public class EnhancePluginDto implements Comparable<EnhancePluginDto>{
         }
         if(otherTimeout && thisTimeout){
             // 比较调用次数和调用时间,调用时间的占比比较小,调用次数占比大
-            return (int) (((double)(lastCallTime - o.lastCallTime)) * 0.0001 +
-                    ((double)(totalCalls - o.totalCalls)) * 0.5);
+            return (int) (((double)(o.lastCallTime - lastCallTime )) * 0.0001 +
+                    ((double)( totalCalls - o.totalCalls )) * 0.5);
         }
-        return 0;
+
+        return (int) (o.lastCallTime - lastCallTime);
     }
 }

@@ -100,7 +100,7 @@ GET {{baseUrl}}/plugin/names
 GET {{baseUrl}}/plugin/list
 
 ### 插件 - 获取插件详情
-GET {{baseUrl}}/plugin/detail?key=kafka:main
+GET {{baseUrl}}/plugin/detail?key=database:metadata
 
 ### 插件 - 访问插件
 GET {{baseUrl}}/plugin/visited?key=kafka:main

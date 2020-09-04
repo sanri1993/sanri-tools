@@ -589,8 +589,8 @@ public class KafkaService {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module("monitor").name("kafkaGroup").author("sanri").envs("default").build());
-        pluginManager.register(PluginDto.builder().module("monitor").name("kafkaTopic").author("sanri").envs("default").build());
+        pluginManager.register(PluginDto.builder().module("monitor").name("kafkaGroup").author("sanri").logo("kafka.jpg").desc("消费组管理").envs("default").build());
+        pluginManager.register(PluginDto.builder().module("monitor").name("kafkaTopic").author("sanri").logo("kafka.jpg").desc("消费主题管理").envs("default").build());
     }
 
     @PreDestroy

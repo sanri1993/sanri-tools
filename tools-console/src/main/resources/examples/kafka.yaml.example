@@ -1,3 +1,4 @@
+chroot: /
 connectIdParam:
   module: kafka
   connName: test

@@ -185,7 +185,7 @@ public class ZookeeperService {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module("monitor").name(module).author("sanri").build());
+        pluginManager.register(PluginDto.builder().module("monitor").name(module).author("sanri").logo("zookeeper.jpg").desc("做为 kafka dubbo 的支撑模块").build());
     }
 
     @PreDestroy
