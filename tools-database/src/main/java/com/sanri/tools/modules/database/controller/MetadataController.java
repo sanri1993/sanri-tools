@@ -3,15 +3,12 @@ package com.sanri.tools.modules.database.controller;
 import com.sanri.tools.modules.core.service.file.ConnectService;
 import com.sanri.tools.modules.database.dtos.meta.*;
 import com.sanri.tools.modules.database.service.JdbcService;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.sql.Array;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -36,7 +33,7 @@ public class MetadataController {
     }
 
     /**
-     * 获取所有的 catalogs 和 schema
+     * 刷新连接获取所有的 catalogs 和 schema
      * @param connName
      * @return
      * @throws IOException
@@ -44,14 +41,14 @@ public class MetadataController {
      */
     @GetMapping("/catalogs")
     public List<Catalog> catalogs(String connName) throws IOException, SQLException {
-        return jdbcService.refreshCatalogs(connName);
+        return jdbcService.refreshConnection(connName);
     }
 
     /**
      *
      * 作者:sanri <br/>
      * 时间:2017-4-21上午11:23:33<br/>
-     * 功能: 查询连接所有的表<br/>
+     * 功能: 首次查询连接所有的表,如果已经存在将会在缓存中获取<br/>
      * @return
      */
     @GetMapping("/tables")
@@ -61,7 +58,7 @@ public class MetadataController {
     }
 
     /**
-     * 刷新数据表
+     * 刷新 catalog 或者刷新 schema
      * @param connName
      * @param catalog
      * @param schema
@@ -69,39 +66,9 @@ public class MetadataController {
      * @throws IOException
      * @throws SQLException
      */
-    @GetMapping("/refreshTables")
-    public Collection<TableMetaData> refreshTables(String connName,String catalog,String schema) throws IOException, SQLException {
-        return jdbcService.refreshTables(connName,catalog,schema);
-    }
-
-    /**
-     *  刷新表格列
-     * @param connName
-     * @param catalog
-     * @param schema
-     * @param tableName
-     * @return
-     * @throws IOException
-     * @throws SQLException
-     */
-    @GetMapping("/refreshColumns")
-    public List<Column> refreshColumns(String connName, String catalog, String schema, String tableName) throws IOException, SQLException {
-        ActualTableName actualTableName = new ActualTableName(catalog,schema,tableName);
-        return jdbcService.refreshTableColumns(connName,actualTableName);
-    }
-
-    // 刷新表格索引项
-    @GetMapping("/refreshIndexs")
-    public List<Index> refreshIndexs(String connName, String catalog, String schema, String tableName) throws IOException, SQLException {
-        ActualTableName actualTableName = new ActualTableName(catalog,schema,tableName);
-        return jdbcService.refreshTableIndexs(connName,actualTableName);
-    }
-
-    // 刷新表格主键项
-    @GetMapping("/refreshPrimaryKeys")
-    public List<PrimaryKey> refreshPrimaryKeys(String connName, String catalog, String schema, String tableName) throws IOException, SQLException {
-        ActualTableName actualTableName = new ActualTableName(catalog,schema,tableName);
-        return jdbcService.refreshTablePrimaryKeys(connName,actualTableName);
+    @GetMapping("/refreshCatalogOrSchema")
+    public Collection<TableMetaData> refreshCatalogOrSchema(String connName,String catalog,String schema) throws IOException, SQLException {
+        return jdbcService.refreshCatalogOrSchema(connName,catalog,schema);
     }
 
     @GetMapping("/refreshTable")

@@ -297,4 +297,17 @@ public class ClassloaderService  {
         }
 
     }
+
+    /**
+     * 加载出一个 Class
+     * @param classloaderName
+     * @param className
+     * @return
+     * @throws ClassNotFoundException
+     */
+    public Class loadClass(String classloaderName, String className) throws ClassNotFoundException {
+        ClassLoader classloader = getClassloader(classloaderName);
+        Class<?> aClass = classloader.loadClass(className);
+        return aClass;
+    }
 }

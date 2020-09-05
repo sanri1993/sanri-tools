@@ -12,7 +12,10 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/classloader")
@@ -96,6 +99,20 @@ public class ClassloaderController {
     public void methods(@PathVariable("classloaderName") String classloaderName, @PathVariable("className") String className) throws ClassNotFoundException{
         // 不能直接返回这个数据
 //        return classloaderService.classMethods(classloaderName,className);
+    }
+
+    /**
+     * 获取某个类的所有方法名
+     * @param classloaderName
+     * @param className
+     * @return
+     */
+    @GetMapping("/{classloaderName}/{className}/methodNames")
+    public List<String> methodNames(@PathVariable("classloaderName") String classloaderName, @PathVariable("className") String className) throws ClassNotFoundException {
+        Class clazz = classloaderService.loadClass(classloaderName,className);
+        Method[] declaredMethods = clazz.getDeclaredMethods();
+        List<String> collect = Arrays.stream(declaredMethods).map(Method::getName).collect(Collectors.toList());
+        return collect;
     }
 
     /**

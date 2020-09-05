@@ -144,7 +144,7 @@ public class JdbcService {
      * @throws IOException
      * @throws SQLException
      */
-    public List<Catalog> refreshCatalogs(String connName) throws IOException, SQLException {
+    public List<Catalog> refreshConnection(String connName) throws IOException, SQLException {
         DatabaseMetaData databaseMetaData = databaseMetaData(connName);
         ResultSet resultSet = null;
         List<Catalog> catalogList = new ArrayList<>(); ;
@@ -187,7 +187,7 @@ public class JdbcService {
      * @throws IOException
      * @throws SQLException
      */
-    public Collection<TableMetaData> refreshTables(String connName, String catalog, String schema) throws IOException, SQLException {
+    public Collection<TableMetaData> refreshCatalogOrSchema(String connName, String catalog, String schema) throws IOException, SQLException {
         Map<ActualTableName, TableMetaData> newTableMetaData = refreshTableInfo(connName, catalog, schema);
 
         // 刷新缓存
