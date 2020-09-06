@@ -1,10 +1,15 @@
 package com.sanri.tools.modules.core.controller;
 
+import com.sanri.tools.modules.core.dtos.ClassStruct;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.core.utils.ZipUtil;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.ClassUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
+import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,6 +17,8 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -113,6 +120,58 @@ public class ClassloaderController {
         Method[] declaredMethods = clazz.getDeclaredMethods();
         List<String> collect = Arrays.stream(declaredMethods).map(Method::getName).collect(Collectors.toList());
         return collect;
+    }
+
+    ParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
+
+    /**
+     * 获取类结构
+     * @param classloaderName
+     * @param className
+     * @return
+     */
+    @GetMapping("/{classloaderName}/{className}/classStruct")
+    public ClassStruct classStruct(@PathVariable("classloaderName") String classloaderName, @PathVariable("className") String className) throws ClassNotFoundException {
+        Class clazz = classloaderService.loadClass(classloaderName,className);
+        String simpleName = clazz.getSimpleName();
+        String packageName = clazz.getPackage().getName();
+        ClassStruct classStruct = new ClassStruct(simpleName, packageName);
+
+        Field[] declaredFields = clazz.getDeclaredFields();
+        List<ClassStruct.Field> fields = new ArrayList<>();
+        classStruct.setFields(fields);
+        for (Field declaredField : declaredFields) {
+            String fieldName = declaredField.getName();
+            String fieldType = declaredField.getType().getSimpleName();
+            int modifiers = declaredField.getModifiers();
+            ClassStruct.Field field = new ClassStruct.Field(modifiers, fieldName, fieldType);
+            fields.add(field);
+        }
+
+        Method[] declaredMethods = clazz.getDeclaredMethods();
+        List<ClassStruct.Method> methods = new ArrayList<>();
+        classStruct.setMethods(methods);
+        for (Method declaredMethod : declaredMethods) {
+            String methodName = declaredMethod.getName();
+            int modifiers = declaredMethod.getModifiers();
+            String returnType = declaredMethod.getReturnType().getSimpleName();
+            ClassStruct.Method method = new ClassStruct.Method(modifiers, methodName, returnType);
+            methods.add(method);
+
+            // 获取方法参数列表
+            Class<?>[] parameterTypes = declaredMethod.getParameterTypes();
+            String[] parameterNames = parameterNameDiscoverer.getParameterNames(declaredMethod);
+            if (ArrayUtils.isNotEmpty(parameterTypes)) {
+                List<ClassStruct.Arg> args = new ArrayList<>();
+                for (int i = 0; i < parameterNames.length; i++) {
+                    Class<?> parameterType = parameterTypes[i];
+                    ClassStruct.Arg arg = new ClassStruct.Arg(parameterType.getSimpleName(), parameterNames[i]);
+                    args.add(arg);
+                }
+                method.setArgs(args);
+            }
+        }
+        return classStruct;
     }
 
     /**

@@ -474,6 +474,6 @@ public class SwaggerJsonParser {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module("swagger").name("main").build());
+        pluginManager.register(PluginDto.builder().module("docs").name("swagger").build());
     }
 }
