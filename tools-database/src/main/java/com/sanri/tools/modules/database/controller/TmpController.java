@@ -1,5 +1,6 @@
 package com.sanri.tools.modules.database.controller;
 
+import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
 import com.sanri.tools.modules.database.dtos.meta.Column;
 import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
 import com.sanri.tools.modules.database.service.JdbcService;
@@ -28,49 +29,60 @@ public class TmpController {
 
     @RequestMapping("/comments")
     public void writeComments() throws IOException, SQLException {
-        // 读取 Excel , 找到有注释的列
-        List<ExcelData> excelDatas = readExcel();
-        // 合并数据
-        Map<String, ExcelData> columnComments = excelDatas.stream().collect(Collectors.toMap(ExcelData::getColumnName, e -> e));
-
-        String connName = "lo";
-        String catalog = null;
-
-        List<TableMetaData> tableMetaDataListAcc = jdbcService.filterSchemaTables(connName, catalog, "acc");
-        List<TableMetaData> tableMetaDataListUam = jdbcService.filterSchemaTables(connName, catalog, "uam");
-        Collection<TableMetaData> union = CollectionUtils.union(tableMetaDataListAcc, tableMetaDataListUam);
-        for (TableMetaData tableMetaData : union) {
-            String tableName = tableMetaData.getActualTableName().getTableName();
-            String schema = tableMetaData.getActualTableName().getSchema();
-            List<Column> columns = tableMetaData.getColumns();
-            for (Column column : columns) {
-                String columnName = column.getColumnName();
-                ExcelData excelData = columnComments.get(columnName);
-                if (excelData != null){
-                    StringBuilder builder = new StringBuilder();
-                    if (StringUtils.isNotBlank(excelData.getDescribe())){
-                        builder.append("[describe]"+excelData.getDescribe());
-                    }
-                    if (StringUtils.isNotBlank(excelData.getEnumValues())){
-                        builder.append("\t[enums]"+excelData.getEnumValues());
-                    }
-                    if (StringUtils.isNotBlank(excelData.getRemark())){
-                        builder.append("\t[remark]"+excelData.getRemark());
-                    }
-                    if (StringUtils.isNotBlank(excelData.getExample())){
-                        builder.append("\t[example]"+excelData.getExample());
-                    }
-                    if (StringUtils.isNotBlank(excelData.getUpdateDescribe())){
-                        builder.append("\t[updateDescribe]"+excelData.getUpdateDescribe());
-                    }
-                    if (StringUtils.isBlank(builder.toString())){
-                        continue;
-                    }
-                    String sql = "COMMENT ON COLUMN "+schema+"."+tableName+"."+columnName+" IS '"+builder.toString()+"';";
-                    System.out.println(sql.replaceAll("\n"," "));
-                }
-            }
+        List<TableMetaData> tableMetaDataList = jdbcService.searchTables("10.134.179.119", null, null, "column:court_uuid");
+        Collections.sort(tableMetaDataList,(a,b) -> a.getActualTableName().getSchema().compareTo(b.getActualTableName().getSchema()));
+        Set<String> updateSchema = new HashSet<>();
+        for (TableMetaData tableMetaData : tableMetaDataList) {
+            ActualTableName actualTableName = tableMetaData.getActualTableName();
+            String schema = actualTableName.getSchema();
+            updateSchema.add(schema);
+            String sql = "update "+schema+"."+actualTableName.getTableName()+" set court_uuid='hhdtrailsit201908090a70ab36ccb64';";
+            System.out.println(sql);
         }
+        System.out.println(updateSchema);
+//        // 读取 Excel , 找到有注释的列
+//        List<ExcelData> excelDatas = readExcel();
+//        // 合并数据
+//        Map<String, ExcelData> columnComments = excelDatas.stream().collect(Collectors.toMap(ExcelData::getColumnName, e -> e));
+//
+//        String connName = "lo";
+//        String catalog = null;
+//
+//        List<TableMetaData> tableMetaDataListAcc = jdbcService.filterSchemaTables(connName, catalog, "acc");
+//        List<TableMetaData> tableMetaDataListUam = jdbcService.filterSchemaTables(connName, catalog, "uam");
+//        Collection<TableMetaData> union = CollectionUtils.union(tableMetaDataListAcc, tableMetaDataListUam);
+//        for (TableMetaData tableMetaData : union) {
+//            String tableName = tableMetaData.getActualTableName().getTableName();
+//            String schema = tableMetaData.getActualTableName().getSchema();
+//            List<Column> columns = tableMetaData.getColumns();
+//            for (Column column : columns) {
+//                String columnName = column.getColumnName();
+//                ExcelData excelData = columnComments.get(columnName);
+//                if (excelData != null){
+//                    StringBuilder builder = new StringBuilder();
+//                    if (StringUtils.isNotBlank(excelData.getDescribe())){
+//                        builder.append("[describe]"+excelData.getDescribe());
+//                    }
+//                    if (StringUtils.isNotBlank(excelData.getEnumValues())){
+//                        builder.append("\t[enums]"+excelData.getEnumValues());
+//                    }
+//                    if (StringUtils.isNotBlank(excelData.getRemark())){
+//                        builder.append("\t[remark]"+excelData.getRemark());
+//                    }
+//                    if (StringUtils.isNotBlank(excelData.getExample())){
+//                        builder.append("\t[example]"+excelData.getExample());
+//                    }
+//                    if (StringUtils.isNotBlank(excelData.getUpdateDescribe())){
+//                        builder.append("\t[updateDescribe]"+excelData.getUpdateDescribe());
+//                    }
+//                    if (StringUtils.isBlank(builder.toString())){
+//                        continue;
+//                    }
+//                    String sql = "COMMENT ON COLUMN "+schema+"."+tableName+"."+columnName+" IS '"+builder.toString()+"';";
+//                    System.out.println(sql.replaceAll("\n"," "));
+//                }
+//            }
+//        }
     }
 
     public List<ExcelData> readExcel() throws IOException {

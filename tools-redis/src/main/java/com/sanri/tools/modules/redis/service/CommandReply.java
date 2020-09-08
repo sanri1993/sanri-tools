@@ -52,7 +52,7 @@ public class CommandReply {
         return itemList;
     }
 
-    public <T> List<T> parserWithClass(String reply,Class<T> clazz){
+    public <T> List<T> parserWithClass(String reply,Class<T> clazz,String... headers){
         String[] lines = StringUtils.split(reply, '\n');
         List<T> list = new ArrayList<>();
         for (int i = 0; i < lines.length; i++) {

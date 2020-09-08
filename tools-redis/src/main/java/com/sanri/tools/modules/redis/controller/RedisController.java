@@ -11,8 +11,8 @@ import java.util.List;
 /**
  * redis 比较重要的监控数据为:
  * 查看当前的模式 单机,主从树状结构,集群(每个节点的槽位信息)            已实现
- * 查看内存使用                                                 未实现
- * 查看连接数,哪些主机占用多少连接                                 未实现
+ * 查看内存使用                                                 已实现
+ * 查看连接数,哪些主机占用多少连接                                 已实现
  * 模糊搜索某个 key ,查看 key 的数据,注意集群模式下 key 的搜索       已实现
  */
 @RestController
@@ -33,6 +33,17 @@ public class RedisController {
         return redisService.nodes(connName);
     }
 
+    @GetMapping("/memoryUses")
+    public List<MemoryUse> memoryUses(String connName) throws IOException {
+        return redisService.memoryUse(connName);
+    }
+
+    @GetMapping("/clientList")
+    public List<ClientConnection> clientList(String connName) throws IOException {
+        List<ClientConnection> clientConnections = redisService.clientList(connName);
+        return clientConnections;
+    }
+
     /**
      * 扫描 key 列表
      * @param redisScanParam
@@ -40,7 +51,7 @@ public class RedisController {
      * @throws IOException
      */
     @GetMapping("/scan")
-    public List<RedisKeyResult> scan(RedisScanParam redisScanParam) throws IOException, ClassNotFoundException {
+    public RedisScanResult scan(RedisScanParam redisScanParam) throws IOException, ClassNotFoundException {
         return redisService.scan(redisScanParam);
     }
 
@@ -62,7 +73,7 @@ public class RedisController {
      * @throws IOException
      */
     @GetMapping("/hashKeyScan")
-    public List<String> hashKeyScan(HashScanParam hashScanParam) throws IOException, ClassNotFoundException {
+    public HashKeyScanResult hashKeyScan(HashScanParam hashScanParam) throws IOException, ClassNotFoundException {
         return redisService.hashKeyScan(hashScanParam);
     }
 

@@ -411,7 +411,7 @@ Content-Type: application/json
 GET {{baseUrl}}/redis/nodes?connName=192.168.0.134
 
 ### redis - scan 某个 key ,可以模糊查询
-GET {{baseUrl}}/redis/scan?connName=10.101.72.43&pattern=PLC:PARKINGLOT.CACHE&limit=10
+GET {{baseUrl}}/redis/scan?connName=10.101.72.43&pattern=*CACHE*&limit=2&cursor=10.101.72.43:7000|474
 
 ### redis - 读取某个具体的 key; 这个数据有点复杂,本来是用 GET 请求的,换 POST
 POST {{baseUrl}}/redis/data
@@ -432,10 +432,16 @@ Content-Type: application/json
 }
 
 ### redis -  扫描 hashKey
-GET {{baseUrl}}/redis/hashKeyScan?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE&pattern=&limit=100&hashKeySerizlizer=jdk
+GET {{baseUrl}}/redis/hashKeyScan?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE&pattern=&limit=100&hashKeySerializer=jdk
 
 ### redis -  key 长度
 GET {{baseUrl}}/redis/keyLength?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE
+
+### redis - 获取客户端连接列表和占用连接数
+GET {{baseUrl}}/redis/clientList?connName=10.101.72.43
+
+### redis - 获取内存占用
+GET {{baseUrl}}/redis/memoryUses?connName=10.101.72.43
 
 ### google 翻译
 GET http://translate.google.cn/translate_a/single?client=gtx&sl=zh-CN&tl=en&dt=t&q=查询当前组织下的审核人

@@ -11,6 +11,7 @@ public class RedisKeyResult {
     //过期时间毫秒值
     private long pttl;
     private long length;
+    private int slot;
 
     public RedisKeyResult() {
     }

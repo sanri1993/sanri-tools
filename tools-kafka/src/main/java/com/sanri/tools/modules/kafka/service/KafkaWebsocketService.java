@@ -2,7 +2,6 @@ package com.sanri.tools.modules.kafka.service;
 
 import com.alibaba.fastjson.JSON;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
-import com.sanri.tools.modules.core.service.classloader.ExtendClassloader;
 import com.sanri.tools.modules.kafka.dtos.ExtendConsumerRecord;
 import com.sanri.tools.modules.kafka.dtos.KafkaConsumerPayload;
 import com.sanri.tools.modules.serializer.service.Serializer;
@@ -13,14 +12,10 @@ import com.sanri.tools.modules.websocket.service.WebsocketMessageListener;
 import com.sanri.tools.modules.websocket.service.messages.ClientMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.DescribeTopicsResult;
-import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
-import org.apache.kafka.common.TopicPartitionInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -87,7 +82,7 @@ public class KafkaWebsocketService {
         private long lastNoClientTime;
 
         Serializer serializer;
-        Serializer defaultSerizlizer;
+        Serializer defaultSerializer;
         ClassLoader classloader;
 
         public ConsumerTask(KafkaConsumerPayload kafkaConsumerPayload) {
@@ -97,7 +92,7 @@ public class KafkaWebsocketService {
             if ( classloader == null ){
                 classloader = ClassLoader.getSystemClassLoader();
             }
-            defaultSerizlizer = serializerChoseService.choseSerializer("string");
+            defaultSerializer = serializerChoseService.choseSerializer("string");
         }
 
         private List<WebSocketClient> notifyConsumerRecordClients = new ArrayList<>();
@@ -147,7 +142,7 @@ public class KafkaWebsocketService {
                             } catch (ClassNotFoundException e) {
                                 log.info("数据反序列化失败,将使用 string 格式数据发送 ");
                                 try {
-                                    deserialize = defaultSerizlizer.deserialize(value,classloader);
+                                    deserialize = defaultSerializer.deserialize(value,classloader);
                                 } catch (ClassNotFoundException ex) {
                                     e.printStackTrace();
                                 }
