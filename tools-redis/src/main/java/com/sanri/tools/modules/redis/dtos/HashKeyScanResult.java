@@ -8,6 +8,7 @@ import java.util.List;
 public class HashKeyScanResult {
     private List<String> keys;
     private String cursor;
+    private long length;
 
     public HashKeyScanResult() {
     }

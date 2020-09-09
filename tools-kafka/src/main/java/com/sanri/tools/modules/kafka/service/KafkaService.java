@@ -34,6 +34,8 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -568,8 +570,8 @@ public class KafkaService {
         return mergeMap.values();
     }
 
-    private double objectDoubleValue(Object value){
-        return  NumberUtils.toDouble(value.toString());
+    private BigDecimal objectDoubleValue(Object value){
+        return new BigDecimal(value.toString());
     }
 
     private List<String> constansValues(Constants constants) {

@@ -14,7 +14,9 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.web.bind.annotation.*;
 
+import javax.management.*;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -130,5 +132,17 @@ public class KafkaController {
         List<BrokerInfo> brokers = kafkaService.brokers(clusterName);
         List<String> collect = brokers.stream().map(BrokerInfo::hostAndPort).collect(Collectors.toList());
         return collect;
+    }
+
+    @GetMapping("/monitor/topic/{topic}")
+    public Collection<MBeanMonitorInfo> topicMonitor(String clusterName, @PathVariable("topic") String topic) throws MalformedObjectNameException, InstanceNotFoundException, IOException, ReflectionException, AttributeNotFoundException, MBeanException {
+        Collection<MBeanMonitorInfo> monitor = kafkaService.monitor(clusterName, BrokerTopicMetrics.TopicMetrics.class, topic);
+        return monitor;
+    }
+
+    @GetMapping("/monitor/broker")
+    public Collection<MBeanMonitorInfo> brokerMonitor(String clusterName) throws MalformedObjectNameException, InstanceNotFoundException, IOException, ReflectionException, AttributeNotFoundException, MBeanException {
+        Collection<MBeanMonitorInfo> monitor = kafkaService.monitor(clusterName, BrokerTopicMetrics.BrokerMetrics.class,null);
+        return monitor;
     }
 }

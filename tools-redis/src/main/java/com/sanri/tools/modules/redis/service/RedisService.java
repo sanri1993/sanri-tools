@@ -466,9 +466,13 @@ public class RedisService {
             scanParams.count(limit - result.size());        // 需要保证搜索到的数据量的正确性
         }while (hashKeyResult.size() < limit && NumberUtils.toLong(cursor) != 0L);
 
+        Long hlen = client.hlen(key);
+        HashKeyScanResult hashKeyScanResult = new HashKeyScanResult(hashKeyResult, cursor);
+        hashKeyScanResult.setLength(hlen);
+
         closeCluster(cluster,client);
 
-        return new HashKeyScanResult(hashKeyResult,cursor);
+        return hashKeyScanResult;
     }
 
     /**
@@ -630,7 +634,7 @@ public class RedisService {
                 }
                 List<Object> listObjects = new ArrayList<>(listValueBytes.size());
                 for (byte[] listValueByte : listValueBytes) {
-                    object = hashValueSerializer.deserialize( listValueByte, classloader);
+                    object = valueSerializer.deserialize( listValueByte, classloader);
                     listObjects.add(object);
                 }
                 return listObjects;

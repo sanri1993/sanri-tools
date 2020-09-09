@@ -291,7 +291,7 @@ Content-Type: application/json
 GET {{baseUrl}}/db/code/renameStrategies
 
 ### 数据表 - 代码生成 - 生成 javaBean
-POST {{baseUrl}}/db/code/javaBeanBuild
+POST {{baseUrl}}/db/code/build/javaBean
 Content-Type: application/json
 
 {
@@ -349,6 +349,7 @@ Content-Type: application/json
 
 ### 数据库 - 代码生成  - 生成代码
 POST {{baseUrl}}/db/code/template/code/generator
+
 Content-Type: application/json
 
 {
@@ -523,6 +524,12 @@ GET {{baseUrl}}/kafka/group/topic/data/nearby?clusterName=192.168.72.42_2181&top
 ### 发送 json 数据
 POST {{baseUrl}}/kafka/topic/data/send/json
 Content-Type: application/json
+
+### 监控 kafka broker 数据
+GET {{baseUrl}}/kafka/monitor/broker?clusterName=192.168.72.42_2181
+
+### 监控 kafka topic 数据
+GET {{baseUrl}}/kafka/monitor/topic/EGSC_EGC_MC_APP_ORG_TOPIC?clusterName=192.168.72.42_2181
 
 ### soap工具 - 加载一个 webservice port
 GET {{baseUrl}}/soap/ports?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl

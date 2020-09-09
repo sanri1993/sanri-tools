@@ -14,6 +14,7 @@ import java.util.List;
  * 查看内存使用                                                 已实现
  * 查看连接数,哪些主机占用多少连接                                 已实现
  * 模糊搜索某个 key ,查看 key 的数据,注意集群模式下 key 的搜索       已实现
+ * 批量删除 key ,先模糊查询,可以指定前缀删除                        还没实现
  */
 @RestController
 @RequestMapping("/redis")

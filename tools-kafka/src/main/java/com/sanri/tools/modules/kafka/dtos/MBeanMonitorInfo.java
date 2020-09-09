@@ -1,16 +1,21 @@
 package com.sanri.tools.modules.kafka.dtos;
 
+import lombok.Data;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 public class MBeanMonitorInfo {
-    private double fifteenMinute;
-    private double fiveMinute;
-    private double meanRate;
-    private double oneMinute;
+    private BigDecimal fifteenMinute;
+    private BigDecimal fiveMinute;
+    private BigDecimal meanRate;
+    private BigDecimal oneMinute;
     private String mBean;
 
     public MBeanMonitorInfo() {
     }
 
-    public MBeanMonitorInfo(String mBean, double fifteenMinute, double fiveMinute, double meanRate, double oneMinute) {
+    public MBeanMonitorInfo( String mBean,BigDecimal fifteenMinute, BigDecimal fiveMinute, BigDecimal meanRate, BigDecimal oneMinute) {
         this.fifteenMinute = fifteenMinute;
         this.fiveMinute = fiveMinute;
         this.meanRate = meanRate;
@@ -18,20 +23,20 @@ public class MBeanMonitorInfo {
         this.mBean = mBean;
     }
 
-    public double getFifteenMinute() {
-        return fifteenMinute;
+    public String getFifteenMinute() {
+        return fifteenMinute.setScale(2, RoundingMode.HALF_UP).toString();
     }
 
-    public double getFiveMinute() {
-        return fiveMinute;
+    public String getFiveMinute() {
+        return fiveMinute.setScale(2, RoundingMode.HALF_UP).toString();
     }
 
-    public double getMeanRate() {
-        return meanRate;
+    public String getMeanRate() {
+        return meanRate.setScale(2, RoundingMode.HALF_UP).toString();
     }
 
-    public double getOneMinute() {
-        return oneMinute;
+    public String getOneMinute() {
+        return oneMinute.setScale(2, RoundingMode.HALF_UP).toString();
     }
 
     public String getmBean() {
@@ -43,9 +48,9 @@ public class MBeanMonitorInfo {
      * @param mBeanInfo
      */
     public void addData(MBeanMonitorInfo mBeanInfo) {
-        this.fifteenMinute += mBeanInfo.fifteenMinute;
-        this.fiveMinute += mBeanInfo.fiveMinute;
-        this.meanRate += mBeanInfo.meanRate;
-        this.oneMinute += mBeanInfo.oneMinute;
+        this.fifteenMinute.add(mBeanInfo.fifteenMinute);
+        this.fiveMinute.add(mBeanInfo.fiveMinute);
+        this.meanRate.add(mBeanInfo.meanRate);
+        this.oneMinute.add(mBeanInfo.oneMinute);
     }
 }
