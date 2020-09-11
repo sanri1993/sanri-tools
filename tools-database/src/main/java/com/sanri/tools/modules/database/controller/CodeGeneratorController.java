@@ -82,6 +82,7 @@ public class CodeGeneratorController {
 
     /**
      * 上传一个模板,相同模板直接覆盖,需要注意是否有相同模板
+     * 文件名格式为: 模板名称.后缀.模板引擎
      * @param file
      */
     @PostMapping("/template/upload")

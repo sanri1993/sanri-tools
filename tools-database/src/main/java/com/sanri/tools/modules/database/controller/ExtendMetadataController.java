@@ -55,19 +55,6 @@ public class ExtendMetadataController {
     }
 
     /**
-     * 查找有某个标签的数据表
-     * @param connName
-     * @param schemaName
-     * @param tag
-     * @return
-     * @throws SQLException
-     */
-    @GetMapping("/mark/tagTables")
-    public List<ActualTableName> tagTables(String connName,String catalog,String schema,String tag) throws SQLException, IOException {
-        return tableMarkService.findTagTables(connName,catalog,schema,tag);
-    }
-
-    /**
      * 批量配置表关系
      * @param batchTableRelationParam
      */

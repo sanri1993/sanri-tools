@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 /**
  * redis 比较重要的监控数据为:
@@ -88,5 +89,26 @@ public class RedisController {
     @PostMapping("/data")
     public Object data(@RequestBody RedisDataQueryParam dataQueryParam) throws IOException, ClassNotFoundException {
         return redisService.loadData(dataQueryParam);
+    }
+
+    /**
+     * 删除 key
+     * @param connName
+     * @param key
+     * @return
+     */
+    @PostMapping("/dropKeys")
+    public Long dropKeys(String connName, String[] keys) throws IOException {
+        return redisService.dropKeys(connName,keys);
+    }
+
+    /**
+     * 查询指定前缀的所有 key ,主要用于批量删除 key
+     * @param match
+     * @return
+     */
+    @GetMapping("/prefixKeys")
+    public Set<String> prefixKeys(String connName,String match) throws IOException {
+        return redisService.prefixKeys(connName,match);
     }
 }

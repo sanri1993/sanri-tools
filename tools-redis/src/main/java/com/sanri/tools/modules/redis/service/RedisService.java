@@ -1,7 +1,6 @@
 package com.sanri.tools.modules.redis.service;
 
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
-import com.sanri.tools.modules.core.service.data.regex.Node;
 import com.sanri.tools.modules.core.service.file.ConnectService;
 import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
@@ -368,6 +367,71 @@ public class RedisService {
     }
 
     /**
+     * 删除 redis key
+     * @param connName
+     * @param keys
+     * @return
+     * @throws IOException
+     */
+    public Long dropKeys(String connName, String... keys) throws IOException {
+        Jedis jedis = jedis(connName);
+        boolean cluster = isCluster(jedis);
+        if(cluster){
+            JedisCluster jedisCluster = jedisCluster(jedis);
+            return jedisCluster.del(keys);
+        }
+        return jedis.del(keys);
+    }
+
+    /**
+     * 查询到指定前端的所有 key
+     * @param connName
+     * @param match
+     * @return
+     * @throws IOException
+     */
+    public Set<String> prefixKeys(String connName, String match) throws IOException {
+        Jedis jedis = jedis(connName);
+        boolean cluster = isCluster(jedis);
+        Set<String> allKeys = new HashSet<>();
+        if (cluster){
+            JedisCluster jedisCluster = jedisCluster(jedis);
+            Map<String, JedisPool> clusterNodes = jedisCluster.getClusterNodes();
+            Iterator<JedisPool> iterator = clusterNodes.values().iterator();
+            while (iterator.hasNext()){
+                Jedis client = iterator.next().getResource();
+                String role = jedisRole(client);
+                if (!"master".equals(role)){
+                    continue;
+                }
+                Set<String> keys = nodeKeys(client, match);
+                allKeys.addAll(keys);
+            }
+
+            closeCluster(cluster,jedisCluster);
+        }else{
+            allKeys = nodeKeys(jedis,match);
+        }
+        return allKeys;
+    }
+
+    public Set<String> nodeKeys(Jedis jedis,String match){
+        String cursor = "0";
+        ScanParams scanParams = new ScanParams();
+        scanParams.count(1000);
+        scanParams.match(match);
+        Set<String> allKeys = new HashSet<>();
+        do {
+            ScanResult<String> scan = jedis.scan(cursor, scanParams);
+            List<String> keys = scan.getResult();
+            allKeys.addAll(keys);
+            cursor = scan.getStringCursor();
+        }while (!"0".equals(cursor));
+
+        return allKeys;
+    }
+
+    /**
      * redis 的数据类型
      */
     enum RedisType{
@@ -463,7 +527,7 @@ public class RedisService {
                 hashKeyResult.add(Objects.toString(hashKeySerializerImpl.deserialize(entry.getKey(), ClassLoader.getSystemClassLoader())));
             }
             cursor = scanResult.getStringCursor();
-            scanParams.count(limit - result.size());        // 需要保证搜索到的数据量的正确性
+            scanParams.count(limit - hashKeyResult.size());        // 需要保证搜索到的数据量的正确性
         }while (hashKeyResult.size() < limit && NumberUtils.toLong(cursor) != 0L);
 
         Long hlen = client.hlen(key);

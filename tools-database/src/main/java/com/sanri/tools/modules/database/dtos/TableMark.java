@@ -15,4 +15,12 @@ public class TableMark {
     private String connName;
     private ActualTableName actualTableName;
     private Set<String> tags = new HashSet<>();
+
+    public TableMark() {
+    }
+
+    public TableMark(String connName, ActualTableName actualTableName) {
+        this.connName = connName;
+        this.actualTableName = actualTableName;
+    }
 }

@@ -5,6 +5,7 @@ import com.sanri.tools.modules.database.dtos.DynamicQueryDto;
 import com.sanri.tools.modules.database.dtos.ExportPreviewDto;
 import com.sanri.tools.modules.database.dtos.TableDataParam;
 import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
+import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
 import com.sanri.tools.modules.database.service.DataService;
 import com.sanri.tools.modules.database.service.JdbcService;
 import com.sanri.tools.modules.database.service.TableDataService;
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -40,11 +42,12 @@ public class DataController {
      * @return
      */
     @GetMapping("/cleanBizTables")
-    public List<String> cleanBizTables(String connName,String catalog,String schemaName,String tagName) throws SQLException, IOException {
-        List<ActualTableName> tagTables = tableMarkService.findTagTables(connName,catalog, schemaName, tagName);
+    public List<String> cleanBizTables(String connName,String catalog,String[] schemas,String tag) throws SQLException, IOException {
+        List<TableMetaData> tagTables = tableMarkService.searchTables(connName,catalog, Arrays.asList(schemas),tag);
         List<String> sqls = new ArrayList<>();
-        for (ActualTableName tagTable : tagTables) {
-            String tableName = tagTable.getTableName();
+        for (TableMetaData tableMetaData : tagTables) {
+            ActualTableName actualTableName = tableMetaData.getActualTableName();
+            String tableName = actualTableName.getSchema()+"."+actualTableName.getTableName();
             sqls.add("truncate "+tableName);
         }
 

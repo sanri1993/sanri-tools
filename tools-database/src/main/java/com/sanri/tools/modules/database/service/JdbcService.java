@@ -94,17 +94,29 @@ public class JdbcService {
      * @throws IOException
      * @throws SQLException
      */
-    public List<TableMetaData> filterSchemaTables(String connName, String catalog, String schema) throws IOException, SQLException {
+    public List<TableMetaData> filterSchemaTables(String connName, String catalog, List<String> schemas) throws IOException, SQLException {
         Collection<TableMetaData> tables = tables(connName, catalog);
+
+        // 首次过滤, 过滤 catalog 和 schema
         List<TableMetaData> filterTables = new ArrayList<>(tables);
-        if (StringUtils.isNotBlank(schema)){
-            // 过滤掉不是 schema 的表
-            Iterator<TableMetaData> iterator = filterTables.iterator();
-            while (iterator.hasNext()){
-                TableMetaData next = iterator.next();
-                ActualTableName actualTableName = next.getActualTableName();
-                if (!schema.equals(actualTableName.getSchema())){
+        Iterator<TableMetaData> iterator = filterTables.iterator();
+        while (iterator.hasNext()){
+            TableMetaData tableMetaData = iterator.next();
+            ActualTableName actualTableName = tableMetaData.getActualTableName();
+            String currentCatalog = actualTableName.getCatalog();
+            String currentSchema = actualTableName.getSchema();
+
+            if (StringUtils.isNotBlank(currentCatalog)){
+                if (StringUtils.isNotBlank(catalog) && !catalog.equals(currentCatalog)){
                     iterator.remove();
+                    continue;
+                }
+            }
+
+            if (StringUtils.isNotBlank(currentSchema)){
+                if (CollectionUtils.isNotEmpty(schemas) && !schemas.contains(currentSchema)){
+                    iterator.remove();
+                    continue;
                 }
             }
         }
@@ -122,7 +134,7 @@ public class JdbcService {
      * @throws SQLException
      */
     public List<TableMetaData> filterChoseTables(String connName, String catalog, String schema,List<String> tableNames) throws IOException, SQLException {
-        List<TableMetaData> tableMetaDataList = filterSchemaTables(connName, catalog, schema);
+        List<TableMetaData> tableMetaDataList = filterSchemaTables(connName, catalog, Collections.singletonList(schema));
 
         List<TableMetaData> filterTables = new ArrayList<>();
         Iterator<TableMetaData> iterator = tableMetaDataList.iterator();
@@ -305,43 +317,12 @@ public class JdbcService {
      * @param keyword
      * @return
      */
-    public List<TableMetaData> searchTables(String connName,String catalog,List<String> schemas,String keyword) throws IOException, SQLException {
-        Collection<TableMetaData> tables = tables(connName, catalog);
-
-        // 首次过滤, 过滤 catalog 和 schema
-        List<TableMetaData> firstFilterTables = new ArrayList<>(tables);
-        Iterator<TableMetaData> iterator = firstFilterTables.iterator();
-        while (iterator.hasNext()){
-            TableMetaData tableMetaData = iterator.next();
-            ActualTableName actualTableName = tableMetaData.getActualTableName();
-            String currentCatalog = actualTableName.getCatalog();
-            String currentSchema = actualTableName.getSchema();
-
-            if (StringUtils.isNotBlank(currentCatalog)){
-                if (StringUtils.isNotBlank(catalog) && !catalog.equals(currentCatalog)){
-                    iterator.remove();
-                    continue;
-                }
-            }
-
-            if (StringUtils.isNotBlank(currentSchema)){
-                if (CollectionUtils.isNotEmpty(schemas) && !schemas.contains(currentSchema)){
-                    iterator.remove();
-                    continue;
-                }
-            }
-        }
+    public List<TableMetaData> searchTables(String connName,String catalog,List<String> schemas,String searchSchema,String keyword) throws IOException, SQLException {
+        List<TableMetaData> firstFilterTables = filterSchemaTables(connName, catalog, schemas);
 
         // 空搜索返回所有表
         if(StringUtils.isBlank(keyword)){
             return firstFilterTables;
-        }
-
-        // 根据关键字进行过滤
-        String searchSchema = "";
-        if(keyword.contains(":")){
-            searchSchema = keyword.split(":")[0];
-            keyword = keyword.split(":")[1];
         }
 
         // oracle 的特殊处理

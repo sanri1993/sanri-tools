@@ -200,17 +200,22 @@ Content-Type: application/json
 [
   {
     "connName": "lo",
-    "schemaName": "hdsc_db",
-    "tableName": "mct_event_handler",
-    "tags": ["biz"]
+    "actualTableName": {
+      "catalog": null,
+      "schema": "mct",
+      "tableName": "mct_system_config"
+    },
+    "tags": [
+      "config"
+    ]
   }
 ]
 
 ### 标记表-获取表标记
-GET {{baseUrl}}/db/metadata/extend/mark/tableTags?connName=lo&schemaName=hdsc_db&tableName=mct_event_handler
+GET {{baseUrl}}/db/metadata/extend/mark/tableTags?connName=lo&schema=mct&tableName=mct_system_config
 
 ### 标记表-查找某个标记的表
-GET {{baseUrl}}/db/metadata/extend/mark/tagTables?connName=lo&schemaName=hdsc_db
+GET {{baseUrl}}/db/metadata/extend/mark/tagTables?connName=lo&schema=mct&tag=config
 
 ### 表关系 - 配置表关系
 POST {{baseUrl}}/db/metadata/extend/relation/config

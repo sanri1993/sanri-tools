@@ -6,7 +6,9 @@ import com.sanri.tools.modules.core.service.file.ConnectService;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
 import com.sanri.tools.modules.database.dtos.TableMark;
+import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -82,6 +84,9 @@ public class TableMarkService {
     public TableMark getTableMark(String connName,ActualTableName actualTableName){
         Map<ActualTableName, TableMark> actualTableNameTableMarkMap = tableMarkMap.computeIfAbsent(connName, k -> new HashMap<>());
         TableMark tableMark = actualTableNameTableMarkMap.get(actualTableName);
+        if (tableMark == null){
+            return new TableMark(connName,actualTableName);
+        }
         return tableMark;
     }
 
@@ -106,22 +111,34 @@ public class TableMarkService {
 
     /**
      * 查找有某个标签的表
+     * @param connName
+     * @param catalog
+     * @param schemas
+     * @param tag
      * @return
+     * @throws SQLException
+     * @throws IOException
      */
-    public List<ActualTableName> findTagTables(String connName,String catalog,String schema,String tag) throws SQLException, IOException {
-        List<ActualTableName> findTables = new ArrayList<>();
+    public List<TableMetaData> searchTables(String connName,String catalog,List<String> schemas,String tag) throws SQLException, IOException {
+        List<TableMetaData> findTables = new ArrayList<>();
 
-        Map<ActualTableName, TableMark> actualTableNameTableMarkMap = tableMarkMap.get(connName);
+        List<TableMetaData> tableMetaDataList = jdbcService.filterSchemaTables(connName, catalog, schemas);
+        Map<ActualTableName, TableMetaData> actualTableNameTableMetaDataMap = tableMetaDataList.stream().collect(Collectors.toMap(TableMetaData::getActualTableName, i -> i));
+
+        Map<ActualTableName, TableMark> actualTableNameTableMarkMap = tableMarkMap.computeIfAbsent(connName,k -> new HashMap<>());
         Iterator<Map.Entry<ActualTableName, TableMark>> iterator = actualTableNameTableMarkMap.entrySet().iterator();
         while (iterator.hasNext()){
             Map.Entry<ActualTableName, TableMark> next = iterator.next();
             ActualTableName key = next.getKey();
             TableMark tableMark = next.getValue();
             ActualTableName actualTableName = tableMark.getActualTableName();
-            boolean tableNamespaceMatch = ((StringUtils.isNotBlank(catalog) && catalog.equals(actualTableName.getCatalog())) || StringUtils.isBlank(catalog))
-                    && ((StringUtils.isNotBlank(schema) && schema.equals(actualTableName.getSchema())) || StringUtils.isBlank(schema));
-            if (tableNamespaceMatch && tableMark.getTags().contains(tag)){
-                findTables.add(actualTableName);
+//            boolean tableNamespaceMatch = ((StringUtils.isNotBlank(catalog) && catalog.equals(actualTableName.getCatalog())) || StringUtils.isBlank(catalog))
+//                    && ((CollectionUtils.isNotEmpty(schemas) && schemas.contains(actualTableName.getSchema())) || CollectionUtils.isEmpty(schemas));
+            if (tableMark.getTags().contains(tag)){
+                TableMetaData tableMetaData = actualTableNameTableMetaDataMap.get(actualTableName);
+                if (tableMetaData != null) {
+                    findTables.add(tableMetaData);
+                }
             }
         }
 

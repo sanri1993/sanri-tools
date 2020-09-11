@@ -1,11 +1,12 @@
 package com.sanri.tools.modules.database.dtos.meta;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 
-@Getter
+@Setter
 public class ActualTableName {
     private String catalog;
     private String schema;
@@ -29,16 +30,32 @@ public class ActualTableName {
             return false;
         }
         ActualTableName other = (ActualTableName) obj;
-        if (fullName == null && other.fullName == null )return true;
+        if (getFullName() == null && other.getFullName() == null )return true;
 
-        return fullName.equals(other.fullName);
+        return getFullName().equals(other.getFullName());
     }
 
     @Override
     public int hashCode() {
-        if (fullName == null){
+        if (getFullName() == null){
             return 0 ;
         }
-        return fullName.hashCode();
+        return getFullName().hashCode();
+    }
+
+    public String getCatalog() {
+        return catalog;
+    }
+
+    public String getSchema() {
+        return schema;
+    }
+
+    public String getTableName() {
+        return tableName;
+    }
+
+    public String getFullName() {
+        return StringUtils.join(Arrays.asList(catalog,schema,tableName),'.');
     }
 }

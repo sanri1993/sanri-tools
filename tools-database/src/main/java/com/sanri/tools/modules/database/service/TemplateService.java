@@ -78,7 +78,7 @@ public class TemplateService {
     // 上传一个模板
     public void uploadTemplate(MultipartFile file) throws IOException {
         File dir = fileManager.mkConfigDir(basePath);
-        String name = file.getName();
+        String name = file.getOriginalFilename();
         String fileName = trueFileName(name);
 
         File templateFile = new File(dir, fileName);

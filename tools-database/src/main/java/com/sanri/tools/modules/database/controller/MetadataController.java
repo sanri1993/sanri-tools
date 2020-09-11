@@ -3,6 +3,8 @@ package com.sanri.tools.modules.database.controller;
 import com.sanri.tools.modules.core.service.file.ConnectService;
 import com.sanri.tools.modules.database.dtos.meta.*;
 import com.sanri.tools.modules.database.service.JdbcService;
+import com.sanri.tools.modules.database.service.TableMarkService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +21,8 @@ public class MetadataController {
     private JdbcService jdbcService;
     @Autowired
     private ConnectService connectService;
+    @Autowired
+    private TableMarkService tableMarkService;
 
     /**
      *
@@ -79,6 +83,19 @@ public class MetadataController {
 
     @GetMapping("/searchTables")
     public List<TableMetaData> searchTables(String connName, String catalog, String[] schemas, String keyword) throws IOException, SQLException {
-        return jdbcService.searchTables(connName,catalog,Arrays.asList(schemas),keyword);
+        List<TableMetaData> tableMetaDataList = null;
+        // 根据关键字进行过滤
+        String searchSchema = "";
+        if(keyword.contains(":")){
+            searchSchema = keyword.split(":")[0];
+            keyword = keyword.split(":")[1];
+        }
+        if (StringUtils.isNotBlank(searchSchema) && "tag".equals(searchSchema)){
+            tableMetaDataList = tableMarkService.searchTables(connName,catalog,Arrays.asList(schemas),keyword);
+        }else {
+            tableMetaDataList = jdbcService.searchTables(connName, catalog, Arrays.asList(schemas),searchSchema, keyword);
+        }
+
+        return tableMetaDataList;
     }
 }

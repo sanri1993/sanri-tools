@@ -9,6 +9,7 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.poifs.filesystem.DirectoryEntry;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,31 +46,31 @@ public class MetadataControllerShow {
      * @return
      */
     @GetMapping("/doc")
-    public ModelAndView generateDoc(String connName, String catalog, String schema,String templateName) throws IOException, SQLException {
-        List<TableMetaData> filterTables = jdbcService.filterSchemaTables(connName,catalog,schema);
+    public ModelAndView generateDoc(String connName, String catalog, String[] schemas,String templateName) throws IOException, SQLException {
+        List<TableMetaData> filterTables = jdbcService.filterSchemaTables(connName,catalog,Arrays.asList(schemas));
         // 使用过滤后的表生成文档
         ModelAndView modelAndView = new ModelAndView(templateName);
         modelAndView.addObject("connName",connName);
         modelAndView.addObject("catalog",catalog);
-        modelAndView.addObject("schema",schema);
+        modelAndView.addObject("schema",schemas);
         modelAndView.addObject("tables",filterTables);
         return modelAndView;
     }
 
     @GetMapping("/doc/download")
-    public void downDoc(String connName, String catalog, String schema,String templateName, HttpServletResponse response) throws IOException, SQLException, TemplateException {
-        List<TableMetaData> filterTables = jdbcService.filterSchemaTables(connName, catalog, schema);
+    public void downDoc(String connName, String catalog, String[] schemas,String templateName, HttpServletResponse response) throws IOException, SQLException, TemplateException {
+        List<TableMetaData> filterTables = jdbcService.filterSchemaTables(connName, catalog, Arrays.asList(schemas));
 
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/octet-stream; charset=utf-8");
         String extension = FilenameUtils.getExtension(templateName);
-        response.setHeader("Content-Disposition","attachment; filename=" + new String((connName+"|"+catalog+"|"+schema+"."+extension).getBytes(), "ISO8859-1"));
+        response.setHeader("Content-Disposition","attachment; filename=" + new String((connName+"|"+catalog+"|"+ StringUtils.join(schemas,'_') +"."+extension).getBytes(), "ISO8859-1"));
 
         Template template = configuration.getTemplate(templateName+".ftl");
         Map<String,Object> model = new HashMap<>();
         model.put("connName",connName);
         model.put("catalog",catalog);
-        model.put("schema",schema);
+        model.put("schema",schemas);
         model.put("tables",filterTables);
         template.process(model,response.getWriter());
     }
@@ -86,8 +87,8 @@ public class MetadataControllerShow {
      * @throws TemplateException
      */
     @GetMapping("/doc/download/word")
-    public ResponseEntity<UrlResource> downDocWord(String connName, String catalog, String schema, String templateName) throws IOException, SQLException, TemplateException {
-        List<TableMetaData> filterTables = jdbcService.filterSchemaTables(connName, catalog, schema);
+    public ResponseEntity<UrlResource> downDocWord(String connName, String catalog, String[] schemas, String templateName) throws IOException, SQLException, TemplateException {
+        List<TableMetaData> filterTables = jdbcService.filterSchemaTables(connName, catalog, Arrays.asList(schemas));
 
         File databaseDocDir = fileManager.mkTmpDir("/database/doc");
         File htmlFile = new File(databaseDocDir,System.currentTimeMillis() + ".html");
@@ -98,7 +99,7 @@ public class MetadataControllerShow {
         Map<String,Object> model = new HashMap<>();
         model.put("connName",connName);
         model.put("catalog",catalog);
-        model.put("schema",schema);
+        model.put("schema",schemas);
         model.put("tables",filterTables);
         template.process(model,outputStreamWriter);
         outputStreamWriter.flush();outputStreamWriter.close();

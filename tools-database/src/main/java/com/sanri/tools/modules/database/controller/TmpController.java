@@ -29,7 +29,7 @@ public class TmpController {
 
     @RequestMapping("/comments")
     public void writeComments() throws IOException, SQLException {
-        List<TableMetaData> tableMetaDataList = jdbcService.searchTables("10.134.179.119", null, null, "column:court_uuid");
+        List<TableMetaData> tableMetaDataList = jdbcService.searchTables("10.134.179.119", null, null, "column","court_uuid");
         Collections.sort(tableMetaDataList,(a,b) -> a.getActualTableName().getSchema().compareTo(b.getActualTableName().getSchema()));
         Set<String> updateSchema = new HashSet<>();
         for (TableMetaData tableMetaData : tableMetaDataList) {
