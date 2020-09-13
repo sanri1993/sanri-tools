@@ -8,6 +8,7 @@ import com.sanri.tools.modules.database.service.JdbcService;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.poifs.filesystem.DirectoryEntry;
@@ -27,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 使用 freemarker 工具, 将数据库文档转成 html word
@@ -47,7 +49,8 @@ public class MetadataControllerShow {
      */
     @GetMapping("/doc")
     public ModelAndView generateDoc(String connName, String catalog, String[] schemas,String templateName) throws IOException, SQLException {
-        List<TableMetaData> filterTables = jdbcService.filterSchemaTables(connName,catalog,Arrays.asList(schemas));
+        Set<String> schemasSet = Arrays.stream(schemas).collect(Collectors.toSet());
+        List<TableMetaData> filterTables = jdbcService.filterSchemaTables(connName,catalog,schemasSet);
         // 使用过滤后的表生成文档
         ModelAndView modelAndView = new ModelAndView(templateName);
         modelAndView.addObject("connName",connName);
@@ -59,7 +62,8 @@ public class MetadataControllerShow {
 
     @GetMapping("/doc/download")
     public void downDoc(String connName, String catalog, String[] schemas,String templateName, HttpServletResponse response) throws IOException, SQLException, TemplateException {
-        List<TableMetaData> filterTables = jdbcService.filterSchemaTables(connName, catalog, Arrays.asList(schemas));
+        Set<String> schemasSet = Arrays.stream(schemas).collect(Collectors.toSet());
+        List<TableMetaData> filterTables = jdbcService.filterSchemaTables(connName, catalog, schemasSet);
 
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/octet-stream; charset=utf-8");
@@ -88,7 +92,8 @@ public class MetadataControllerShow {
      */
     @GetMapping("/doc/download/word")
     public ResponseEntity<UrlResource> downDocWord(String connName, String catalog, String[] schemas, String templateName) throws IOException, SQLException, TemplateException {
-        List<TableMetaData> filterTables = jdbcService.filterSchemaTables(connName, catalog, Arrays.asList(schemas));
+        Set<String> schemasSet = Arrays.stream(schemas).collect(Collectors.toSet());
+        List<TableMetaData> filterTables = jdbcService.filterSchemaTables(connName, catalog, schemasSet);
 
         File databaseDocDir = fileManager.mkTmpDir("/database/doc");
         File htmlFile = new File(databaseDocDir,System.currentTimeMillis() + ".html");

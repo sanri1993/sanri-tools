@@ -1,5 +1,6 @@
 package com.sanri.tools.modules.database.dtos;
 
+import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
 import lombok.Data;
 
 import javax.sql.DataSource;
@@ -32,8 +33,7 @@ public class CodeGeneratorConfig {
     public static class DataSourceConfig {
         private String connName;
         private String catalog;
-        private String schema;
-        private List<String> tableNames;
+        private List<ActualTableName> tables;
     }
 
     @Data

@@ -21,6 +21,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 数据库数据管理
@@ -43,7 +45,8 @@ public class DataController {
      */
     @GetMapping("/cleanBizTables")
     public List<String> cleanBizTables(String connName,String catalog,String[] schemas,String tag) throws SQLException, IOException {
-        List<TableMetaData> tagTables = tableMarkService.searchTables(connName,catalog, Arrays.asList(schemas),tag);
+        Set<String> schemasSet = Arrays.stream(schemas).collect(Collectors.toSet());
+        List<TableMetaData> tagTables = tableMarkService.searchTables(connName,catalog, schemasSet,tag);
         List<String> sqls = new ArrayList<>();
         for (TableMetaData tableMetaData : tagTables) {
             ActualTableName actualTableName = tableMetaData.getActualTableName();

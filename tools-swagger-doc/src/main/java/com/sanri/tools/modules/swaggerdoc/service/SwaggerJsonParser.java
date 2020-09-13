@@ -474,6 +474,6 @@ public class SwaggerJsonParser {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module("docs").name("swagger").build());
+        pluginManager.register(PluginDto.builder().module("docs").name("swagger").author("9420").logo("swagger.jpg").desc("将 swagger 文档换一个 ui ,并提供下载").build());
     }
 }

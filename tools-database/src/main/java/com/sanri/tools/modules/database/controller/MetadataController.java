@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/db/metadata")
@@ -90,10 +91,11 @@ public class MetadataController {
             searchSchema = keyword.split(":")[0];
             keyword = keyword.split(":")[1];
         }
+        Set<String> schemasSet = Arrays.stream(schemas).collect(Collectors.toSet());
         if (StringUtils.isNotBlank(searchSchema) && "tag".equals(searchSchema)){
-            tableMetaDataList = tableMarkService.searchTables(connName,catalog,Arrays.asList(schemas),keyword);
+            tableMetaDataList = tableMarkService.searchTables(connName,catalog,schemasSet,keyword);
         }else {
-            tableMetaDataList = jdbcService.searchTables(connName, catalog, Arrays.asList(schemas),searchSchema, keyword);
+            tableMetaDataList = jdbcService.searchTables(connName, catalog, schemasSet,searchSchema, keyword);
         }
 
         return tableMetaDataList;

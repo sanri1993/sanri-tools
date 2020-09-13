@@ -1,5 +1,6 @@
 package com.sanri.tools.modules.database.dtos;
 
+import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.Tolerate;
@@ -11,8 +12,7 @@ import java.util.List;
 public class JavaBeanBuildConfig {
     private String connName;
     private String catalog;
-    private String schema;
-    private List<String> tableNames;
+    private List<ActualTableName> tables;
 
     private boolean lombok;
     private boolean swagger2;

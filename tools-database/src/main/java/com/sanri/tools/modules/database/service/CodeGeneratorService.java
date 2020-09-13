@@ -67,8 +67,7 @@ public class CodeGeneratorService {
     public String javaBeanBuild(JavaBeanBuildConfig javaBeanBuildConfig) throws IOException, SQLException {
         String connName = javaBeanBuildConfig.getConnName();
         String catalog = javaBeanBuildConfig.getCatalog();
-        String schema = javaBeanBuildConfig.getSchema();
-        List<TableMetaData> filterTables = jdbcService.filterChoseTables(connName, catalog, schema,javaBeanBuildConfig.getTableNames());
+        List<TableMetaData> filterTables = jdbcService.filterChoseTables(connName, catalog, javaBeanBuildConfig.getTables());
 
         // 获取重命名工具
         String renameStrategy = javaBeanBuildConfig.getRenameStrategy();
@@ -108,8 +107,7 @@ public class CodeGeneratorService {
         CodeGeneratorConfig.DataSourceConfig dataSourceConfig = codeGeneratorConfig.getDataSourceConfig();
         String connName = dataSourceConfig.getConnName();
         String catalog = dataSourceConfig.getCatalog();
-        String schema = dataSourceConfig.getSchema();
-        List<TableMetaData> tableMetaDataList = jdbcService.filterChoseTables(connName, catalog, schema, dataSourceConfig.getTableNames());
+        List<TableMetaData> tableMetaDataList = jdbcService.filterChoseTables(connName, catalog, dataSourceConfig.getTables());
 
         ConnectionMetaData databaseConnection = jdbcService.connectionMetaData(connName);
 
@@ -119,7 +117,7 @@ public class CodeGeneratorService {
 
         // 实体生成配置复制
         JavaBeanBuildConfig javaBeanBuildConfig = JavaBeanBuildConfig.builder()
-                .catalog(catalog).schema(schema).connName(connName).tableNames(dataSourceConfig.getTableNames())
+                .catalog(catalog).connName(connName).tables(dataSourceConfig.getTables())
                 .lombok(globalConfig.isLombok()).swagger2(globalConfig.isSwagger2()).persistence(globalConfig.isPersistence()).serializer(globalConfig.isSerializer()).supperClass(globalConfig.getSupperClass()).exclude(globalConfig.getExclude())
                 .renameStrategy(globalConfig.getRenameStrategy()).packageName(packageConfig.getEntity())
                 .build();
@@ -207,7 +205,7 @@ public class CodeGeneratorService {
      */
     public String previewCode(PreviewCodeParam previewCodeParam) throws IOException, SQLException, TemplateException {
         // 获取表元数据
-        List<TableMetaData> tableMetaData = jdbcService.filterChoseTables(previewCodeParam.getConnName(), previewCodeParam.getActualTableName().getCatalog(), previewCodeParam.getActualTableName().getSchema(),Collections.singletonList(previewCodeParam.getActualTableName().getTableName()));
+        List<TableMetaData> tableMetaData = jdbcService.filterChoseTables(previewCodeParam.getConnName(), previewCodeParam.getActualTableName().getCatalog(), Collections.singletonList(previewCodeParam.getActualTableName()));
         if (!CollectionUtils.isEmpty(tableMetaData)){
             TableMetaData previewTable = tableMetaData.get(0);
             RenameStrategy renameStrategy = renameStrategyMap.get(previewCodeParam.getRenameStrategyName());
@@ -229,8 +227,7 @@ public class CodeGeneratorService {
         CodeGeneratorConfig.DataSourceConfig dataSourceConfig = codeGeneratorParam.getDataSourceConfig();
         String connName = dataSourceConfig.getConnName();
         String catalog = dataSourceConfig.getCatalog();
-        String schema = dataSourceConfig.getSchema();
-        List<TableMetaData> filterTables = jdbcService.filterChoseTables(connName, catalog, schema,dataSourceConfig.getTableNames());
+        List<TableMetaData> filterTables = jdbcService.filterChoseTables(connName, catalog, dataSourceConfig.getTables());
 
         String renameStrategyName = codeGeneratorParam.getRenameStrategyName();
         RenameStrategy renameStrategy = renameStrategyMap.get(renameStrategyName);

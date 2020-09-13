@@ -94,7 +94,7 @@ public class JdbcService {
      * @throws IOException
      * @throws SQLException
      */
-    public List<TableMetaData> filterSchemaTables(String connName, String catalog, List<String> schemas) throws IOException, SQLException {
+    public List<TableMetaData> filterSchemaTables(String connName, String catalog, Set<String> schemas) throws IOException, SQLException {
         Collection<TableMetaData> tables = tables(connName, catalog);
 
         // 首次过滤, 过滤 catalog 和 schema
@@ -133,8 +133,11 @@ public class JdbcService {
      * @throws IOException
      * @throws SQLException
      */
-    public List<TableMetaData> filterChoseTables(String connName, String catalog, String schema,List<String> tableNames) throws IOException, SQLException {
-        List<TableMetaData> tableMetaDataList = filterSchemaTables(connName, catalog, Collections.singletonList(schema));
+    public List<TableMetaData> filterChoseTables(String connName, String catalog, List<ActualTableName> tables) throws IOException, SQLException {
+        Set<String> schemas = tables.stream().map(actualTableName -> actualTableName.getSchema()).collect(Collectors.toSet());
+        List<String> tableNames = tables.stream().map(ActualTableName::getTableName).collect(Collectors.toList());
+
+        List<TableMetaData> tableMetaDataList = filterSchemaTables(connName, catalog, schemas);
 
         List<TableMetaData> filterTables = new ArrayList<>();
         Iterator<TableMetaData> iterator = tableMetaDataList.iterator();
@@ -317,7 +320,7 @@ public class JdbcService {
      * @param keyword
      * @return
      */
-    public List<TableMetaData> searchTables(String connName,String catalog,List<String> schemas,String searchSchema,String keyword) throws IOException, SQLException {
+    public List<TableMetaData> searchTables(String connName,String catalog,Set<String> schemas,String searchSchema,String keyword) throws IOException, SQLException {
         List<TableMetaData> firstFilterTables = filterSchemaTables(connName, catalog, schemas);
 
         // 空搜索返回所有表

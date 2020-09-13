@@ -171,6 +171,6 @@ public class MainDubboService {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module("call").name("dubbo").author("9420").desc("依赖 zookeeper ,在线调用 zookeeper 方法").logo("dubbo.jpg").build());
+        pluginManager.register(PluginDto.builder().module("call").name("dubbo").author("9420").desc("依赖 zookeeper ,在线调用 dubbo 方法").logo("dubbo.jpg").build());
     }
 }

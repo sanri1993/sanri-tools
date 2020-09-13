@@ -35,7 +35,7 @@ public class ExcelDocService {
     private FileManager fileManager;
 
     public Path generate(CodeGeneratorConfig.DataSourceConfig dataSourceConfig) throws IOException, SQLException {
-        List<TableMetaData> tableMetaDataList = jdbcService.filterChoseTables(dataSourceConfig.getConnName(), dataSourceConfig.getCatalog(), dataSourceConfig.getSchema(), dataSourceConfig.getTableNames());
+        List<TableMetaData> tableMetaDataList = jdbcService.filterChoseTables(dataSourceConfig.getConnName(), dataSourceConfig.getCatalog(), dataSourceConfig.getTables());
         Workbook workbook = new XSSFWorkbook();
 
         for (TableMetaData tableMetaData : tableMetaDataList) {

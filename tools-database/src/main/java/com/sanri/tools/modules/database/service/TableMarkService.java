@@ -119,7 +119,7 @@ public class TableMarkService {
      * @throws SQLException
      * @throws IOException
      */
-    public List<TableMetaData> searchTables(String connName,String catalog,List<String> schemas,String tag) throws SQLException, IOException {
+    public List<TableMetaData> searchTables(String connName,String catalog,Set<String> schemas,String tag) throws SQLException, IOException {
         List<TableMetaData> findTables = new ArrayList<>();
 
         List<TableMetaData> tableMetaDataList = jdbcService.filterSchemaTables(connName, catalog, schemas);
