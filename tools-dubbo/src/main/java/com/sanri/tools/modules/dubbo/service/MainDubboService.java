@@ -8,16 +8,16 @@ import com.alibaba.dubbo.remoting.exchange.Request;
 import com.alibaba.dubbo.rpc.RpcInvocation;
 import com.alibaba.dubbo.rpc.RpcResult;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.sanri.tools.modules.core.dtos.ClassStruct;
 import com.sanri.tools.modules.core.dtos.PluginDto;
+import com.sanri.tools.modules.core.exception.ToolException;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.dubbo.DubboProviderDto;
 import com.sanri.tools.modules.dubbo.dtos.DubboInvokeParam;
-import com.sanri.tools.modules.dubbo.dtos.DubboLoadMethodParam;
-import com.sanri.tools.modules.dubbo.dtos.MethodInfo;
-import com.sanri.tools.modules.core.exception.ToolException;
 import com.sanri.tools.modules.zookeeper.service.ZookeeperService;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,9 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -84,43 +86,6 @@ public class MainDubboService {
         return dubboProviderDtos;
     }
 
-    /**
-     * 获取调用方法详情
-     * 主要是要获取参数, 让使用者输入参数
-     * @param dubboInvokeParam
-     * @return
-     */
-    public List<MethodInfo> methods(DubboLoadMethodParam dubboInvokeParam) throws ClassNotFoundException {
-        String classloaderName = dubboInvokeParam.getClassloaderName();
-        String serviceClassName = dubboInvokeParam.getServiceClassName();
-
-        ClassLoader classloader = classloaderService.getClassloader(classloaderName);
-        if (classloader == null){
-            classloader = ClassLoader.getSystemClassLoader();
-        }
-        Class<?> clazz = classloader.loadClass(serviceClassName);
-
-        // 获取指定方法
-        Method[] declaredMethods = clazz.getDeclaredMethods();
-        Map<String, List<Method>> methodMap = Arrays.stream(declaredMethods).collect(Collectors.groupingBy(Method::getName));
-        List<MethodInfo> methodInfos = new ArrayList<>();
-        String[] methodArray = dubboInvokeParam.methodArray();
-        for (String methodName : methodArray) {
-            List<Method> methodList = methodMap.get(methodName);
-            if (CollectionUtils.isNotEmpty(methodList)){
-                for (Method method : methodList) {
-                    Class<?>[] parameterTypes = method.getParameterTypes();
-                    Class<?> returnType = method.getReturnType();
-                    List<String> parameterTypeNames = Arrays.stream(parameterTypes).map(Class::getName).collect(Collectors.toList());
-                    MethodInfo methodInfo = new MethodInfo(methodName,parameterTypeNames,returnType.getName());
-                    methodInfos.add(methodInfo);
-                }
-            }
-        }
-
-        return methodInfos;
-    }
-
     private String [] primitiveTypeNames = {"long"};
 
     public Object invoke(DubboInvokeParam dubboInvokeParam) throws ClassNotFoundException, NoSuchMethodException, RemotingException, ExecutionException, InterruptedException {
@@ -134,27 +99,26 @@ public class MainDubboService {
         }
         Class<?> clazz = classloader.loadClass(serviceClassName);
 
-        // 解决出方法
-        MethodInfo methodInfo = dubboInvokeParam.getMethodInfo();
-        List<String> parameterTypeNames = methodInfo.getParameterTypeNames();
-        Class[] parameterTypes = new Class[parameterTypeNames.size()];
-        for (int i = 0; i < parameterTypeNames.size(); i++) {
-            String typeName = parameterTypeNames.get(i);
-            if (ArrayUtils.contains(primitiveTypeNames,typeName)){
-                if ("long".equals(typeName)){
-                    parameterTypes [i] = Long.TYPE;
-                    continue;
-                }
+        // 解析出方法
+        Method[] declaredMethods = clazz.getDeclaredMethods();
+        Method method = null;
+        for (Method declaredMethod : declaredMethods) {
+            if (declaredMethod.getName().equals(dubboInvokeParam.getMethodName())){
+                method = declaredMethod;
+                break;
             }
-            parameterTypes [i] = classloader.loadClass(typeName);
         }
-        Method method = clazz.getDeclaredMethod(methodInfo.getName(),parameterTypes);
 
         // 解析参数
-        List<String> args = dubboInvokeParam.getArgs();
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        JSONArray args = dubboInvokeParam.getArgs();
         Object [] argArray = new Object[parameterTypes.length];
         for (int i = 0; i < parameterTypes.length; i++) {
-            Object object = JSON.parseObject(args.get(i), parameterTypes[i]);
+            Object object = args.get(i);
+            if (object instanceof JSONObject){
+                JSONObject current = (JSONObject) object;
+                object = JSON.parseObject(current.toJSONString(),parameterTypes[i]);
+            }
             argArray[i] = object;
         }
 
@@ -207,6 +171,6 @@ public class MainDubboService {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module("call").name("dubbo").build());
+        pluginManager.register(PluginDto.builder().module("call").name("dubbo").author("9420").desc("依赖 zookeeper ,在线调用 zookeeper 方法").logo("dubbo.jpg").build());
     }
 }

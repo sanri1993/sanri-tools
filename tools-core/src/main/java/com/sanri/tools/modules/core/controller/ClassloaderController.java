@@ -2,12 +2,14 @@ package com.sanri.tools.modules.core.controller;
 
 import com.sanri.tools.modules.core.dtos.ClassStruct;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
+import com.sanri.tools.modules.core.service.data.RandomDataService;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.core.utils.ZipUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +33,8 @@ public class ClassloaderController {
     private ClassloaderService classloaderService;
     @Autowired
     private FileManager fileManager;
+    @Autowired
+    private RandomDataService randomDataService;
 
     /**
      * 上传 zip 文件,创建类加载器,类文件需要严格的目录结构
@@ -97,17 +101,6 @@ public class ClassloaderController {
         return classloaderService.listLoadedClasses(classloaderName);
     }
 
-    @GetMapping("/{classloaderName}/{className}/fields")
-    public void fields(@PathVariable("classloaderName") String classloaderName, @PathVariable("className") String className) throws ClassNotFoundException {
-        classloaderService.classFields(classloaderName,className);
-    }
-
-    @GetMapping("/{classloaderName}/{className}/methods")
-    public void methods(@PathVariable("classloaderName") String classloaderName, @PathVariable("className") String className) throws ClassNotFoundException{
-        // 不能直接返回这个数据
-//        return classloaderService.classMethods(classloaderName,className);
-    }
-
     /**
      * 获取某个类的所有方法名
      * @param classloaderName
@@ -122,7 +115,7 @@ public class ClassloaderController {
         return collect;
     }
 
-    ParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
+    ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
 
     /**
      * 获取类结构
@@ -163,15 +156,53 @@ public class ClassloaderController {
             String[] parameterNames = parameterNameDiscoverer.getParameterNames(declaredMethod);
             if (ArrayUtils.isNotEmpty(parameterTypes)) {
                 List<ClassStruct.Arg> args = new ArrayList<>();
-                for (int i = 0; i < parameterNames.length; i++) {
+                for (int i = 0; i < parameterTypes.length; i++) {
                     Class<?> parameterType = parameterTypes[i];
-                    ClassStruct.Arg arg = new ClassStruct.Arg(parameterType.getSimpleName(), parameterNames[i]);
+                    String argName = "arg"+i;
+                    if (parameterNames != null){
+                        argName = parameterNames[i];
+                    }
+                    ClassStruct.Arg arg = new ClassStruct.Arg(parameterType.getSimpleName(),argName );
                     args.add(arg);
                 }
                 method.setArgs(args);
             }
         }
         return classStruct;
+    }
+
+    /**
+     * 构建方法参数,需要保证方法名是唯一的,如果有重载方法,将只取第一个重载方法的参数
+     * @param classloaderName
+     * @param className
+     * @param methodName
+     * @return
+     */
+    @GetMapping("/{classloaderName}/{className}/{methodName}/buildParams")
+    public List<Object> buildParams(@PathVariable("classloaderName") String classloaderName, @PathVariable("className") String className,@PathVariable("methodName") String methodName) throws ClassNotFoundException {
+        Class clazz = classloaderService.loadClass(classloaderName,className);
+        Method[] declaredMethods = clazz.getDeclaredMethods();
+        Method method = null;
+        for (Method declaredMethod : declaredMethods) {
+            if (declaredMethod.getName().equals(methodName)){
+                method = declaredMethod;
+            }
+        }
+        List<Object> paramValues = new ArrayList<>();
+        if (method != null){
+            Class<?>[] parameterTypes = method.getParameterTypes();
+            for (Class<?> parameterType : parameterTypes) {
+                ClassLoader classLoader = parameterType.getClassLoader();
+                if (classLoader == null){
+                    Object populateData = randomDataService.populateData(parameterType);
+                    paramValues.add(populateData);
+                }else {
+                    Object randomData = randomDataService.randomData(parameterType.getName(), classLoader);
+                    paramValues.add(randomData);
+                }
+            }
+        }
+        return paramValues;
     }
 
     /**

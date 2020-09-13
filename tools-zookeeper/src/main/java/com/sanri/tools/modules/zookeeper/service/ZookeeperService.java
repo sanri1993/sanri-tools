@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -162,7 +163,7 @@ public class ZookeeperService {
         path = resolvePath(path);
 
         ZkClient zkClient = zkClient(connName);
-        zkClient.writeData(path,data);
+        zkClient.writeData(path,data.getBytes(StandardCharsets.UTF_8));
     }
 
     /**

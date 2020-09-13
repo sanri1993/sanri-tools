@@ -72,6 +72,6 @@ public class ConfigDataService {
 
     @PostConstruct
     public void init(){
-        pluginManager.register(PluginDto.builder().module(JdbcService.module).name("configData").build());
+        pluginManager.register(PluginDto.builder().module(JdbcService.module).name("configData").author("9420").logo("nacos.jpg").desc("配置数据查询").build());
     }
 }

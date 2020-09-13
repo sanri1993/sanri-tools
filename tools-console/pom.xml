@@ -117,6 +117,7 @@
             <resource>
                 <directory>${basedir}/src/main/resources</directory>
                 <includes>
+                    <include>*</include>
                     <include>**.*</include>
                     <include>**/*.*</include>
                     <include>**/*/*.*</include>

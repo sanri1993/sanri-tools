@@ -4,7 +4,6 @@ import com.alibaba.dubbo.remoting.RemotingException;
 import com.sanri.tools.modules.dubbo.DubboProviderDto;
 import com.sanri.tools.modules.dubbo.dtos.DubboInvokeParam;
 import com.sanri.tools.modules.dubbo.dtos.DubboLoadMethodParam;
-import com.sanri.tools.modules.dubbo.dtos.MethodInfo;
 import com.sanri.tools.modules.dubbo.service.MainDubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -38,19 +37,6 @@ public class DubboController {
     @GetMapping("/providers")
     public List<DubboProviderDto> providers(String connName, String serviceName) throws IOException {
         return dubboService.providers(connName,serviceName);
-    }
-
-    /**
-     * 某个服务,某个提供者 提供的方法列表详情
-     * @param provider
-     * @param connName
-     * @param serviceName
-     * @return
-     */
-    @GetMapping("/methods")
-    public List<MethodInfo> methods(String connName, String serviceName, String methods, String classloaderName) throws ClassNotFoundException {
-        DubboLoadMethodParam dubboLoadMethodParam = new DubboLoadMethodParam(connName,serviceName,methods,classloaderName);
-        return dubboService.methods(dubboLoadMethodParam);
     }
 
     /**
