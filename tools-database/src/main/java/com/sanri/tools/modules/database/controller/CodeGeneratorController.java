@@ -1,9 +1,6 @@
 package com.sanri.tools.modules.database.controller;
 
-import com.sanri.tools.modules.database.dtos.CodeGeneratorConfig;
-import com.sanri.tools.modules.database.dtos.CodeGeneratorParam;
-import com.sanri.tools.modules.database.dtos.JavaBeanBuildConfig;
-import com.sanri.tools.modules.database.dtos.TemplateContent;
+import com.sanri.tools.modules.database.dtos.*;
 import com.sanri.tools.modules.database.service.CodeGeneratorService;
 import com.sanri.tools.modules.database.service.PreviewCodeParam;
 import com.sanri.tools.modules.database.service.TemplateService;
@@ -36,9 +33,14 @@ public class CodeGeneratorController {
         return codeGeneratorService.javaBeanBuild(javaBeanBuildConfig);
     }
 
-    @PostMapping("/build/project/mybatis")
-    public String mybatisProjectBuild(@RequestBody CodeGeneratorConfig codeGeneratorConfig) throws IOException, SQLException {
-        return codeGeneratorService.projectBuild(codeGeneratorConfig);
+    @PostMapping("/build/mapper")
+    public String buildMapper(@RequestBody MapperBuildConfig mapperBuildConfig) throws InterruptedException, SQLException, IOException {
+       return codeGeneratorService.mapperBuild(mapperBuildConfig);
+    }
+
+    @PostMapping("/build/project")
+    public String buildProject(@RequestBody CodeGeneratorConfig codeGeneratorConfig) throws IOException, SQLException {
+        return null;
     }
 
     /**

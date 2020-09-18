@@ -61,44 +61,47 @@ public class ExtendMetadataController {
     @PostMapping("/relation/config")
     public void configBatch(@RequestBody BatchTableRelationParam batchTableRelationParam){
         String connName = batchTableRelationParam.getConnName();
-        String schemaName = batchTableRelationParam.getSchemaName();
+        String catalog = batchTableRelationParam.getCatalog();
 
-        tableRelationService.configRelation(connName,schemaName,batchTableRelationParam.getTableRelations());
+        tableRelationService.configRelation(connName,catalog,batchTableRelationParam.getTableRelations());
     }
 
     /**
      * 当前表被哪些表引用
      * @param connName
-     * @param schemaName
+     * @param catalog
      * @param tableName
      * @return
      */
     @GetMapping("/relation/parents")
-    public List<TableRelationDto> parents(String connName, String schemaName, String tableName){
-        return tableRelationService.parents(connName,schemaName,tableName);
+    public List<TableRelationDto> parents(String connName, String catalog,String schema, String tableName){
+        ActualTableName actualTableName = new ActualTableName(catalog, schema, tableName);
+        return tableRelationService.parents(connName,catalog,actualTableName);
     }
 
     /**
      * 当前表引用的表
      * @param connName
-     * @param schemaName
+     * @param catalog
      * @param tableName
      * @return
      */
     @GetMapping("/relation/childs")
-    public List<TableRelationDto> childs(String connName, String schemaName, String tableName){
-        return tableRelationService.childs(connName,schemaName,tableName);
+    public List<TableRelationDto> childs(String connName, String catalog,String schema, String tableName){
+        ActualTableName actualTableName = new ActualTableName(catalog, schema, tableName);
+        return tableRelationService.childs(connName,catalog,actualTableName);
     }
 
     /**
      * 找到当前表引用的表层级关系
      * @param connName
-     * @param schemaName
+     * @param catalog
      * @param tableName
      * @return
      */
     @GetMapping("/relation/hierarchy")
-    public List<TableRelationDto> hierarchy(String connName, String schemaName, String tableName){
-        return tableRelationService.hierarchy(connName,schemaName,tableName);
+    public List<TableRelationDto> hierarchy(String connName, String catalog, String schema,String tableName){
+        ActualTableName actualTableName = new ActualTableName(catalog, schema, tableName);
+        return tableRelationService.hierarchy(connName,catalog,actualTableName);
     }
 }

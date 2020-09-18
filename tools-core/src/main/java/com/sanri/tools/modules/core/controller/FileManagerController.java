@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 
 @Controller
 @RequestMapping("/file/manager")
@@ -41,6 +42,15 @@ public class FileManagerController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentDispositionFormData("attachment", filenameEncode);
+        headers.add("fileName",filenameEncode);
+        headers.add("Access-Control-Expose-Headers", "fileName");
+        headers.add("Access-Control-Expose-Headers", "Content-Disposition");
+//        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+//        headers.add("Content-Disposition", "attachment; filename=" + filenameEncode);
+//        headers.add("Pragma", "no-cache");
+//        headers.add("Expires", "0");
+//        headers.add("Last-Modified", new Date().toString());
+//        headers.add("ETag", String.valueOf(System.currentTimeMillis()));
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 
         ResponseEntity<Resource> body = ResponseEntity.ok()

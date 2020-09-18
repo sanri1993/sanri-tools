@@ -87,11 +87,20 @@ public class MetadataController {
         List<TableMetaData> tableMetaDataList = null;
         // 根据关键字进行过滤
         String searchSchema = "";
-        if(keyword.contains(":")){
-            searchSchema = keyword.split(":")[0];
-            keyword = keyword.split(":")[1];
+        if(StringUtils.isNotBlank(keyword) && keyword.contains(":")){
+            String [] array = keyword.split(":",2);
+            searchSchema = array[0];
+            keyword = array[1];
         }
         Set<String> schemasSet = Arrays.stream(schemas).collect(Collectors.toSet());
+        if (StringUtils.isNotBlank(keyword) && keyword.contains(".")){
+            // 如果包含 . 的话, 前面是 schema , 后面是 keyword
+            String [] array = keyword.split("\\.",2);
+            String schema = array[0];
+            schemasSet.add(schema);
+            keyword = array[1];
+        }
+
         if (StringUtils.isNotBlank(searchSchema) && "tag".equals(searchSchema)){
             tableMetaDataList = tableMarkService.searchTables(connName,catalog,schemasSet,keyword);
         }else {

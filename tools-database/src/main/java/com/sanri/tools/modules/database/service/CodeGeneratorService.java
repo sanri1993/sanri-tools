@@ -1,26 +1,29 @@
 package com.sanri.tools.modules.database.service;
 
 import com.sanri.tools.modules.core.service.file.FileManager;
-import com.sanri.tools.modules.database.dtos.CodeGeneratorConfig;
-import com.sanri.tools.modules.database.dtos.CodeGeneratorParam;
-import com.sanri.tools.modules.database.dtos.ConnectionMetaData;
-import com.sanri.tools.modules.database.dtos.JavaBeanBuildConfig;
+import com.sanri.tools.modules.database.dtos.*;
+import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
 import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
 import com.sanri.tools.modules.database.service.rename.JavaBeanInfo;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.mybatis.generator.api.GeneratedJavaFile;
+import org.mybatis.generator.api.GeneratedXmlFile;
+import org.mybatis.generator.api.ProgressCallback;
+import org.mybatis.generator.config.*;
+import org.mybatis.generator.internal.NullProgressCallback;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.ReflectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.beans.PropertyDescriptor;
 import java.io.File;
@@ -43,6 +46,9 @@ public class CodeGeneratorService {
 
     @Autowired
     private Configuration configuration;
+
+    // 生成代码的目录
+    private static final String BASE_GENERATE_DIR = "code/generate/";
 
     @Autowired(required = false)
     private Map<String,RenameStrategy> renameStrategyMap = new HashMap<>();
@@ -73,7 +79,7 @@ public class CodeGeneratorService {
         String renameStrategy = javaBeanBuildConfig.getRenameStrategy();
         RenameStrategy renameStrategyImpl = renameStrategyMap.get(renameStrategy);
 
-        File javaBeanDir = fileManager.mkTmpDir("code/javabean/" + System.currentTimeMillis());
+        File javaBeanDir = fileManager.mkTmpDir(BASE_GENERATE_DIR + "javabean/" + System.currentTimeMillis());
 
         // 对过滤出来的表生成 javaBean
         for (TableMetaData filterTable : filterTables) {
@@ -85,8 +91,120 @@ public class CodeGeneratorService {
         return relativePath.toString();
     }
 
-    @PostMapping("/projectBuild")
-    public String projectBuild(@RequestBody CodeGeneratorConfig codeGeneratorConfig) throws IOException, SQLException {
+    /**
+     * 使用 mybatis-generator 生成 mapper.xml mapper.java entity.java 文件
+     * @return
+     */
+    public String mapperBuild(MapperBuildConfig mapperBuildConfig) throws IOException, SQLException, InterruptedException {
+        CodeGeneratorConfig.DataSourceConfig dataSourceConfig = mapperBuildConfig.getDataSourceConfig();
+        CodeGeneratorConfig.PackageConfig packageConfig = mapperBuildConfig.getPackageConfig();
+        MapperBuildConfig.FilesConfig filesConfig = mapperBuildConfig.getFilesConfig();
+
+        // context
+        Context context = new Context(ModelType.valueOf(mapperBuildConfig.getModelType()));
+        context.setId(RandomStringUtils.randomAlphanumeric(3));
+        context.setTargetRuntime(mapperBuildConfig.getTargetRunTime());
+
+        // jdbc
+        String connName = dataSourceConfig.getConnName();
+        ConnectionMetaData connectionMetaData = jdbcService.connectionMetaData(connName);
+        JDBCConnectionConfiguration jdbcConnectionConfiguration = new JDBCConnectionConfiguration();
+        jdbcConnectionConfiguration.setDriverClass(connectionMetaData.getDriverClass());
+        jdbcConnectionConfiguration.setConnectionURL(connectionMetaData.getConnectionURL());
+        jdbcConnectionConfiguration.setPassword(connectionMetaData.getAuthParam().getPassword());
+        jdbcConnectionConfiguration.setUserId(connectionMetaData.getAuthParam().getUsername());
+        context.setJdbcConnectionConfiguration(jdbcConnectionConfiguration);
+
+        // java model
+        if (filesConfig.isEntity()) {
+            JavaModelGeneratorConfiguration javaModelGeneratorConfiguration = new JavaModelGeneratorConfiguration();
+            javaModelGeneratorConfiguration.setTargetPackage(packageConfig.getEntity());
+            context.setJavaModelGeneratorConfiguration(javaModelGeneratorConfiguration);
+        }
+
+        // sqlmap
+        if (filesConfig.isXml()) {
+            SqlMapGeneratorConfiguration sqlMapGeneratorConfiguration = new SqlMapGeneratorConfiguration();
+            sqlMapGeneratorConfiguration.setTargetPackage(packageConfig.getMapper());
+            context.setSqlMapGeneratorConfiguration(sqlMapGeneratorConfiguration);
+        }
+
+        // javaclient
+        if (filesConfig.isMapper()) {
+            JavaClientGeneratorConfiguration javaClientGeneratorConfiguration = new JavaClientGeneratorConfiguration();
+            javaClientGeneratorConfiguration.setTargetPackage(packageConfig.getMapper());
+            javaClientGeneratorConfiguration.setImplementationPackage(packageConfig.getMapper());
+            javaClientGeneratorConfiguration.setConfigurationType(mapperBuildConfig.getJavaClientType());
+            context.setJavaClientGeneratorConfiguration(javaClientGeneratorConfiguration);
+        }
+
+        // plugins
+        List<MapperBuildConfig.PluginConfig> pluginConfigs = mapperBuildConfig.getPluginConfigs();
+        for (MapperBuildConfig.PluginConfig pluginConfig : pluginConfigs) {
+            PluginConfiguration pluginConfiguration = new PluginConfiguration();
+            pluginConfiguration.setConfigurationType(pluginConfig.getType());
+            Map<String, String> propertys = pluginConfig.getPropertys();
+            propertys.forEach((k,v) -> pluginConfiguration.addProperty(k,v));
+            context.addPluginConfiguration(pluginConfiguration);
+        }
+
+        // table configurations
+        List<TableMetaData> tableMetaDataList = jdbcService.filterChoseTables(connName, dataSourceConfig.getCatalog(), dataSourceConfig.getTables());
+        for (TableMetaData tableMetaData : tableMetaDataList) {
+            TableConfiguration tableConfiguration = new TableConfiguration(context);
+            ActualTableName actualTableName = tableMetaData.getActualTableName();
+            tableConfiguration.setCatalog(actualTableName.getCatalog());
+            tableConfiguration.setSchema(actualTableName.getSchema());
+            tableConfiguration.setTableName(actualTableName.getTableName());
+            context.addTableConfiguration(tableConfiguration);
+        }
+
+        // generate files
+        List<GeneratedJavaFile> generatedJavaFiles = new ArrayList<>();
+        List<GeneratedXmlFile> generatedXmlFiles = new ArrayList<>();
+        ProgressCallback callback = new NullProgressCallback();
+        List<String> warnings = new ArrayList<>();
+        Set<String> fullyQualifiedTableNames = new HashSet<>();
+        context.introspectTables(callback, warnings,fullyQualifiedTableNames);
+        context.generateFiles(callback, generatedJavaFiles, generatedXmlFiles, warnings);
+
+        // 写入生成的数据到文件
+        String projectName = mapperBuildConfig.getProjectName();
+        File src = fileManager.mkTmpDir(BASE_GENERATE_DIR + "mapper/" + projectName + System.currentTimeMillis());
+        for (GeneratedJavaFile generatedJavaFile : generatedJavaFiles) {
+            String targetPackage = generatedJavaFile.getTargetPackage();
+            File director = getDirector(src, targetPackage);
+
+            File targetFile = new File(director, generatedJavaFile.getFileName());
+            FileUtils.writeStringToFile(targetFile,generatedJavaFile.getFormattedContent());
+        }
+
+        for (GeneratedXmlFile generatedXmlFile : generatedXmlFiles) {
+            String targetPackage = generatedXmlFile.getTargetPackage();
+            File director = getDirector(src, targetPackage);
+
+            File targetFile = new File(director, generatedXmlFile.getFileName());
+            FileUtils.writeStringToFile(targetFile,generatedXmlFile.getFormattedContent());
+        }
+        Path path = fileManager.relativePath(src.toPath());
+        return path.toString();
+    }
+
+    private File getDirector(File base,String targetPackage){
+        StringBuilder sb = new StringBuilder();
+        StringTokenizer st = new StringTokenizer(targetPackage, "."); //$NON-NLS-1$
+        while (st.hasMoreTokens()) {
+            sb.append(st.nextToken());
+            sb.append(File.separatorChar);
+        }
+        File directory = new File(base, sb.toString());
+        if (!directory.exists()){
+            directory.mkdirs();
+        }
+        return directory;
+    }
+
+    public String projectBuild(CodeGeneratorConfig codeGeneratorConfig) throws IOException, SQLException, InterruptedException {
         File targetDir = fileManager.mkTmpDir("code/project/buildSpringBoot");
         //项目基本目录
         File projectDir = new File(targetDir, codeGeneratorConfig.getProjectName()+System.currentTimeMillis());
@@ -109,8 +227,6 @@ public class CodeGeneratorService {
         String catalog = dataSourceConfig.getCatalog();
         List<TableMetaData> tableMetaDataList = jdbcService.filterChoseTables(connName, catalog, dataSourceConfig.getTables());
 
-        ConnectionMetaData databaseConnection = jdbcService.connectionMetaData(connName);
-
         // 先生成实体信息
         String renameStrategy = globalConfig.getRenameStrategy();
         RenameStrategy renameStrategyImpl = renameStrategyMap.get(renameStrategy);
@@ -125,11 +241,10 @@ public class CodeGeneratorService {
         // 循环所有 table 生成实体信息
         for (TableMetaData tableMetaData : tableMetaDataList) {
             JavaBeanInfo javaBeanInfo = renameStrategyImpl.mapping(tableMetaData);
-            // 准备 Context
             generaterJavaBean(entityDir, javaBeanBuildConfig, tableMetaData, javaBeanInfo);
         }
 
-        // mapper 文件生成,
+        // mapper 文件生成, 这里借用 mybatis-generator
 
 
         return null;

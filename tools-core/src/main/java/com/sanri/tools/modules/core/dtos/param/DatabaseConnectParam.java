@@ -27,10 +27,10 @@ public class DatabaseConnectParam extends AbstractConnectParam{
     }
 
     public String connectionURL(){
+        String connectString = connectParam.getConnectString();
         switch (dbType){
             case dbType_mysql:
-
-                break;
+                return "jdbc:mysql://"+connectString+"/"+database;
 
         }
 

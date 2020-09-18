@@ -329,6 +329,9 @@ public class RedisService {
     private long keyLength(JedisCommands client, String key) {
         String type = client.type(key);
         RedisType redisType = RedisType.parse(type);
+        if (redisType == null){
+            return 0 ;
+        }
         switch (redisType){
             case string:
                 return client.strlen(key);
@@ -435,7 +438,7 @@ public class RedisService {
      * redis 的数据类型
      */
     enum RedisType{
-        string("string"),Set("set"),ZSet("zset"),Hash("hash"),List("list");
+        string("string"),Set("set"),ZSet("zset"),Hash("hash"),List("list"),None("none");
         private String value;
 
         RedisType(String value) {
