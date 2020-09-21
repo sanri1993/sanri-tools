@@ -61,6 +61,77 @@ public class CodeGeneratorService {
         return renameStrategyMap.keySet();
     }
 
+    /** 使用模板生成代码 **/
+    @Autowired
+    private TemplateService templateService;
+
+    /**
+     * 使用某一张表进行代码的预览
+     * 模板代码预览
+     * @param previewCodeParam
+     */
+    public String previewCode(PreviewCodeParam previewCodeParam) throws IOException, SQLException, TemplateException {
+        // 获取表元数据
+        List<TableMetaData> tableMetaData = jdbcService.filterChoseTables(previewCodeParam.getConnName(), previewCodeParam.getActualTableName().getCatalog(), Collections.singletonList(previewCodeParam.getActualTableName()));
+        if (!CollectionUtils.isEmpty(tableMetaData)){
+            TableMetaData previewTable = tableMetaData.get(0);
+            RenameStrategy renameStrategy = renameStrategyMap.get(previewCodeParam.getRenameStrategyName());
+            // 生成代码
+            return templateService.preview(previewCodeParam,previewTable,renameStrategy);
+        }
+        return "";
+    }
+
+    /**
+     * 使用模板方案代码生成
+     * @param template
+     * @param connName
+     * @param actualTableName
+     * @param renameStrategyName
+     * @return
+     */
+    public Path codeGenerator(CodeGeneratorParam codeGeneratorParam) throws IOException, SQLException, TemplateException {
+        CodeGeneratorConfig.DataSourceConfig dataSourceConfig = codeGeneratorParam.getDataSourceConfig();
+        String connName = dataSourceConfig.getConnName();
+        String catalog = dataSourceConfig.getCatalog();
+        List<TableMetaData> filterTables = jdbcService.filterChoseTables(connName, catalog, dataSourceConfig.getTables());
+
+        String renameStrategyName = codeGeneratorParam.getRenameStrategyName();
+        RenameStrategy renameStrategy = renameStrategyMap.get(renameStrategyName);
+
+        File file = templateService.processBatch(codeGeneratorParam,filterTables,renameStrategy);
+        return fileManager.relativePath(file.toPath());
+    }
+
+    public File projectBuild(CodeGeneratorConfig codeGeneratorConfig) throws IOException, SQLException, InterruptedException {
+        File targetDir = fileManager.mkTmpDir(BASE_GENERATE_DIR+"buildSpringBoot");
+
+        //项目基本目录
+        File projectDir = new File(targetDir, codeGeneratorConfig.getProjectName()+System.currentTimeMillis());
+        CodeGeneratorConfig.GlobalConfig globalConfig = codeGeneratorConfig.getGlobalConfig();
+        CodeGeneratorConfig.PackageConfig packageConfig = codeGeneratorConfig.getPackageConfig();
+
+        //自己生成 maven 骨架
+        File javaDir = new File(projectDir, "src/main/java");javaDir.mkdirs();
+        File resourcesDir = new File(projectDir, "src/main/resources");resourcesDir.mkdirs();
+        File testJavaDir = new File(projectDir, "src/test/java");testJavaDir.mkdirs();
+        File testResourcesDir = new File(projectDir, "src/test/resources");testResourcesDir.mkdirs();
+
+        // 生成 service,controller,vo,dto,param
+        mkdirs(javaDir, packageConfig);
+        File entityDir = new File(javaDir,StringUtils.replace(packageConfig.getEntity(),".","/"));
+
+        // 准备数据源,获取表元数据
+        CodeGeneratorConfig.DataSourceConfig dataSourceConfig = codeGeneratorConfig.getDataSourceConfig();
+        String connName = dataSourceConfig.getConnName();
+        String catalog = dataSourceConfig.getCatalog();
+        List<TableMetaData> tableMetaDataList = jdbcService.filterChoseTables(connName, catalog, dataSourceConfig.getTables());
+
+
+
+        return projectDir;
+    }
+
     /**
      * 数据表生成 javaBean
      * 支持 swagger , lombok , persistence-api
@@ -70,7 +141,7 @@ public class CodeGeneratorService {
      * @throws IOException
      * @throws SQLException
      */
-    public String javaBeanBuild(JavaBeanBuildConfig javaBeanBuildConfig) throws IOException, SQLException {
+    public File javaBeanBuild(JavaBeanBuildConfig javaBeanBuildConfig) throws IOException, SQLException {
         String connName = javaBeanBuildConfig.getConnName();
         String catalog = javaBeanBuildConfig.getCatalog();
         List<TableMetaData> filterTables = jdbcService.filterChoseTables(connName, catalog, javaBeanBuildConfig.getTables());
@@ -79,23 +150,40 @@ public class CodeGeneratorService {
         String renameStrategy = javaBeanBuildConfig.getRenameStrategy();
         RenameStrategy renameStrategyImpl = renameStrategyMap.get(renameStrategy);
 
-        File javaBeanDir = fileManager.mkTmpDir(BASE_GENERATE_DIR + "javabean/" + System.currentTimeMillis());
+        File javaBeanDir = fileManager.mkTmpDir(BASE_GENERATE_DIR + "javabean" + System.currentTimeMillis());
 
         // 对过滤出来的表生成 javaBean
         for (TableMetaData filterTable : filterTables) {
             JavaBeanInfo javaBeanInfo = renameStrategyImpl.mapping(filterTable);
-            generaterJavaBean(javaBeanDir, javaBeanBuildConfig, filterTable, javaBeanInfo);
+            Template entityTemplate = configuration.getTemplate("code/entity.xml.ftl");
+            Map<String, Object> context = new HashMap<>();
+            context.put("bean", javaBeanInfo);
+            context.put("beanConfig", javaBeanBuildConfig);
+            context.put("table", filterTable);
+            context.put("author", System.getProperty("user.name"));
+            context.put("date", DateFormatUtils.ISO_DATE_FORMAT.format(System.currentTimeMillis()));
+            context.put("time", DateFormatUtils.ISO_TIME_NO_T_FORMAT.format(System.currentTimeMillis()));
+            // 准备 context
+            File entityFile = new File(javaBeanDir, javaBeanInfo.getClassName() + ".java");
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(entityFile));
+            try {
+                entityTemplate.process(context, outputStreamWriter);
+            } catch (TemplateException e) {
+                e.printStackTrace();
+            } finally {
+                IOUtils.closeQuietly(outputStreamWriter);
+            }
         }
-        Path path = javaBeanDir.toPath();
-        Path relativePath = fileManager.relativePath(path);
-        return relativePath.toString();
+
+        return javaBeanDir;
     }
 
     /**
      * 使用 mybatis-generator 生成 mapper.xml mapper.java entity.java 文件
+     * 配置一个插件就支持了 tk.mybatis
      * @return
      */
-    public String mapperBuild(MapperBuildConfig mapperBuildConfig) throws IOException, SQLException, InterruptedException {
+    public File mapperBuild(MapperBuildConfig mapperBuildConfig) throws IOException, SQLException, InterruptedException {
         CodeGeneratorConfig.DataSourceConfig dataSourceConfig = mapperBuildConfig.getDataSourceConfig();
         CodeGeneratorConfig.PackageConfig packageConfig = mapperBuildConfig.getPackageConfig();
         MapperBuildConfig.FilesConfig filesConfig = mapperBuildConfig.getFilesConfig();
@@ -186,8 +274,8 @@ public class CodeGeneratorService {
             File targetFile = new File(director, generatedXmlFile.getFileName());
             FileUtils.writeStringToFile(targetFile,generatedXmlFile.getFormattedContent());
         }
-        Path path = fileManager.relativePath(src.toPath());
-        return path.toString();
+
+        return src;
     }
 
     private File getDirector(File base,String targetPackage){
@@ -202,88 +290,6 @@ public class CodeGeneratorService {
             directory.mkdirs();
         }
         return directory;
-    }
-
-    public String projectBuild(CodeGeneratorConfig codeGeneratorConfig) throws IOException, SQLException, InterruptedException {
-        File targetDir = fileManager.mkTmpDir("code/project/buildSpringBoot");
-        //项目基本目录
-        File projectDir = new File(targetDir, codeGeneratorConfig.getProjectName()+System.currentTimeMillis());
-        CodeGeneratorConfig.GlobalConfig globalConfig = codeGeneratorConfig.getGlobalConfig();
-        CodeGeneratorConfig.PackageConfig packageConfig = codeGeneratorConfig.getPackageConfig();
-
-        //自己生成 maven 骨架
-        File javaDir = new File(projectDir, "src/main/java");javaDir.mkdirs();
-        File resourcesDir = new File(projectDir, "src/main/resources");resourcesDir.mkdirs();
-        File testJavaDir = new File(projectDir, "src/test/java");testJavaDir.mkdirs();
-        File testResourcesDir = new File(projectDir, "src/test/resources");testResourcesDir.mkdirs();
-
-        // 生成 service,controller,vo,dto,param
-        mkdirs(javaDir, packageConfig);
-        File entityDir = new File(javaDir,StringUtils.replace(packageConfig.getEntity(),".","/"));
-
-        // 准备数据源,获取表元数据
-        CodeGeneratorConfig.DataSourceConfig dataSourceConfig = codeGeneratorConfig.getDataSourceConfig();
-        String connName = dataSourceConfig.getConnName();
-        String catalog = dataSourceConfig.getCatalog();
-        List<TableMetaData> tableMetaDataList = jdbcService.filterChoseTables(connName, catalog, dataSourceConfig.getTables());
-
-        // 先生成实体信息
-        String renameStrategy = globalConfig.getRenameStrategy();
-        RenameStrategy renameStrategyImpl = renameStrategyMap.get(renameStrategy);
-
-        // 实体生成配置复制
-        JavaBeanBuildConfig javaBeanBuildConfig = JavaBeanBuildConfig.builder()
-                .catalog(catalog).connName(connName).tables(dataSourceConfig.getTables())
-                .lombok(globalConfig.isLombok()).swagger2(globalConfig.isSwagger2()).persistence(globalConfig.isPersistence()).serializer(globalConfig.isSerializer()).supperClass(globalConfig.getSupperClass()).exclude(globalConfig.getExclude())
-                .renameStrategy(globalConfig.getRenameStrategy()).packageName(packageConfig.getEntity())
-                .build();
-
-        // 循环所有 table 生成实体信息
-        for (TableMetaData tableMetaData : tableMetaDataList) {
-            JavaBeanInfo javaBeanInfo = renameStrategyImpl.mapping(tableMetaData);
-            generaterJavaBean(entityDir, javaBeanBuildConfig, tableMetaData, javaBeanInfo);
-        }
-
-        // mapper 文件生成, 这里借用 mybatis-generator
-
-
-        return null;
-    }
-
-    /**
-     * 单个 java 实体类生成
-     * @param entityDir
-     * @param javaBeanBuildConfig
-     * @param tableMetaData
-     * @param javaBeanInfo
-     * @throws IOException
-     */
-    private void generaterJavaBean(File entityDir, JavaBeanBuildConfig javaBeanBuildConfig, TableMetaData tableMetaData, JavaBeanInfo javaBeanInfo) throws IOException {
-        Template entityTemplate = configuration.getTemplate("code/entity.xml.ftl");
-        Map<String, Object> context = new HashMap<>();
-        context.put("bean", javaBeanInfo);
-        context.put("beanConfig", javaBeanBuildConfig);
-        context.put("table", tableMetaData);
-        commonTemplateData(context);
-        // 准备 context
-        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(new File(entityDir, javaBeanInfo.getClassName() + ".java")));
-        try {
-            entityTemplate.process(context, outputStreamWriter);
-        } catch (TemplateException e) {
-            e.printStackTrace();
-        } finally {
-            IOUtils.closeQuietly(outputStreamWriter);
-        }
-    }
-
-    /**
-     * 通用数据
-     * @param context
-     */
-    private void commonTemplateData(Map<String, Object> context) {
-        context.put("author", System.getProperty("user.name"));
-        context.put("date", DateFormatUtils.ISO_DATE_FORMAT.format(System.currentTimeMillis()));
-        context.put("time", DateFormatUtils.ISO_TIME_NO_T_FORMAT.format(System.currentTimeMillis()));
     }
 
     /**
@@ -307,47 +313,5 @@ public class CodeGeneratorService {
                 }
             }
         }
-    }
-
-    /** 使用模板生成代码 **/
-    @Autowired
-    private TemplateService templateService;
-
-    /**
-     * 使用某一张表进行代码的预览
-     * 模板代码预览
-     * @param previewCodeParam
-     */
-    public String previewCode(PreviewCodeParam previewCodeParam) throws IOException, SQLException, TemplateException {
-        // 获取表元数据
-        List<TableMetaData> tableMetaData = jdbcService.filterChoseTables(previewCodeParam.getConnName(), previewCodeParam.getActualTableName().getCatalog(), Collections.singletonList(previewCodeParam.getActualTableName()));
-        if (!CollectionUtils.isEmpty(tableMetaData)){
-            TableMetaData previewTable = tableMetaData.get(0);
-            RenameStrategy renameStrategy = renameStrategyMap.get(previewCodeParam.getRenameStrategyName());
-            // 生成代码
-            return templateService.preview(previewCodeParam,previewTable,renameStrategy);
-        }
-        return "";
-    }
-
-    /**
-     * 使用模板方案代码生成
-     * @param template
-     * @param connName
-     * @param actualTableName
-     * @param renameStrategyName
-     * @return
-     */
-    public Path codeGenerator(CodeGeneratorParam codeGeneratorParam) throws IOException, SQLException, TemplateException {
-        CodeGeneratorConfig.DataSourceConfig dataSourceConfig = codeGeneratorParam.getDataSourceConfig();
-        String connName = dataSourceConfig.getConnName();
-        String catalog = dataSourceConfig.getCatalog();
-        List<TableMetaData> filterTables = jdbcService.filterChoseTables(connName, catalog, dataSourceConfig.getTables());
-
-        String renameStrategyName = codeGeneratorParam.getRenameStrategyName();
-        RenameStrategy renameStrategy = renameStrategyMap.get(renameStrategyName);
-
-        File file = templateService.processBatch(codeGeneratorParam,filterTables,renameStrategy);
-        return fileManager.relativePath(file.toPath());
     }
 }

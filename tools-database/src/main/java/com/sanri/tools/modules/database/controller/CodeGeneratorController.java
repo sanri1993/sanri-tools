@@ -1,5 +1,6 @@
 package com.sanri.tools.modules.database.controller;
 
+import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.database.dtos.*;
 import com.sanri.tools.modules.database.service.CodeGeneratorService;
 import com.sanri.tools.modules.database.service.PreviewCodeParam;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.SQLException;
@@ -22,6 +24,8 @@ public class CodeGeneratorController {
     private CodeGeneratorService codeGeneratorService;
     @Autowired
     private TemplateService templateService;
+    @Autowired
+    private FileManager fileManager;
 
     @GetMapping("/renameStrategies")
     public Set<String> renameStrategies(){
@@ -30,17 +34,29 @@ public class CodeGeneratorController {
 
     @PostMapping("/build/javaBean")
     public String javaBeanBuild(@RequestBody JavaBeanBuildConfig javaBeanBuildConfig) throws IOException, SQLException {
-        return codeGeneratorService.javaBeanBuild(javaBeanBuildConfig);
+        File file = codeGeneratorService.javaBeanBuild(javaBeanBuildConfig);
+        Path path = fileManager.relativePath(file.toPath());
+        return path.toString();
     }
 
     @PostMapping("/build/mapper")
     public String buildMapper(@RequestBody MapperBuildConfig mapperBuildConfig) throws InterruptedException, SQLException, IOException {
-       return codeGeneratorService.mapperBuild(mapperBuildConfig);
+        File file = codeGeneratorService.mapperBuild(mapperBuildConfig);
+        Path path = fileManager.relativePath(file.toPath());
+        return path.toString();
+    }
+
+    @PostMapping("/build/mybatisPlus")
+    public String buildMybatisPlus(){
+
+        return null;
     }
 
     @PostMapping("/build/project")
-    public String buildProject(@RequestBody CodeGeneratorConfig codeGeneratorConfig) throws IOException, SQLException {
-        return null;
+    public String buildProject(@RequestBody CodeGeneratorConfig codeGeneratorConfig) throws IOException, SQLException, InterruptedException {
+        File file = codeGeneratorService.projectBuild(codeGeneratorConfig);
+        Path path = fileManager.relativePath(file.toPath());
+        return path.toString();
     }
 
     /**
