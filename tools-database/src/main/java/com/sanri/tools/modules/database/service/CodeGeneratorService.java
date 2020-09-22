@@ -103,6 +103,14 @@ public class CodeGeneratorService {
         return fileManager.relativePath(file.toPath());
     }
 
+    /**
+     * 直接构建一个项目
+     * @param codeGeneratorConfig
+     * @return
+     * @throws IOException
+     * @throws SQLException
+     * @throws InterruptedException
+     */
     public File projectBuild(CodeGeneratorConfig codeGeneratorConfig) throws IOException, SQLException, InterruptedException {
         File targetDir = fileManager.mkTmpDir(BASE_GENERATE_DIR+"buildSpringBoot");
 
@@ -126,7 +134,6 @@ public class CodeGeneratorService {
         String connName = dataSourceConfig.getConnName();
         String catalog = dataSourceConfig.getCatalog();
         List<TableMetaData> tableMetaDataList = jdbcService.filterChoseTables(connName, catalog, dataSourceConfig.getTables());
-
 
 
         return projectDir;
@@ -231,8 +238,8 @@ public class CodeGeneratorService {
         for (MapperBuildConfig.PluginConfig pluginConfig : pluginConfigs) {
             PluginConfiguration pluginConfiguration = new PluginConfiguration();
             pluginConfiguration.setConfigurationType(pluginConfig.getType());
-            Map<String, String> propertys = pluginConfig.getPropertys();
-            propertys.forEach((k,v) -> pluginConfiguration.addProperty(k,v));
+            Map<String, String> properties = pluginConfig.getProperties();
+            properties.forEach((k,v) -> pluginConfiguration.addProperty(k,v));
             context.addPluginConfiguration(pluginConfiguration);
         }
 

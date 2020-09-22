@@ -354,37 +354,6 @@ Content-Type: application/json
 POST {{baseUrl}}/db/code/build/mapper
 Content-Type: application/json
 
-{
-  "projectName": "app",
-  "dataSourceConfig": {
-    "connName": "localhost",
-    "catalog": "test",
-    "tables": [
-      {
-        "connName": "localhost",
-        "catalog": "test",
-        "tableName": "batch"
-      }
-    ]
-  },
-  "packageConfig": {
-    "mapper": "com.sanri.app.mapper",
-    "entity": "com.sanri.app.mapper.entity"
-  },
-  "pluginConfigs": [
-    {
-      "type": "tk.mybatis.mapper.generator.MapperPlugin",
-      "propertys": {
-        "mappers": "tk.mybatis.mapper.common.Mapper",
-        "caseSensitive": true,
-        "forceAnnotation": true,
-        "beginningDelimiter": "`",
-        "endingDelimiter": "`",
-        "lombok": "Getter,Setter,ToString,Accessors"
-      }
-    }
-  ]
-}
 
 ### 数据库 - 代码生成 - 列出所有模板
 GET {{baseUrl}}/db/code/templates
@@ -442,42 +411,6 @@ Content-Type: application/json
   "packageConfig": {
     "mapper": "com.sanri.test.mapper"
   }
-}
-
-### 数据库 - 代码生成 - mapper 生成 ;  mybatis , tk.mybatis
-POST {{baseUrl}}/db/code/build/mapper
-Content-Type: application/json
-
-{
-  "projectName": "app",
-  "dataSourceConfig": {
-    "connName": "localhost",
-    "catalog": "test",
-    "tables": [
-      {
-        "connName": "localhost",
-        "catalog": "test",
-        "tableName": "batch"
-      }
-    ]
-  },
-  "packageConfig": {
-    "mapper": "com.sanri.app.mapper",
-    "entity": "com.sanri.app.mapper.entity"
-  },
-  "pluginConfigs": [
-    {
-      "type": "tk.mybatis.mapper.generator.MapperPlugin",
-      "propertys": {
-        "mappers": "tk.mybatis.mapper.common.Mapper",
-        "caseSensitive": true,
-        "forceAnnotation": true,
-        "beginningDelimiter": "`",
-        "endingDelimiter": "`",
-        "lombok": "Getter,Setter,ToString,Accessors"
-      }
-    }
-  ]
 }
 
 ### zookeeper - 列出子节点

@@ -168,14 +168,14 @@ public class FileManager {
             return new FileSystemResource(file);
         }
 
-        int length = file.list().length;
+        int length = file.listFiles().length;
         if(length == 0){
             log.warn("空文件夹[{}]",file);
             return null;
         }
 
         // 只有一个文件的情况
-        if(length == 1) {
+        if(length == 1 && file.listFiles()[0].isFile()) {
             String fileName = file.list()[0];
             return new FileSystemResource(new File(file, fileName));
         }

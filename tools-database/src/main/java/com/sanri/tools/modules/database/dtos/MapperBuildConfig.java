@@ -34,6 +34,6 @@ public class MapperBuildConfig {
     @Data
     public static class PluginConfig{
         private String type;
-        private Map<String,String> propertys = new HashMap<>();
+        private Map<String,String> properties = new HashMap<>();
     }
 }
