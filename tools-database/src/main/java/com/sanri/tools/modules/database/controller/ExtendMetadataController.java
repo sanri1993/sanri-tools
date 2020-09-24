@@ -1,5 +1,6 @@
 package com.sanri.tools.modules.database.controller;
 
+import com.sanri.tools.modules.database.dtos.TableRelationTree;
 import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
 import com.sanri.tools.modules.database.dtos.BatchTableRelationParam;
 import com.sanri.tools.modules.database.dtos.TableMark;
@@ -89,7 +90,7 @@ public class ExtendMetadataController {
     @GetMapping("/relation/childs")
     public List<TableRelationDto> childs(String connName, String catalog,String schema, String tableName){
         ActualTableName actualTableName = new ActualTableName(catalog, schema, tableName);
-        return tableRelationService.childs(connName,catalog,actualTableName);
+        return tableRelationService.childs(connName,actualTableName);
     }
 
     /**
@@ -100,8 +101,14 @@ public class ExtendMetadataController {
      * @return
      */
     @GetMapping("/relation/hierarchy")
-    public List<TableRelationDto> hierarchy(String connName, String catalog, String schema,String tableName){
+    public TableRelationTree hierarchy(String connName, String catalog, String schema,String tableName){
         ActualTableName actualTableName = new ActualTableName(catalog, schema, tableName);
-        return tableRelationService.hierarchy(connName,catalog,actualTableName);
+        return tableRelationService.hierarchy(connName,actualTableName);
+    }
+
+    @GetMapping("/relation/superTypes")
+    public TableRelationTree superTypes(String connName, String catalog, String schema,String tableName){
+        ActualTableName actualTableName = new ActualTableName(catalog, schema, tableName);
+        return tableRelationService.superTypes(connName,actualTableName);
     }
 }

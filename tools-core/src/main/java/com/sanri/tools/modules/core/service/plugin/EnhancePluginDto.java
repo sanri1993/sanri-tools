@@ -2,6 +2,7 @@ package com.sanri.tools.modules.core.service.plugin;
 
 import com.sanri.tools.modules.core.dtos.PluginDto;
 import lombok.Data;
+import org.apache.commons.lang3.time.DateUtils;
 
 /**
  * 增强工具属性,统计一些调用属性,使更热门的工具排名更靠前
@@ -40,12 +41,13 @@ public class EnhancePluginDto implements Comparable<EnhancePluginDto>{
         if(!otherTimeout && thisTimeout){
             return 1;
         }
-        if(otherTimeout && thisTimeout){
-            // 比较调用次数和调用时间,调用时间的占比比较小,调用次数占比大
-            return (int) (((double)(o.lastCallTime - lastCallTime )) * 0.0001 +
-                    ((double)( totalCalls - o.totalCalls )) * 0.5);
+        if(!otherTimeout && !thisTimeout){
+            // 5 分钟之内,调用时间会有一定占比, 5 分钟之后只根据调用次数
+            long sub = o.lastCallTime - lastCallTime;
+            return (int) (((double)sub) * 0.01 + ((double)( totalCalls - o.totalCalls )) * 0.5);
         }
 
-        return (int) (o.lastCallTime - lastCallTime);
+        // 5 分钟之后 , 只根据调用次数排序
+        return o.totalCalls - totalCalls;
     }
 }

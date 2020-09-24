@@ -248,11 +248,11 @@ Content-Type: application/json
     {
       "sourceTableName": {
         "schema": "mct",
-        "tableName": "mct_event_handler"
+        "tableName": "mct_event_record_biz"
       },
       "targetTableName": {
         "schema": "mct",
-        "tableName": "mct_event_record_common"
+        "tableName": "mct_event_record_plc"
       },
       "sourceColumnName": "uuid",
       "targetColumnName": "uuid",
@@ -265,10 +265,10 @@ Content-Type: application/json
 GET {{baseUrl}}/db/metadata/extend/relation/parents?connName=lo&schema=mct&tableName=mct_event_handler
 
 ### 数据库 - 表关系  - 查询表的下级引用
-GET {{baseUrl}}/db/metadata/extend/relation/childs?connName=lo&schema=mct&tableName=mct_event_handler
+GET {{baseUrl}}/db/metadata/extend/relation/childs?connName=lo&schema=mct&tableName=mct_event_record_biz
 
 ### 数据库 - 表关系  - 查询表的关联层级
-GET {{baseUrl}}/db/metadata/extend/relation/hierarchy?connName=lo&schema=mct&tableName=mct_event_handler
+GET {{baseUrl}}/db/metadata/extend/relation/hierarchy?connName=lo&schema=mct&tableName=mct_event_record_biz
 
 ### 单表随机数据生成
 POST {{baseUrl}}/db/data/singleTableRandomData

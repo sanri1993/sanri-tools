@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.alibaba.fastjson.serializer.PropertyFilter;
 import com.sanri.tools.modules.core.service.file.FileManager;
+import com.sanri.tools.modules.database.dtos.TableRelationTree;
 import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
 import com.sanri.tools.modules.database.dtos.meta.Column;
 import com.sanri.tools.modules.database.dtos.TableRelationDto;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -63,9 +65,9 @@ public class TableRelationService {
      * @param tableName
      * @return
      */
-    public List<TableRelationDto> childs(String connName, String catalog, ActualTableName tableName){
-        Set<TableRelationDto> relations = loadCatalogRelationMap(connName, catalog);
-        return relations.stream().filter(relation -> relation.getSourceTableName().equals(tableName)).collect(Collectors.toList());
+    public List<TableRelationDto> childs(String connName, ActualTableName actualTableName){
+        Set<TableRelationDto> relations = loadCatalogRelationMap(connName, actualTableName.getCatalog());
+        return relations.stream().filter(relation -> relation.getSourceTableName().equals(actualTableName)).collect(Collectors.toList());
     }
 
     /**
@@ -89,19 +91,44 @@ public class TableRelationService {
      * @param tableName
      * @return
      */
-    public List<TableRelationDto> hierarchy(String connName, String catalog, ActualTableName tableName) {
-        Set<TableRelationDto> relations = loadCatalogRelationMap(connName, catalog);
-        List<TableRelationDto> tableRelations = new ArrayList<>();
-        findTableHierarchy(relations,tableName,tableRelations);
-        return tableRelations;
+    public TableRelationTree hierarchy(String connName, ActualTableName actualTableName) {
+        Set<TableRelationDto> relations = loadCatalogRelationMap(connName, actualTableName.getCatalog());
+
+        TableRelationTree top = new TableRelationTree(actualTableName);
+        findTableHierarchy(relations,top);
+        return top;
     }
 
-    private void findTableHierarchy(Set<TableRelationDto> relations, ActualTableName tableName, List<TableRelationDto> tableRelations) {
+    private void findTableHierarchy(Set<TableRelationDto> relations, TableRelationTree parent) {
+        ActualTableName originTable = parent.getTableName();
         for (TableRelationDto relation : relations) {
             ActualTableName sourceTableName = relation.getSourceTableName();
-            if(sourceTableName.equals(tableName)){
-                tableRelations.add(relation);
-                findTableHierarchy(relations,relation.getTargetTableName(),tableRelations);
+            if(sourceTableName.equals(originTable)){
+                TableRelationDto.Relation currentRelation = TableRelationDto.Relation.valueOf(relation.getRelation());
+                TableRelationTree subParent = new TableRelationTree(relation.getSourceColumnName(),relation.getTargetTableName(),relation.getTargetColumnName(),currentRelation);
+                parent.addRelation(subParent);
+                findTableHierarchy(relations,subParent);
+            }
+        }
+    }
+
+    public TableRelationTree superTypes(String connName, ActualTableName actualTableName) {
+        Set<TableRelationDto> relations = loadCatalogRelationMap(connName, actualTableName.getCatalog());
+
+        TableRelationTree top = new TableRelationTree(actualTableName);
+        findTableSuperTypes(relations,top);
+        return top;
+    }
+
+    private void findTableSuperTypes(Set<TableRelationDto> relations, TableRelationTree parent) {
+        ActualTableName originTable = parent.getTableName();
+        for (TableRelationDto relation : relations) {
+            ActualTableName targetTableName = relation.getTargetTableName();
+            if(targetTableName.equals(originTable)){
+                TableRelationDto.Relation currentRelation = TableRelationDto.Relation.valueOf(relation.getRelation());
+                TableRelationTree subParent = new TableRelationTree(relation.getSourceColumnName(),relation.getSourceTableName(),relation.getSourceColumnName(),currentRelation);
+                parent.addRelation(subParent);
+                findTableSuperTypes(relations,subParent);
             }
         }
     }
