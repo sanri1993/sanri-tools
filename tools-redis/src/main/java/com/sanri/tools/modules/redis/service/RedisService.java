@@ -336,7 +336,9 @@ public class RedisService {
             case string:
                 return client.strlen(key);
             case Set:
+                return client.scard(key);
             case ZSet:
+                return client.zcard(key);
             case List:
                 return client.llen(key);
             case Hash:
@@ -617,6 +619,7 @@ public class RedisService {
                     }
                     listValueBytes = jedisCluster.lrange(keyBytes, 0, jedisCluster.llen(keyBytes));
                     break;
+
             }
 
             jedisCluster.close();
