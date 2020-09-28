@@ -376,10 +376,12 @@ public class JdbcService {
      * @param actualTableName
      * @return
      */
-    public TableMetaData findTable(String connName, ActualTableName actualTableName) {
-        Map<ActualTableName, TableMetaData> actualTableNameTableMetaDataMap = tableMetaDataMap.get(connName);
-        TableMetaData tableMetaData = actualTableNameTableMetaDataMap.get(actualTableName);
-        return tableMetaData;
+    public TableMetaData findTable(String connName, ActualTableName actualTableName) throws IOException, SQLException {
+        List<TableMetaData> tableMetaDataList = filterChoseTables(connName, actualTableName.getCatalog(), Collections.singletonList(actualTableName));
+        if (CollectionUtils.isNotEmpty(tableMetaDataList)){
+            return tableMetaDataList.get(0);
+        }
+        return null;
     }
 
     /**

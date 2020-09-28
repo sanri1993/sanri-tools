@@ -1,10 +1,19 @@
 package com.sanri.tools.modules.database.service;
 
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelReader;
+import com.alibaba.excel.context.AnalysisContext;
+import com.alibaba.excel.event.AnalysisEventListener;
+import com.alibaba.excel.read.metadata.ReadSheet;
+import com.alibaba.excel.read.metadata.holder.ReadRowHolder;
+import com.sanri.tools.modules.core.exception.ToolException;
+import com.sanri.tools.modules.database.dtos.ExcelImportParam;
 import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
 import com.sanri.tools.modules.database.dtos.meta.Column;
 import com.sanri.tools.modules.database.dtos.TableDataParam;
 import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,47 +21,79 @@ import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-// TODO 需要考虑类型映射 , 占位符冲突问题
 @Service
 @Slf4j
 public class TableDataService {
     @Autowired
     private JdbcService jdbcService;
-    ExpressionParser expressionParser = new SpelExpressionParser();
+
+    private ExpressionParser expressionParser = new SpelExpressionParser();
+
+    public void writeDataToTable(String connName,ActualTableName actualTableName,String [] columns, List<String[]> rows){
+        String insertSql = "insert into ${tableName}(${columns}) values ${values}";
+
+        HashMap<String, Object> paramMap = new HashMap<>();
+        String tableName = actualTableName.getSchema()+"."+actualTableName.getTableName();
+        if (StringUtils.isBlank(actualTableName.getSchema())){
+            tableName = actualTableName.getCatalog()+"."+actualTableName.getTableName();
+        }
+        paramMap.put("tableName",tableName);
+        paramMap.put("columns",StringUtils.join(columns,','));
+        List<String> multiValues = new ArrayList<>();
+        StringSubstitutor stringSubstitutor = new StringSubstitutor(paramMap, "${", "}");
+
+        for (String[] row : rows) {
+            String currentValues = StringUtils.join(row,"','");
+            currentValues = "('" + currentValues + "')";
+            multiValues.add(currentValues);
+        }
+        String columnValues = StringUtils.join(multiValues, ',');
+        paramMap.put("values",columnValues);
+        String finalSql = stringSubstitutor.replace(insertSql);
+
+        try {
+            List<Integer> executeUpdate = jdbcService.executeUpdate(connName, Arrays.asList(finalSql));
+            log.info("影响行数 {}",executeUpdate);
+        } catch (SQLException | IOException e) {
+            log.error("当前 sql 执行错误{}, 当前sql  {}",e.getMessage(),finalSql);
+        }
+
+    }
 
     /**
      * 单表数据添加
      * @param tableDataParam
      */
-    public void singleTableWriteRandomData(TableDataParam tableDataParam) {
+    public void singleTableWriteRandomData(TableDataParam tableDataParam) throws IOException, SQLException {
         // 获取表元数据信息
         String connName = tableDataParam.getConnName();
         ActualTableName actualTableName = tableDataParam.getActualTableName();
         TableMetaData tableMetaData = jdbcService.findTable(connName,actualTableName);
+        if (tableMetaData == null){
+            log.error("未找到数据表: [{}]",actualTableName);
+            return ;
+        }
 
         List<TableDataParam.ColumnMapper> columnMappers = tableDataParam.getColumnMappers();
-        HashMap<String, Object> paramMap = new HashMap<>();
-        paramMap.put("tableName",actualTableName.getTableName());
-        String columns = columnMappers.stream().map(TableDataParam.ColumnMapper::getColumnName).collect(Collectors.joining(","));
-        paramMap.put("columns",columns);
-        List<Object> values = new ArrayList<>();
-        List<String> multiValues = new ArrayList<>();
-        StringSubstitutor stringSubstitutor = new StringSubstitutor(paramMap, "${", "}");
-
-        String insertSql = "insert into ${tableName}(${columns}) values ${values}";
+        List<String> columns = columnMappers.stream().map(TableDataParam.ColumnMapper::getColumnName).collect(Collectors.toList());
 
         // column 映射成 map
         Map<String, Column> columnMap = tableMetaData.getColumns().stream().collect(Collectors.toMap(Column::getColumnName, column -> column));
 
         // 将数据分段插入
-        int SEGMENT_SIZE = 100;
+        int SEGMENT_SIZE = 1000;
         int segments = (tableDataParam.getSize() - 1) / SEGMENT_SIZE + 1;
+        log.info("数据将分段插入,总共分成 {} 段",segments);
         for (int k = 0; k < segments; k++) {
             int start = k * SEGMENT_SIZE;
             int end = (k + 1) * SEGMENT_SIZE;
@@ -60,9 +101,9 @@ public class TableDataService {
                 end = tableDataParam.getSize();
             }
 
-            multiValues.clear();
+            List<String[]> rows = new ArrayList<>();
             for (int i = start; i < end; i++) {
-                values.clear();
+                List<String> row = new ArrayList<>();
                 for (TableDataParam.ColumnMapper columnMapper : columnMappers) {
                     String random = columnMapper.getRandom();
                     String columnName = columnMapper.getColumnName();
@@ -74,24 +115,103 @@ public class TableDataService {
                     Column column = columnMap.get(columnName);
                     String dataType = column.getTypeName();
                     // 需要判断数据库字段类型,数字型和字符型的添加不一样的
-                    values.add("'"+value+"'");
+                    row.add(value);
                 }
-                String columnValues = StringUtils.join(values, ',');
-                multiValues.add('('+columnValues+')');
+                rows.add(row.toArray(new String []{}));
             }
-            String columnValues = StringUtils.join(multiValues, ',');
-            paramMap.put("values",columnValues);
-            String finalSql = stringSubstitutor.replace(insertSql);
-            log.info("将要执行的语句为 {}",finalSql);
-            try {
-                List<Integer> executeUpdate = jdbcService.executeUpdate(connName, Arrays.asList(finalSql));
-                log.info("影响行数 {}",executeUpdate);
-            } catch (SQLException | IOException e) {
-                log.error("当前 sql 执行错误 {}",finalSql);
-            }
+            writeDataToTable(connName,actualTableName,columns.toArray(new String []{}),rows);
+            String percent = new BigDecimal((k+1) * 100).divide(new BigDecimal(segments)).setScale(2, RoundingMode.HALF_UP).toString();
+            log.info("数据表 {} 数据插入进度 {}/{} , 百分比: {} %",actualTableName.getTableName(),(k+1),segments,percent);
         }
 
     }
 
+    /**
+     * 从 excel 导入数据到某张表
+     * @param excelImportParam
+     * @param multipartFile
+     */
+    public void importDataFromExcel(ExcelImportParam excelImportParam, MultipartFile excel) throws IOException, SQLException {
+        String connName = excelImportParam.getConnName();
+        TableMetaData tableMetaData = jdbcService.findTable(connName, excelImportParam.getActualTableName());
+        if (tableMetaData == null){
+            throw new ToolException(excelImportParam.getActualTableName().getTableName()+" 数据表不存在,导入失败");
+        }
+        // 读取 Excel 数据
+        ImportDataToTableListener syncReadListener = new ImportDataToTableListener(tableMetaData,excelImportParam);
+        ReadSheet readSheet = EasyExcel.readSheet(0).headRowNumber(excelImportParam.getStartRow()).build();
+        ExcelReader excelReader = EasyExcel.read(excel.getInputStream())
+                .autoTrim(true).ignoreEmptyRow(true).registerReadListener(syncReadListener).build();
+        excelReader.read(readSheet);
+    }
+
+    /**
+     * 直接用map接收数据
+     *
+     * @author Jiaju Zhuang
+     */
+    public class ImportDataToTableListener extends AnalysisEventListener<Map<Integer, String>> {
+        private TableMetaData tableMetaData;
+        private ExcelImportParam excelImportParam;
+        private static final int BATCH_SIZE = 1000;
+
+        private List<Map<Integer,String>> cacheDatas = new ArrayList<>();
+
+        String insertSql = "insert into ${tableName}(${columns}) values ${values}";
+
+        public ImportDataToTableListener(TableMetaData tableMetaData, ExcelImportParam excelImportParam) {
+            this.tableMetaData = tableMetaData;
+            this.excelImportParam = excelImportParam;
+        }
+
+        @Override
+        public void invoke(Map<Integer, String> data, AnalysisContext context) {
+            if (cacheDatas.size() >= BATCH_SIZE){
+                saveDataToTable();
+                cacheDatas.clear();
+            }
+            cacheDatas.add(data);
+        }
+
+        @Override
+        public void doAfterAllAnalysed(AnalysisContext context) {
+            saveDataToTable();
+        }
+
+        private void saveDataToTable(){
+            List<ExcelImportParam.Mapping> mappings = excelImportParam.getMapping();
+
+            String [] headers = new String[mappings.size()];
+            for (int i = 0; i < mappings.size(); i++) {
+                ExcelImportParam.Mapping mapping = mappings.get(i);
+                headers[i] = mapping.getColumnName();
+            }
+
+            List<String []> rows = new ArrayList<>();
+
+            for (Map<Integer, String> cacheData : cacheDatas) {
+                String [] body = new String[mappings.size()];
+                for (int i = 0; i < mappings.size(); i++) {
+                    ExcelImportParam.Mapping mapping = mappings.get(i);
+                    int index = mapping.getIndex();
+                    String random = mapping.getRandom();
+                    if (index != -1){
+                        body[i] = cacheData.get(index);
+                    }else if (StringUtils.isNotBlank(random)){
+                        // 使用 spel 生成数据
+                        Expression expression = expressionParser.parseExpression(random);
+                        body[i] = expression.getValue(String.class);
+                    }else{
+                        body[i] = mapping.getConstant();
+                    }
+                }
+
+                rows.add(body);
+            }
+
+            cacheDatas.clear();
+            writeDataToTable(excelImportParam.getConnName(),excelImportParam.getActualTableName(),headers,rows);
+        }
+    }
 
 }

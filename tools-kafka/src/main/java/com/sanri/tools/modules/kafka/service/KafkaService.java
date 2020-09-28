@@ -15,10 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.kafka.clients.admin.*;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -399,11 +396,23 @@ public class KafkaService {
         List<TopicLogSize> topicLogSizes = new ArrayList<>();
 
         KafkaConsumer<byte[], byte[]> consumer = loadConsumerClient(clusterName);
+
         try {
+            // 这个方法巨慢,直接去 zk 上拿分区数据算了
+            KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(module, clusterName);
+            int partitions = 0;
+//            try {
+//                partitions = zookeeperService.countChildren(clusterName, kafkaConnectParam.getChroot() + "/brokers/topics/" + topic + "/partitions");
+//            }catch (Exception e){
+//                log.error("[{}]从 zookeeper 上获取[{}]分区数出错,启用备用方案,从 kafka 上获取",clusterName,topic);
+//                List<PartitionInfo> partitionInfos = consumer.partitionsFor(topic);
+//                partitions = partitionInfos.size();
+//            }
             List<PartitionInfo> partitionInfos = consumer.partitionsFor(topic);
+            partitions = partitionInfos.size();
 
             List<TopicPartition> topicPartitions = new ArrayList<>();
-            for (int i = 0; i < partitionInfos.size(); i++) {
+            for (int i = 0; i < partitions; i++) {
                 topicPartitions.add(new TopicPartition(topic, i));
             }
 
@@ -470,8 +479,14 @@ public class KafkaService {
         KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(module, clusterName);
         Map<String, Object> properties = kafkaConnectParam.getKafka().buildConsumerProperties();
         // 设置为 byte[] 序列化
-        properties.put("key.deserializer","org.apache.kafka.common.serialization.ByteArrayDeserializer");
-        properties.put("value.deserializer","org.apache.kafka.common.serialization.ByteArrayDeserializer");
+        properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,"org.apache.kafka.common.serialization.ByteArrayDeserializer");
+        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,"org.apache.kafka.common.serialization.ByteArrayDeserializer");
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG,"console-"+clusterName);
+        properties.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG,"30000");
+        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"earliest");
+        properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG,"true");
+        properties.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG,"500");
+//        properties.put(ConsumerConfig.DEFAULT_API_TIMEOUT_MS_CONFIG,"1000");
         return new KafkaConsumer<byte[], byte[]>(properties);
     }
 
@@ -541,16 +556,20 @@ public class KafkaService {
             // 遍历所有的 mBean
             Constants constants = new Constants(clazz);
             List<String> mBeans = constansValues(constants);
-            for (String mBean : mBeans) {
-                if (clazz == BrokerTopicMetrics.TopicMetrics.class){
-                    mBean = String.format(mBean,topic);
+            try {
+                for (String mBean : mBeans) {
+                    if (clazz == BrokerTopicMetrics.TopicMetrics.class){
+                        mBean = String.format(mBean,topic);
+                    }
+                    Object fifteenMinuteRate = mbeanConnection.getAttribute(new ObjectName(mBean), BrokerTopicMetrics.MBean.FIFTEEN_MINUTE_RATE);
+                    Object fiveMinuteRate = mbeanConnection.getAttribute(new ObjectName(mBean), BrokerTopicMetrics.MBean.FIVE_MINUTE_RATE);
+                    Object meanRate = mbeanConnection.getAttribute(new ObjectName(mBean), BrokerTopicMetrics.MBean.MEAN_RATE);
+                    Object oneMinuteRate = mbeanConnection.getAttribute(new ObjectName(mBean), BrokerTopicMetrics.MBean.ONE_MINUTE_RATE);
+                    MBeanMonitorInfo mBeanInfo = new MBeanMonitorInfo(mBean,objectDoubleValue(fifteenMinuteRate), objectDoubleValue(fiveMinuteRate), objectDoubleValue(meanRate), objectDoubleValue(oneMinuteRate));
+                    mBeanInfos.add(mBeanInfo);
                 }
-                Object fifteenMinuteRate = mbeanConnection.getAttribute(new ObjectName(mBean), BrokerTopicMetrics.MBean.FIFTEEN_MINUTE_RATE);
-                Object fiveMinuteRate = mbeanConnection.getAttribute(new ObjectName(mBean), BrokerTopicMetrics.MBean.FIVE_MINUTE_RATE);
-                Object meanRate = mbeanConnection.getAttribute(new ObjectName(mBean), BrokerTopicMetrics.MBean.MEAN_RATE);
-                Object oneMinuteRate = mbeanConnection.getAttribute(new ObjectName(mBean), BrokerTopicMetrics.MBean.ONE_MINUTE_RATE);
-                MBeanMonitorInfo mBeanInfo = new MBeanMonitorInfo(mBean,objectDoubleValue(fifteenMinuteRate), objectDoubleValue(fiveMinuteRate), objectDoubleValue(meanRate), objectDoubleValue(oneMinuteRate));
-                mBeanInfos.add(mBeanInfo);
+            } catch (InstanceNotFoundException e) {
+                log.error("当前连接[{}]主题[{}]未找到监控实例 [{}]",clusterName,topic,e.getMessage());
             }
         }
 

@@ -145,31 +145,64 @@ public class ClassloaderController {
         List<ClassStruct.Method> methods = new ArrayList<>();
         classStruct.setMethods(methods);
         for (Method declaredMethod : declaredMethods) {
-            String methodName = declaredMethod.getName();
-            int modifiers = declaredMethod.getModifiers();
-            String returnType = declaredMethod.getReturnType().getSimpleName();
-            ClassStruct.Method method = new ClassStruct.Method(modifiers, methodName, returnType);
+            ClassStruct.Method method = buildMethodDesc(declaredMethod);
             methods.add(method);
-
-            // 获取方法参数列表
-            Class<?>[] parameterTypes = declaredMethod.getParameterTypes();
-            String[] parameterNames = parameterNameDiscoverer.getParameterNames(declaredMethod);
-            if (ArrayUtils.isNotEmpty(parameterTypes)) {
-                List<ClassStruct.Arg> args = new ArrayList<>();
-                for (int i = 0; i < parameterTypes.length; i++) {
-                    Class<?> parameterType = parameterTypes[i];
-                    String argName = "arg"+i;
-                    if (parameterNames != null){
-                        argName = parameterNames[i];
-                    }
-                    ClassStruct.Arg arg = new ClassStruct.Arg(parameterType.getSimpleName(),argName );
-                    args.add(arg);
-                }
-                method.setArgs(args);
-            }
         }
         return classStruct;
     }
+
+    /**
+     * 获取一个类所有的静态方法
+     * @param className
+     * @param classloaderName
+     * @return
+     * @throws ClassNotFoundException
+     */
+    @GetMapping("/{classloaderName}/{className}/staticMethods")
+    public List<ClassStruct.Method> staticMethods(String className,String classloaderName) throws ClassNotFoundException {
+        Method[] methods = classloaderService.classMethods(classloaderName, className);
+        List<ClassStruct.Method> methodDescs = new ArrayList<>();
+        for (Method method : methods) {
+            int modifiers = method.getModifiers();
+            boolean isStatic = Modifier.isStatic(modifiers);
+            if (isStatic){
+                ClassStruct.Method methodDesc = buildMethodDesc(method);
+                methodDescs.add(methodDesc);
+            }
+        }
+        return methodDescs;
+    }
+
+    /**
+     * 构建自定义的方法描述
+     * @param declaredMethod
+     * @return
+     */
+    private ClassStruct.Method buildMethodDesc(Method declaredMethod) {
+        String methodName = declaredMethod.getName();
+        int modifiers = declaredMethod.getModifiers();
+        String returnType = declaredMethod.getReturnType().getSimpleName();
+        ClassStruct.Method method = new ClassStruct.Method(modifiers, methodName, returnType);
+
+        // 获取方法参数列表
+        Class<?>[] parameterTypes = declaredMethod.getParameterTypes();
+        String[] parameterNames = parameterNameDiscoverer.getParameterNames(declaredMethod);
+        if (ArrayUtils.isNotEmpty(parameterTypes)) {
+            List<ClassStruct.Arg> args = new ArrayList<>();
+            for (int i = 0; i < parameterTypes.length; i++) {
+                Class<?> parameterType = parameterTypes[i];
+                String argName = "arg"+i;
+                if (parameterNames != null){
+                    argName = parameterNames[i];
+                }
+                ClassStruct.Arg arg = new ClassStruct.Arg(parameterType.getSimpleName(),argName );
+                args.add(arg);
+            }
+            method.setArgs(args);
+        }
+        return method;
+    }
+
 
     /**
      * 构建方法参数,需要保证方法名是唯一的,如果有重载方法,将只取第一个重载方法的参数

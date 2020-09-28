@@ -270,26 +270,83 @@ GET {{baseUrl}}/db/metadata/extend/relation/childs?connName=lo&schema=mct&tableN
 ### 数据库 - 表关系  - 查询表的关联层级
 GET {{baseUrl}}/db/metadata/extend/relation/hierarchy?connName=lo&schema=mct&tableName=mct_event_record_biz
 
-### 单表随机数据生成
+### 数据库 - 数据 - 单表随机数据生成
 POST {{baseUrl}}/db/data/singleTableRandomData
 Content-Type: application/json
 
 {
   "connName": "localhost",
-  "schemaName": "test",
-  "tableName": "test",
-  "columnMappers":[{"columnName": "name","random": "T(com.sanri.tools.modules.core.utils.RandomUtil).chinese(64,null)"},
-    {"columnName": "idcard","random": "T(com.sanri.tools.modules.core.utils.RandomUtil).idcard()"}]
+  "actualTableName": {
+    "catalog": "test",
+    "tableName": "test_index"
+  },
+  "size": 120,
+  "columnMappers": [
+    {
+      "columnName": "title",
+      "random": "T(com.sanri.tools.modules.core.utils.RandomUtil).chinese(64,null)"
+    },
+    {
+      "columnName": "idcard",
+      "random": "T(com.sanri.tools.modules.core.utils.RandomUtil).idcard()"
+    },
+    {
+      "columnName": "age",
+      "random": "T(org.apache.commons.lang3.RandomUtils).nextInt(1,140)"
+    },
+    {
+      "columnName": "author",
+      "random": "T(com.sanri.tools.modules.core.utils.RandomUtil).chinese(32,null)"
+    },
+    {
+      "columnName": "report_time",
+      "random": "T(org.apache.commons.lang3.time.DateFormatUtils).ISO_8601_EXTENDED_DATETIME_FORMAT.format(T(com.sanri.tools.modules.core.utils.RandomUtil).date())"
+    }
+  ]
 }
 
-### 数据表 - 配置数据(nacos,diamond) - 所有分组信息
-GET {{baseUrl}}/db/data/config/groups?connName=lo&schemaName=nacos
+### 数据库 - 数据 - 导入数据
+POST {{baseUrl}}/db/data/import/excel
+Content-Type: multipart/form-data; boundary=importData
 
-### 数据表 - 配置数据 - 分组的 dataIds
-GET {{baseUrl}}/db/data/config/dataIds?connName=lo&schemaName=nacos&groupId=scp-st-messagecenter-component
+--importData
+Content-Disposition: form-data; name="excel"; filename="acc_auth_history_record.xlsx"
+Content-Type: application/octet-stream
 
-### 数据表 - 配置数据 - 获取配置数据详情
-GET {{baseUrl}}/db/data/config/content?connName=lo&schemaName=nacos&groupId=scp-st-messagecenter-component&dataId=scp-st-messagecenter-component-dev.properties
+< d:/test/acc_auth_history_record.xlsx
+--importData
+Content-Disposition: form-data; name="config"
+Content-Type: application/json
+
+{
+"connName": "localhost",
+"actualTableName": {
+    "catalog": "test",
+    "tableName": "test_index"
+},
+"startRow": 2,
+"mapping": [
+    {
+      "columnName": "title",
+      "index": 35
+    },{
+      "columnName": "author",
+      "index": 31
+    },
+    {
+      "columnName": "idcard",
+      "random": "T(com.sanri.tools.modules.core.utils.RandomUtil).idcard()"
+    },
+    {
+      "columnName": "age",
+      "random": "T(org.apache.commons.lang3.RandomUtils).nextInt(1,140)"
+    },
+    {
+      "columnName": "report_time",
+      "random": "T(org.apache.commons.lang3.time.DateFormatUtils).ISO_8601_EXTENDED_DATETIME_FORMAT.format(T(com.sanri.tools.modules.core.utils.RandomUtil).date())"
+    }
+ ]
+}
 
 ### 数据表 - 数据 - 导出数据预览
 POST {{baseUrl}}/db/data/exportPreview
@@ -327,6 +384,15 @@ Content-Type: application/json
   "sqls": ["create table abc(name varchar(32))"],
   "traceId": "abc"
 }
+### 数据表 - 配置数据(nacos,diamond) - 所有分组信息
+GET {{baseUrl}}/db/data/config/groups?connName=lo&schemaName=nacos
+
+### 数据表 - 配置数据 - 分组的 dataIds
+GET {{baseUrl}}/db/data/config/dataIds?connName=lo&schemaName=nacos&groupId=scp-st-messagecenter-component
+
+### 数据表 - 配置数据 - 获取配置数据详情
+GET {{baseUrl}}/db/data/config/content?connName=lo&schemaName=nacos&groupId=scp-st-messagecenter-component&dataId=scp-st-messagecenter-component-dev.properties
+
 ### 数据库 - 代码生成 - 列出所有重命名策略
 GET {{baseUrl}}/db/code/renameStrategies
 

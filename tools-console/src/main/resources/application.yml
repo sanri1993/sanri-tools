@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8084
 spring:
   application:
     name: sanri-tools
@@ -20,9 +20,9 @@ spring:
     mode: HTML
 data:
   path:
-    config: d:/test/config
-    tmp: d:/tmp/sanritools
-    libs: d:/libs
+    config: /home/appdeploy/sanri-test/configs
+    tmp: /tmp
+    libs: /tmp/libs
 translate:
   baidu:
     appId: 20181123000238271

@@ -54,6 +54,11 @@ public class ZookeeperService {
         return children;
     }
 
+    public int countChildren(String connName, String path) throws IOException {
+        ZkClient zkClient = zkClient(connName);
+        return zkClient.countChildren(path);
+    }
+
     /**
      * 获取节点元数据
      * @param connName

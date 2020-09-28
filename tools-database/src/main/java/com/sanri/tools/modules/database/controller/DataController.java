@@ -1,9 +1,6 @@
 package com.sanri.tools.modules.database.controller;
 
-import com.sanri.tools.modules.database.dtos.DataQueryParam;
-import com.sanri.tools.modules.database.dtos.DynamicQueryDto;
-import com.sanri.tools.modules.database.dtos.ExportPreviewDto;
-import com.sanri.tools.modules.database.dtos.TableDataParam;
+import com.sanri.tools.modules.database.dtos.*;
 import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
 import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
 import com.sanri.tools.modules.database.service.DataService;
@@ -62,7 +59,7 @@ public class DataController {
      * @param tableDataParam
      */
     @PostMapping("/singleTableRandomData")
-    public void singleTableRandomData(@RequestBody TableDataParam tableDataParam){
+    public void singleTableRandomData(@RequestBody TableDataParam tableDataParam) throws IOException, SQLException {
         tableDataService.singleTableWriteRandomData(tableDataParam);
     }
 
@@ -72,8 +69,8 @@ public class DataController {
      * @throws IOException
      */
     @PostMapping("/import/excel")
-    public void importDataFromExcel(MultipartFile file) throws IOException {
-
+    public void importDataFromExcel(@RequestPart("config") ExcelImportParam excelImportParam,@RequestPart("excel") MultipartFile multipartFile) throws IOException, SQLException {
+        tableDataService.importDataFromExcel(excelImportParam,multipartFile);
     }
 
     /**

@@ -1,6 +1,8 @@
 package com.sanri.tools.modules.database.service;
 
+import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.service.file.FileManager;
+import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.database.dtos.*;
 import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
 import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 
+import javax.annotation.PostConstruct;
 import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -34,6 +37,8 @@ import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.*;
+
+import static com.sanri.tools.modules.database.service.JdbcService.module;
 
 @Service
 @Slf4j
@@ -320,5 +325,18 @@ public class CodeGeneratorService {
                 }
             }
         }
+    }
+
+    @Autowired
+    private PluginManager pluginManager;
+
+    @PostConstruct
+    public void register(){
+        pluginManager.register(PluginDto.builder()
+                .module(module).name("codeGenerate").author("sanri").envs("default")
+                .logo("mysql.jpg")
+                .desc("代码生成功能")
+                .help("数据表处理工具.md")
+                .build());
     }
 }
