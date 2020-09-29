@@ -5,6 +5,7 @@ import com.sanri.tools.modules.redis.dtos.MemoryUse;
 import com.sanri.tools.modules.redis.dtos.RedisNode;
 import com.sanri.tools.modules.redis.dtos.params.ConnParam;
 import com.sanri.tools.modules.redis.service.RedisClusterService;
+import com.sanri.tools.modules.redis.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,8 @@ import java.util.List;
 public class RedisMonitorController {
     @Autowired
     private RedisClusterService redisClusterService;
+    @Autowired
+    private RedisService redisService;
 
     @GetMapping("/nodes")
     public List<RedisNode> nodes(ConnParam connParam) throws IOException {
@@ -32,7 +35,7 @@ public class RedisMonitorController {
     }
 
     @PostMapping("/client/kill/{clientId}")
-    public void killClient(String connName,@PathVariable("clientId") String clientId){
-
+    public String killClient(ConnParam connParam, @PathVariable("clientId") String clientId) throws IOException {
+        return redisService.killClient(connParam,clientId);
     }
 }

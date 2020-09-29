@@ -525,7 +525,7 @@ GET {{baseUrl}}/redis/monitor/nodes?connName=192.168.0.134
 GET {{baseUrl}}/redis/key/scan?connName=192.168.0.134&pattern=*&limit=2&cursor=0&keySerializer=string
 
 ### redis - 读取某个具体的 key
-GET {{baseUrl}}/redis/data?connName=192.168.0.134&key=doe:registry:list&pattern=*&limit=1&cursor=0&keySerializer=string&value=string
+GET {{baseUrl}}/redis/data?connName=192.168.0.134&key=abc&subKeys=mm,mm2&keySerializer=string&value=string&hashKey=string&hashValue=string
 
 ### redis -  扫描 hashKey
 GET {{baseUrl}}/redis/hashKeyScan?connName=192.168.0.134&key=doe:registry:list&pattern=&limit=100&hashKeySerializer=jdk

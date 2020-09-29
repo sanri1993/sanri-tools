@@ -293,6 +293,19 @@ public class RedisService{
         return null;
     }
 
+    /**
+     * kill 客户端连接
+     * @param connParam
+     * @param id
+     * @return
+     * @throws IOException
+     */
+    public String killClient(ConnParam connParam, String id) throws IOException {
+        JedisClient jedisClient = jedisClient(connParam);
+        String clientKill = jedisClient.jedis.clientKill(id);
+        return clientKill;
+    }
+
     List<ZSetTuple> mapperZsetTuple(Serializer valueSerializer, ClassLoader classloader, Set<Tuple> tuples) throws IOException, ClassNotFoundException {
         List<ZSetTuple> zSetTuples = new ArrayList<>();
         for (Tuple tuple : tuples) {
