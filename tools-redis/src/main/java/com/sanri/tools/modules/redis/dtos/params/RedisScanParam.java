@@ -1,6 +1,9 @@
 package com.sanri.tools.modules.redis.dtos.params;
 
-public class ScanParam {
+import lombok.Data;
+
+@Data
+public class RedisScanParam {
     private String pattern;
     private int limit;
     private String cursor;
