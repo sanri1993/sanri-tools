@@ -1,5 +1,6 @@
 package com.sanri.tools.modules.serializer.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Service
+@Slf4j
 public class SerializerChoseService {
     private Map<String,Serializer> serializerMap = new HashMap<>();
 
@@ -29,10 +31,15 @@ public class SerializerChoseService {
 
     /**
      * 获取一个序列化工具
-     * @param serializer
+     * @param serializerName
      * @return
      */
-    public Serializer choseSerializer(String serializer) {
-        return serializerMap.get(serializer);
+    public Serializer choseSerializer(String serializerName) {
+        Serializer serializer = serializerMap.get(serializerName);
+        if (serializer == null){
+            log.warn("不支持的序列化工具: {},将默认使用 string 序列化",serializerName);
+            return serializerMap.get("string");
+        }
+        return serializer;
     }
 }

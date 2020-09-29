@@ -123,7 +123,7 @@ Content-Type: application/x-www-form-urlencoded
 name=redis
 
 ### 连接管理-获取某个模块的连接列表
-GET {{baseUrl}}/connect/zookeeper/names
+GET {{baseUrl}}/connect/redis/names
 
 ### 连接管理-获取某个连接详情
 GET {{baseUrl}}/connect/redis/10.101.72.43
@@ -519,40 +519,25 @@ Content-Type: application/x-www-form-urlencoded
 connName=192.168.2.134_2181&name=dubbo
 
 ### redis - 查看 redis 的节点列表
-GET {{baseUrl}}/redis/nodes?connName=192.168.0.134
+GET {{baseUrl}}/redis/monitor/nodes?connName=192.168.0.134
 
 ### redis - scan 某个 key ,可以模糊查询
-GET {{baseUrl}}/redis/scan?connName=10.101.72.43&pattern=*CACHE*&limit=2&cursor=10.101.72.43:7000|474
+GET {{baseUrl}}/redis/key/scan?connName=192.168.0.134&pattern=*&limit=2&cursor=0&keySerializer=string
 
-### redis - 读取某个具体的 key; 这个数据有点复杂,本来是用 GET 请求的,换 POST
-POST {{baseUrl}}/redis/data
-Content-Type: application/json
-
-{
-  "connName": "10.101.72.43",
-  "key": "PLC:PARKINGLOT.CACHE",
-  "serializerChose": {
-    "value": "jdk",
-    "hashKey": "jdk",
-    "hashValue": "jdk"
-  },
-  "classloaderName": "singleClasses",
-  "extraQueryParam": {
-    "hashKey": "22"
-  }
-}
+### redis - 读取某个具体的 key
+GET {{baseUrl}}/redis/data?connName=192.168.0.134&key=doe:registry:list&pattern=*&limit=1&cursor=0&keySerializer=string&value=string
 
 ### redis -  扫描 hashKey
-GET {{baseUrl}}/redis/hashKeyScan?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE&pattern=&limit=100&hashKeySerializer=jdk
+GET {{baseUrl}}/redis/hashKeyScan?connName=192.168.0.134&key=doe:registry:list&pattern=&limit=100&hashKeySerializer=jdk
 
 ### redis -  key 长度
 GET {{baseUrl}}/redis/keyLength?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE
 
 ### redis - 获取客户端连接列表和占用连接数
-GET {{baseUrl}}/redis/clientList?connName=10.101.72.43
+GET {{baseUrl}}/redis/monitor/clientList?connName=192.168.0.134
 
 ### redis - 获取内存占用
-GET {{baseUrl}}/redis/memoryUses?connName=10.101.72.43
+GET {{baseUrl}}/redis/monitor/memoryUses?connName=192.168.0.134
 
 ### redis - 删除 key
 POST {{baseUrl}}/redis/dropKeys?connName=10.101.72.43&keys=abc,def

@@ -168,7 +168,7 @@ public class RedisService{
         JedisClient jedisClient = jedisClient(connParam);
         Jedis client = jedisClient.jedis;
 
-        Serializer keySerializer = serializerChoseService.choseSerializer(serializerParam.getKey());
+        Serializer keySerializer = serializerChoseService.choseSerializer(serializerParam.getKeySerializer());
         Serializer valueSerializer = serializerChoseService.choseSerializer(serializerParam.getValue());
         Serializer hashKeySerializer = serializerChoseService.choseSerializer(serializerParam.getHashKey());
         Serializer hashValueSerializer = serializerChoseService.choseSerializer(serializerParam.getHashValue());
@@ -316,7 +316,7 @@ public class RedisService{
      */
     private SubKeyScanResult clientSubKeyScan(Jedis client , String key,RedisScanParam redisScanParam,SerializerParam serializerParam) throws IOException, ClassNotFoundException {
         ClassLoader classloader = classloaderService.getClassloader(serializerParam.getClassloaderName());
-        Serializer keySerializer = serializerChoseService.choseSerializer(serializerParam.getKey());
+        Serializer keySerializer = serializerChoseService.choseSerializer(serializerParam.getKeySerializer());
         Serializer hashKeySerializer = serializerChoseService.choseSerializer(serializerParam.getHashKey());
 
         byte[] keyBytes = keySerializer.serialize(key);
@@ -401,7 +401,7 @@ public class RedisService{
         }
 
         // key 的序列化和类加载器
-        String serializerParamKey = serializerParam.getKey();
+        String serializerParamKey = serializerParam.getKeySerializer();
         String classloaderName = serializerParam.getClassloaderName();
         Serializer serializer = serializerChoseService.choseSerializer(serializerParamKey);
         ClassLoader classloader = classloaderService.getClassloader(classloaderName);
@@ -506,7 +506,7 @@ public class RedisService{
                 Field declaredField = FieldUtils.getDeclaredField(clientClass, split[0], true);
                 if (declaredField != null) {
                     try {
-                        FieldUtils.writeField(declaredField,clientConnection,split[1],true);
+                        FieldUtils.writeField(declaredField,client,split[1],true);
                     } catch (IllegalAccessException e) {
                         log.error("redis 客户端信息写入字段[{}],值[{}] 失败",split[0],split[1]);
                     }

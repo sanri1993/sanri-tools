@@ -147,10 +147,12 @@ public class FileManager {
     private List<ConfigPath> convertDir2ConfigPaths(File moduleDir) {
         List<ConfigPath> configPaths = new ArrayList<>();
         File[] files = moduleDir.listFiles();
-        for (File file : files) {
-            String name = file.getName();
-            boolean directory = file.isDirectory();
-            configPaths.add(new ConfigPath(name,directory,file));
+        if (files != null) {
+            for (File file : files) {
+                String name = file.getName();
+                boolean directory = file.isDirectory();
+                configPaths.add(new ConfigPath(name, directory, file));
+            }
         }
         return configPaths;
     }

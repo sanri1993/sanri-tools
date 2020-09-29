@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class SerializerParam {
-    private String key;
+    private String keySerializer;
     private String value;
     private String hashKey;
     private String hashValue;

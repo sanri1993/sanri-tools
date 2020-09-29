@@ -37,11 +37,19 @@ public class RedisClusterService {
      * @throws IOException
      * @return
      */
-    public KeyScanResult scan(ConnParam connParam, RedisScanParam redisScanParam, SerializerParam serializerParam, int hostIndex) throws IOException, ClassNotFoundException {
+    public KeyScanResult scan(ConnParam connParam, RedisScanParam redisScanParam, SerializerParam serializerParam) throws IOException, ClassNotFoundException {
         JedisClient jedisClient = redisService.jedisClient(connParam);
         if (!jedisClient.isCluster){
             return redisService.scan(connParam,redisScanParam,serializerParam);
         }
+        String cursor = redisScanParam.getCursor();
+        String[] complexCursor = cursor.split("\\|");
+        if (complexCursor.length != 2){
+            throw  new ToolException("游标格式不正确 "+cursor);
+        }
+        redisScanParam.setCursor(complexCursor[0]);
+        int hostIndex = NumberUtils.toInt(complexCursor[1]);
+
         JedisCluster jedisCluster = jedisCluster(jedisClient.jedis);
         List<Jedis> jedis = masterBrokers(jedisCluster);
         if (hostIndex >= jedis.size()){
@@ -96,7 +104,7 @@ public class RedisClusterService {
     public List<MemoryUse> memoryUses(ConnParam connParam) throws IOException {
         JedisClient jedisClient = redisService.jedisClient(connParam);
         if (!jedisClient.isCluster){
-            redisService.memoryUses(connParam);
+            return redisService.memoryUses(connParam);
         }
         List<MemoryUse> memoryUses = new ArrayList<>();
         JedisCluster jedisCluster = jedisCluster(jedisClient.jedis);
@@ -148,6 +156,9 @@ public class RedisClusterService {
      */
     public SubKeyScanResult subKeyScan(ConnParam connParam,String key,RedisScanParam redisScanParam,SerializerParam serializerParam) throws IOException, ClassNotFoundException {
         JedisClient jedisClient = redisService.jedisClient(connParam);
+        if (!jedisClient.isCluster){
+            redisService.subKeyScan(connParam,key,redisScanParam,serializerParam);
+        }
         JedisCluster jedisCluster = jedisCluster(jedisClient.jedis);
         return clientSubKeyScan(jedisCluster,key,redisScanParam,serializerParam);
     }
@@ -161,9 +172,13 @@ public class RedisClusterService {
      */
     public Object data(ConnParam connParam, SubKeyParam subKeyParam, RangeParam rangeParam, RedisScanParam redisScanParam, SerializerParam serializerParam) throws IOException, ClassNotFoundException {
         JedisClient jedisClient = redisService.jedisClient(connParam);
+        if (!jedisClient.isCluster){
+            return redisService.data(connParam,subKeyParam,rangeParam,redisScanParam,serializerParam);
+        }
+
         JedisCluster client = jedisCluster(jedisClient.jedis);
 
-        Serializer keySerializer = serializerChoseService.choseSerializer(serializerParam.getKey());
+        Serializer keySerializer = serializerChoseService.choseSerializer(serializerParam.getKeySerializer());
         Serializer valueSerializer = serializerChoseService.choseSerializer(serializerParam.getValue());
         Serializer hashKeySerializer = serializerChoseService.choseSerializer(serializerParam.getHashKey());
         Serializer hashValueSerializer = serializerChoseService.choseSerializer(serializerParam.getHashValue());
@@ -299,7 +314,7 @@ public class RedisClusterService {
      */
     private SubKeyScanResult clientSubKeyScan(JedisCluster client , String key,RedisScanParam redisScanParam,SerializerParam serializerParam) throws IOException, ClassNotFoundException {
         ClassLoader classloader = classloaderService.getClassloader(serializerParam.getClassloaderName());
-        Serializer keySerializer = serializerChoseService.choseSerializer(serializerParam.getKey());
+        Serializer keySerializer = serializerChoseService.choseSerializer(serializerParam.getKeySerializer());
         Serializer hashKeySerializer = serializerChoseService.choseSerializer(serializerParam.getHashKey());
 
         byte[] keyBytes = keySerializer.serialize(key);
