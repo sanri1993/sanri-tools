@@ -591,26 +591,26 @@ public class RedisService{
     /**
      * 获取 key 长度
      * @param client
-     * @param key
+     * @param keyBytes
      * @return
      */
-    private long keyLength(Jedis client, byte[] key) {
-        String type = client.type(key);
+    long keyLength(Jedis client, byte[] keyBytes) {
+        String type = client.type(keyBytes);
         RedisType redisType = RedisType.parse(type);
         if (redisType == null){
             return 0 ;
         }
         switch (redisType){
             case string:
-                return client.strlen(key);
+                return client.strlen(keyBytes);
             case Set:
-                return client.scard(key);
+                return client.scard(keyBytes);
             case ZSet:
-                return client.zcard(key);
+                return client.zcard(keyBytes);
             case List:
-                return client.llen(key);
+                return client.llen(keyBytes);
             case Hash:
-                return client.hlen(key);
+                return client.hlen(keyBytes);
         }
 
         return 0;

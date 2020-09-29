@@ -51,25 +51,30 @@ public class RedisClusterService {
         int hostIndex = NumberUtils.toInt(complexCursor[1]);
 
         JedisCluster jedisCluster = jedisCluster(jedisClient.jedis);
-        List<Jedis> jedis = masterBrokers(jedisCluster);
-        if (hostIndex >= jedis.size()){
-            log.info("{} 节点数据扫描完毕",connParam);
-            return null;
+        List<KeyScanResult.KeyResult> keyResults;
+        KeyScanResult keyScanResult;
+        try {
+            List<Jedis> jedis = masterBrokers(jedisCluster);
+            if (hostIndex >= jedis.size()){
+                log.info("{} 节点数据扫描完毕",connParam);
+                return null;
+            }
+            keyResults = new ArrayList<>();
+            keyScanResult = null;
+            for (int i = hostIndex; i < jedis.size(); i++) {
+                Jedis current = jedis.get(i);
+                keyScanResult = redisService.nodeScan(current, redisScanParam, serializerParam);
+                boolean finish = keyScanResult.isFinish();
+                if (!finish){
+                    keyResults.addAll(keyScanResult.getKeys());
+                    redisScanParam.setLimit(redisScanParam.getLimit() - keyResults.size());
+                }else{break;}
+            }
+            keyScanResult.setKeys(keyResults);
+            return keyScanResult;
+        } finally {
+            jedisCluster.close();
         }
-        List<KeyScanResult.KeyResult> keyResults = new ArrayList<>();
-        KeyScanResult keyScanResult = null;
-        for (int i = hostIndex; i < jedis.size(); i++) {
-            Jedis current = jedis.get(i);
-            keyScanResult = redisService.nodeScan(current, redisScanParam, serializerParam);
-            boolean finish = keyScanResult.isFinish();
-            if (!finish){
-                keyResults.addAll(keyScanResult.getKeys());
-                redisScanParam.setLimit(redisScanParam.getLimit() - keyResults.size());
-            }else{break;}
-        }
-        jedisCluster.close();
-        keyScanResult.setKeys(keyResults);
-        return keyScanResult;
     }
 
     /**
@@ -86,13 +91,17 @@ public class RedisClusterService {
 
         List<ClientConnection> clientConnections = new ArrayList<>();
         JedisCluster jedisCluster = jedisCluster(jedisClient.jedis);
-        List<Jedis> brokers = brokers(jedisCluster);
-        for (Jedis broker : brokers) {
-            ClientConnection clientConnection = redisService.nodeClientList(broker);
-            clientConnections.add(clientConnection);
+        try {
+            List<Jedis> brokers = brokers(jedisCluster);
+            for (Jedis broker : brokers) {
+                ClientConnection clientConnection = redisService.nodeClientList(broker);
+                clientConnections.add(clientConnection);
+            }
+            return clientConnections;
+        } finally {
+            jedisCluster.close();
         }
-        jedisCluster.close();
-        return clientConnections;
+
     }
 
     /**
@@ -108,12 +117,16 @@ public class RedisClusterService {
         }
         List<MemoryUse> memoryUses = new ArrayList<>();
         JedisCluster jedisCluster = jedisCluster(jedisClient.jedis);
-        List<Jedis> brokers = brokers(jedisCluster);
-        for (Jedis broker : brokers) {
-            MemoryUse memoryUse = redisService.nodeMemoryUse(broker);
-            memoryUses.add(memoryUse);
+        try {
+            List<Jedis> brokers = brokers(jedisCluster);
+            for (Jedis broker : brokers) {
+                MemoryUse memoryUse = redisService.nodeMemoryUse(broker);
+                memoryUses.add(memoryUse);
+            }
+            return memoryUses;
+        } finally {
+            jedisCluster.close();
         }
-        return memoryUses;
     }
 
     /**
@@ -140,9 +153,11 @@ public class RedisClusterService {
         JedisClient jedisClient = redisService.jedisClient(connParam);
         if (!jedisClient.isCluster){
             redisService.dropKeys(connParam,keys);
+            return ;
         }
         JedisCluster jedisCluster = jedisCluster(jedisClient.jedis);
         jedisCluster.del(keys);
+        jedisCluster.close();
     }
 
     /**
@@ -157,10 +172,56 @@ public class RedisClusterService {
     public SubKeyScanResult subKeyScan(ConnParam connParam,String key,RedisScanParam redisScanParam,SerializerParam serializerParam) throws IOException, ClassNotFoundException {
         JedisClient jedisClient = redisService.jedisClient(connParam);
         if (!jedisClient.isCluster){
-            redisService.subKeyScan(connParam,key,redisScanParam,serializerParam);
+           return  redisService.subKeyScan(connParam,key,redisScanParam,serializerParam);
         }
         JedisCluster jedisCluster = jedisCluster(jedisClient.jedis);
-        return clientSubKeyScan(jedisCluster,key,redisScanParam,serializerParam);
+        SubKeyScanResult subKeyScanResult;
+        try {
+            subKeyScanResult = clientSubKeyScan(jedisCluster, key, redisScanParam, serializerParam);
+            return subKeyScanResult;
+        } finally {
+            jedisCluster.close();
+        }
+    }
+
+    /**
+     * 获取 key 的数据量大小
+     * @param connParam
+     * @param key
+     * @param serializerParam
+     * @return
+     * @throws IOException
+     */
+    public long keyLength(ConnParam connParam, String key,SerializerParam serializerParam) throws IOException {
+        JedisClient jedisClient = redisService.jedisClient(connParam);
+        Serializer serializer = serializerChoseService.choseSerializer(serializerParam.getKeySerializer());
+        byte[] keyBytes = serializer.serialize(key);
+        if (!jedisClient.isCluster){
+            return redisService.keyLength(jedisClient.jedis,keyBytes);
+        }
+        JedisCluster client = jedisCluster(jedisClient.jedis);
+        long clusterKeyLength = clusterKeyLength(client,keyBytes);
+        client.close();
+        return clusterKeyLength;
+    }
+
+    private long clusterKeyLength(JedisCluster client, byte[] keyBytes) {
+        String type = client.type(keyBytes);
+        RedisService.RedisType redisType = RedisService.RedisType.parse(type);
+        switch (redisType){
+            case string:
+                return client.strlen(keyBytes);
+            case Set:
+                return client.scard(keyBytes);
+            case ZSet:
+                return client.zcard(keyBytes);
+            case List:
+                return client.llen(keyBytes);
+            case Hash:
+                return client.hlen(keyBytes);
+        }
+
+        return 0 ;
     }
 
     /**
@@ -178,126 +239,130 @@ public class RedisClusterService {
 
         JedisCluster client = jedisCluster(jedisClient.jedis);
 
-        Serializer keySerializer = serializerChoseService.choseSerializer(serializerParam.getKeySerializer());
-        Serializer valueSerializer = serializerChoseService.choseSerializer(serializerParam.getValue());
-        Serializer hashKeySerializer = serializerChoseService.choseSerializer(serializerParam.getHashKey());
-        Serializer hashValueSerializer = serializerChoseService.choseSerializer(serializerParam.getHashValue());
-        ClassLoader classloader = classloaderService.getClassloader(serializerParam.getClassloaderName());
+        try {
+            Serializer keySerializer = serializerChoseService.choseSerializer(serializerParam.getKeySerializer());
+            Serializer valueSerializer = serializerChoseService.choseSerializer(serializerParam.getValue());
+            Serializer hashKeySerializer = serializerChoseService.choseSerializer(serializerParam.getHashKey());
+            Serializer hashValueSerializer = serializerChoseService.choseSerializer(serializerParam.getHashValue());
+            ClassLoader classloader = classloaderService.getClassloader(serializerParam.getClassloaderName());
 
-        byte[] keyBytes = keySerializer.serialize(subKeyParam.getKey());
+            byte[] keyBytes = keySerializer.serialize(subKeyParam.getKey());
 
-        String type = client.type(keyBytes);
-        RedisService.RedisType redisType = RedisService.RedisType.parse(type);
-        switch (redisType){
-            case string:
-                byte[] value = client.get(keyBytes);
-                return valueSerializer.deserialize(value,classloader);
-            case List:
-                Long start = rangeParam.getStart();
-                Long stop = rangeParam.getStop();
-                List<byte[]> lrange = client.lrange(keyBytes, start, stop);
-                List<Object> values = new ArrayList<>();
-                for (byte[] bytes : lrange) {
-                    Object deserialize = valueSerializer.deserialize(bytes, classloader);
-                    values.add(deserialize);
-                }
-                return values;
-            case Hash:
-                boolean all = subKeyParam.isAll();
-                Map<byte[], byte[]> map = new HashMap<>();
-                Map<Object, Object> mapValues = new HashMap<>();
-                if (all){
-                    map = client.hgetAll(keyBytes);
-                }else{
-                    String[] subKeys = subKeyParam.getSubKeys();
-                    for (String subKey : subKeys) {
-                        byte[] subKeyBytes = hashKeySerializer.serialize(subKey);
-                        byte[] valueBytes = client.hget(keyBytes, subKeyBytes);
-                        map.put(subKeyBytes,valueBytes);
+            String type = client.type(keyBytes);
+            RedisService.RedisType redisType = RedisService.RedisType.parse(type);
+            switch (redisType){
+                case string:
+                    byte[] value = client.get(keyBytes);
+                    return valueSerializer.deserialize(value,classloader);
+                case List:
+                    Long start = rangeParam.getStart();
+                    Long stop = rangeParam.getStop();
+                    List<byte[]> lrange = client.lrange(keyBytes, start, stop);
+                    List<Object> values = new ArrayList<>();
+                    for (byte[] bytes : lrange) {
+                        Object deserialize = valueSerializer.deserialize(bytes, classloader);
+                        values.add(deserialize);
                     }
-                }
-                Iterator<Map.Entry<byte[], byte[]>> iterator = map.entrySet().iterator();
-                while (iterator.hasNext()){
-                    Map.Entry<byte[], byte[]> next = iterator.next();
-                    byte[] subKey = next.getKey();
-                    byte[] valueBytes = next.getValue();
-
-                    Object hashKey = hashKeySerializer.deserialize(subKey,classloader);
-                    Object hashValue = hashValueSerializer.deserialize(valueBytes, classloader);
-                    mapValues.put(hashKey,hashValue);
-                }
-                return mapValues;
-            case Set:
-                if (subKeyParam.isAll()) {
-                    Set<byte[]> smembers = jedisClient.jedis.smembers(keyBytes);
-                    Set<Object> setValues = new HashSet<>();
-                    for (byte[] smember : smembers) {
-                        Object deserialize = valueSerializer.deserialize(smember, classloader);
-                        setValues.add(deserialize);
+                    return values;
+                case Hash:
+                    boolean all = subKeyParam.isAll();
+                    Map<byte[], byte[]> map = new HashMap<>();
+                    Map<Object, Object> mapValues = new HashMap<>();
+                    if (all){
+                        map = client.hgetAll(keyBytes);
+                    }else{
+                        String[] subKeys = subKeyParam.getSubKeys();
+                        for (String subKey : subKeys) {
+                            byte[] subKeyBytes = hashKeySerializer.serialize(subKey);
+                            byte[] valueBytes = client.hget(keyBytes, subKeyBytes);
+                            map.put(subKeyBytes,valueBytes);
+                        }
                     }
-                    return setValues;
-                }else {
+                    Iterator<Map.Entry<byte[], byte[]>> iterator = map.entrySet().iterator();
+                    while (iterator.hasNext()){
+                        Map.Entry<byte[], byte[]> next = iterator.next();
+                        byte[] subKey = next.getKey();
+                        byte[] valueBytes = next.getValue();
+
+                        Object hashKey = hashKeySerializer.deserialize(subKey,classloader);
+                        Object hashValue = hashValueSerializer.deserialize(valueBytes, classloader);
+                        mapValues.put(hashKey,hashValue);
+                    }
+                    return mapValues;
+                case Set:
+                    if (subKeyParam.isAll()) {
+                        Set<byte[]> smembers = jedisClient.jedis.smembers(keyBytes);
+                        Set<Object> setValues = new HashSet<>();
+                        for (byte[] smember : smembers) {
+                            Object deserialize = valueSerializer.deserialize(smember, classloader);
+                            setValues.add(deserialize);
+                        }
+                        return setValues;
+                    }else {
+                        String cursor = redisScanParam.getCursor();
+                        int limit = redisScanParam.getLimit();
+                        ScanParams scanParams = new ScanParams();
+                        scanParams.match(redisScanParam.getPattern()).count(limit);
+                        List<byte[]> smembers = new ArrayList<>();
+                        do {
+                            ScanResult<byte[]> scan = client.sscan(keyBytes, cursor.getBytes(), scanParams);
+                            List<byte[]> subScan = scan.getResult();
+                            for (byte[] setValue : subScan) {
+                                smembers.add(setValue);
+                            }
+
+                            cursor = scan.getStringCursor();
+                            scanParams.count(limit - subScan.size());
+                        } while (smembers.size() < limit && NumberUtils.toLong(cursor) != 0L);
+
+                        // 对扫描到的数据进行使用序列化解析
+                        List<Object> smemberObjects = new ArrayList<>();
+                        for (byte[] smember : smembers) {
+                            smemberObjects.add(valueSerializer.deserialize(smember, classloader));
+                        }
+                        SubKeyScanResult<Object> subKeyScanResult = new SubKeyScanResult(smemberObjects, cursor);
+                        if ("0".equals(cursor)) {
+                            subKeyScanResult.setFinish(true);
+                        }
+                        return subKeyScanResult;
+                    }
+                case ZSet:
+                    if (rangeParam.getStart() != null && rangeParam.getStop() != null){
+                        Set<Tuple> tuples = client.zrangeWithScores(keyBytes, rangeParam.getStart(), rangeParam.getStop());
+                        List<ZSetTuple> zSetTuples = redisService.mapperZsetTuple(valueSerializer,classloader,tuples);
+                        return zSetTuples;
+                    }
+                    if (rangeParam.getMin() != null && rangeParam.getMax() != null){
+                        Set<Tuple> tuples = client.zrangeByScoreWithScores(keyBytes, rangeParam.getMin(), rangeParam.getMax());
+                        List<ZSetTuple> zSetTuples = redisService.mapperZsetTuple(valueSerializer, classloader, tuples);
+                        return zSetTuples;
+                    }
+
                     String cursor = redisScanParam.getCursor();
                     int limit = redisScanParam.getLimit();
                     ScanParams scanParams = new ScanParams();
                     scanParams.match(redisScanParam.getPattern()).count(limit);
-                    List<byte[]> smembers = new ArrayList<>();
+
+                    Set<Tuple> tuples = new HashSet<>();
                     do {
-                        ScanResult<byte[]> scan = client.sscan(keyBytes, cursor.getBytes(), scanParams);
-                        List<byte[]> subScan = scan.getResult();
-                        for (byte[] setValue : subScan) {
-                            smembers.add(setValue);
-                        }
+                        ScanResult<Tuple> zscan = client.zscan(keyBytes, cursor.getBytes(), scanParams);
+                        List<Tuple> subScan = zscan.getResult();
+                        tuples.addAll(subScan);
 
-                        cursor = scan.getStringCursor();
+                        cursor = zscan.getStringCursor();
                         scanParams.count(limit - subScan.size());
-                    } while (smembers.size() < limit && NumberUtils.toLong(cursor) != 0L);
+                    }while (tuples.size() < limit && NumberUtils.toLong(cursor) != 0L);
 
-                    // 对扫描到的数据进行使用序列化解析
-                    List<Object> smemberObjects = new ArrayList<>();
-                    for (byte[] smember : smembers) {
-                        smemberObjects.add(valueSerializer.deserialize(smember, classloader));
-                    }
-                    SubKeyScanResult<Object> subKeyScanResult = new SubKeyScanResult(smemberObjects, cursor);
-                    if ("0".equals(cursor)) {
+                    List<ZSetTuple> zSetTuples = redisService.mapperZsetTuple(valueSerializer, classloader, tuples);
+                    SubKeyScanResult<ZSetTuple> subKeyScanResult = new SubKeyScanResult<ZSetTuple>(zSetTuples, cursor);
+                    if ("0".equals(cursor)){
                         subKeyScanResult.setFinish(true);
                     }
                     return subKeyScanResult;
-                }
-            case ZSet:
-                if (rangeParam.getStart() != null && rangeParam.getStop() != null){
-                    Set<Tuple> tuples = client.zrangeWithScores(keyBytes, rangeParam.getStart(), rangeParam.getStop());
-                    List<ZSetTuple> zSetTuples = redisService.mapperZsetTuple(valueSerializer,classloader,tuples);
-                    return zSetTuples;
-                }
-                if (rangeParam.getMin() != null && rangeParam.getMax() != null){
-                    Set<Tuple> tuples = client.zrangeByScoreWithScores(keyBytes, rangeParam.getMin(), rangeParam.getMax());
-                    List<ZSetTuple> zSetTuples = redisService.mapperZsetTuple(valueSerializer, classloader, tuples);
-                    return zSetTuples;
-                }
 
-                String cursor = redisScanParam.getCursor();
-                int limit = redisScanParam.getLimit();
-                ScanParams scanParams = new ScanParams();
-                scanParams.match(redisScanParam.getPattern()).count(limit);
-
-                Set<Tuple> tuples = new HashSet<>();
-                do {
-                    ScanResult<Tuple> zscan = client.zscan(keyBytes, cursor.getBytes(), scanParams);
-                    List<Tuple> subScan = zscan.getResult();
-                    tuples.addAll(subScan);
-
-                    cursor = zscan.getStringCursor();
-                    scanParams.count(limit - subScan.size());
-                }while (tuples.size() < limit && NumberUtils.toLong(cursor) != 0L);
-
-                List<ZSetTuple> zSetTuples = redisService.mapperZsetTuple(valueSerializer, classloader, tuples);
-                SubKeyScanResult<ZSetTuple> subKeyScanResult = new SubKeyScanResult<ZSetTuple>(zSetTuples, cursor);
-                if ("0".equals(cursor)){
-                    subKeyScanResult.setFinish(true);
-                }
-                return subKeyScanResult;
-
+            }
+        } finally {
+            client.close();
         }
 
         return null;
@@ -360,21 +425,6 @@ public class RedisClusterService {
         return subKeyScanResult;
     }
 
-
-//    /**
-//     * 范围 key 列表查询
-//     * @param connParam
-//     * @param key
-//     * @param rangeParam
-//     * @param serializerParam
-//     * @return
-//     * @throws IOException
-//     */
-//    public List<String> rangeKeys(ConnParam connParam, String key, RangeParam rangeParam, SerializerParam serializerParam) throws IOException{
-//        JedisClient jedisClient = redisService.jedisClient(connParam);
-//        JedisCluster jedisCluster = jedisCluster(jedisClient.jedis);
-//        return redisService.clientRangeKeys(jedisCluster,key,rangeParam,serializerParam);
-//    }
 
     /**
      * 获取集群客户端
@@ -457,4 +507,5 @@ public class RedisClusterService {
 
         return redisNodes;
     }
+
 }

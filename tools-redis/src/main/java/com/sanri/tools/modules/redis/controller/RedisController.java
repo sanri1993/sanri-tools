@@ -40,6 +40,11 @@ public class RedisController {
         return redisClusterService.subKeyScan(connParam,key,redisScanParam,serializerParam);
     }
 
+    @GetMapping("/key/length")
+    public long keyLength(ConnParam connParam,String key,SerializerParam serializerParam) throws IOException {
+        return redisClusterService.keyLength(connParam,key,serializerParam);
+    }
+
     /**
      * 查询数据
      * @param connParam

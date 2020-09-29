@@ -528,10 +528,10 @@ GET {{baseUrl}}/redis/key/scan?connName=192.168.0.134&pattern=*&limit=2&cursor=0
 GET {{baseUrl}}/redis/data?connName=192.168.0.134&key=abc&subKeys=mm,mm2&keySerializer=string&value=string&hashKey=string&hashValue=string
 
 ### redis -  扫描 hashKey
-GET {{baseUrl}}/redis/hashKeyScan?connName=192.168.0.134&key=doe:registry:list&pattern=&limit=100&hashKeySerializer=jdk
+GET {{baseUrl}}/redis/key/subKeys?connName=192.168.0.134&key=abc&pattern=*&limit=2&keySerializer=string&value=string&hashKey=string&hashValue=string&cursor=0
 
 ### redis -  key 长度
-GET {{baseUrl}}/redis/keyLength?connName=10.101.72.43&key=PLC:PARKINGLOT.CACHE
+GET {{baseUrl}}/redis/key/length?connName=192.168.0.134&key=abc
 
 ### redis - 获取客户端连接列表和占用连接数
 GET {{baseUrl}}/redis/monitor/clientList?connName=192.168.0.134
