@@ -530,7 +530,8 @@ public class RedisService{
         String host = jedis.getClient().getHost();
         int port = jedis.getClient().getPort();
         HostAndPort target = new HostAndPort(host, port);
-        ClientConnection clientConnection = new ClientConnection(target);
+        String role = jedisRole(jedis);
+        ClientConnection clientConnection = new ClientConnection(target,role);
 
         List<ClientConnection.Client> clients  = new ArrayList<>();
         clientConnection.setClients(clients);
