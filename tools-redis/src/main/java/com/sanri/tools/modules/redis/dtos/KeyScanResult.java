@@ -12,6 +12,7 @@ public class KeyScanResult {
     private int hostIndex;
     private HostAndPort target;
     private boolean finish;
+    private boolean done;
 
     public KeyScanResult() {
     }

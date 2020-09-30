@@ -1,5 +1,6 @@
 package com.sanri.tools.modules.redis.service;
 
+import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.exception.ToolException;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
 import com.sanri.tools.modules.core.service.file.ConnectService;
@@ -18,8 +19,11 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.*;
+import redis.clients.util.JedisClusterCRC16;
 
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -29,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class RedisService{
     // 保存的 jedis 客户端
-    private static Map<String, JedisClient> jedisMap = new ConcurrentHashMap<>();
+    private Map<String, JedisClient> jedisMap = new ConcurrentHashMap<>();
     @Autowired
     private ConnectService connectService;
     @Autowired
@@ -41,6 +45,34 @@ public class RedisService{
     private SerializerChoseService serializerChoseService;
     @Autowired
     private ClassloaderService classloaderService;
+
+    /**
+     * 查看有多少个数据库
+     * @param connParam
+     * @return
+     * @throws IOException
+     */
+    public int dbs(ConnParam connParam) throws IOException {
+        JedisClient jedisClient = jedisClient(connParam);
+        List<String> databases = jedisClient.jedis.configGet("databases");
+        int size = NumberUtils.toInt(databases.get(1));
+        return size;
+    }
+
+    /**
+     * 当前运行模式查询
+     * @param connParam
+     * @return
+     * @throws IOException
+     */
+    public String mode(ConnParam connParam) throws IOException {
+        JedisClient jedisClient = jedisClient(connParam);
+        List<RedisNode> redisNodes = masterSlaveNodes(jedisClient.jedis);
+        if (redisNodes.size() == 1){
+            return "standalone";
+        }
+        return "master-slave";
+    }
 
     /**
      * 删除连接
@@ -65,7 +97,9 @@ public class RedisService{
         JedisClient jedisClient = jedisClient(connParam);
         Jedis jedis = jedisClient.jedis;
 
-        return nodeScan(jedis,redisScanParam, serializerParam);
+        KeyScanResult keyScanResult = nodeScan(jedis, redisScanParam, serializerParam);
+        keyScanResult.setDone(keyScanResult.isFinish());
+        return keyScanResult;
     }
 
     /**
@@ -439,6 +473,8 @@ public class RedisService{
             long length = keyLength(jedis, key);
             String keySerializer = Objects.toString(serializer.deserialize(key, classloader));
             KeyScanResult.KeyResult keyResult = new KeyScanResult.KeyResult(keySerializer, type, ttl, pttl, length);
+            int slot = JedisClusterCRC16.getSlot(key);
+            keyResult.setSlot(slot);
             keyWraps.add(keyResult);
         }
 
@@ -551,6 +587,7 @@ public class RedisService{
                 redisNode.setId(host+":"+port);
                 redisNode.setRole("master");
                 redisNode.setHostAndPort(HostAndPort.parseString(redisNode.getId()));
+                redisNode.setDbSize(jedis.dbSize());
                 return Collections.singletonList(redisNode);
             }
 
@@ -572,6 +609,7 @@ public class RedisService{
         redisNode.setRole(properties.get("role"));
         redisNode.setHostAndPort(hostAndPort);
         redisNode.setMaster(masterId);
+        redisNode.setDbSize(jedis.dbSize());
         redisNodes.add(redisNode);
 
         // 添加子节点
@@ -632,7 +670,6 @@ public class RedisService{
         return false;
     }
 
-
     /**
      * redis 的数据类型
      */
@@ -686,5 +723,24 @@ public class RedisService{
         }
 
         return jedisClient;
+    }
+
+    @PostConstruct
+    public void register(){
+        pluginManager.register(PluginDto.builder().module("monitor").name(module).logo("redis.jpg").desc("redis 数据查看,集群信息管理").author("sanri").envs("default").build());
+    }
+
+    @PreDestroy
+    public void destory(){
+        log.info("清除 {} 客户端列表:{}",module,jedisMap.keySet());
+        Iterator<JedisClient> iterator = jedisMap.values().iterator();
+        while (iterator.hasNext()){
+            JedisClient next = iterator.next();
+            if(next != null && next.jedis != null){
+                try {
+                    next.jedis.close();
+                } catch (Exception e) {}
+            }
+        }
     }
 }

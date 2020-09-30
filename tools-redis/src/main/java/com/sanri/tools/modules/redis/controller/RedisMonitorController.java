@@ -20,20 +20,68 @@ public class RedisMonitorController {
     @Autowired
     private RedisService redisService;
 
+    /**
+     * 运行模式查询 standalone , master-slave, cluster
+     * @param connParam
+     * @return
+     * @throws IOException
+     */
+    @GetMapping("/mode")
+    public String mode(ConnParam connParam) throws IOException {
+        return redisClusterService.mode(connParam);
+    }
+
+    /**
+     * 非集群模式下, 查看节点的数据库数量
+     * @param connParam
+     * @return
+     * @throws IOException
+     */
+    @GetMapping("/dbs")
+    public long dbs(ConnParam connParam) throws IOException {
+        return redisService.dbs(connParam);
+    }
+
+    /**
+     * redis 节点列表
+     * @param connParam
+     * @return
+     * @throws IOException
+     */
     @GetMapping("/nodes")
     public List<RedisNode> nodes(ConnParam connParam) throws IOException {
         return redisClusterService.nodes(connParam);
     }
+
+    /**
+     * 各节点内存使用情况查询
+     * @param connParam
+     * @return
+     * @throws IOException
+     */
     @GetMapping("/memoryUses")
     public List<MemoryUse> memoryUses(ConnParam connParam) throws IOException {
         return redisClusterService.memoryUses(connParam);
     }
 
+    /**
+     * 客户端连接列表
+     * @param connParam
+     * @return
+     * @throws IOException
+     */
     @GetMapping("/clientList")
     public List<ClientConnection> clientList(ConnParam connParam) throws IOException {
         return redisClusterService.clientList(connParam);
     }
 
+    /**
+     * kill 某一个客户端
+     * @param connParam
+     * @param clientId
+     * @return
+     * @throws IOException
+     */
     @PostMapping("/client/kill/{clientId}")
     public String killClient(ConnParam connParam, @PathVariable("clientId") String clientId) throws IOException {
         return redisService.killClient(connParam,clientId);

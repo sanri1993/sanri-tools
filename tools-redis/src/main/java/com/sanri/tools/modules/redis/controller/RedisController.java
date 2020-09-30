@@ -4,6 +4,7 @@ import com.sanri.tools.modules.redis.dtos.KeyScanResult;
 import com.sanri.tools.modules.redis.dtos.SubKeyScanResult;
 import com.sanri.tools.modules.redis.dtos.params.*;
 import com.sanri.tools.modules.redis.service.RedisClusterService;
+import com.sanri.tools.modules.redis.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,8 @@ import java.io.IOException;
 public class RedisController {
     @Autowired
     private RedisClusterService redisClusterService;
+    @Autowired
+    private RedisService redisService;
 
     @GetMapping("/key/scan")
     public KeyScanResult scan(ConnParam connParam, RedisScanParam scanParam,SerializerParam serializerParam) throws IOException, ClassNotFoundException {

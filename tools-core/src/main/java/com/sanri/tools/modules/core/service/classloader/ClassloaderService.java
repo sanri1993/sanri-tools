@@ -166,7 +166,7 @@ public class ClassloaderService  {
     public ClassLoader getClassloader(String classloaderName) {
         ClassLoader extendClassloader = CACHED_CLASSLOADER.get(classloaderName);
         if (extendClassloader == null){
-            log.warn("不支持的类加载器: {}, 将使用系统类加载器",classloaderName);
+//            log.warn("不支持的类加载器: {}, 将使用系统类加载器",classloaderName);
             extendClassloader = ClassLoader.getSystemClassLoader();
         }
         return extendClassloader;

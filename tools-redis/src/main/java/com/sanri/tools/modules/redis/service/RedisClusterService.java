@@ -29,6 +29,21 @@ public class RedisClusterService {
     private ClassloaderService classloaderService;
 
     /**
+     * 查询运行模式
+     * @param connParam
+     * @return
+     * @throws IOException
+     */
+    public String mode(ConnParam connParam) throws IOException {
+        JedisClient jedisClient = redisService.jedisClient(connParam);
+        boolean isCluster = jedisClient.isCluster;
+        if (isCluster){
+            return "cluster";
+        }
+        return redisService.mode(connParam);
+    }
+
+    /**
      * 集群的数据扫描
      * @param connParam
      * @param redisScanParam
@@ -45,7 +60,9 @@ public class RedisClusterService {
         String cursor = redisScanParam.getCursor();
         String[] complexCursor = cursor.split("\\|");
         if (complexCursor.length != 2){
-            throw  new ToolException("游标格式不正确 "+cursor);
+//            throw  new ToolException("游标格式不正确 "+cursor);
+            // 如果没有传主机
+            complexCursor = new String[]{cursor,"0"};
         }
         redisScanParam.setCursor(complexCursor[0]);
         int hostIndex = NumberUtils.toInt(complexCursor[1]);
@@ -64,12 +81,23 @@ public class RedisClusterService {
             for (int i = hostIndex; i < jedis.size(); i++) {
                 Jedis current = jedis.get(i);
                 keyScanResult = redisService.nodeScan(current, redisScanParam, serializerParam);
-                boolean finish = keyScanResult.isFinish();
-                if (!finish){
-                    keyResults.addAll(keyScanResult.getKeys());
-                    redisScanParam.setLimit(redisScanParam.getLimit() - keyResults.size());
-                }else{break;}
+                keyScanResult.setHostIndex(i);
+                keyResults.addAll(keyScanResult.getKeys());
+
+                if (!keyScanResult.isFinish()){
+                    int nextLimit = redisScanParam.getLimit() - keyResults.size();
+                    redisScanParam.setLimit(nextLimit);
+
+                    if (nextLimit == 0){
+                        break;
+                    }
+                }
             }
+
+            if (keyScanResult.getHostIndex() == jedis.size() -1 && keyScanResult.isFinish()){
+                keyScanResult.setDone(true);
+            }
+
             keyScanResult.setKeys(keyResults);
             return keyScanResult;
         } finally {

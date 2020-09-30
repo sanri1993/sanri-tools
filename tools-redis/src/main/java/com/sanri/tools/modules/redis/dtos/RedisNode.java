@@ -13,4 +13,6 @@ public class RedisNode {
     // 槽位范围,只有集群模式才会有
     private int slotStart;
     private int slotEnd;
+
+    private long dbSize;
 }

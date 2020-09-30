@@ -518,11 +518,14 @@ Content-Type: application/x-www-form-urlencoded
 
 connName=192.168.2.134_2181&name=dubbo
 
+### redis - mode 查询
+GET {{baseUrl}}/redis/monitor/mode?connName=10.101.72.43
+
 ### redis - 查看 redis 的节点列表
-GET {{baseUrl}}/redis/monitor/nodes?connName=192.168.0.134
+GET {{baseUrl}}/redis/monitor/nodes?connName=10.101.72.43
 
 ### redis - scan 某个 key ,可以模糊查询
-GET {{baseUrl}}/redis/key/scan?connName=192.168.0.134&pattern=*&limit=2&cursor=0&keySerializer=string
+GET {{baseUrl}}/redis/key/scan?connName=10.101.72.43&pattern=*IR*&limit=20&cursor=1435|0&keySerializer=string
 
 ### redis - 读取某个具体的 key
 GET {{baseUrl}}/redis/data?connName=192.168.0.134&key=abc&subKeys=mm,mm2&keySerializer=string&value=string&hashKey=string&hashValue=string
