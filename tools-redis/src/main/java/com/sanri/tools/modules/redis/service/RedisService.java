@@ -671,6 +671,38 @@ public class RedisService{
         return false;
     }
 
+    public Object collectionMethods(ConnParam connParam, String[] keys, String command, SerializerParam serializerParam) throws IOException, ClassNotFoundException {
+        JedisClient jedisClient = jedisClient(connParam);
+
+        Serializer choseSerializer = serializerChoseService.choseSerializer(serializerParam.getValue());
+        ClassLoader classloader = classloaderService.getClassloader(serializerParam.getClassloaderName());
+
+        byte [][] keyBytes = new byte [keys.length][];
+        for (int i = 0; i < keys.length; i++) {
+            keyBytes[i] = choseSerializer.serialize(keys[i]);
+        }
+
+        Set<byte[]> result = null;
+        switch (command){
+            case "inter":
+                result = jedisClient.jedis.sinter(keyBytes);
+                break;
+            case "diff":
+                result = jedisClient.jedis.sdiff(keyBytes);
+                break;
+            case "union":
+                result = jedisClient.jedis.sunion(keyBytes);
+                break;
+        }
+
+        Set<Object> collect = new HashSet<>();
+        for (byte[] bytes : result) {
+            Object deserialize = choseSerializer.deserialize(bytes, classloader);
+            collect.add(deserialize);
+        }
+        return collect;
+    }
+
     /**
      * redis 的数据类型
      */

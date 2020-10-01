@@ -536,4 +536,53 @@ public class RedisClusterService {
         return redisNodes;
     }
 
+    /**
+     * 交,并,差集合操作
+     * @param connParam
+     * @param keys
+     * @param command
+     * @param serializerParam
+     * @return
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public Object collectionMethods(ConnParam connParam, String[] keys, String command, SerializerParam serializerParam) throws IOException, ClassNotFoundException {
+        JedisClient jedisClient = redisService.jedisClient(connParam);
+        if (!jedisClient.isCluster){
+            return redisService.collectionMethods(connParam,keys,command,serializerParam);
+        }
+
+        Serializer choseSerializer = serializerChoseService.choseSerializer(serializerParam.getValue());
+        ClassLoader classloader = classloaderService.getClassloader(serializerParam.getClassloaderName());
+
+        byte [][] keyBytes = new byte [keys.length][];
+        for (int i = 0; i < keys.length; i++) {
+            keyBytes[i] = choseSerializer.serialize(keys[i]);
+        }
+
+        JedisCluster jedisCluster = jedisCluster(jedisClient.jedis);
+        Set<byte[]> result = null;
+        try {
+            switch (command){
+                case "inter":
+                    result = jedisCluster.sinter(keyBytes);
+                    break;
+                case "diff":
+                    result = jedisCluster.sdiff(keyBytes);
+                    break;
+                case "union":
+                    result = jedisCluster.sunion(keyBytes);
+                    break;
+            }
+        } finally {
+            jedisCluster.close();
+        }
+
+        Set<Object> collect = new HashSet<>();
+        for (byte[] bytes : result) {
+            Object deserialize = choseSerializer.deserialize(bytes, classloader);
+            collect.add(deserialize);
+        }
+        return collect;
+    }
 }

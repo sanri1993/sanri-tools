@@ -63,4 +63,17 @@ public class RedisController {
     public Object data(ConnParam connParam, SubKeyParam subKeyParam, RangeParam rangeParam, RedisScanParam redisScanParam, SerializerParam serializerParam) throws IOException, ClassNotFoundException {
         return redisClusterService.data(connParam,subKeyParam,rangeParam,redisScanParam,serializerParam);
     }
+
+    /**
+     * 集合操作 , 交(inter),并(union),差(diff)
+     * @param connParam
+     * @param keys
+     * @param command
+     * @param serializerParam
+     * @return
+     */
+    @GetMapping("/collectionMethods")
+    public Object collectionMethods(ConnParam connParam,String [] keys,String command,SerializerParam serializerParam) throws IOException, ClassNotFoundException {
+        return redisClusterService.collectionMethods(connParam,keys,command,serializerParam);
+    }
 }
