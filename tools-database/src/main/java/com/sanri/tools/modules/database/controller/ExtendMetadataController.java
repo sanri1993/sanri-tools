@@ -77,7 +77,7 @@ public class ExtendMetadataController {
     @GetMapping("/relation/parents")
     public List<TableRelationDto> parents(String connName, String catalog,String schema, String tableName){
         ActualTableName actualTableName = new ActualTableName(catalog, schema, tableName);
-        return tableRelationService.parents(connName,catalog,actualTableName);
+        return tableRelationService.parents(connName,actualTableName);
     }
 
     /**

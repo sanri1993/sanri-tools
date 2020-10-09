@@ -305,6 +305,33 @@ Content-Type: application/json
   ]
 }
 
+### 数据库 - 数据 - 单表随机数据生成(关联其它表)
+POST {{baseUrl}}/db/data/singleTableRandomData
+Content-Type: application/json
+
+{
+  "connName": "localhost",
+  "actualTableName": {
+    "catalog": "test",
+    "tableName": "emp"
+  },
+  "size": 100,
+  "columnMappers": [
+    {
+      "columnName": "empno",
+      "random": "T(org.apache.commons.lang3.RandomStringUtils).randomNumeric(4)"
+    },
+    {
+      "columnName": "ename",
+      "random": "T(com.sanri.tools.modules.core.utils.RandomUtil).chinese(5,null)"
+    },
+    {
+      "columnName": "deptno",
+      "sql": "select deptno from test.dept"
+    }
+  ]
+}
+
 ### 数据库 - 数据 - 导入数据
 POST {{baseUrl}}/db/data/import/excel
 Content-Type: multipart/form-data; boundary=importData

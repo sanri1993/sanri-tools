@@ -2,9 +2,79 @@ package jdbctest;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Converter;
+import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
+import net.sf.jsqlparser.JSQLParserException;
+import net.sf.jsqlparser.expression.Alias;
+import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.StringValue;
+import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
+import net.sf.jsqlparser.parser.CCJSqlParserManager;
+import net.sf.jsqlparser.schema.Column;
+import net.sf.jsqlparser.schema.Table;
+import net.sf.jsqlparser.statement.select.*;
+import net.sf.jsqlparser.util.SelectUtils;
+import net.sf.jsqlparser.util.TablesNamesFinder;
 import org.junit.Test;
 
+import java.io.StringReader;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 public class CamelConvertMain {
+    // jsqlparser 解析
+    CCJSqlParserManager parserManager = new CCJSqlParserManager();
+
+    @Test
+    public void tes22t() throws JSQLParserException {
+        String sql = "select * from mct.mct_event_handler";
+        Select select = (Select) parserManager.parse(new StringReader(sql));
+        TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
+        List<String> tableList = tablesNamesFinder.getTableList(select);
+        System.out.println(tableList);
+    }
+
+    @Test
+    public void testBuildSelect(){
+        String catalog = "xxdb";
+        ActualTableName main = new ActualTableName(catalog,"mct","mct_event_common");
+        ActualTableName sub = new ActualTableName(catalog,"mct","mct_event_handler");
+
+        Table mainTable = new Table(main.getSchema(),main.getTableName());
+        mainTable.setAlias(new Alias("a"));
+        Table subTable = new Table(sub.getSchema(),sub.getTableName());
+        subTable.setAlias(new Alias("b"));
+
+        Select select = new Select();
+        PlainSelect plainSelect = new PlainSelect();
+        SelectItem selectItem = new AllTableColumns(mainTable);
+        plainSelect.setSelectItems(Collections.singletonList(selectItem));
+        plainSelect.setFromItem(mainTable);
+        System.out.println(plainSelect.toString());
+    }
+
+    @Test
+    public void testBuilsssdSelect(){
+        String catalog = "xxdb";
+        ActualTableName main = new ActualTableName(catalog,"mct","mct_event_common");
+        ActualTableName sub = new ActualTableName(catalog,"mct","mct_event_handler");
+
+        Table mainTable = new Table(main.getSchema(),main.getTableName());
+        mainTable.setAlias(new Alias("a"));
+        Table subTable = new Table(sub.getSchema(),sub.getTableName());
+        subTable.setAlias(new Alias("b"));
+
+        Select select = SelectUtils.buildSelectFromTableAndExpressions(mainTable, new Column("b.*"));
+        System.out.println(select);
+
+        EqualsTo equalsTo = new EqualsTo();
+        equalsTo.setLeftExpression(new Column("a.uuid"));
+        equalsTo.setRightExpression(new Column("b.event_record_id"));
+        SelectUtils.addJoin(select,subTable,equalsTo);
+
+        System.out.println(select);
+    }
+
     @Test
     public void test(){
         String orderColumn = "orderColumn";

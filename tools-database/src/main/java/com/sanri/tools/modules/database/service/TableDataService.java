@@ -13,7 +13,17 @@ import com.sanri.tools.modules.database.dtos.meta.Column;
 import com.sanri.tools.modules.database.dtos.TableDataParam;
 import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.jsqlparser.JSQLParserException;
+import net.sf.jsqlparser.parser.CCJSqlParserManager;
+import net.sf.jsqlparser.statement.select.Limit;
+import net.sf.jsqlparser.statement.select.PlainSelect;
+import net.sf.jsqlparser.statement.select.Select;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.codec.digest.MessageDigestAlgorithms;
+import org.apache.commons.dbutils.handlers.ColumnListHandler;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.SQLException;
@@ -36,45 +47,19 @@ import java.util.stream.Collectors;
 public class TableDataService {
     @Autowired
     private JdbcService jdbcService;
+    @Autowired
+    private DataService dataService;
 
     private ExpressionParser expressionParser = new SpelExpressionParser();
 
-    public void writeDataToTable(String connName,ActualTableName actualTableName,String [] columns, List<String[]> rows){
-        String insertSql = "insert into ${tableName}(${columns}) values ${values}";
-
-        HashMap<String, Object> paramMap = new HashMap<>();
-        String tableName = actualTableName.getSchema()+"."+actualTableName.getTableName();
-        if (StringUtils.isBlank(actualTableName.getSchema())){
-            tableName = actualTableName.getCatalog()+"."+actualTableName.getTableName();
-        }
-        paramMap.put("tableName",tableName);
-        paramMap.put("columns",StringUtils.join(columns,','));
-        List<String> multiValues = new ArrayList<>();
-        StringSubstitutor stringSubstitutor = new StringSubstitutor(paramMap, "${", "}");
-
-        for (String[] row : rows) {
-            String currentValues = StringUtils.join(row,"','");
-            currentValues = "('" + currentValues + "')";
-            multiValues.add(currentValues);
-        }
-        String columnValues = StringUtils.join(multiValues, ',');
-        paramMap.put("values",columnValues);
-        String finalSql = stringSubstitutor.replace(insertSql);
-
-        try {
-            List<Integer> executeUpdate = jdbcService.executeUpdate(connName, Arrays.asList(finalSql));
-            log.info("影响行数 {}",executeUpdate);
-        } catch (SQLException | IOException e) {
-            log.error("当前 sql 执行错误{}, 当前sql  {}",e.getMessage(),finalSql);
-        }
-
-    }
+    // jsqlparser 解析
+    private CCJSqlParserManager parserManager = new CCJSqlParserManager();
 
     /**
-     * 单表数据添加
+     * 单表数据添加,随机数据
      * @param tableDataParam
      */
-    public void singleTableWriteRandomData(TableDataParam tableDataParam) throws IOException, SQLException {
+    public void singleTableWriteRandomData(TableDataParam tableDataParam) throws IOException, SQLException, JSQLParserException {
         // 获取表元数据信息
         String connName = tableDataParam.getConnName();
         ActualTableName actualTableName = tableDataParam.getActualTableName();
@@ -85,6 +70,27 @@ public class TableDataService {
         }
 
         List<TableDataParam.ColumnMapper> columnMappers = tableDataParam.getColumnMappers();
+        // 如果有列映射是使用 sql 语句的,先查询 sql 语句的数据,每次都去查的话性能会受影响
+        List<String> sqls = columnMappers.stream().filter(columnMapper -> StringUtils.isNotBlank(columnMapper.getSql())).map(TableDataParam.ColumnMapper::getSql).collect(Collectors.toList());
+        // sql 做 md5 ,映射 sql 对象的列表数据
+        Map<String,List<Object>> datas = new HashMap<>();
+        for (String sql : sqls) {
+            String sqlMd5 = DigestUtils.md5Hex(sql);
+            // sql 如果没有加 limit ,这里给其加上 limit 100
+            Select select = (Select) parserManager.parse(new StringReader(sql));
+            PlainSelect plainSelect = (PlainSelect) select.getSelectBody();
+            Limit originLimit = plainSelect.getLimit();
+            if (originLimit == null) {
+                originLimit = new Limit();
+                originLimit.setOffset(0);
+                originLimit.setRowCount(100);
+            }
+            plainSelect.setLimit(originLimit);
+
+            List<Object> executeQuery = jdbcService.executeQuery(connName, sql, new ColumnListHandler<Object>(1));
+            datas.put(sqlMd5,executeQuery);
+        }
+
         List<String> columns = columnMappers.stream().map(TableDataParam.ColumnMapper::getColumnName).collect(Collectors.toList());
 
         // column 映射成 map
@@ -107,15 +113,26 @@ public class TableDataService {
                 for (TableDataParam.ColumnMapper columnMapper : columnMappers) {
                     String random = columnMapper.getRandom();
                     String columnName = columnMapper.getColumnName();
+                    String sql = columnMapper.getSql();
 
-                    // 使用 spel 生成数据
-                    Expression expression = expressionParser.parseExpression(random);
-                    String value = expression.getValue(String.class);
+                    Object value = null;
+                    if (StringUtils.isNotBlank(random)) {
+                        // 使用 spel 生成数据
+                        Expression expression = expressionParser.parseExpression(random);
+                        value =  expression.getValue(String.class);
+                    }else if (StringUtils.isNotBlank(sql)){
+                        String md5Hex = DigestUtils.md5Hex(sql);
+                        List<Object> list = datas.get(md5Hex);
+                        int position = RandomUtils.nextInt(0,list.size());
+                        value = list.get(position);
+                    }
 
+                    // 需要判断数据库字段类型,数字型和字符型的添加不一样的
                     Column column = columnMap.get(columnName);
                     String dataType = column.getTypeName();
-                    // 需要判断数据库字段类型,数字型和字符型的添加不一样的
-                    row.add(value);
+
+                    // 暂时都使用 String 类型
+                    row.add(Objects.toString(value));
                 }
                 rows.add(row.toArray(new String []{}));
             }
@@ -150,7 +167,7 @@ public class TableDataService {
      *
      * @author Jiaju Zhuang
      */
-    public class ImportDataToTableListener extends AnalysisEventListener<Map<Integer, String>> {
+    private class ImportDataToTableListener extends AnalysisEventListener<Map<Integer, String>> {
         private TableMetaData tableMetaData;
         private ExcelImportParam excelImportParam;
         private static final int BATCH_SIZE = 1000;
@@ -212,6 +229,44 @@ public class TableDataService {
             cacheDatas.clear();
             writeDataToTable(excelImportParam.getConnName(),excelImportParam.getActualTableName(),headers,rows);
         }
+    }
+
+    /**
+     * 数据写入表格
+     * @param connName
+     * @param actualTableName
+     * @param columns
+     * @param rows
+     */
+    private void writeDataToTable(String connName,ActualTableName actualTableName,String [] columns, List<String[]> rows){
+        String insertSql = "insert into ${tableName}(${columns}) values ${values}";
+
+        HashMap<String, Object> paramMap = new HashMap<>();
+        String tableName = actualTableName.getSchema()+"."+actualTableName.getTableName();
+        if (StringUtils.isBlank(actualTableName.getSchema())){
+            tableName = actualTableName.getCatalog()+"."+actualTableName.getTableName();
+        }
+        paramMap.put("tableName",tableName);
+        paramMap.put("columns",StringUtils.join(columns,','));
+        List<String> multiValues = new ArrayList<>();
+        StringSubstitutor stringSubstitutor = new StringSubstitutor(paramMap, "${", "}");
+
+        for (String[] row : rows) {
+            String currentValues = StringUtils.join(row,"','");
+            currentValues = "('" + currentValues + "')";
+            multiValues.add(currentValues);
+        }
+        String columnValues = StringUtils.join(multiValues, ',');
+        paramMap.put("values",columnValues);
+        String finalSql = stringSubstitutor.replace(insertSql);
+
+        try {
+            List<Integer> executeUpdate = jdbcService.executeUpdate(connName, Arrays.asList(finalSql));
+            log.info("影响行数 {}",executeUpdate);
+        } catch (SQLException | IOException e) {
+            log.error("当前 sql 执行错误{}, 当前sql  {}",e.getMessage(),finalSql);
+        }
+
     }
 
 }

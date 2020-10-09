@@ -1,14 +1,21 @@
 package com.sanri.tools.modules.database.service;
 
 import com.sanri.tools.modules.core.service.file.FileManager;
-import com.sanri.tools.modules.database.dtos.DataQueryParam;
-import com.sanri.tools.modules.database.dtos.DynamicQueryDto;
+import com.sanri.tools.modules.database.dtos.*;
+import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.JSQLParserException;
+import net.sf.jsqlparser.expression.Alias;
+import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
 import net.sf.jsqlparser.parser.CCJSqlParserManager;
-import net.sf.jsqlparser.statement.select.Limit;
-import net.sf.jsqlparser.statement.select.PlainSelect;
-import net.sf.jsqlparser.statement.select.Select;
+import net.sf.jsqlparser.schema.Column;
+import net.sf.jsqlparser.schema.Table;
+import net.sf.jsqlparser.statement.select.*;
+import net.sf.jsqlparser.util.SelectUtils;
+import net.sf.jsqlparser.util.TablesNamesFinder;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -26,6 +33,7 @@ import java.io.*;
 import java.nio.file.Path;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +50,85 @@ public class DataService {
 
     @Autowired
     private FileManager fileManager;
+
+    @Autowired
+    private TableRelationService tableRelationService;
+
+    /**
+     * sql 关联数据查询,返回需要查询的所有 sql 语句
+     * @param connName
+     * @param catalog
+     * @param sql
+     * @return
+     */
+    public RelationDataQueryResult relationDataQuery(String connName, String catalog, String sql) throws JSQLParserException {
+        RelationDataQueryResult relationDataQueryResult = new RelationDataQueryResult(sql);
+        // 分析当前 sql , 找到当前 sql 要查的主表
+        Select select = (Select) parserManager.parse(new StringReader(sql));
+        TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
+        List<String> tableList = tablesNamesFinder.getTableList(select);
+        if (CollectionUtils.isNotEmpty(tableList)){
+            String tableName = tableList.get(0);
+            String[] split = tableName.split("\\.");
+            String schema = null;
+            if (split.length == 2) {
+                schema = split[0];
+                tableName = split[1];
+            }
+            PlainSelect selectBody = (PlainSelect) select.getSelectBody();
+            Expression where = selectBody.getWhere();
+
+            ActualTableName actualTableName = new ActualTableName(catalog, schema, tableName);
+            TableRelationTree tableRelationTree = tableRelationService.hierarchy(connName, actualTableName);
+            TableRelationTree parents = tableRelationService.superTypes(connName, actualTableName);
+
+            List<String> sqls = new ArrayList<>();
+            List<TableRelationTree> children = tableRelationTree.getChildren();
+            for (TableRelationTree child : children) {
+                String generateSql = childRelationsSql(tableRelationTree.getTableName(), child, selectBody);
+                sqls.add(generateSql);
+            }
+
+//            List<String> parentSqls = relationSqls(actualTableName,childs);
+//            relationDataQueryResult.setParents(parentSqls);
+        }
+
+        return relationDataQueryResult;
+    }
+
+    /**
+     *
+     * @param mainTable
+     * @param childs
+     * @param where
+     * @return
+     */
+    private String childRelationsSql(ActualTableName main,TableRelationTree subTableRelation, SelectBody selectBody) {
+        Table mainTable = new Table(main.getSchema(), main.getTableName());
+        mainTable.setAlias(new Alias(DigestUtils.md5Hex(main.getFullName())));
+        ActualTableName sub = subTableRelation.getTableName();
+        Table subTable = new Table(sub.getSchema(), sub.getTableName());
+        subTable.setAlias(new Alias(DigestUtils.md5Hex(sub.getFullName())));
+
+        // 一对一 和一对多都是单字段关联 , 多对多可能需要一张表来关联
+        TableRelationDto.Relation relation = subTableRelation.getRelation();
+        switch (relation){
+            case MANY_MANY:
+                break;
+            case ONE_MANY:
+            case ONE_ONE:
+                // 构建一个连接查询
+                Select select = SelectUtils.buildSelectFromTableAndExpressions(mainTable, new Column("b.*"));
+
+                EqualsTo equalsTo = new EqualsTo();
+                equalsTo.setLeftExpression(new Column("a.uuid"));
+                equalsTo.setRightExpression(new Column("b.event_record_id"));
+                SelectUtils.addJoin(select,subTable,equalsTo);
+                break;
+        }
+
+        return null;
+    }
 
     /**
      * 数据导出预览

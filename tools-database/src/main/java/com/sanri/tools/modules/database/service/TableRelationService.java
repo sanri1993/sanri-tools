@@ -77,7 +77,8 @@ public class TableRelationService {
      * @param tableName
      * @return
      */
-    public List<TableRelationDto> parents(String connName,String catalog,ActualTableName tableName){
+    public List<TableRelationDto> parents(String connName,ActualTableName tableName){
+        String catalog = tableName.getCatalog();
         Set<TableRelationDto> relations = loadCatalogRelationMap(connName, catalog);
         Predicate<TableRelationDto> function = relation -> relation.getTargetTableName().equals(tableName)
                 || TableRelationDto.Relation.valueOf(relation.getRelation()) != TableRelationDto.Relation.ONE_MANY;

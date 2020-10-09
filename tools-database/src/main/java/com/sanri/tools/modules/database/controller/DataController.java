@@ -59,7 +59,7 @@ public class DataController {
      * @param tableDataParam
      */
     @PostMapping("/singleTableRandomData")
-    public void singleTableRandomData(@RequestBody TableDataParam tableDataParam) throws IOException, SQLException {
+    public void singleTableRandomData(@RequestBody TableDataParam tableDataParam) throws IOException, SQLException, JSQLParserException {
         tableDataService.singleTableWriteRandomData(tableDataParam);
     }
 
