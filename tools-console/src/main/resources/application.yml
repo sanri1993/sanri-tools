@@ -23,6 +23,8 @@ data:
     config: /home/appdeploy/sanri-test/configs
     tmp: /tmp
     libs: /tmp/libs
+logging:
+  path: /tmp/logs
 translate:
   baidu:
     appId: 20181123000238271
