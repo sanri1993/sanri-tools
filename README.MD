@@ -27,14 +27,18 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
    * zookeeper 连接的子节点,acl权限,节点数据,节点元数据,删除节点,写入数据
    * 路径收藏功能,方便下次直接查找
 4. tools-redis
-   * 集群节点展示,显示节点主机,端口,角色,父节点
+   * 支持集群,主从和单机,展示节点主机,端口,角色,父节点; 集群可以展示槽位分配 
    * key 列表查询,可以查询集群所有节点,hashKey 列表查询,key 的长度,ttl , type 展示
-   * 查询某个 key 的数据,可以根据序列化和类加载器来直接展示成数据明文
+   * 查询某个 key 的数据,可以根据序列化和类加载器展示成友好的方式,支持(string,hash,list,set,zset)
+   * 在线求 set 类型的数据交集,并集,差集
+   * 监控每一个节点使用的内存信息
+   * 监控每一个节点的连接数,主机占用连接数信息,杀掉某个连接
 5. tools-kafka
    * 消费组列表,删除消费组,消费组消费的主题列表,消费组消费主题某分区消费数据情况,消费组消费主题某分区附近的数据
    * 主题列表,主题尾部数据,创建主题,删除主题,模拟数据发送
    * 主题数据实时监控,brokers 列表
    * 所有的数据消费或监控都可以使用序列化配合类加载器来展示数据明文
+   * JMX 监控,详情见类 BrokerTopicMetrics 
 6. tools-database
    * 数据库元数据 catalog,schema,表,列,索引,主键 查询和搜索
    * 扩展元数据 表类型(字典表,配置表,业务表),表关联关系设置,展示和搜索
@@ -42,6 +46,8 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
    * 使用模板生成代码,组合模板成方案生成代码
    * 使用 sql 预览数据库数据和 excel 导出,导入 excel 数据 ,表随机数据生成 
    * nacos,diamond 等依赖于数据库的配置数据可以直接展示 
+   * 强大的搜索功能,可以使用表名,列名,注释,表标记,schema 来搜索表
+   * 随机数据插入,在压力测试时可以用 , 可以用 spring 表达式,正则,关联另一张表来随机生成表数据
 7. tools-mybatis
    * 上传 mapper 文件,配合类加载器,可以找到所有的 mapper 文件中的所有 statementId
    * 根据 statementId 可以知道当前 statementId 所必传的参数
@@ -99,7 +105,7 @@ tools-soap
 ```
 
 ## 如何运行
-运行的第一步你要会看当前版本,当前工具的版本在 tools-console/src/main/resources/version 文件中
+当前工具的版本在 tools-console/src/main/resources/version 文件中
 
 各模块的版本后面会写在 pluginDto 中注册进来
 
@@ -132,11 +138,15 @@ public void register(){
     pluginManager.register(PluginDto.builder().module("tools-xxx").name("main").build());
 }
 ```
+module 在前端是做为一级菜单,然后 name 是二级菜单 , 同一个模块下可以注册多个功能项
+
 ### 关于单元测试
 工具使用了更方便的单元测试,直接发送 http 请求来测试,所有的单元测试都在 requests/全部 http 请求.http 中
 
 ### 关于项目前端
 官方前端 [https://gitee.com/sanri/sanritoolsvue](https://gitee.com/sanri/sanritoolsvue)
+
+前端美图 [https://gitee.com/sanri/sanri-tools-maven/issues/I1UEJR](https://gitee.com/sanri/sanri-tools-maven/issues/I1UEJR)
 
 如果对这个前端不满意,可以使用接口进行自定义开发, 本项目只是提供数据服务
 
@@ -184,10 +194,11 @@ dataSource  : 数据源,引用类 ConnectionMetaData
 ## 如何交流、反馈、参与贡献？
 
 * Git仓库：https://gitee.com/sanri/sanri-tools-maven
-* 官方QQ群：645576465
-* 技术讨论、二次开发等咨询、问题和建议，请移步到 QQ 群，我会在第一时间进行解答和回复
+* 官方前端：[https://gitee.com/sanri/sanritoolsvue](https://gitee.com/sanri/sanritoolsvue)
+* 技术讨论、二次开发等咨询、问题和建议，请移步到微信群，我会在第一时间进行解答和回复
 * 如需关注项目最新动态，请Watch、Star项目，同时也是对项目最好的支持
 * 微信扫码并关注我，获得项目最新动态及更新提醒,拉你进入微信技术群
+* 如果有需要支持的中间件,可以提交 pr , 或者微信联系我
 
 ![我的微信](https://images.gitee.com/uploads/images/2020/0802/183913_c89fb735_409739.jpeg)
 
