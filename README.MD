@@ -105,19 +105,23 @@ tools-soap
 ```
 
 ## 如何运行
-当前工具的版本在 tools-console/src/main/resources/version 文件中
 
-各模块的版本后面会写在 pluginDto 中注册进来
-
-### 下载源码启动 
+### 方式一下载源码启动 
 * issue 因为 tools-name 模块中的 ik 分词在中央仓库是没有的,所以你如果不需要这个模块,可以直接删除此模块, 或者你想要这个模块可以安装 ik 分词依赖,包和安装脚本都在 tools-name/src/main/resources 中 
 
 解决 ik 分词问题后,就可以直接运行 tools-console 中的 com.sanri.tools.Application 启动 ,标准的 springboot 项目
 
-### 下载 release 启动 
+### 方式二下载 release 启动 
+
+[https://gitee.com/sanri/sanri-tools-maven/releases](https://gitee.com/sanri/sanri-tools-maven/releases)
+
 @since 2.0.0  java -jar sanritools.jar 
 
 2.0.0 版本之前,下载的 release 为 tomcat ,双击 bin/start.bat 启动
+
+**如何查看当前正在开发的工具版本**
+
+当前工具的版本在 tools-console/src/main/resources/version 文件中, 各模块的版本后面会写在 pluginDto 中注册进来
 
 ## 如何扩展自己的工具
 新增一个模块,如 tools-xxx ,然后依赖于 tools-core 
