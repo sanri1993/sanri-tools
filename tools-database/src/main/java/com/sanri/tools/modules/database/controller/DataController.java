@@ -37,11 +37,23 @@ public class DataController {
     private DataService dataService;
 
     /**
+     * 清空表数据
+     * @param connName
+     * @param actualTableName
+     * @return
+     */
+    @PostMapping("/emptyTable")
+    public int emptyTable(String connName, ActualTableName actualTableName) throws IOException, SQLException {
+        int emptyTable = tableDataService.emptyTable(connName, actualTableName);
+        return emptyTable;
+    }
+
+    /**
      * 获取清除所有业务表数据 sql
      * @return
      */
-    @GetMapping("/cleanBizTables")
-    public List<String> cleanBizTables(String connName,String catalog,String[] schemas,String tag) throws SQLException, IOException {
+    @GetMapping("/cleanTagTables")
+    public List<String> cleanTagTables(String connName,String catalog,String[] schemas,String tag) throws SQLException, IOException {
         Set<String> schemasSet = Arrays.stream(schemas).collect(Collectors.toSet());
         List<TableMetaData> tagTables = tableMarkService.searchTables(connName,catalog, schemasSet,tag);
         List<String> sqls = new ArrayList<>();

@@ -5,7 +5,6 @@ import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.read.metadata.ReadSheet;
-import com.alibaba.excel.read.metadata.holder.ReadRowHolder;
 import com.sanri.tools.modules.core.exception.ToolException;
 import com.sanri.tools.modules.database.dtos.ExcelImportParam;
 import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
@@ -19,10 +18,8 @@ import net.sf.jsqlparser.statement.select.Limit;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.codec.digest.MessageDigestAlgorithms;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.dbutils.handlers.ColumnListHandler;
-import org.apache.commons.dbutils.handlers.ScalarHandler;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
@@ -39,7 +36,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,6 +50,24 @@ public class TableDataService {
 
     // jsqlparser 解析
     private CCJSqlParserManager parserManager = new CCJSqlParserManager();
+
+    /**
+     * 清空数据表
+     * @param connName
+     * @param actualTableName
+     * @return
+     */
+    public int emptyTable(String connName, ActualTableName actualTableName) throws IOException, SQLException {
+        String sql = "truncate "+actualTableName.getSchema()+"."+actualTableName.getTableName();
+        if (StringUtils.isBlank(actualTableName.getSchema())){
+            sql = "truncate "+actualTableName.getCatalog()+"."+actualTableName.getTableName();
+        }
+        List<Integer> integers = jdbcService.executeUpdate(connName, Collections.singletonList(sql));
+        if (CollectionUtils.isNotEmpty(integers)){
+            return integers.get(0);
+        }
+        return 0 ;
+    }
 
     /**
      * 单表数据添加,随机数据
