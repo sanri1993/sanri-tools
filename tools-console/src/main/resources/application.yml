@@ -1,5 +1,3 @@
-server:
-  port: 8084
 spring:
   application:
     name: sanri-tools
@@ -18,13 +16,6 @@ spring:
     enabled: true
     encoding: UTF-8
     mode: HTML
-data:
-  path:
-    config: /home/appdeploy/sanri-test/configs
-    tmp: /tmp
-    libs: /tmp/libs
-logging:
-  path: /tmp/logs
 translate:
   baidu:
     appId: 20181123000238271

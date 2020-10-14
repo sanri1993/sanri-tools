@@ -20,22 +20,24 @@ public class DatabaseConnectParam extends AbstractConnectParam{
             case dbType_mysql:
                 return "com.mysql.jdbc.Driver";
             case dbType_postgresql:
-
+                return "org.postgresql.Driver";
+            case dbType_oracle:
+                return "oracle.jdbc.driver.OracleDriver";
         }
 
         return null;
     }
-
-    public String connectionURL(){
-        String connectString = connectParam.getConnectString();
-        switch (dbType){
-            case dbType_mysql:
-                return "jdbc:mysql://"+connectString+"/"+database;
-
-        }
-
-        return null;
-    }
+//
+//    public String connectionURL(){
+//        String connectString = connectParam.getConnectString();
+//        switch (dbType){
+//            case dbType_mysql:
+//                return "jdbc:mysql://"+connectString+"/"+database;
+//
+//        }
+//
+//        return null;
+//    }
 
     public Properties properties(){
         Properties properties = new Properties();

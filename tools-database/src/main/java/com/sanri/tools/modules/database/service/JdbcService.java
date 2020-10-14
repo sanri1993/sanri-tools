@@ -1,5 +1,6 @@
 package com.sanri.tools.modules.database.service;
 
+import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.service.file.ConnectService;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
@@ -485,9 +486,19 @@ public class JdbcService {
     public ConnectionMetaData connectionMetaData(String connName) throws IOException, SQLException {
         DatabaseConnectParam databaseConnectParam = (DatabaseConnectParam) connectService.readConnParams(module, connName);
         AuthParam authParam = databaseConnectParam.getAuthParam();
-        String driverClass = databaseConnectParam.driverClass();
-        String connectionURL = databaseConnectParam.connectionURL();
-        return new ConnectionMetaData(authParam,driverClass,connectionURL);
+        DataSource dataSource = dataSource(connName);
+        String connectionURL = "";
+        if (dataSource instanceof ExMysqlDataSource){
+            ExMysqlDataSource exMysqlDataSource = (ExMysqlDataSource) dataSource;
+            connectionURL = exMysqlDataSource.getURL();
+        }else if (dataSource instanceof PGSimpleDataSource){
+            PGSimpleDataSource pgSimpleDataSource = (PGSimpleDataSource) dataSource;
+            connectionURL = pgSimpleDataSource.getURL();
+        }else if (dataSource instanceof OracleDataSource){
+            OracleDataSource oracleDataSource = (OracleDataSource) dataSource;
+            connectionURL = oracleDataSource.getURL();
+        }
+        return new ConnectionMetaData(authParam,databaseConnectParam.driverClass(),connectionURL);
     }
 
     protected Map<ActualTableName, TableMetaData> refreshTableInfo(String connName, String catalog, String schema) throws IOException, SQLException {
