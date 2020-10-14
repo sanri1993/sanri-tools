@@ -151,24 +151,34 @@ public class TemplateService {
         File generatorDir = new File(dir,System.currentTimeMillis()+"");
 
         CodeGeneratorConfig.PackageConfig packageConfig = codeGeneratorParam.getPackageConfig();
+        boolean single = codeGeneratorParam.isSingle();
         for (Template template : templates) {
-            for (TableMetaData filterTable : filterTables) {
-                ActualTableName actualTableName = filterTable.getActualTableName();
+            if (single){
                 Map<String, Object> context = new HashMap<>();
-                context.put("table",filterTable);
-                JavaBeanInfo mapping = renameStrategy.mapping(filterTable);
-                context.put("mapping",mapping);
-                commonTemplateData(context);
-                context.put("package",packageConfig);
+                context.put("tables",filterTables);
                 String process = freeMarkerTemplate.process(template, context);
-
-                // 写入目标文件,文件名规则为 类名+模板名(mapper.xml.时间戳)
-                String className = mapping.getClassName();
-                String name = template.getName();
-                String fileNameSuffix = StringUtils.capitalize(FilenameUtils.getBaseName(name));
-
-                File file = new File(generatorDir, className+fileNameSuffix);
+                String fileName = StringUtils.capitalize(FilenameUtils.getBaseName(template.getName()));
+                File file = new File(generatorDir, fileName);
                 FileUtils.writeStringToFile(file,process);
+            }else {
+                for (TableMetaData filterTable : filterTables) {
+                    ActualTableName actualTableName = filterTable.getActualTableName();
+                    Map<String, Object> context = new HashMap<>();
+                    context.put("table", filterTable);
+                    JavaBeanInfo mapping = renameStrategy.mapping(filterTable);
+                    context.put("mapping", mapping);
+                    commonTemplateData(context);
+                    context.put("package", packageConfig);
+                    String process = freeMarkerTemplate.process(template, context);
+
+                    // 写入目标文件,文件名规则为 类名+模板名(mapper.xml.时间戳)
+                    String className = mapping.getClassName();
+                    String name = template.getName();
+                    String fileNameSuffix = StringUtils.capitalize(FilenameUtils.getBaseName(name));
+
+                    File file = new File(generatorDir, className + fileNameSuffix);
+                    FileUtils.writeStringToFile(file, process);
+                }
             }
         }
 

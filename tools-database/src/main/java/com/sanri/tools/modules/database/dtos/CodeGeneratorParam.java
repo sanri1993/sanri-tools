@@ -10,4 +10,6 @@ public class CodeGeneratorParam {
    private CodeGeneratorConfig.DataSourceConfig dataSourceConfig;
    private CodeGeneratorConfig.PackageConfig packageConfig;
    private String renameStrategyName;
+   // 单一文件 , 这时只会使用 dataSourceConfig
+   private boolean single;
 }
