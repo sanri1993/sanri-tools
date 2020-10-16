@@ -82,6 +82,18 @@ public class MetadataController {
         return jdbcService.refreshTable(connName,actualTableName);
     }
 
+    /**
+     * 搜索表 , keyword 可以写成表达式的形式, 目前支持
+     * table: column: tag:
+     * 后面可以继续扩展操作符 , 像 everything 一样
+     * @param connName
+     * @param catalog
+     * @param schemas
+     * @param keyword
+     * @return
+     * @throws IOException
+     * @throws SQLException
+     */
     @GetMapping("/searchTables")
     public List<TableMetaData> searchTables(String connName, String catalog, String[] schemas, String keyword) throws IOException, SQLException {
         List<TableMetaData> tableMetaDataList = null;

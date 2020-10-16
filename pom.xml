@@ -17,6 +17,7 @@
         <module>tools-mybatis</module>
         <module>tools-name</module>
         <module>tools-dubbo</module>
+        <module>tools-mongodb</module>
     </modules>
 
     <parent>

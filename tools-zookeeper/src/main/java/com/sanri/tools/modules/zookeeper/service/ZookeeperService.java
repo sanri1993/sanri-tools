@@ -4,7 +4,7 @@ import com.sanri.tools.modules.core.service.file.ConnectService;
 import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.core.dtos.param.ConnectParam;
-import com.sanri.tools.modules.core.dtos.param.ZookeeperConnectParam;
+import com.sanri.tools.modules.core.dtos.param.SimpleConnectParam;
 import com.sanri.tools.modules.zookeeper.dtos.ZooNodeACL;
 import com.sanri.tools.modules.serializer.SerializerConstants;
 import com.sanri.tools.modules.serializer.service.Serializer;
@@ -107,7 +107,7 @@ public class ZookeeperService {
     ZkClient zkClient(String connName) throws IOException {
         ZkClient zkClient = zkClientMap.get(connName);
         if(zkClient == null){
-            ZookeeperConnectParam zookeeperConnectParam = (ZookeeperConnectParam) connectService.readConnParams(module, connName);
+            SimpleConnectParam zookeeperConnectParam = (SimpleConnectParam) connectService.readConnParams(module, connName);
             ConnectParam connectParam = zookeeperConnectParam.getConnectParam();
             int connectionTimeout = connectParam.getConnectionTimeout();
             int sessionTimeout = connectParam.getSessionTimeout();

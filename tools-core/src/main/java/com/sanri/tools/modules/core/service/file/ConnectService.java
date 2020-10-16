@@ -82,7 +82,7 @@ public class ConnectService {
     public void createConnect(String module,String data) throws IOException {
         Class<?> param = moduleParamFactory(module);
         if(param == null){
-            throw new IllegalArgumentException("模块配置不受支持:"+module);
+            throw new IllegalArgumentException("模块配置不受支持:"+module+" 支持的模块列表为[database,kafka,redis,mongo,zookeeper]");
         }
         AbstractConnectParam abstractConnectParam = (AbstractConnectParam) JSON.parseObject(data, param);
         ConnectParam connectParam = abstractConnectParam.getConnectParam();
@@ -103,7 +103,8 @@ public class ConnectService {
             case "redis":
                 return RedisConnectParam.class;
             case "zookeeper":
-                return ZookeeperConnectParam.class;
+            case "mongo":
+                return SimpleConnectParam.class;
         }
         return null;
     }

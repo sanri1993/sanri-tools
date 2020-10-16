@@ -787,5 +787,29 @@ connName: 10.101.72.43
   "pattern": "abc*"
 }
 
+### mongodb - 创建连接
+POST {{baseUrl}}/connect/create/mongo
+Content-Type: application/json
+
+{
+  "connectIdParam": {
+    "module": "mongo",
+    "connName": "192.168.108.130"
+  },
+  "connectParam": {
+    "host": "192.168.108.130",
+    "port": 27017
+  }
+}
+
+### mongo - 查询所有库
+GET {{baseUrl}}/mongo/databaseNames?connName=192.168.108.130
+
+### mongo - 查询库的所有集合
+GET {{baseUrl}}/mongo/collectionNames/admin?connName=192.168.108.130
+
+### mongo - 查询集合文档数量
+GET {{baseUrl}}/mongo/documents/admin/system.version?connName=192.168.108.130
+
 ###
 
