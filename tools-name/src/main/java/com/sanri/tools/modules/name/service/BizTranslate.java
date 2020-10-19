@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringBufferInputStream;
+import java.io.StringReader;
 import java.util.*;
 
 @Component
@@ -38,7 +39,11 @@ public class BizTranslate {
         // 进行业务词翻译
         Set<String> needTranslateWords = translateCharSequence.getNeedTranslateWords();
         for (String needTranslateWord : needTranslateWords) {
-            String bizMirror = Objects.toString(properties.get(needTranslateWord));
+            Object object = properties.get(needTranslateWord);
+            if (object == null){
+                continue;
+            }
+            String bizMirror = Objects.toString(object);
             if (StringUtils.isNotBlank(bizMirror)) {
                 translateCharSequence.addTranslate(needTranslateWord, bizMirror);
                 translateCharSequence.setTranslate(true, needTranslateWord);
@@ -57,10 +62,10 @@ public class BizTranslate {
 
     public Properties bizMirrmorKeyValue(String biz) throws IOException {
         String content = fileManager.readConfig(module, biz);
-        InputStream inputStream = new StringBufferInputStream(content);
+        StringReader stringReader = new StringReader(content);
         Properties properties = new Properties();
-        properties.load(inputStream);
-        inputStream.close();
+        properties.load(stringReader);
+        stringReader.close();
         return properties;
     }
 

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -45,6 +46,16 @@ public class NameController {
     @GetMapping("/detail/{biz}")
     public List<String> bizMirrors(@PathVariable("biz") String biz) throws IOException {
         return bizTranslate.mirrors(biz);
+    }
+
+    @GetMapping("/content/bizs")
+    public List<String> bizsContent(String [] bizs) throws IOException {
+        List<String> contentMerge = new ArrayList<>();
+        for (String biz : bizs) {
+            List<String> mirrors = bizTranslate.mirrors(biz);
+            contentMerge.addAll(mirrors);
+        }
+        return contentMerge;
     }
 
     @PostMapping("/mirror/write/{biz}")
