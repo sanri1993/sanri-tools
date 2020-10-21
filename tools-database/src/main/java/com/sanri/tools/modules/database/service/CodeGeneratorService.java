@@ -336,7 +336,7 @@ public class CodeGeneratorService {
                 .module(module).name("codeGenerate").author("sanri").envs("default")
                 .logo("mysql.jpg")
                 .desc("代码生成功能")
-                .help("数据表处理工具.md")
+                .help("代码生成.md")
                 .build());
     }
 }

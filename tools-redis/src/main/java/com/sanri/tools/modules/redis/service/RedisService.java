@@ -760,7 +760,7 @@ public class RedisService{
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module("monitor").name(module).logo("redis.jpg").desc("redis 数据查看,集群信息管理").author("sanri").envs("default").build());
+        pluginManager.register(PluginDto.builder().module("monitor").name(module).logo("redis.jpg").desc("redis 数据查看,集群信息管理").help("Redis.md").author("sanri").envs("default").build());
     }
 
     @PreDestroy
