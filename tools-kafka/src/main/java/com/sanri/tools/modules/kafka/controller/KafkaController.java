@@ -4,6 +4,7 @@ import com.sanri.tools.modules.kafka.dtos.*;
 import com.sanri.tools.modules.kafka.service.KafkaDataService;
 import com.sanri.tools.modules.kafka.service.KafkaService;
 import com.sanri.tools.modules.core.dtos.param.KafkaConnectParam;
+import org.apache.commons.codec.DecoderException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -73,8 +74,18 @@ public class KafkaController {
     }
 
     @GetMapping("/topic/data/last")
-    public List<KafkaData> topicLastDatas(DataConsumerParam dataConsumerParam) throws InterruptedException, ExecutionException, ClassNotFoundException, IOException {
+    public List<PartitionKafkaData> topicLastDatas(DataConsumerParam dataConsumerParam) throws InterruptedException, ExecutionException, ClassNotFoundException, IOException {
         return kafkaDataService.lastDatas(dataConsumerParam);
+    }
+
+    @GetMapping("/topic/data/consumerDataAndCreateIndex")
+    public void consumerDataAndCreateIndex(DataConsumerParam dataConsumerParam) throws InterruptedException, ExecutionException, ClassNotFoundException, IOException {
+        kafkaDataService.consumerDataAndCreateIndex(dataConsumerParam);
+    }
+
+    @GetMapping("/topic/data/search")
+    public List<PartitionKafkaData> topicDataIndexQuery(String keyword) throws IOException, DecoderException, ClassNotFoundException {
+        return kafkaDataService.topicDataIndexQuery(keyword);
     }
 
     @GetMapping("/topic/data/one")
@@ -108,7 +119,7 @@ public class KafkaController {
     }
 
     @GetMapping("/group/topic/data/nearby")
-    public List<KafkaData> groupTopicNearbyData(NearbyDataConsumerParam nearbyDataConsumerParam) throws IOException, ClassNotFoundException {
+    public List<PartitionKafkaData> groupTopicNearbyData(NearbyDataConsumerParam nearbyDataConsumerParam) throws IOException, ClassNotFoundException {
         return kafkaDataService.nearbyDatas(nearbyDataConsumerParam);
     }
 

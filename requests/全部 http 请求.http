@@ -649,6 +649,12 @@ GET {{baseUrl}}/kafka/brokers?clusterName=192.168.72.42_2181
 ### 消费主题最后几条数据
 GET {{baseUrl}}/kafka/topic/data/last?clusterName=192.168.72.42_2181&topic=EGSC_SCP_SDC_EVENT_DATA_TOPIC&partition=-1&perPartitionSize=10&serializer=string
 
+### 消费主题数据,并创建索引
+GET {{baseUrl}}/kafka/topic/data/consumerDataAndCreateIndex?clusterName=192.168.72.42_2181&topic=EGSC_SCP_SDC_EVENT_DATA_TOPIC&partition=-1&perPartitionSize=10&serializer=string
+
+### 使用索引来查询数据
+GET {{baseUrl}}/kafka/topic/data/search?keyword=1
+
 ### 消费主题附近的几条数据
 GET {{baseUrl}}/kafka/group/topic/data/nearby?clusterName=192.168.72.42_2181&topic=EGSC_SCP_SDC_EVENT_DATA_TOPIC&partition=0&offset=16090&perPartitionSize=10&serializer=string
 

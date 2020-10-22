@@ -3,7 +3,10 @@ package com.sanri.tools.modules.core.utils;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.*;
 
@@ -67,5 +70,15 @@ public class NetUtil {
             e.printStackTrace();
         }
         return "";
+    }
+
+    /**
+     * 远程地址
+     * @return
+     */
+    public static String remoteAddr(){
+        HttpServletRequest request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
+        String remoteAddr = request.getRemoteAddr();
+        return remoteAddr;
     }
 }

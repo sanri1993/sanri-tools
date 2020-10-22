@@ -1,24 +1,39 @@
 package com.sanri.tools.modules.kafka.service;
 
 import com.alibaba.fastjson.JSON;
+import com.sanri.tools.modules.core.dtos.param.KafkaConnectParam;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
 import com.sanri.tools.modules.core.service.file.ConnectService;
+import com.sanri.tools.modules.core.service.file.FileManager;
+import com.sanri.tools.modules.core.utils.NetUtil;
 import com.sanri.tools.modules.kafka.dtos.*;
-import com.sanri.tools.modules.core.dtos.param.KafkaConnectParam;
 import com.sanri.tools.modules.serializer.service.Serializer;
 import com.sanri.tools.modules.serializer.service.SerializerChoseService;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.TopicPartition;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.core.SimpleAnalyzer;
+import org.apache.lucene.document.*;
+import org.apache.lucene.index.*;
+import org.apache.lucene.search.*;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.SimpleFSDirectory;
+import org.apache.lucene.util.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.*;
@@ -39,6 +54,128 @@ public class KafkaDataService {
     private ClassloaderService classloaderService;
     @Autowired
     private ConnectService connectService;
+    @Autowired
+    private FileManager fileManager;
+
+    /**
+     * 对主题消费数据建立的索引进行查询
+     * @param keyword
+     */
+    public List<PartitionKafkaData> topicDataIndexQuery(String keyword) throws IOException, DecoderException, ClassNotFoundException {
+        String remoteAddr = NetUtil.remoteAddr();
+        File dir = fileManager.mkTmpDir("indices/" + remoteAddr);
+        if (dir.listFiles().length == 0){
+            return null;
+        }
+
+        List<PartitionKafkaData> datas = new ArrayList<>();
+
+        MatchAllDocsQuery matchAllDocsQuery = new MatchAllDocsQuery();
+        Directory directory = new SimpleFSDirectory(dir);
+        IndexReader indexReader = IndexReader.open(directory);
+        IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+
+        Serializer serializer = serializerChoseService.choseSerializer("jdk");
+
+        SortField sortField = new SortField("timestamp", SortField.Type.LONG,true);
+        TopDocs search = indexSearcher.search(matchAllDocsQuery, 10,new Sort(sortField));
+        ScoreDoc[] scoreDocs = search.scoreDocs;
+        for (ScoreDoc scoreDoc : scoreDocs) {
+            int docId = scoreDoc.doc;
+            Document doc = indexSearcher.doc(docId);
+            int partition = doc.getField("partition").numericValue().intValue();
+            long offset = doc.getField("offset").numericValue().longValue();
+            long timestamp = doc.getField("timestamp").numericValue().longValue();
+            int dataConvert = doc.getField("dataConvert").numericValue().intValue();
+            Object data = null;
+            switch (dataConvert){
+                case 1:
+                    data = doc.getField("data").stringValue();
+                    break;
+                case 2:
+                    data = JSON.parse(doc.getField("data").stringValue());
+                    break;
+                case 3:
+                    data = serializer.deserialize(Hex.decodeHex(doc.getField("data").stringValue()),ClassLoader.getSystemClassLoader());
+                    break;
+            }
+            datas.add(new PartitionKafkaData(offset,data,timestamp,partition));
+        }
+
+        indexReader.close();
+        return datas;
+    }
+
+    /**
+     * 模仿 kafkatool 的功能, 索引搜索数据
+     * 消费某一个主题的附近数据,然后建立索引方便快速查询
+     * 对于每个 ip 来说会建立一个单独的存储索引的位置
+     * @param dataConsumerParam
+     */
+    public void consumerDataAndCreateIndex(DataConsumerParam dataConsumerParam) throws IOException, ExecutionException, InterruptedException, ClassNotFoundException {
+        String remoteAddr = NetUtil.remoteAddr();
+        File dir = fileManager.mkTmpDir("indices/" + remoteAddr);
+        // 如果目录存在,清空目录, 重建索引
+        FileUtils.cleanDirectory(dir);
+
+        String clusterName = dataConsumerParam.getClusterName();
+        String topic = dataConsumerParam.getTopic();
+
+        // 查询有多少分区
+        int partitions = kafkaService.partitions(clusterName, topic);
+        List<TopicPartition> topicPartitions = new ArrayList<>();
+        Map<TopicPartition,PartitionOffset> partitionOffsetsMap = new HashMap<>();
+        for (int i = 0; i < partitions; i++) {
+            TopicPartition topicPartition = new TopicPartition(topic, i);
+            topicPartitions.add(topicPartition);
+            partitionOffsetsMap.put(topicPartition,new PartitionOffset(topicPartition,dataConsumerParam.getPerPartitionSize()));
+        }
+
+        // 消费主题数据
+        StopWatch stopWatch = new StopWatch();stopWatch.start();
+        log.debug("clusterName:[{}],topic:[{}]开始加载数据,每个分区准备加载[{}] 条",clusterName,topic,dataConsumerParam.getPerPartitionSize());
+        List<PartitionKafkaData> kafkaData = loadData(clusterName, topicPartitions, partitionOffsetsMap, dataConsumerParam.getClassloaderName(), dataConsumerParam.getSerializer());
+
+        // 建立数据索引
+        stopWatch.stop();
+        log.debug("clusterName:[{}],topic:[{}],查询到数据量[{}],用时[{} ms],开始在目录[{}]建立索引",clusterName,topic,kafkaData.size(),stopWatch.getTime(),dir);
+        Directory directory = new SimpleFSDirectory(dir);
+        Analyzer analyzer = new SimpleAnalyzer(Version.LUCENE_42);
+        IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_42, analyzer);
+        IndexWriter writer = new IndexWriter(directory, config);
+
+        // 使用 jdk 序列化写入索引
+        Serializer serializer = serializerChoseService.choseSerializer("jdk");
+
+        for (PartitionKafkaData kafkaDatum : kafkaData) {
+            Document doc = new Document();
+
+            Object data = kafkaDatum.getData();
+            int dataConvert = 1;            // 1 是原始数据, 2 是 json 转出来的 , 3 是 hex 数据
+            String textData = "";
+            if (data instanceof String){
+                textData = (String) data;
+            }else {
+                try {
+                    textData = JSON.toJSONString(data);
+                    dataConvert = 2;
+                } catch (Exception e) {
+                    Hex.encodeHexString(serializer.serialize(textData));
+                    dataConvert = 3;
+                }
+            }
+
+            doc.add(new IntField("partition", kafkaDatum.getPartition(), Field.Store.YES));
+            doc.add(new LongField("offset", kafkaDatum.getOffset(), Field.Store.YES));
+            doc.add(new LongField("timestamp", kafkaDatum.getTimestamp(), Field.Store.YES));
+            doc.add(new TextField("data", textData, Field.Store.YES));
+            doc.add(new IntField("dataConvert",dataConvert, Field.Store.YES));
+            writer.addDocument(doc);
+        }
+        writer.commit();
+        writer.close();
+    }
+
 
     /**
      * 加载一条数据,用于数据模拟
@@ -57,7 +194,7 @@ public class KafkaDataService {
             topicPartitions.add(topicPartition);
             partitionOffsetsMap.put(topicPartition,new PartitionOffset(topicPartition,1));
         }
-        List<KafkaData> kafkaData = loadData(clusterName, topicPartitions, partitionOffsetsMap, dataConsumerParam.getClassloaderName(), dataConsumerParam.getSerializer());
+        List<PartitionKafkaData> kafkaData = loadData(clusterName, topicPartitions, partitionOffsetsMap, dataConsumerParam.getClassloaderName(), dataConsumerParam.getSerializer());
         if (CollectionUtils.isNotEmpty(kafkaData)){
             return kafkaData.get(0);
         }
@@ -76,7 +213,7 @@ public class KafkaDataService {
      * @throws ExecutionException
      * @throws IOException
      */
-    public List<KafkaData> lastDatas(DataConsumerParam dataConsumerParam) throws InterruptedException, ExecutionException, IOException, ClassNotFoundException {
+    public List<PartitionKafkaData> lastDatas(DataConsumerParam dataConsumerParam) throws InterruptedException, ExecutionException, IOException, ClassNotFoundException {
         int partition = dataConsumerParam.getPartition();
         String clusterName = dataConsumerParam.getClusterName();
         String topic = dataConsumerParam.getTopic();
@@ -110,7 +247,7 @@ public class KafkaDataService {
      * @param classloaderName
      * @return
      */
-    public List<KafkaData> nearbyDatas(NearbyDataConsumerParam nearbyDataConsumerParam) throws IOException, ClassNotFoundException {
+    public List<PartitionKafkaData> nearbyDatas(NearbyDataConsumerParam nearbyDataConsumerParam) throws IOException, ClassNotFoundException {
         String clusterName = nearbyDataConsumerParam.getClusterName();
         String topic = nearbyDataConsumerParam.getTopic();
         int partition = nearbyDataConsumerParam.getPartition();
@@ -122,7 +259,7 @@ public class KafkaDataService {
         topicPartitions.add(topicPartition);
         partitionOffsetsMap.put(topicPartition,new PartitionOffset(topicPartition,nearbyDataConsumerParam.getPerPartitionSize()));
 
-        List<KafkaData> datas = loadData(clusterName, topicPartitions, partitionOffsetsMap, nearbyDataConsumerParam.getClassloaderName(), nearbyDataConsumerParam.getSerializer());
+        List<PartitionKafkaData> datas = loadData(clusterName, topicPartitions, partitionOffsetsMap, nearbyDataConsumerParam.getClassloaderName(), nearbyDataConsumerParam.getSerializer());
         return datas;
     }
 
@@ -147,7 +284,7 @@ public class KafkaDataService {
         }
     }
 
-    private List<KafkaData> loadData(String clusterName,List<TopicPartition> topicPartitions,Map<TopicPartition,PartitionOffset> partitionOffsets,String classloaderName,String serializer) throws IOException, ClassNotFoundException {
+    private List<PartitionKafkaData> loadData(String clusterName,List<TopicPartition> topicPartitions,Map<TopicPartition,PartitionOffset> partitionOffsets,String classloaderName,String serializer) throws IOException, ClassNotFoundException {
         // 获取序列化工具和类加载器
         ClassLoader classloader = classloaderService.getClassloader(classloaderName);
         if(classloader == null){classloader = ClassLoader.getSystemClassLoader();}
@@ -155,7 +292,7 @@ public class KafkaDataService {
 
         // 加载消费者
         KafkaConsumer<byte[], byte[]> consumer = kafkaService.loadConsumerClient(clusterName);
-        List<KafkaData> datas = new ArrayList<>();
+        List<PartitionKafkaData> datas = new ArrayList<>();
 
         final int loadTimes = 5; // 加载 5 次, 每次加载 20ms
         long perLoadTimeInMillis =  20 ;
