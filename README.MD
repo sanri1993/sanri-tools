@@ -154,7 +154,22 @@ module 在前端是做为一级菜单,然后 name 是二级菜单 , 同一个模
 
 如果对这个前端不满意,可以使用接口进行自定义开发, 本项目只是提供数据服务
 
+#### 界面美图
+
+![](images/连接管理.png)
+
+![](images/数据库元数据.png)
+
+![](images/代码生成-1.png)
+
+![](images/Redis.png)
+
+![](images/kafka消费组.png)
+
+
+
 ### 数据库的文档生成
+
 数据库文档生成，每个公司要求的模板都不一样，可以自己扩展，使用 jdbcService 可以拿到你想要的元数据，然后想怎么生成，全靠你自己， 我这里提供了三个示例
 * 生成 markdown 的 ，使用 database-doc.md.ftl 模板
 * 生成 html 的，使用 database-doc.html.ftl 模板
