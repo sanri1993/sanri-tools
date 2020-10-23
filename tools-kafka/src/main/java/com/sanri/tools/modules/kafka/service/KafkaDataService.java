@@ -15,6 +15,7 @@ import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -76,9 +77,9 @@ public class KafkaDataService {
         IndexSearcher indexSearcher = new IndexSearcher(indexReader);
 
         Serializer serializer = serializerChoseService.choseSerializer("jdk");
-
+        int numDocs = indexReader.numDocs();
         SortField sortField = new SortField("timestamp", SortField.Type.LONG,true);
-        TopDocs search = indexSearcher.search(matchAllDocsQuery, 10,new Sort(sortField));
+        TopDocs search = indexSearcher.search(matchAllDocsQuery, numDocs,new Sort(sortField));
         ScoreDoc[] scoreDocs = search.scoreDocs;
         for (ScoreDoc scoreDoc : scoreDocs) {
             int docId = scoreDoc.doc;
@@ -87,16 +88,21 @@ public class KafkaDataService {
             long offset = doc.getField("offset").numericValue().longValue();
             long timestamp = doc.getField("timestamp").numericValue().longValue();
             int dataConvert = doc.getField("dataConvert").numericValue().intValue();
+            String dataStringValue = doc.getField("data").stringValue();
+
+            if (StringUtils.isNotBlank(keyword) &&  !dataStringValue.contains(keyword)){
+                continue;
+            }
             Object data = null;
             switch (dataConvert){
                 case 1:
-                    data = doc.getField("data").stringValue();
+                    data = dataStringValue;
                     break;
                 case 2:
-                    data = JSON.parse(doc.getField("data").stringValue());
+                    data = JSON.parse(dataStringValue);
                     break;
                 case 3:
-                    data = serializer.deserialize(Hex.decodeHex(doc.getField("data").stringValue()),ClassLoader.getSystemClassLoader());
+                    data = serializer.deserialize(Hex.decodeHex(dataStringValue),ClassLoader.getSystemClassLoader());
                     break;
             }
             datas.add(new PartitionKafkaData(offset,data,timestamp,partition));
