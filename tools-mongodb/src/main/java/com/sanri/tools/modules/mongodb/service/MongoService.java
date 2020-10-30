@@ -1,20 +1,24 @@
 package com.sanri.tools.modules.mongodb.service;
 
+import com.alibaba.fastjson.JSONObject;
+import com.mongodb.BasicDBObject;
 import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.MongoIterable;
+import com.mongodb.client.*;
+import com.mongodb.util.JSON;
+import com.sanri.tools.modules.core.dtos.PageResponseDto;
 import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.dtos.param.ConnectParam;
+import com.sanri.tools.modules.core.dtos.param.PageParam;
 import com.sanri.tools.modules.core.dtos.param.SimpleConnectParam;
+import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
 import com.sanri.tools.modules.core.service.file.ConnectService;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.mongodb.dtos.CollectionDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.IteratorUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +43,9 @@ public class MongoService {
     private ConnectService connectService;
     @Autowired
     private PluginManager pluginManager;
+
+    @Autowired
+    private ClassloaderService classloaderService;
 
     /**
      * 查询当前连接所有数据库
@@ -75,6 +82,41 @@ public class MongoService {
             collectionDtos.add(collectionDto);
         }
         return collectionDtos;
+    }
+
+    /**
+     * 分页 mongo 数据查询
+     * @param mongoQueryParam
+     * @param pageParam
+     * @return
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public PageResponseDto<List<String>> queryDataPage(MongoQueryParam mongoQueryParam, PageParam pageParam) throws IOException, ClassNotFoundException {
+        List<String> objects = new ArrayList<>();
+
+        String filterJson = mongoQueryParam.getFilter();
+        String sortJson = mongoQueryParam.getSort();
+
+        BasicDBObject filterBson = filterJson == null ? new BasicDBObject() :  BasicDBObject.parse(filterJson);
+        BasicDBObject sortBson = sortJson == null ? new BasicDBObject() :  BasicDBObject.parse(sortJson);
+        sortBson.append("_id",-1);
+
+        MongoClient mongoClient = mongoClient(mongoQueryParam.getConnName());
+        MongoDatabase database = mongoClient.getDatabase(mongoQueryParam.getDatabaseName());
+        MongoCollection<Document> collection = database.getCollection(mongoQueryParam.getCollectionName());
+        FindIterable<Document> limit = collection.find(filterBson).sort(sortBson)
+                .skip(pageParam.getPageNo()).limit(pageParam.getPageSize());
+        MongoCursor<Document> iterator = limit.iterator();
+        while (iterator.hasNext()){
+            Document document = iterator.next();
+            String json = document.toJson();
+            objects.add(json);
+        }
+
+        // 查询数据总数
+        long countDocuments = collection.countDocuments(filterBson);
+        return new PageResponseDto<>(objects,countDocuments);
     }
 
 

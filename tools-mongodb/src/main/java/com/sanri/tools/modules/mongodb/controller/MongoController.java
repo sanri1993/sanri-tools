@@ -1,6 +1,9 @@
 package com.sanri.tools.modules.mongodb.controller;
 
+import com.sanri.tools.modules.core.dtos.PageResponseDto;
+import com.sanri.tools.modules.core.dtos.param.PageParam;
 import com.sanri.tools.modules.mongodb.dtos.CollectionDto;
+import com.sanri.tools.modules.mongodb.service.MongoQueryParam;
 import com.sanri.tools.modules.mongodb.service.MongoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,5 +41,18 @@ public class MongoController {
     @GetMapping("/collectionNames/{databaseName}")
     public List<CollectionDto> collectionNames(String connName, @PathVariable("databaseName") String databaseName) throws IOException {
         return mongoService.collectionNames(connName,databaseName);
+    }
+
+    /**
+     * mongo 分页数据查询
+     * @param mongoQueryParam
+     * @param pageParam
+     * @return
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    @GetMapping("/queryPage")
+    public PageResponseDto<List<String>> queryPage(MongoQueryParam mongoQueryParam, PageParam pageParam) throws IOException, ClassNotFoundException {
+        return mongoService.queryDataPage(mongoQueryParam,pageParam);
     }
 }
