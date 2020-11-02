@@ -653,7 +653,7 @@ GET {{baseUrl}}/kafka/topic/data/last?clusterName=192.168.72.42_2181&topic=EGSC_
 GET {{baseUrl}}/kafka/topic/data/consumerDataAndCreateIndex?clusterName=192.168.72.42_2181&topic=EGSC_SCP_SDC_EVENT_DATA_TOPIC&partition=-1&perPartitionSize=10&serializer=string
 
 ### 使用索引来查询数据
-GET {{baseUrl}}/kafka/topic/data/search?keyword=1
+GET {{baseUrl}}/kafka/topic/data/search?keyword=5236833587864535049012
 
 ### 消费主题附近的几条数据
 GET {{baseUrl}}/kafka/group/topic/data/nearby?clusterName=192.168.72.42_2181&topic=EGSC_SCP_SDC_EVENT_DATA_TOPIC&partition=0&offset=16090&perPartitionSize=10&serializer=string
@@ -812,10 +812,10 @@ Content-Type: application/json
 GET {{baseUrl}}/mongo/databaseNames?connName=192.168.108.130
 
 ### mongo - 查询库的所有集合
-GET {{baseUrl}}/mongo/collectionNames/admin?connName=192.168.108.130
+GET {{baseUrl}}/mongo/collectionNames/mall-port?connName=192.168.108.130
 
-### mongo - 查询集合文档数量
-GET {{baseUrl}}/mongo/documents/admin/system.version?connName=192.168.108.130
+### mongo - 数据筛选
+GET {{baseUrl}}/mongo/queryPage?connName=192.168.108.130&databaseName=mall-port&collectionName=goods&pageNo=1&pageSize=10
 
 ###
 

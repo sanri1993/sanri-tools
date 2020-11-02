@@ -36,7 +36,7 @@ public class ExtendMetadataController {
      */
     @GetMapping("/mark/tags")
     public List<String> tags(){
-        return Arrays.asList("biz","dict","sys","report","biz_config");
+        return Arrays.asList("biz","dict","sys","report","biz_config","deprecated");
     }
 
     /**

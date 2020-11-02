@@ -8,11 +8,11 @@ import java.util.List;
 @Getter
 @Setter
 public class TableMetaData {
-    private ActualTableName actualTableName;
-    private Table table;
-    private List<Column> columns;
-    private List<Index> indexs;
-    private List<PrimaryKey> primaryKeys;
+    protected ActualTableName actualTableName;
+    protected Table table;
+    protected List<Column> columns;
+    protected List<Index> indexs;
+    protected List<PrimaryKey> primaryKeys;
 
     public TableMetaData() {
     }

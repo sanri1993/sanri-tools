@@ -1,9 +1,12 @@
 package com.sanri.tools.modules.database.controller;
 
 import com.sanri.tools.modules.core.service.file.ConnectService;
+import com.sanri.tools.modules.database.dtos.ExtendTableMetaData;
+import com.sanri.tools.modules.database.dtos.TableMark;
 import com.sanri.tools.modules.database.dtos.meta.*;
 import com.sanri.tools.modules.database.service.JdbcService;
 import com.sanri.tools.modules.database.service.TableMarkService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -95,8 +98,7 @@ public class MetadataController {
      * @throws SQLException
      */
     @GetMapping("/searchTables")
-    public List<TableMetaData> searchTables(String connName, String catalog, String[] schemas, String keyword) throws IOException, SQLException {
-        List<TableMetaData> tableMetaDataList = null;
+    public List<ExtendTableMetaData> searchTables(String connName, String catalog, String[] schemas, String keyword) throws IOException, SQLException {
         // 根据关键字进行过滤
         String searchSchema = "";
         if(StringUtils.isNotBlank(keyword) && keyword.contains(":")){
@@ -113,12 +115,22 @@ public class MetadataController {
             keyword = array[1];
         }
 
+        List<TableMetaData> tableMetaDataList = null;
         if (StringUtils.isNotBlank(searchSchema) && "tag".equals(searchSchema)){
             tableMetaDataList = tableMarkService.searchTables(connName,catalog,schemasSet,keyword);
         }else {
             tableMetaDataList = jdbcService.searchTables(connName, catalog, schemasSet,searchSchema, keyword);
         }
 
-        return tableMetaDataList;
+        List<ExtendTableMetaData> extendTableMetaData = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(tableMetaDataList)){
+            for (TableMetaData tableMetaData : tableMetaDataList) {
+                ActualTableName actualTableName = tableMetaData.getActualTableName();
+                TableMark tableMark = tableMarkService.getTableMark(connName, actualTableName);
+                extendTableMetaData.add(new ExtendTableMetaData(tableMetaData,tableMark));
+            }
+        }
+
+        return extendTableMetaData;
     }
 }

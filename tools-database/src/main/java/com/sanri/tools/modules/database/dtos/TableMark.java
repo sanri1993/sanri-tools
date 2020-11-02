@@ -23,4 +23,12 @@ public class TableMark {
         this.connName = connName;
         this.actualTableName = actualTableName;
     }
+
+    /**
+     * 表是否弃用
+     * @return
+     */
+    public boolean isDeprecated(){
+        return this.tags != null && tags.contains("deprecated");
+    }
 }
