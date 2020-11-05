@@ -1,6 +1,6 @@
 package com.sanri.tools.modules.websocket.service;
 
-import com.sanri.tools.modules.websocket.service.messages.ClientMessage;
+import com.sanri.tools.modules.websocket.service.decode.protocol.ClientMessage;
 
 public interface WebsocketMessageListener {
     /**
@@ -9,6 +9,13 @@ public interface WebsocketMessageListener {
      * @param webSocketClient
      */
     void listen(ClientMessage clientMessage,WebSocketClient webSocketClient);
+
+    /**
+     * 处理消息异常时回调
+     * @param e
+     * @param clientMessage
+     */
+    void exceptionCaught(Exception e,ClientMessage clientMessage);
 
     /**
      * 支持的消息

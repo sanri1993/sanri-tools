@@ -817,5 +817,11 @@ GET {{baseUrl}}/mongo/collectionNames/mall-port?connName=192.168.108.130
 ### mongo - 数据筛选
 GET {{baseUrl}}/mongo/queryPage?connName=192.168.108.130&databaseName=mall-port&collectionName=goods&pageNo=1&pageSize=10
 
+### chat - 查看在线用户列表
+GET {{baseUrl}}/chat/onlineUsers
+
+### chat - 获取sessionId
+GET {{baseUrl}}/chat/sessionId
+
 ###
 

@@ -1,6 +1,6 @@
 package com.sanri.tools.modules.websocket.service;
 
-import com.sanri.tools.modules.websocket.service.messages.ClientMessage;
+import com.sanri.tools.modules.websocket.service.decode.protocol.ClientMessage;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public class MessageDispatch {
                     websocketMessageListener.listen(clientMessage,webSocketClient);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                websocketMessageListener.exceptionCaught(e,clientMessage);
             }
         }
     }

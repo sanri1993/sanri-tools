@@ -9,7 +9,7 @@ import com.sanri.tools.modules.serializer.service.SerializerChoseService;
 import com.sanri.tools.modules.websocket.service.MessageDispatch;
 import com.sanri.tools.modules.websocket.service.WebSocketClient;
 import com.sanri.tools.modules.websocket.service.WebsocketMessageListener;
-import com.sanri.tools.modules.websocket.service.messages.ClientMessage;
+import com.sanri.tools.modules.websocket.service.decode.protocol.ClientMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -69,6 +69,11 @@ public class KafkaWebsocketService {
                 consumerTaskMap.put(topic,consumerTask);
             }
             consumerTask.addListener(webSocketClient);
+        }
+
+        @Override
+        public void exceptionCaught(Exception e, ClientMessage clientMessage) {
+            log.error("处理 kafka 消息时异常:{}",e.getMessage(),e);
         }
 
         @Override
