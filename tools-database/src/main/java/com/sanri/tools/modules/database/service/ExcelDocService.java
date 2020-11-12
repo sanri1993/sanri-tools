@@ -2,10 +2,7 @@ package com.sanri.tools.modules.database.service;
 
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.database.dtos.CodeGeneratorConfig;
-import com.sanri.tools.modules.database.dtos.meta.Column;
-import com.sanri.tools.modules.database.dtos.meta.PrimaryKey;
-import com.sanri.tools.modules.database.dtos.meta.Table;
-import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
+import com.sanri.tools.modules.database.dtos.meta.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
@@ -21,8 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,8 +30,9 @@ public class ExcelDocService {
     @Autowired
     private FileManager fileManager;
 
-    public Path generate(CodeGeneratorConfig.DataSourceConfig dataSourceConfig) throws IOException, SQLException {
-        List<TableMetaData> tableMetaDataList = jdbcService.filterChoseTables(dataSourceConfig.getConnName(), dataSourceConfig.getCatalog(), dataSourceConfig.getTables());
+    public Path generate(String connName,String catalog,String [] schemas) throws IOException, SQLException {
+        HashSet<String> schemasSet = new HashSet<>(Arrays.asList(schemas));
+        List<TableMetaData> tableMetaDataList = jdbcService.filterSchemaTables(connName,catalog,schemasSet);
         Workbook workbook = new XSSFWorkbook();
 
         for (TableMetaData tableMetaData : tableMetaDataList) {

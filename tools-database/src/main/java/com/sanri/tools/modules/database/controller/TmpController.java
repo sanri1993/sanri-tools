@@ -29,17 +29,17 @@ public class TmpController {
 
     @RequestMapping("/comments")
     public void writeComments() throws IOException, SQLException {
-        List<TableMetaData> tableMetaDataList = jdbcService.searchTables("10.134.179.119", null, null, "column","court_uuid");
-        Collections.sort(tableMetaDataList,(a,b) -> a.getActualTableName().getSchema().compareTo(b.getActualTableName().getSchema()));
-        Set<String> updateSchema = new HashSet<>();
-        for (TableMetaData tableMetaData : tableMetaDataList) {
-            ActualTableName actualTableName = tableMetaData.getActualTableName();
-            String schema = actualTableName.getSchema();
-            updateSchema.add(schema);
-            String sql = "update "+schema+"."+actualTableName.getTableName()+" set court_uuid='hhdtrailsit201908090a70ab36ccb64';";
-            System.out.println(sql);
-        }
-        System.out.println(updateSchema);
+//        List<TableMetaData> tableMetaDataList = jdbcService.searchTables("10.134.179.119", null, null, "column","court_uuid");
+//        Collections.sort(tableMetaDataList,(a,b) -> a.getActualTableName().getSchema().compareTo(b.getActualTableName().getSchema()));
+//        Set<String> updateSchema = new HashSet<>();
+//        for (TableMetaData tableMetaData : tableMetaDataList) {
+//            ActualTableName actualTableName = tableMetaData.getActualTableName();
+//            String schema = actualTableName.getSchema();
+//            updateSchema.add(schema);
+//            String sql = "update "+schema+"."+actualTableName.getTableName()+" set court_uuid='hhdtrailsit201908090a70ab36ccb64';";
+//            System.out.println(sql);
+//        }
+//        System.out.println(updateSchema);
 //        // 读取 Excel , 找到有注释的列
 //        List<ExcelData> excelDatas = readExcel();
 //        // 合并数据

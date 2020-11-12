@@ -138,8 +138,8 @@ public class MetadataControllerShow {
 
     @PostMapping("/generate")
     @ResponseBody
-    public String generate(@RequestBody CodeGeneratorConfig.DataSourceConfig dataSourceConfig) throws IOException, SQLException {
-        Path generate = excelDocService.generate(dataSourceConfig);
+    public String generate(String connName,String catalog,String [] schemas) throws IOException, SQLException {
+        Path generate = excelDocService.generate(connName,catalog,schemas);
         return generate.toString();
     }
 }
