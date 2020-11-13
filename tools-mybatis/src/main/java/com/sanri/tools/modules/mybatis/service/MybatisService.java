@@ -206,7 +206,7 @@ public class MybatisService {
             SqlCommandType sqlCommandType = mappedStatement.getSqlCommandType();
             if (sqlCommandType == SqlCommandType.SELECT){
                 resultSet = statement.executeQuery();
-                DynamicQueryDto dynamicQueryDto = jdbcService.dynamicQueryProcessor.handle(resultSet);
+                DynamicQueryDto dynamicQueryDto = JdbcService.dynamicQueryProcessor.handle(resultSet);
                 dynamicQueryDto.setSql(statement.toString());
                 boundSqlResponse = new BoundSqlResponse(sqlCommandType,dynamicQueryDto);
             }else{

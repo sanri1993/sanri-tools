@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 @Component
 public class KryoSerializer implements Serializer {
     public static final ThreadLocal<Kryo> kryos = new ThreadLocal<Kryo>(){
+        @Override
         protected Kryo initialValue() {
             Kryo kryo = new Kryo();
             kryo.setInstantiatorStrategy(new Kryo.DefaultInstantiatorStrategy(

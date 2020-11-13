@@ -50,7 +50,7 @@ public class BusinessException extends RuntimeException {
             for (;argIndex<argsStringArray.length;argIndex++){
                 argsStringArray[argIndex] = "";
             }
-            formatMessage = messageFormat.format(message,argsStringArray);
+            formatMessage = MessageFormat.format(message,argsStringArray);
         }
 
         BusinessException businessException = new BusinessException();

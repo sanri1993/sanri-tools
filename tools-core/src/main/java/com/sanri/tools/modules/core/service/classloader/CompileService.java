@@ -58,6 +58,7 @@ public class CompileService {
             this.contents = contents;
         }
 
+        @Override
         public CharSequence getCharContent(boolean ignoreEncodingErrors)throws IOException {
             return contents;
         }

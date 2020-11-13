@@ -39,14 +39,17 @@ public enum  SystemMessage implements ExceptionCause<BusinessException> {
         messageFormat = new MessageFormat(message);
     }
 
+    @Override
     public BusinessException exception(Object...args) {
         return BusinessException.create(this,args);
     }
 
+    @Override
     public MessageFormat getMessageFormat() {
         return messageFormat;
     }
 
+    @Override
     public ResponseDto result() {
         return responseDto;
     }

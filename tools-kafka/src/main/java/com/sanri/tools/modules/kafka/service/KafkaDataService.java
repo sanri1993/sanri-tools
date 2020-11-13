@@ -314,7 +314,7 @@ public class KafkaDataService {
 
                 Long beginningOffset = entry.getValue();
                 Long endOffset = endOffsets.get(key);
-                if (endOffset == beginningOffset){
+                if (endOffset.equals(beginningOffset)){
                     log.warn("主题-分区[{}-{}]目前无数据可消费",key.topic(),key.partition());
                     continue;
                 }

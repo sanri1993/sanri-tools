@@ -62,6 +62,7 @@ public class TransportClient {
 
         final NettyHandler nettyHandler = new NettyHandler(url, handler);
         bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
+            @Override
             public ChannelPipeline getPipeline() {
 
                 ChannelPipeline pipeline = Channels.pipeline();

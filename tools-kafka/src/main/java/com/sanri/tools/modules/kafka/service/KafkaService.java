@@ -429,7 +429,7 @@ public class KafkaService {
                 Long logSize = entry.getValue();
 
                 // 如果有数据,消费最后一条数据 ,主要得到最后一条数据时间
-                if (logSize != minOffset){
+                if (!logSize.equals(minOffset)){
                     consumer.seek(topicPartition,logSize - 1);
                     // 如果不相等，则一定有一条数据, 后面一定要获取到
                     hasDataPartitions ++;
