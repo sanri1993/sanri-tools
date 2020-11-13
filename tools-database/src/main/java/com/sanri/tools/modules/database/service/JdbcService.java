@@ -561,6 +561,7 @@ public class JdbcService {
             ResultSet columnsResultSet = databaseMetaData.getPrimaryKeys(catalog, schema, tableName);
             List<PrimaryKey> indices = primaryKeyListProcessor.handle(columnsResultSet);
             primaryKeyMap.put(table.getActualTableName(),indices);
+            columnsResultSet.close();
         }
 
         return primaryKeyMap;
