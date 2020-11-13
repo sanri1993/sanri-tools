@@ -106,10 +106,8 @@ public class WsdlOperation {
 			}
 			buildReturnObject(parentElement,outputObject,this.output);
 			return outputObject;
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (DocumentException e) {
-			e.printStackTrace();
+		} catch (IOException | DocumentException e ) {
+			log.error("WsdlOperation invoke error : {}",e.getMessage(),e);
 		}
 		return null;
 	}
@@ -284,10 +282,8 @@ public class WsdlOperation {
 					throw new IllegalArgumentException("不支持的 style 类型:"+style);
 				}
 				return buildDocument;
-			} catch (SAXException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
+			} catch (SAXException | IOException e) {
+				log.error("WsdlOperation buildRequest error : {}",e.getMessage(),e);
 			}
 			break;
 		case SOAP12:

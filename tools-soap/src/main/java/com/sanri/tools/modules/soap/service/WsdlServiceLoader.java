@@ -32,7 +32,7 @@ public class WsdlServiceLoader {
 		try {
 			wsdlFactory = WSDLFactory.newInstance();
 		} catch (WSDLException e) {
-			e.printStackTrace();
+			log.error("WsdlServiceLoader init error: {}",e.getMessage(),e);
 		}
 	}
 
@@ -99,7 +99,7 @@ public class WsdlServiceLoader {
 			URL fileURL = fileURI.toURL();
 			return loadService(fileURL);
 		} catch (MalformedURLException e) {
-			e.printStackTrace();
+			log.error("WsdlServiceLoader loadService error : {}",e.getMessage(),e);
 		}
 		return null;
 	}
@@ -126,7 +126,7 @@ public class WsdlServiceLoader {
 			wsdlContext.processTypes();
 			return wsdlContext;
 		} catch (WSDLException e) {
-			e.printStackTrace();
+			log.error("WsdlServiceLoader parserWsdlContext error : {}",e.getMessage(),e);
 		}
 		return null;
 	}

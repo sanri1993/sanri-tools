@@ -32,7 +32,7 @@ public class BizTranslate {
                 Properties mirrmorKeyValue = bizMirrmorKeyValue(biz);
                 properties.putAll(mirrmorKeyValue);
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("translate load biz word error : {}",e.getMessage(),e);
             }
         }
 

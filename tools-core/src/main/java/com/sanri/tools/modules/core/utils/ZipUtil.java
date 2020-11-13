@@ -1,5 +1,6 @@
 package com.sanri.tools.modules.core.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.Zip64Mode;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -18,6 +19,7 @@ import java.util.List;
  * 时间:2017-4-24下午4:09:47<br/>
  * 功能:zip 处理工具类,需要 apache-commons-compress 支持 <br/>
  */
+@Slf4j
 public class ZipUtil {
 
 	/**
@@ -54,7 +56,7 @@ public class ZipUtil {
 			}
 			zaos.finish();
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("ZipUtil zip error: {}",e.getMessage(),e);
 		} finally {
 			IOUtils.closeQuietly(zaos);
 		}
@@ -131,10 +133,8 @@ public class ZipUtil {
 					IOUtils.copy(zais, fos);
 					IOUtils.closeQuietly(fos);
 				}
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
 			} catch (IOException e) {
-				e.printStackTrace();
+				log.error("ZipUtil unzip error: {}",e.getMessage(),e);
 			} finally{
 				IOUtils.closeQuietly(is);
 				IOUtils.closeQuietly(zais);

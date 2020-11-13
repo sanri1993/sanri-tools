@@ -10,6 +10,7 @@ import com.sanri.tools.modules.database.service.JdbcService;
 import com.sanri.tools.modules.mybatis.dtos.BoundSqlParam;
 import com.sanri.tools.modules.mybatis.dtos.BoundSqlResponse;
 import com.sanri.tools.modules.mybatis.dtos.ProjectDto;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -41,6 +42,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class MybatisService {
     @Autowired
     private FileManager fileManager;
@@ -128,7 +130,7 @@ public class MybatisService {
         try {
             FileUtils.writeStringToFile(bindClassloader,collect);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("MybatisService serializer error : {}",e.getMessage(),e);
         }
     }
 
@@ -242,7 +244,7 @@ public class MybatisService {
                 try {
                     loadMapperFile(projectName,mapperFile.getName(),classloaderName);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error("MybatisService reload.loadMapperFile error : {}",e.getMessage(),e);
                 }
             }
         }

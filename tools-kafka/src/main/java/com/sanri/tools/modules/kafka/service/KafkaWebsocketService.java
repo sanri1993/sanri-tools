@@ -149,7 +149,7 @@ public class KafkaWebsocketService {
                                 try {
                                     deserialize = defaultSerializer.deserialize(value,classloader);
                                 } catch (ClassNotFoundException ex) {
-                                    e.printStackTrace();
+                                   log.error("ConsumerTask deserialize error : {}",e.getMessage(),e);
                                 }
                             }
                             for (WebSocketClient notifyConsumerRecordClient : notifyConsumerRecordClients) {

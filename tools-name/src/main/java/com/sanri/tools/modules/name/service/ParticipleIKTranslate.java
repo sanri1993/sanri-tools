@@ -48,7 +48,7 @@ public class ParticipleIKTranslate implements TokenizerTool {
             translateCharSequence.initCharMaps();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("ParticipleIKTranslate doTokenizer error : {}",e.getMessage(),e);
         }finally {
             IOUtils.closeQuietly(reader);
         }

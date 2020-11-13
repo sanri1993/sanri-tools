@@ -53,7 +53,7 @@ public class WsdlContext {
 			BASE_SOAP11_DOCUMENT = IOUtils.toString(soap11File);
 			BASE_SOAP12_DOCUMENT = IOUtils.toString(soap12File);
 		} catch (URISyntaxException | IOException e) {
-			e.printStackTrace();
+			log.info("init load soap xml error : {}",e.getMessage(),e);
 		}
 	}
 	/**

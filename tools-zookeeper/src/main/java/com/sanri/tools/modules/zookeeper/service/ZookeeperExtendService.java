@@ -65,7 +65,7 @@ public class ZookeeperExtendService {
         try {
             fileManager.writeConfig(ZookeeperService.module,"favorites", JSON.toJSONString(pathFavorites));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("zookeeper serializer favorites error : {}",e.getMessage(),e);
         }
     }
 
@@ -76,7 +76,7 @@ public class ZookeeperExtendService {
             TypeReference<Map<String,Set<PathFavorite>>> typeReference =  new TypeReference<Map<String,Set<PathFavorite>>>(){};
             this.pathFavorites = JSON.parseObject(favorites,typeReference);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("zookeeper load path favorites error : {}",e.getMessage(),e);
         }
     }
 }

@@ -10,6 +10,7 @@ import com.sanri.tools.modules.database.dtos.meta.*;
 import com.sanri.tools.modules.core.dtos.param.AuthParam;
 import com.sanri.tools.modules.core.dtos.param.ConnectParam;
 import com.sanri.tools.modules.core.dtos.param.DatabaseConnectParam;
+import lombok.extern.slf4j.Slf4j;
 import oracle.jdbc.pool.OracleDataSource;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.dbutils.DbUtils;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 
 
 @Service
+@Slf4j
 public class JdbcService {
     @Autowired
     private ConnectService connectService;
@@ -437,7 +439,7 @@ public class JdbcService {
                 dynamicQueryDto.setSql(sql);
                 dynamicQueryDtos.add(dynamicQueryDto);
             } catch (SQLException e) {
-                e.printStackTrace();
+                log.error("当前 sql [{}],在 connName [{}] 执行失败，原因为 [{}]",sql,connName,e.getMessage(),e);
             }
         }
         return dynamicQueryDtos;

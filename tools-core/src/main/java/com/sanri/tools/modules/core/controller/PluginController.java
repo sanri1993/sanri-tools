@@ -54,7 +54,7 @@ public class PluginController {
      * @return
      */
     @GetMapping("/detail")
-    public PluginDto detail(String key){
+    public PluginDto detail(String key) throws IOException {
         EnhancePluginDto detail = pluginManager.detail(key);
         if(detail != null) {
             PluginDto pluginDto = detail.getPluginDto();
@@ -66,9 +66,7 @@ public class PluginController {
                    inputStream = classPathResource.getInputStream();
                    String content = IOUtils.toString(inputStream, "utf-8");
                    pluginDto.setHelpContent(content);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }finally {
+                } finally {
                     IOUtils.closeQuietly(inputStream);
                 }
             }

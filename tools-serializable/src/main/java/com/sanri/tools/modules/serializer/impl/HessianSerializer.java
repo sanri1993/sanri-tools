@@ -31,9 +31,7 @@ public class HessianSerializer implements Serializer {
             IOUtils.closeQuietly(byteArrayOutputStream);
             try {
                 hessianOutput.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            } catch (IOException e) {}
         }
         return byteArrayOutputStream.toByteArray();
     }
@@ -52,9 +50,7 @@ public class HessianSerializer implements Serializer {
             IOUtils.closeQuietly(byteArrayInputStream);
             try {
                 hessianInput.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            } catch (Exception e) {}
         }
     }
 }

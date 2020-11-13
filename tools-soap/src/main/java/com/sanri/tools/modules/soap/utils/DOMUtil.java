@@ -430,9 +430,7 @@ public class DOMUtil {
             result = strResult.getWriter().toString();
             try {
                 strWtr.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            } catch (IOException e) {}
         }
 
         return result;

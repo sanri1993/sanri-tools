@@ -1,11 +1,13 @@
 package com.sanri.tools.modules.zookeeper.service;
 
 import com.sanri.tools.modules.serializer.service.Serializer;
+import lombok.extern.slf4j.Slf4j;
 import org.I0Itec.zkclient.exception.ZkMarshallingError;
 import org.I0Itec.zkclient.serialize.ZkSerializer;
 
 import java.io.IOException;
 
+@Slf4j
 public class ZkSerializerAdapter implements ZkSerializer {
     private Serializer serializer;
 
@@ -18,7 +20,7 @@ public class ZkSerializerAdapter implements ZkSerializer {
         try {
             return serializer.serialize(o);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("serialize error : {}",e.getMessage(),e);
         }
         return new byte[0];
     }
@@ -27,10 +29,8 @@ public class ZkSerializerAdapter implements ZkSerializer {
     public Object deserialize(byte[] bytes) throws ZkMarshallingError {
         try {
             return serializer.deserialize(bytes,ClassLoader.getSystemClassLoader());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        } catch (IOException | ClassNotFoundException e) {
+            log.error("deserialize error : {}",e.getMessage(),e);
         }
         return null;
     }

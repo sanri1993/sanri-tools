@@ -11,10 +11,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ResourceUtils;
 
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.text.ParseException;
@@ -64,8 +66,8 @@ public class RandomUtil {
 					AREA_CITY_MAP.add(next);
 				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (IOException | URISyntaxException e) {
+			log.error("random data init load error : {}",e.getMessage(),e);
 		}finally{
 			IOUtils.closeQuietly(reader);
 		}
@@ -205,7 +207,7 @@ public class RandomUtil {
 			String sno = RandomStringUtils.randomNumeric(3);
 			return idcard(area, yyyyMMdd, sno);
 		} catch (ParseException e) {
-			e.printStackTrace();
+			// format has not exception
 		}
 		return "";
 	}

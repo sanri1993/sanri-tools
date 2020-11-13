@@ -65,7 +65,7 @@ public final class IdCard18Model {
         try {
             return DateUtils.parseDate(birthday, format);
         } catch (ParseException e) {
-            e.printStackTrace();
+            // don't have exception
         }
         return null;
     }

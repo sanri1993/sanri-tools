@@ -68,7 +68,7 @@ public class ClassloaderService  {
                 String className = FilenameUtils.getBaseName(classPath);
                 extendClassloader.loadClass(className);
             }  catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                log.error("loadClasses error : {}",e.getMessage(),e);
             }
         }
         CACHED_CLASSLOADER.put(classloaderName,extendClassloader);
@@ -221,7 +221,7 @@ public class ClassloaderService  {
                 try {
                     loadClasses(file,name);
                 } catch (MalformedURLException e) {
-                    e.printStackTrace();
+                    log.error("load ext libs error : {}",e.getMessage(),e);
                 }
             }
         }catch (Exception e){

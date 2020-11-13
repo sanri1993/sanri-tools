@@ -9,6 +9,10 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class NetUtil {
@@ -28,9 +32,7 @@ public class NetUtil {
         } finally {
             try {
                 socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            } catch (IOException e) {}
         }
         return true;
     }
@@ -51,25 +53,76 @@ public class NetUtil {
     public static boolean isHostReachable(String host, Integer timeOut) {
         try {
             return InetAddress.getByName(host).isReachable(timeOut);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+           log.error("isHostReachable () error : {}",e.getMessage(),e);
         }
         return false;
     }
 
     /**
-     * 本地 ip
+     * IceWee 2013.07.19
+     * 获取本地IP列表（针对多网卡情况）
+     *
      * @return
      */
-    public static String localIp(){
+    public static List<String> getLocalIPs() {
+        List<String> ipList = new ArrayList<String>();
         try {
-            return Inet4Address.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
+            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+            NetworkInterface networkInterface;
+            Enumeration<InetAddress> inetAddresses;
+            InetAddress inetAddress;
+            String ip;
+            while (networkInterfaces.hasMoreElements()) {
+                networkInterface = networkInterfaces.nextElement();
+                inetAddresses = networkInterface.getInetAddresses();
+                while (inetAddresses.hasMoreElements()) {
+                    inetAddress = inetAddresses.nextElement();
+                    if (inetAddress != null && inetAddress instanceof Inet4Address) { // IPV4
+                        ip = inetAddress.getHostAddress();
+                        ipList.add(ip);
+                    }
+                }
+            }
+        } catch (SocketException e) {
+           log.error("getLocalIPs() error : {}",e.getMessage(),e);
         }
-        return "";
+        return ipList;
+    }
+
+    /**
+     * 获取本机 mac 地址
+     * @return
+     */
+    public List<String> localMacs() throws SocketException {
+        java.util.Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
+        StringBuilder sb = new StringBuilder();
+        ArrayList<String> tmpMacList = new ArrayList<>();
+        while (en.hasMoreElements()) {
+            NetworkInterface iface = en.nextElement();
+            List<InterfaceAddress> addrs = iface.getInterfaceAddresses();
+            for (InterfaceAddress addr : addrs) {
+                InetAddress ip = addr.getAddress();
+                NetworkInterface network = NetworkInterface.getByInetAddress(ip);
+                if (network == null) {
+                    continue;
+                }
+                byte[] mac = network.getHardwareAddress();
+                if (mac == null) {
+                    continue;
+                }
+                sb.delete(0, sb.length());
+                for (int i = 0; i < mac.length; i++) {
+                    sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
+                }
+                tmpMacList.add(sb.toString());
+            }
+        }
+        if (tmpMacList.size() <= 0) {
+            return tmpMacList;
+        }
+        List<String> unique = tmpMacList.stream().distinct().collect(Collectors.toList());
+        return unique;
     }
 
     /**

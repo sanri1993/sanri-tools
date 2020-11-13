@@ -245,12 +245,8 @@ public class DataService {
                         fileOutputStream = new FileOutputStream(excelPartFile);
                         fillExcelSheet(dynamicQueryDto,sheet);
                         workbook.write(fileOutputStream);
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    } catch (Exception e) {
+                        log.error("exportLowMemoryMutiProcessor() error : {}",e.getMessage(),e);
                     } finally {
                         IOUtils.closeQuietly(fileOutputStream);
                     }

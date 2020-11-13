@@ -64,8 +64,7 @@ public class WsdlServiceClient {
             url = new URL(webserviceUrl);
             return url;
         } catch (MalformedURLException e) {
-            log.error("传入路径不合法:"+webserviceUrl+",请使用 wsdl 文档地址");
-            e.printStackTrace();
+            log.error("传入路径不合法:{},请使用 wsdl 文档地址",webserviceUrl,e);
         }
         return null;
     }

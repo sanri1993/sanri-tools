@@ -181,7 +181,7 @@ public class CodeGeneratorService {
             try {
                 entityTemplate.process(context, outputStreamWriter);
             } catch (TemplateException e) {
-                e.printStackTrace();
+                log.error("javaBeanBuild template error : {}",e.getMessage(),e);
             } finally {
                 IOUtils.closeQuietly(outputStreamWriter);
             }

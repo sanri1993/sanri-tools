@@ -153,7 +153,7 @@ public class TableRelationService {
         try {
             fileManager.writeConfig(JdbcService.module,"metadata/relations",JSON.toJSONString(tableRelationDtoMap));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("table relation serializable error : {}",e.getMessage(),e);
         }
     }
 

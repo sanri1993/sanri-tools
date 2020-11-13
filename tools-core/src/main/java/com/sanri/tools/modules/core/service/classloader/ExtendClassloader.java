@@ -1,5 +1,7 @@
 package com.sanri.tools.modules.core.service.classloader;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -8,6 +10,7 @@ import java.util.Vector;
 /**
  * 为每一个类加载器标识一个名称
  */
+@Slf4j
 public class ExtendClassloader extends URLClassLoader {
     private String name;
 
@@ -32,7 +35,7 @@ public class ExtendClassloader extends URLClassLoader {
             Vector<Class<?>> vector = (Vector<Class<?>>) classes.get(this);
             return vector;
         } catch (IllegalAccessException | NoSuchFieldException e) {
-            e.printStackTrace();
+            log.error("getLoadClasses() error : {}",e.getMessage(),e);
         }
         return null;
     }

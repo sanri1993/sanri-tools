@@ -57,7 +57,7 @@ public class TableMarkService {
         try {
             fileManager.writeConfig(JdbcService.module,"metadata/tablemark", JSON.toJSONString(tableMarkMap));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("tableMark serializable error : {}",e.getMessage(),e);
         }
     }
 

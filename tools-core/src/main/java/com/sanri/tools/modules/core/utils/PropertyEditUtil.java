@@ -75,7 +75,7 @@ public final class PropertyEditUtil {
 		try {
 			return PropertyUtils.getSimpleProperty(source, name);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("getSimpleProperty() error : {}",e.getMessage(),e);
 		}
 		return null;
 	}
@@ -93,7 +93,7 @@ public final class PropertyEditUtil {
 		try {
 			return PropertyUtils.getNestedProperty(source, name);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("getNestedProperty() error : {}",e.getMessage(),e);
 		}
 		return null;
 	}
@@ -179,7 +179,7 @@ public final class PropertyEditUtil {
 					Object propertyValue = readMethod.invoke(source);
 					describe.put(name, propertyValue);
 				} catch (Exception e) {
-					e.printStackTrace();
+					log.error("describeExclude() error : {}",e.getMessage(),e);
 				}
 				
 			}
