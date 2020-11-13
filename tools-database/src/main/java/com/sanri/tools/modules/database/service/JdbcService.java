@@ -536,6 +536,7 @@ public class JdbcService {
         ResultSet columnsResultSet = databaseMetaData.getColumns(catalog, schema, "%", "%");
         List<Column> columns = columnListProcessor.handle(columnsResultSet);
         Map<ActualTableName, List<Column>> collect = columns.stream().collect(Collectors.groupingBy(Column::getActualTableName));
+        columnsResultSet.close();
         return collect;
     }
 
@@ -546,6 +547,7 @@ public class JdbcService {
             ResultSet columnsResultSet = databaseMetaData.getIndexInfo(catalog, schema, tableName, false,true);
             List<Index> indices = indexListProcessor.handle(columnsResultSet);
             indexMap.put(table.getActualTableName(),indices);
+            columnsResultSet.close();
         }
         return indexMap;
     }
