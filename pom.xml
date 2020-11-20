@@ -18,6 +18,7 @@
         <module>tools-name</module>
         <module>tools-dubbo</module>
         <module>tools-mongodb</module>
+        <module>tools-quartz</module>
     </modules>
 
     <parent>

@@ -158,7 +158,7 @@ public class DataService {
      * @param dataQueryParam
      * @return
      */
-    public String exportSingleProcessor(DataQueryParam dataQueryParam) throws IOException, SQLException {
+    public ExportProcessDto exportSingleProcessor(DataQueryParam dataQueryParam) throws IOException, SQLException {
         String connName = dataQueryParam.getConnName();
         String sql = dataQueryParam.getFirstSql();
 
@@ -176,7 +176,8 @@ public class DataService {
         workbook.write(fileOutputStream);
 
         Path path = fileManager.relativePath(exportDir.toPath());
-        return path.toString();
+
+        return new ExportProcessDto(path.toString(),1,1);
     }
 
     // 单线程导出最大数据量
@@ -191,7 +192,7 @@ public class DataService {
      * @throws SQLException
      * @return
      */
-    public String exportLowMemoryMutiProcessor(DataQueryParam dataQueryParam) throws IOException, SQLException, JSQLParserException {
+    public ExportProcessDto exportLowMemoryMutiProcessor(DataQueryParam dataQueryParam) throws IOException, SQLException, JSQLParserException {
         String connName = dataQueryParam.getConnName();
         String sql = dataQueryParam.getFirstSql();
 
@@ -256,7 +257,8 @@ public class DataService {
         }
 
         Path path = fileManager.relativePath(exportDir.toPath());
-        return path.toString();
+        ExportProcessDto exportProcessDto = new ExportProcessDto(path.toString(), 0, dataCount);
+        return exportProcessDto;
     }
 
     /**

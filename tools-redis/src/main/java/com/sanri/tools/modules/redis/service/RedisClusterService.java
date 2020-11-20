@@ -91,7 +91,7 @@ public class RedisClusterService {
                 keyResults.addAll(keyScanResult.getKeys());
 
                 if (!keyScanResult.isFinish()) {
-                    int nextLimit = redisScanParam.getLimit() - keyResults.size();
+                    int nextLimit = redisScanParam.getLimit() - keyScanResult.getKeys().size();
                     redisScanParam.setLimit(nextLimit);
 
                     if (nextLimit == 0) {
