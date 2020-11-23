@@ -114,8 +114,8 @@ public class DataController {
      * @return
      */
     @PostMapping("/exportData")
-    public String exportData(@RequestBody DataQueryParam dataQueryParam) throws JSQLParserException, SQLException, IOException {
-        String fileRelativePath = dataService.exportLowMemoryMutiProcessor(dataQueryParam);
+    public ExportProcessDto exportData(@RequestBody DataQueryParam dataQueryParam) throws JSQLParserException, SQLException, IOException {
+        ExportProcessDto fileRelativePath = dataService.exportLowMemoryMutiProcessor(dataQueryParam);
         return fileRelativePath;
     }
 

@@ -815,5 +815,14 @@ GET {{baseUrl}}/chat/onlineUsers
 ### chat - 获取sessionId
 GET {{baseUrl}}/chat/sessionId
 
+### quartz - triggers
+GET {{baseUrl}}/quartz/triggers?connName=localhost&catalog=quartz
+
+### quartz - triggerCron
+GET {{baseUrl}}/quartz/trigger/cron?connName=localhost&catalog=quartz&name=triggertest01&group=test
+
+### quartz - trigger
+GET {{baseUrl}}/quartz/trigger?connName=localhost&group=test&name=triggertest01
+
 ###
 
