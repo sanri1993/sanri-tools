@@ -22,6 +22,16 @@ public class QuartzController {
     private QuartzService quartzService;
 
     /**
+     * 调度器库绑定类加载器
+     * @param connName
+     * @param classloaderName
+     */
+    @GetMapping("/createScheduler")
+    public void createScheduler(String connName,String classloaderName) throws Exception {
+        quartzService.bindClassloader(connName,classloaderName);
+    }
+
+    /**
      * 查询所有的任务列表
      * @param connName
      * @return
@@ -53,7 +63,7 @@ public class QuartzController {
      * @throws SchedulerException
      */
     @GetMapping("/trigger")
-    public void trigger(String connName,String group,String name) throws SchedulerException {
+    public void trigger(String connName,String group,String name) throws Exception {
         JobKey jobKey = new JobKey(name, group);
         quartzService.trigger(connName,jobKey);
     }
@@ -66,7 +76,7 @@ public class QuartzController {
      * @throws SchedulerException
      */
     @GetMapping("/pause")
-    public void pause(String connName,String name,String group) throws SchedulerException {
+    public void pause(String connName,String name,String group) throws Exception {
         JobKey jobKey = new JobKey(name, group);
         quartzService.pause(connName,jobKey);
     }
@@ -79,7 +89,7 @@ public class QuartzController {
      * @throws SchedulerException
      */
     @GetMapping("/resume")
-    public void resume(String connName,String name,String group) throws SchedulerException {
+    public void resume(String connName,String name,String group) throws Exception {
         JobKey jobKey = new JobKey(name, group);
         quartzService.resume(connName,jobKey);
     }
@@ -94,7 +104,7 @@ public class QuartzController {
      * @throws SchedulerException
      */
     @GetMapping("/remove")
-    public void remove(String connName,String triggerName,String triggerGroup,String jobName,String jobGroup) throws SchedulerException {
+    public void remove(String connName,String triggerName,String triggerGroup,String jobName,String jobGroup) throws Exception {
         TriggerKey triggerKey = TriggerKey.triggerKey(triggerName, triggerGroup);
         JobKey jobKey = JobKey.jobKey(jobName, jobGroup);
         quartzService.remove(connName,triggerKey,jobKey);

@@ -816,13 +816,16 @@ GET {{baseUrl}}/chat/onlineUsers
 GET {{baseUrl}}/chat/sessionId
 
 ### quartz - triggers
-GET {{baseUrl}}/quartz/triggers?connName=localhost&catalog=quartz
+GET {{baseUrl}}/quartz/triggers?connName=localhost&catalog=job
 
 ### quartz - triggerCron
-GET {{baseUrl}}/quartz/trigger/cron?connName=localhost&catalog=quartz&name=triggertest01&group=test
+GET {{baseUrl}}/quartz/trigger/cron?connName=localhost&catalog=job&name=triggertest01&group=test
 
 ### quartz - trigger
-GET {{baseUrl}}/quartz/trigger?connName=localhost&group=test&name=triggertest01
+GET {{baseUrl}}/quartz/trigger?connName=localhost@job&group=test&name=test01
+
+### quartz - createScheduler
+GET {{baseUrl}}/quartz/createScheduler?connName=localhost
 
 ###
 

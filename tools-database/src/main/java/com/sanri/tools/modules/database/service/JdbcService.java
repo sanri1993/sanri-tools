@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -597,7 +598,12 @@ public class JdbcService {
                 String catalog = rs.getString("TABLE_CAT");
                 String schema = rs.getString("TABLE_SCHEM");
                 String tableName = rs.getString("TABLE_NAME");
-                String remarks = rs.getString("REMARKS");
+//                String remarks = rs.getString("REMARKS");
+                String remarks = null;
+                try {
+                    // 解决注释字段乱码问题
+                    remarks = new String(rs.getBytes("REMARKS"),"UTF-8");
+                } catch (UnsupportedEncodingException e) {}
                 ActualTableName actualTableName = new ActualTableName(catalog, schema, tableName);
                 Table table = new Table(actualTableName, remarks);
                 tables.add(table);
@@ -622,7 +628,11 @@ public class JdbcService {
                 int columnSize = rs.getInt("COLUMN_SIZE");
                 int decimalDigits = rs.getInt("DECIMAL_DIGITS");
                 int nullableInt = rs.getInt("NULLABLE");
-                String remarks = rs.getString("REMARKS");
+//                String remarks = rs.getString("REMARKS");
+                String remarks = null;
+                try {
+                    remarks = new String(rs.getBytes("REMARKS"),"UTF-8");
+                } catch (UnsupportedEncodingException e) {}
                 String autoIncrement = rs.getString("IS_AUTOINCREMENT");
 
                 boolean nullable = nullableInt == 1 ? true: false;
@@ -726,10 +736,31 @@ public class JdbcService {
         return connection.getMetaData();
     }
 
-    DataSource dataSource(String connName) throws SQLException, IOException {
-        DataSource dataSource = dataSourceMap.get(connName);
+    /**
+     * 获取默认数据源和指定数据库的数据源
+     * @param connName
+     * @return
+     * @throws IOException
+     * @throws SQLException
+     */
+    public DataSource dataSource(String connName) throws IOException, SQLException {return dataSource(connName,null);}
+    public DataSource dataSource(String connName,String databaseName) throws SQLException, IOException {
+        if (connName.contains("@")){
+            String[] split = StringUtils.split(connName, '@');
+            connName = split[0];
+            databaseName = split[1];
+        }
+
+        DatabaseConnectParam databaseConnectParam = (DatabaseConnectParam) connectService.readConnParams(JdbcService.module, connName);
+
+        String database = databaseConnectParam.getDatabase();
+        if (StringUtils.isBlank(databaseName)) {
+            databaseName = database;
+        }
+
+        DataSource dataSource = dataSourceMap.get(connName+"@"+databaseName);
+
         if (dataSource == null){
-            DatabaseConnectParam databaseConnectParam = (DatabaseConnectParam) connectService.readConnParams(JdbcService.module, connName);
             String dbType = databaseConnectParam.getDbType();
             ConnectParam connectParam = databaseConnectParam.getConnectParam();
             AuthParam authParam = databaseConnectParam.getAuthParam();
@@ -739,7 +770,7 @@ public class JdbcService {
                     ExMysqlDataSource mysqlDataSource = new ExMysqlDataSource();
                     mysqlDataSource.setServerName(connectParam.getHost());
                     mysqlDataSource.setPort(connectParam.getPort());
-                    mysqlDataSource.setDatabaseName(databaseConnectParam.getDatabase());
+                    mysqlDataSource.setDatabaseName(databaseName);
                     mysqlDataSource.setUser(authParam.getUsername());
                     mysqlDataSource.setPassword(authParam.getPassword());
                     dataSource = mysqlDataSource;
@@ -748,7 +779,7 @@ public class JdbcService {
                     PGSimpleDataSource pgSimpleDataSource = new PGSimpleDataSource();
                     pgSimpleDataSource.setServerName(connectParam.getHost());
                     pgSimpleDataSource.setPortNumber(connectParam.getPort());
-                    pgSimpleDataSource.setDatabaseName(databaseConnectParam.getDatabase());
+                    pgSimpleDataSource.setDatabaseName(databaseName);
                     pgSimpleDataSource.setUser(authParam.getUsername());
                     pgSimpleDataSource.setPassword(authParam.getPassword());
                     dataSource = pgSimpleDataSource;
@@ -757,14 +788,15 @@ public class JdbcService {
                     OracleDataSource oracleDataSource = new OracleDataSource();
                     oracleDataSource.setServerName(connectParam.getHost());
                     oracleDataSource.setPortNumber(connectParam.getPort());
-                    oracleDataSource.setDatabaseName(databaseConnectParam.getDatabase());
+                    oracleDataSource.setDatabaseName(databaseName);
                     oracleDataSource.setUser(authParam.getUsername());
                     oracleDataSource.setPassword(authParam.getPassword());
                     oracleDataSource.setDriverType("thin");
-                    oracleDataSource.setURL("jdbc:oracle:thin:@"+connectParam.getHost()+":"+connectParam.getPort()+":"+databaseConnectParam.getDatabase());
+                    oracleDataSource.setURL("jdbc:oracle:thin:@"+connectParam.getHost()+":"+connectParam.getPort()+":"+ database);
                     dataSource = oracleDataSource;
             }
-            dataSourceMap.put(connName,dataSource);
+
+            dataSourceMap.put(connName+"@"+databaseName,dataSource);
         }
         return dataSource;
     }
