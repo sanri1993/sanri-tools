@@ -7,6 +7,7 @@ import com.sanri.tools.modules.core.dtos.ResponseDto;
 import com.sanri.tools.modules.core.exception.ToolException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -124,7 +125,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ToolException.class)
     public ResponseDto toolException(ToolException e){
+        StackTraceElement stackTraceElement = e.getStackTrace()[0];
+        String className = stackTraceElement.getClassName();
+        int lineNumber = stackTraceElement.getLineNumber();
+        String methodName = stackTraceElement.getMethodName();
+        String mark = StringUtils.join(new String[]{className,".", methodName, "(", lineNumber + "", ") ",}, "");
         BusinessException businessException = BusinessException.create(e.getMessage());
+        log.error(mark + businessException.getMessage());
         return businessException.getResponseDto();
     }
 }

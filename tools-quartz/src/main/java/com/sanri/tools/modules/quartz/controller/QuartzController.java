@@ -2,14 +2,13 @@ package com.sanri.tools.modules.quartz.controller;
 
 import com.sanri.tools.modules.quartz.dtos.TriggerCron;
 import com.sanri.tools.modules.quartz.dtos.TriggerTask;
+import com.sanri.tools.modules.quartz.service.EditJobParam;
 import com.sanri.tools.modules.quartz.service.QuartzService;
 import org.quartz.JobKey;
 import org.quartz.SchedulerException;
 import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -22,13 +21,13 @@ public class QuartzController {
     private QuartzService quartzService;
 
     /**
-     * 调度器库绑定类加载器
+     * 添加或修改一个 job
      * @param connName
-     * @param classloaderName
+     * @param editJobParam
      */
-    @GetMapping("/createScheduler")
-    public void createScheduler(String connName,String classloaderName) throws Exception {
-        quartzService.bindClassloader(connName,classloaderName);
+    @PostMapping("/{connName}/editJob")
+    public void editJob(@PathVariable("connName") String connName, @RequestBody EditJobParam editJobParam) throws Exception {
+        quartzService.editJob(connName,editJobParam);
     }
 
     /**

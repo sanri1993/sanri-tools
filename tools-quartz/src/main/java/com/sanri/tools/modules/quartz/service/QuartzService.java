@@ -1,34 +1,21 @@
 package com.sanri.tools.modules.quartz.service;
 
-import com.sanri.tools.modules.core.exception.ToolException;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
-import com.sanri.tools.modules.core.service.classloader.ExtendClassloader;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.database.service.JdbcService;
-import com.sanri.tools.modules.quartz.dtos.ExScheduler;
 import com.sanri.tools.modules.quartz.dtos.TriggerCron;
 import com.sanri.tools.modules.quartz.dtos.TriggerTask;
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
-import org.quartz.JobKey;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.TriggerKey;
-import org.quartz.simpl.CascadingClassLoadHelper;
-import org.quartz.spi.ClassLoadHelper;
+import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.support.CronSequenceGenerator;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.sql.DataSource;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -49,49 +36,7 @@ public class QuartzService {
     @Autowired
     private SpringJobFactory springJobFactory;
 
-    private Map<String, ExScheduler> schedulerMap = new ConcurrentHashMap<>();
-
-    /**
-     * 对于 quartz 需要绑定类加载器
-     * @param connName
-     * @param classloaderName
-     */
-    public void bindClassloader(String connName,String classloaderName) throws Exception {
-        ClassLoader classloader = classloaderService.getClassloader(classloaderName);
-        Enhancer enhancer = new Enhancer();
-        enhancer.setSuperclass(CascadingClassLoadHelper.class);
-        enhancer.setCallback(new LoadClassCallback(classloader));
-        Object object = enhancer.create();
-        createSchedule(connName,classloader,object.getClass());
-    }
-
-    public static class LoadClassCallback implements MethodInterceptor{
-        private ClassLoader classLoader;
-        public LoadClassCallback(ClassLoader classloader) {
-            this.classLoader = classloader;
-        }
-
-        @Override
-        public Object intercept(Object obj, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
-            if(method.getDeclaringClass() == Object.class){
-                return method.invoke(obj,objects);
-            }
-
-            String methodName = method.getName();
-            int parameterCount = method.getParameterCount();
-            if (methodName.equals("loadClass") && parameterCount == 1){
-                Object invoke = methodProxy.invoke(obj, objects);
-                if (invoke == null){
-                    return classLoader.loadClass(Objects.toString(objects[0]));
-                }
-
-                return invoke;
-            }
-
-            // 其它情况调用原方法
-            return methodProxy.invoke(obj,objects);
-        }
-    }
+    private Map<String, Scheduler> schedulerMap = new ConcurrentHashMap<>();
 
     /**
      * 一般任务数不会过万 , 一次性查出来即可
@@ -136,12 +81,36 @@ public class QuartzService {
     }
 
     /**
+     * 编辑或者添加一个 job
+     * @param editJobParam
+     */
+    public void editJob(String connName,EditJobParam editJobParam) throws Exception {
+        Scheduler scheduler = loadScheduler(connName);
+        JobDetail jobDetail = scheduler.getJobDetail(editJobParam.getJobKey());
+        // 创建 job
+        JobKey jobKey = editJobParam.getJobKey();
+        if (jobDetail != null){
+            scheduler.deleteJob(jobKey);
+        }
+        ClassLoader classloader = classloaderService.getClassloader(editJobParam.getClassloaderName());
+        Class<? extends Job> jobClass = (Class<? extends Job>) classloader.loadClass(editJobParam.getClassName());
+        jobDetail = JobBuilder.newJob(jobClass).withIdentity(editJobParam.getJobKey()).withDescription(editJobParam.getDescription()).build();
+        jobDetail.getJobDataMap().put("jobMethodName", editJobParam.getJobMethodName());
+
+        // 创建触发器
+        CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule(editJobParam.getCron());
+        TriggerKey triggerKey = TriggerKey.triggerKey("trigger" + jobKey.getName(), jobKey.getGroup());
+        Trigger trigger = TriggerBuilder.newTrigger().withIdentity(triggerKey).startNow().withSchedule(cronScheduleBuilder).build();
+        Date scheduleJob = scheduler.scheduleJob(jobDetail, trigger);
+    }
+
+    /**
      * 触发一个任务
      * @param connName
      * @param jobKey
      * @throws SchedulerException
      */
-    @GetMapping("/trigger")
+    @InvokeClassLoader
     public void trigger(String connName,JobKey jobKey) throws Exception {
         Scheduler scheduler = loadScheduler(connName);
         scheduler.triggerJob(jobKey);
@@ -153,7 +122,7 @@ public class QuartzService {
      * @param jobKey
      * @throws SchedulerException
      */
-    @GetMapping("/pause")
+    @InvokeClassLoader
     public void pause(String connName,JobKey jobKey) throws Exception {
         Scheduler scheduler = loadScheduler(connName);
         scheduler.pauseJob(jobKey);
@@ -164,7 +133,7 @@ public class QuartzService {
      * @param connName
      * @param jobKey
      */
-    @GetMapping("/resume")
+    @InvokeClassLoader
     public void resume(String connName,JobKey jobKey) throws Exception {
         Scheduler scheduler = loadScheduler(connName);
         scheduler.resumeJob(jobKey);
@@ -175,7 +144,7 @@ public class QuartzService {
      * @param connName
      * @param triggerKey
      */
-    @GetMapping("/remove")
+    @InvokeClassLoader
     public void remove(String connName,TriggerKey triggerKey,JobKey jobKey) throws Exception {
         Scheduler scheduler = loadScheduler(connName);
         // 停止触发器
@@ -231,44 +200,15 @@ public class QuartzService {
         }
     }
 
-
-    /**
-     * 加载一个日程调度器
-     * @param connName
-     * @return
-     */
-    public Scheduler loadScheduler(String connName){
-        ExScheduler exScheduler = schedulerMap.get(connName);
-        if (exScheduler == null){
-            throw new ToolException("未找到对应连接 "+connName+" 的调度器,需要先创建并绑定类加载器");
-        }
-        return exScheduler.getScheduler();
-    }
-
-    /**
-     * 获取当前连接调度器绑定的类加载器
-     * @param connName
-     * @return
-     */
-    public ClassLoader getClassLoader(String connName){
-        ExScheduler exScheduler = schedulerMap.get(connName);
-        if (exScheduler == null){
-            throw new ToolException("未找到对应连接 "+connName+" 的调度器,需要先创建并绑定类加载器");
-        }
-        return exScheduler.getClassLoader();
-    }
-
     /**
      * 创建一个日程调度工具
      * @param connName
-     * @param classLoader
-     * @param classloaderHelper
      * @return
      * @throws Exception
      */
-    public ExScheduler createSchedule(String connName, ClassLoader classLoader, Class classloaderHelper) throws Exception {
-        ExScheduler exScheduler = schedulerMap.get(connName);
-        if (exScheduler == null){
+    public Scheduler loadScheduler(String connName) throws Exception {
+        Scheduler scheduler = schedulerMap.get(connName);
+        if (scheduler == null){
             DataSource dataSource = jdbcService.dataSource(connName);
             SchedulerFactoryBean factory = new SchedulerFactoryBean();
             factory.setAutoStartup(true);
@@ -276,28 +216,14 @@ public class QuartzService {
             Properties properties = new Properties();
             properties.setProperty("org.quartz.jobStore.tablePrefix","qrtz_");
             properties.setProperty("org.quartz.scheduler.instanceName","SchedulerFactory");
-            properties.setProperty(PROP_SCHED_CLASS_LOAD_HELPER_CLASS,classloaderHelper.getName());
+            properties.setProperty(PROP_SCHED_CLASS_LOAD_HELPER_CLASS,CascadingClassLoadHelperExtend.class.getName());
             factory.setQuartzProperties(properties);
             factory.setJobFactory(springJobFactory);
             factory.afterPropertiesSet();
-            Scheduler scheduler = factory.getScheduler();
+            scheduler = factory.getScheduler();
 
-            exScheduler = new ExScheduler(classLoader, classloaderHelper, scheduler);
-            schedulerMap.put(connName,exScheduler);
+            schedulerMap.put(connName,scheduler);
         }
-        return exScheduler;
-    }
-
-    static class CustomClassLoaderHelper extends CascadingClassLoadHelper implements ClassLoadHelper {
-        private ExtendClassloader extendClassloader;
-
-        @Override
-        public Class<?> loadClass(String name) throws ClassNotFoundException {
-            Class<?> aClass = super.loadClass(name);
-            if (aClass == null){
-                return extendClassloader.loadClass(name);
-            }
-            return aClass;
-        }
+        return scheduler;
     }
 }

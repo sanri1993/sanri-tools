@@ -5,7 +5,7 @@ GET {{baseUrl}}/version/current
 GET {{baseUrl}}/classloader/classloaders
 
 ### 类加载器 - 查看类加载器加载的类
-GET {{baseUrl}}/classloader/listLoadedClasses?classloaderName=user
+GET {{baseUrl}}/classloader/listLoadedClasses?classloaderName=job
 
 ### 类加载器 - 查看某个类的所有方法信息
 GET {{baseUrl}}/classloader/user/com.mmc.dubbo.api.user.UserFact/methodNames
@@ -36,15 +36,15 @@ POST {{baseUrl}}/classloader/uploadClassesZipSimple
 Content-Type: multipart/form-data; boundary=uploadClassesZip
 
 --uploadClassesZip
-Content-Disposition: form-data; name="file"; filename="entity.zip"
+Content-Disposition: form-data; name="file"; filename="job.zip"
 Content-Type: application/octet-stream
 
-< d:/test/entity.zip
+< d:/test/job.zip
 --uploadClassesZip
 Content-Disposition: form-data; name="classloaderName"
 Content-Type: application/x-www-form-urlencoded
 
-entity
+job
 ### 类加载器 - 上传单个 class 文件
 POST {{baseUrl}}/classloader/uploadSingleClass
 Content-Type: multipart/form-data; boundary=uploadSingleClass
@@ -822,10 +822,24 @@ GET {{baseUrl}}/quartz/triggers?connName=localhost&catalog=job
 GET {{baseUrl}}/quartz/trigger/cron?connName=localhost&catalog=job&name=triggertest01&group=test
 
 ### quartz - trigger
-GET {{baseUrl}}/quartz/trigger?connName=localhost@job&group=test&name=test01
+GET {{baseUrl}}/quartz/trigger?connName=localhost@job&group=default&name=mm&classloaderName=job
 
-### quartz - createScheduler
-GET {{baseUrl}}/quartz/createScheduler?connName=localhost
+### quartz - pause
+GET {{baseUrl}}/quartz/pause?connName=localhost@job&group=default&name=mm&classloaderName=job
+
+### quartz - add job
+POST {{baseUrl}}/quartz/localhost@job/editJob
+Content-Type: application/json
+
+{
+  "name": "mm",
+  "group": "default",
+  "description": "一个测试添加 job 的功能 ",
+  "className": "com.itstyle.quartz.job.CleanUnRelatedImageJob",
+  "classloaderName": "job",
+  "jobMethodName": "",
+  "cron": "* * * * * ? *"
+}
 
 ###
 
