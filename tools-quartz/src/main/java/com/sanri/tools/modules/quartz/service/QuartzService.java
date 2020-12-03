@@ -1,10 +1,15 @@
 package com.sanri.tools.modules.quartz.service;
 
+import com.alibaba.fastjson.JSON;
+import com.sanri.tools.modules.core.dtos.PluginDto;
+import com.sanri.tools.modules.core.exception.ToolException;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
+import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.database.service.JdbcService;
 import com.sanri.tools.modules.quartz.dtos.TriggerCron;
 import com.sanri.tools.modules.quartz.dtos.TriggerTask;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -14,8 +19,10 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.support.CronSequenceGenerator;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.io.StringReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -24,11 +31,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.quartz.impl.StdSchedulerFactory.PROP_SCHED_CLASS_LOAD_HELPER_CLASS;
 
 @Service
+@Slf4j
 public class QuartzService {
     @Autowired
     private JdbcService jdbcService;
     @Autowired
     private PluginManager pluginManager;
+    @Autowired
+    private FileManager fileManager;
 
     @Autowired
     private ClassloaderService classloaderService;
@@ -37,6 +47,38 @@ public class QuartzService {
     private SpringJobFactory springJobFactory;
 
     private Map<String, Scheduler> schedulerMap = new ConcurrentHashMap<>();
+
+    /**
+     * 将数据库连接绑定到 quartz
+     * @param connName
+     * @param setttings
+     */
+    public void bindQuartz(String connName,Map<String,Object> setttings) throws Exception {
+        Scheduler scheduler = schedulerMap.get(connName);
+        if (scheduler != null) {
+            log.info("quartz 已经绑定连接了,不能重复绑定");
+            return ;
+        }
+        DataSource dataSource = jdbcService.dataSource(connName);
+        SchedulerFactoryBean factory = new SchedulerFactoryBean();
+        factory.setAutoStartup(true);
+        factory.setDataSource(dataSource);
+
+        setttings.put(PROP_SCHED_CLASS_LOAD_HELPER_CLASS,CascadingClassLoadHelperExtend.class.getName());
+//        setttings.setProperty("org.quartz.jobStore.tablePrefix","qrtz_");
+        setttings.put("org.quartz.scheduler.instanceName","SchedulerFactory");
+        Properties properties = new Properties();
+        properties.putAll(setttings);
+        // 序列化当前配置
+        serializer(connName,properties);
+
+        factory.setQuartzProperties(properties);
+        factory.setJobFactory(springJobFactory);
+        factory.afterPropertiesSet();
+        scheduler = factory.getScheduler();
+
+        schedulerMap.put(connName,scheduler);
+    }
 
     /**
      * 一般任务数不会过万 , 一次性查出来即可
@@ -209,21 +251,42 @@ public class QuartzService {
     public Scheduler loadScheduler(String connName) throws Exception {
         Scheduler scheduler = schedulerMap.get(connName);
         if (scheduler == null){
-            DataSource dataSource = jdbcService.dataSource(connName);
-            SchedulerFactoryBean factory = new SchedulerFactoryBean();
-            factory.setAutoStartup(true);
-            factory.setDataSource(dataSource);
-            Properties properties = new Properties();
-            properties.setProperty("org.quartz.jobStore.tablePrefix","qrtz_");
-            properties.setProperty("org.quartz.scheduler.instanceName","SchedulerFactory");
-            properties.setProperty(PROP_SCHED_CLASS_LOAD_HELPER_CLASS,CascadingClassLoadHelperExtend.class.getName());
-            factory.setQuartzProperties(properties);
-            factory.setJobFactory(springJobFactory);
-            factory.afterPropertiesSet();
-            scheduler = factory.getScheduler();
-
-            schedulerMap.put(connName,scheduler);
+            throw new ToolException("当前连接 "+connName+" 未找到绑定的调度器,请先执行绑定操作");
         }
+
         return scheduler;
+    }
+
+    public static final String MODULE = "quartz";
+
+    @PostConstruct
+    public void register() throws IOException {
+        pluginManager.register(PluginDto.builder().module("monitor")
+                .name("quartz").author("9420")
+                .logo("null.png").desc("可视化任务调度").build());
+
+        // 加载序列化的连接配置
+        Set<String> settings = fileManager.simpleConfigNames(MODULE, "settings");
+        for (String connName : settings) {
+            String setting = fileManager.readConfig(MODULE, "settings/" + connName);
+            Properties properties = new Properties();
+            StringReader stringReader = new StringReader(setting);
+            properties.load(stringReader);stringReader.close();
+            try {
+                bindQuartz(connName,new HashMap<String,Object>((Map)properties));
+            } catch (Exception e) {
+                log.error("加载以前绑定的调度器失败,连接名为 {},异常信息为:{}",connName,e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * 将当前连接配置序列化到文件
+     * @param connName
+     * @param properties
+     */
+    public void serializer(String connName,Properties properties) throws IOException {
+        String jsonString = JSON.toJSONString(properties);
+        fileManager.writeConfig(MODULE,"settings/"+connName,jsonString);
     }
 }

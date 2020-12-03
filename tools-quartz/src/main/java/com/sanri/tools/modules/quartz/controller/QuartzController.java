@@ -13,12 +13,24 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/quartz")
 public class QuartzController {
     @Autowired
     private QuartzService quartzService;
+
+    /**
+     * 绑定一个 quartz
+     * @param connName
+     * @param settings
+     * @throws Exception
+     */
+    @PostMapping("/{connName}/bindQuartz")
+    public void bindQuartz(@PathVariable("connName") String connName, @RequestBody Map<String,Object> settings) throws Exception {
+        quartzService.bindQuartz(connName,settings);
+    }
 
     /**
      * 添加或修改一个 job
