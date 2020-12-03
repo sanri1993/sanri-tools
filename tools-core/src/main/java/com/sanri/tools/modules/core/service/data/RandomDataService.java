@@ -245,7 +245,8 @@ public class RandomDataService {
             return RandomUtils.nextDouble(10,1000);
         }
         if(propertyType == Boolean.class || propertyType == boolean.class){
-            return RandomUtils.nextInt(1,1000) & 2 ;
+//            return RandomUtils.nextInt(1,1000) & 2 ;
+            return RandomUtils.nextBoolean();
         }
         if(propertyType == Short.class || propertyType == short.class){
             int nexInt = RandomUtils.nextInt(129, 500);
