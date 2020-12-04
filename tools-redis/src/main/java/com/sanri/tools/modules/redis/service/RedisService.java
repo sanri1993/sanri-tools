@@ -454,6 +454,12 @@ public class RedisService{
         ClassLoader classloader = classloaderService.getClassloader(classloaderName);
 
         Set<byte[]> keys = new HashSet<>();
+
+        // 统计搜索用时,如超时, 直接结束
+        long startSearchTime = System.currentTimeMillis();
+        long searchTime = 0;
+
+        // 开始搜索
         do {
             ScanResult scanResult = jedis.scan(cursor.getBytes(), scanParams);
             List<byte[]> result = scanResult.getResult();
@@ -462,7 +468,17 @@ public class RedisService{
             }
             cursor = scanResult.getStringCursor();
             scanParams.count(limit - keys.size());
-        }while (keys.size() < limit && NumberUtils.toLong(cursor) != 0L);
+
+            if (redisScanParam.getTimeout() != -1 ){
+                searchTime = System.currentTimeMillis() - startSearchTime;
+                if (searchTime > redisScanParam.getTimeout()){
+                    Client client = jedis.getClient();
+                    String hostAndPort = client.getHost() + ":" + client.getPort();
+                    log.warn("当前搜索超时,可能是查找的 pattern[{}] 并不存在,在连接 [{}] ",redisScanParam.getPattern(),hostAndPort);
+                    break;
+                }
+            }
+        }while (keys.size() < limit && NumberUtils.toLong(cursor) != 0L );
 
         // 获取各 key 的属性信息
         List<KeyScanResult.KeyResult> keyWraps = new ArrayList<>();

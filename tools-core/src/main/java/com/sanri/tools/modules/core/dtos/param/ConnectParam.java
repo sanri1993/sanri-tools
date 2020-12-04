@@ -9,9 +9,11 @@ public class ConnectParam {
 
     public static final int DEFAULT_SESSION_TIMEOUT = 30000;
     public static final int DEFAULT_CONNECTION_TIMEOUT = 5000;
+    public static final int DEFAULT_MAX_ATTEMPTS = 5;
 
     private int sessionTimeout = DEFAULT_SESSION_TIMEOUT;
     private int connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
+    private int maxAttempts = DEFAULT_MAX_ATTEMPTS;
     /**
      * 获取连接字符串
      * @return

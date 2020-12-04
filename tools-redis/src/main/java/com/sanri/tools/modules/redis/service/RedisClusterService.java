@@ -1,6 +1,7 @@
 package com.sanri.tools.modules.redis.service;
 
 import com.alibaba.fastjson.JSON;
+import com.sanri.tools.modules.core.dtos.param.ConnectParam;
 import com.sanri.tools.modules.core.dtos.param.RedisConnectParam;
 import com.sanri.tools.modules.core.exception.ToolException;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
@@ -84,6 +85,12 @@ public class RedisClusterService {
             }
             keyResults = new ArrayList<>();
             keyScanResult = null;
+
+            // 均分每一个节点的搜索超时,如果前端无法等待太久的话
+            if (redisScanParam.getTimeout() != -1) {
+                redisScanParam.setTimeout(redisScanParam.getTimeout() / jedis.size());
+            }
+
             for (int i = hostIndex; i < jedis.size(); i++) {
                 Jedis current = jedis.get(i);
                 keyScanResult = redisService.nodeScan(current, redisScanParam, serializerParam);
@@ -486,11 +493,13 @@ public class RedisClusterService {
         //获取连接配置，查看是否具有密码Auth校验
         String connectJsonString = connectService.content("redis", connParam.getConnName());
         RedisConnectParam redisConnectParam = JSON.parseObject(connectJsonString, RedisConnectParam.class);
+        ConnectParam connectParam = redisConnectParam.getConnectParam();
+        GenericObjectPoolConfig genericObjectPoolConfig = new GenericObjectPoolConfig();
         if (redisConnectParam.getAuthParam() != null && StringUtils.isNotEmpty(redisConnectParam.getAuthParam().getPassword())) {
             //此处参数为Jedis的默认配置值，请按需配置
-            return new JedisCluster(hostAndPorts, 2000, 5, 5, redisConnectParam.getAuthParam().getPassword(), new GenericObjectPoolConfig());
+            return new JedisCluster(hostAndPorts, connectParam.getConnectionTimeout(), connectParam.getSessionTimeout(), connectParam.getMaxAttempts(), redisConnectParam.getAuthParam().getPassword(),genericObjectPoolConfig );
         }
-        return new JedisCluster(hostAndPorts);
+        return new JedisCluster(hostAndPorts,connectParam.getConnectionTimeout(), connectParam.getSessionTimeout(), connectParam.getMaxAttempts(),genericObjectPoolConfig);
     }
 
     /**
@@ -536,7 +545,7 @@ public class RedisClusterService {
      * @param jedis
      * @return
      */
-    private List<RedisNode> clusterNodes(Jedis jedis) {
+    private synchronized List<RedisNode> clusterNodes(Jedis jedis) {
         Client client = jedis.getClient();
         client.clusterNodes();
         String bulkReply = client.getBulkReply();
