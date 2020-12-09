@@ -17,8 +17,12 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.*;
+import redis.clients.jedis.exceptions.JedisConnectionException;
+import redis.clients.util.JedisClusterCRC16;
+import sun.misc.CRC16;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -101,7 +105,7 @@ public class RedisClusterService {
                     int nextLimit = redisScanParam.getLimit() - keyScanResult.getKeys().size();
                     redisScanParam.setLimit(nextLimit);
 
-                    if (nextLimit == 0) {
+                    if (nextLimit <= 0) {
                         break;
                     }
                 }
@@ -201,8 +205,40 @@ public class RedisClusterService {
             return;
         }
         JedisCluster jedisCluster = jedisCluster(jedisClient.jedis, connParam);
-        jedisCluster.del(keys);
-        jedisCluster.close();
+        try {
+            // CROSSSLOT Keys in request don't hash to the same slot 使用注释的会出这个错
+//            List<RedisNode> redisNodes = clusterNodes(jedisClient.jedis);
+//
+//            // 将 key 按主机节点分组
+//            Map<String, JedisPool> clusterNodes = jedisCluster.getClusterNodes();
+//            for (RedisNode redisNode : redisNodes) {
+//                if (redisNode.isMaster()) {
+//                    int slotStart = redisNode.getSlotStart();
+//                    int slotEnd = redisNode.getSlotEnd();
+//                    Set<String> nodeKeys = new HashSet<>();
+//                    for (String key : keys) {
+//                        int slot = JedisClusterCRC16.getSlot(key);
+//                        if (slot >= slotStart && slot< slotEnd){
+//                            nodeKeys.add(key);
+//                        }
+//                    }
+//
+//                    JedisPool jedisPool = clusterNodes.get(redisNode.getHostAndPort().toString());
+//                    if (jedisPool != null && nodeKeys.size() > 0){
+//                        Jedis resource = jedisPool.getResource();
+//                        resource.del(nodeKeys.toArray(new String []{}));
+//                    }
+//                }
+//            }
+            long count = 0 ;
+            for (String key : keys) {
+                Long del = jedisCluster.del(key);
+                count += del;
+            }
+            log.info("删除连接[{}] 上的 key 删除成功[{}] 条",connParam.getConnName(),count);
+        } finally {
+            jedisCluster.close();
+        }
     }
 
     /**
@@ -546,9 +582,26 @@ public class RedisClusterService {
      * @return
      */
     private synchronized List<RedisNode> clusterNodes(Jedis jedis) {
-        Client client = jedis.getClient();
-        client.clusterNodes();
-        String bulkReply = client.getBulkReply();
+        String bulkReply = "";
+        try {
+            bulkReply = jedis.clusterNodes();
+        }catch (JedisConnectionException e){
+            Throwable cause = e.getCause();
+            if (cause != null && cause instanceof SocketException){
+                try {
+                    jedis.disconnect();
+                }catch (Exception e2){
+                    log.warn("断开连接失败,最后再尝试重新连接一下");
+                }finally {
+                    jedis.connect();
+                }
+
+                bulkReply = jedis.clusterNodes();
+            }
+        }
+//        Client client = jedis.getClient();
+//        client.clusterNodes();
+//        String bulkReply = client.getBulkReply();
         List<String[]> nodeCommandLines = CommandReply.spaceCommandReply.parser(bulkReply);
         List<RedisNode> redisNodes = nodeCommandLines.stream().map(line -> {
             RedisNode redisNode = new RedisNode();
@@ -558,7 +611,7 @@ public class RedisClusterService {
             String flags = line[2];
             redisNode.setRole(flags.replace("myself,", ""));
             redisNode.setMaster(line[3]);
-            if ("master".equals(redisNode.getRole())) {
+            if (redisNode.isMaster()) {
                 String slots = line[8];
                 if (slots.contains("-")) {
                     String[] split = StringUtils.split(slots, '-');

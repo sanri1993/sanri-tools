@@ -19,6 +19,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.*;
+import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.util.JedisClusterCRC16;
 
 
@@ -26,6 +27,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.SocketException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -468,6 +470,11 @@ public class RedisService{
             }
             cursor = scanResult.getStringCursor();
             scanParams.count(limit - keys.size());
+            if (redisScanParam.isFast() && !"0".equals(cursor)){
+                // 如果是快速搜索,不需要考虑每次的搜索数量 ,一次查找 1 万条数据
+                // 如果 cursor = 0 第一次搜索还是搜索  20 条数据
+                scanParams.count(10000);
+            }
 
             if (redisScanParam.getTimeout() != -1 ){
                 searchTime = System.currentTimeMillis() - startSearchTime;
@@ -769,6 +776,18 @@ public class RedisService{
             }
 
             jedisMap.put(connName,jedisClient);
+        }
+
+        try {
+            jedisClient.jedis.info();
+        }catch (JedisConnectionException e){
+            Throwable cause = e.getCause();
+            if (cause instanceof SocketException){
+                log.warn("[{}] Redis 出现 SocketException 尝试重新连接",connParam.getConnName());
+                // 有 socket 异常进行重新连接
+//                jedisClient.jedis.close();
+                jedisClient.jedis.connect();
+            }
         }
 
         return jedisClient;

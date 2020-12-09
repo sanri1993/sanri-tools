@@ -19,6 +19,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,6 +116,12 @@ public class GlobalExceptionHandler {
     public ResponseDto fileNotFound(FileNotFoundException e){
         log.error(e.getMessage(),e);
         return SystemMessage.NETWORK_ERROR.result();
+    }
+
+    @ExceptionHandler(StreamCorruptedException.class)
+    public ResponseDto StreamCorruptedException(StreamCorruptedException e){
+        log.error(e.getMessage(),e);
+        return BusinessException.create(e.getMessage()).getResponseDto();
     }
 
     @ExceptionHandler(IOException.class)

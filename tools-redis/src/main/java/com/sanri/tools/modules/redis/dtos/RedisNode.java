@@ -15,4 +15,8 @@ public class RedisNode {
     private int slotEnd;
 
     private long dbSize;
+
+    public boolean isMaster(){
+        return "master".equals(role);
+    }
 }

@@ -102,7 +102,7 @@ public class MethodInvokeAop {
             // base64 参数
             boolean isBase64 = (arg instanceof String)  && ((String) arg).length() > 100;
             if (isBase64){
-                builder.append(parameterName).append(":").append(((String) arg).substring(0,100));
+                builder.append(parameterName).append(":").append(((String) arg).substring(0,100)).append("...(May be BASE64,long string)");
                 continue;
             }
 
