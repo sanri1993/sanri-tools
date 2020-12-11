@@ -54,6 +54,7 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
    * 传入必传参数,和数据库连接,可以直接调用 statementId, 得到 sql 语句 ,这里的数据库连接引用数据库模块的连接名
 8. tools-swagger-doc
    * 将 swagger 的文档生成更美观的文档并提供下载文档
+   * 注意: 这个工具尚不完善,输入框填入网络请求中 json 数据那个链接
 9. tools-dubbo
    * 依赖于 zookeeper 模块,得到 dubbo 的提供者,获取提供的方法,并可以执行调用
 10. tools-name
@@ -63,11 +64,20 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
     * 支持 soap 调用
 12. tools-websocket
     * 主要是给其它模块提供前端推送数据功能 
+13. tools-quartz
+    * 触发器和任务列表,cron 表达式以及后面 10 次的任务执行时间
+    * 触发,停止,恢复,需要配合类加载器
+    * 新建,移除任务,需要配合类加载器
+14. tools-mongodb
+    * 数据库列表,集合列表
+    * 数据查询
+15. tools-elasticsearch
+    * 计划中,欢迎网友提供需求
     
 ### 每一个模块的使用文档
-对于一个工具来说,使用文档是比较重要的,我们约定使用文档全部放到每个模块的 resources 中,取名规则为 模块名_readme.md 文件,
+对于一个工具来说,使用文档是比较重要的,使用文档放到每个模块的 resources 中, 然后通过 PluginManager 注册进来
 
-在模块注册的时候,我会去读取你这个文件并显示到你的模块说明文档中,你可以在 md 文件中做外链,以便链接外部说明文档
+在首页会读取使用文档,并展示给用户,你可以在 md 文件中做外链,以便链接外部说明文档
 
 ### 工具模块间依赖关系,扩展自己的工具时可能需要用到
 
@@ -111,7 +121,7 @@ tools-soap
 
 解决 ik 分词问题后,就可以直接运行 tools-console 中的 com.sanri.tools.Application 启动 ,标准的 springboot 项目
 
-### 方式二下载 release 启动 
+### 方式二下载 release 启动
 
 [https://gitee.com/sanri/sanri-tools-maven/releases](https://gitee.com/sanri/sanri-tools-maven/releases)
 
@@ -122,6 +132,16 @@ tools-soap
 **如何查看当前正在开发的工具版本**
 
 当前工具的版本在 tools-console/src/main/resources/version 文件中, 各模块的版本后面会写在 pluginDto 中注册进来
+
+### 方式三 , 前端嵌入后台中启动 (推荐)
+这种方式适合于后端人员需要调试工具时使用; 
+
+* 在 tools-console/src/main 文件夹中建一个目录 webapp ,并标识为 web 
+* 解压 tools-console/webapp.zip 放到上一步建的 webapp 目录
+* 运行 tools-console 中的 Application.main() , 就可以做后台的开发调试了
+* 访问路径  http://localhost:8084
+
+注: tools-console 的 webapp.zip 是一个比较旧的版本(20201211),后面的打包版本会放在[前端项目Release](https://gitee.com/sanri/sanritoolsvue/releases)
 
 ## 如何扩展自己的工具
 新增一个模块,如 tools-xxx ,然后依赖于 tools-core 
@@ -142,7 +162,7 @@ public void register(){
     pluginManager.register(PluginDto.builder().module("tools-xxx").name("main").build());
 }
 ```
-module 在前端是做为一级菜单,然后 name 是二级菜单 , 同一个模块下可以注册多个功能项
+module 在前端是做为一级菜单,然后 name 是二级菜单 , 同一个模块下可以注册多个功能项, 插件的开发和工作中开发 controller 没有区别 
 
 ### 关于单元测试
 工具使用了更方便的单元测试,直接发送 http 请求来测试,所有的单元测试都在 requests/全部 http 请求.http 中
