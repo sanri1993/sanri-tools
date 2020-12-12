@@ -3,6 +3,7 @@ package com.sanri.tools.modules.redis.controller;
 import com.sanri.tools.modules.redis.dtos.ClientConnection;
 import com.sanri.tools.modules.redis.dtos.MemoryUse;
 import com.sanri.tools.modules.redis.dtos.RedisNode;
+import com.sanri.tools.modules.redis.dtos.RedisSlowlog;
 import com.sanri.tools.modules.redis.dtos.params.ConnParam;
 import com.sanri.tools.modules.redis.service.RedisClusterService;
 import com.sanri.tools.modules.redis.service.RedisService;
@@ -85,5 +86,15 @@ public class RedisMonitorController {
     @PostMapping("/client/kill/{clientId}")
     public String killClient(ConnParam connParam, @PathVariable("clientId") String clientId) throws IOException {
         return redisService.killClient(connParam,clientId);
+    }
+
+    /**
+     * 查询 redis 慢查询
+     * @param connParam
+     * @return
+     */
+    @GetMapping("/slowlogs")
+    public List<RedisSlowlog> redisSlowlogs(ConnParam connParam) throws IOException {
+        return redisClusterService.slowlogs(connParam);
     }
 }

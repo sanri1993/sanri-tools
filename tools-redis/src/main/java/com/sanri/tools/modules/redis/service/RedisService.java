@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import redis.clients.jedis.*;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.util.JedisClusterCRC16;
+import redis.clients.util.Slowlog;
 
 
 import javax.annotation.PostConstruct;
@@ -430,6 +431,20 @@ public class RedisService{
     }
 
     /**
+     * 显示当前主机的慢查询
+     * @param jedis
+     * @return
+     */
+    RedisSlowlog slowlogs(Jedis jedis){
+        List<Slowlog> slowlogs = jedis.slowlogGet();
+        String host = jedis.getClient().getHost();
+        int port = jedis.getClient().getPort();
+        HostAndPort hostAndPort = new HostAndPort(host, port);
+        String role = jedisRole(jedis);
+        return new RedisSlowlog(hostAndPort,slowlogs,role);
+    }
+
+    /**
      * 单台节点数据扫描
      * @param jedis
      * @param redisScanParam
@@ -594,7 +609,7 @@ public class RedisService{
      * @param jedis
      * @return
      */
-    private List<RedisNode> masterSlaveNodes(Jedis jedis){
+    private synchronized List<RedisNode> masterSlaveNodes(Jedis jedis){
         List<RedisNode> redisNodes = new ArrayList<>();
 
         //如果不是集群模式,看是否为主从模式,获取主从结构的所有节点

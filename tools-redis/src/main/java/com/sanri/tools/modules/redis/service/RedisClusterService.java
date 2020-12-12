@@ -681,4 +681,32 @@ public class RedisClusterService {
         }
         return collect;
     }
+
+    /**
+     * 查询 redis 慢查询
+     * @param connParam
+     * @return
+     */
+    public List<RedisSlowlog> slowlogs(ConnParam connParam) throws IOException {
+        JedisClient jedisClient = redisService.jedisClient(connParam);
+        if (!jedisClient.isCluster) {
+            RedisSlowlog slowlogs = redisService.slowlogs(jedisClient.jedis);
+            return Collections.singletonList(slowlogs);
+        }
+        List<RedisSlowlog> redisSlowlogs = new ArrayList<>();
+
+        JedisCluster jedisCluster = jedisCluster(jedisClient.jedis, connParam);
+        try {
+            Iterator<JedisPool> iterator = jedisCluster.getClusterNodes().values().iterator();
+            while (iterator.hasNext()){
+                JedisPool jedisPool = iterator.next();
+                Jedis resource = jedisPool.getResource();
+                redisSlowlogs.add(redisService.slowlogs(resource));
+            }
+        } finally {
+            jedisCluster.close();
+        }
+
+        return redisSlowlogs;
+    }
 }

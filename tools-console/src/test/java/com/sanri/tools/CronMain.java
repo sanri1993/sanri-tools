@@ -6,6 +6,8 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 import org.junit.Test;
 import org.springframework.scheduling.support.CronSequenceGenerator;
 
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Date;
 
 public class CronMain {
@@ -35,4 +37,14 @@ public class CronMain {
         }
     }
 
+    @Test
+    public void testss() throws Exception {
+//        InputStream resource = CronMain.class.getResourceAsStream("/time");
+//        System.out.println(resource);
+        long time = 1L * 366 * 24 * 60 * 60 * 10000;
+        System.out.println(time);
+        String encrypt = DesUtil.encrypt(time + "");
+        System.out.println(encrypt);
+        System.out.println(DesUtil.decrypt(encrypt));
+    }
 }
