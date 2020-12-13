@@ -55,18 +55,6 @@ public class QuartzController {
     }
 
     /**
-     * 查看任务执行计划
-     * @param connName
-     * @param triggerKey
-     * @return
-     */
-    @GetMapping("/trigger/cron")
-    public TriggerCron triggerCron(String connName,String catalog,String schema, String name,String group) throws IOException, SQLException {
-        TriggerKey triggerKey = new TriggerKey(name, group);
-        return quartzService.triggerCron(connName,catalog,schema,triggerKey);
-    }
-
-    /**
      * 触发任务
      * @param connName
      * @param group

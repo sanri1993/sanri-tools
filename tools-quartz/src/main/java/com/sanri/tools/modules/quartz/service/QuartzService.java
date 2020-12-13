@@ -89,37 +89,27 @@ public class QuartzService {
         if (StringUtils.isNotBlank(schema)){
             namespace = schema;
         }
-        String sql = "select trigger_group,trigger_name,job_group,job_name,start_time,prev_fire_time,next_fire_time  from "+namespace+".qrtz_triggers qct  ";
-        List<TriggerTask> triggerTasks = jdbcService.executeQuery(connName, sql, triggerTaskProcessor);
-        return triggerTasks;
-    }
-
-    /**
-     * 查询某个 trigger 的 cron 表达式
-     * @param connName
-     * @param triggerKey
-     * @return
-     */
-    public TriggerCron triggerCron(String connName,String catalog,String schema,TriggerKey triggerKey) throws IOException, SQLException {
-        String namespace = catalog;
-        if (StringUtils.isNotBlank(schema)){
-            namespace = schema;
+//        String sql = "select trigger_group,trigger_name,job_group,job_name,start_time,prev_fire_time,next_fire_time  from "+namespace+".qrtz_triggers qct  ";
+        String sql = "select a.trigger_group,a.trigger_name,job_group,job_name,start_time,prev_fire_time,next_fire_time ,cron_expression " +
+                "from "+namespace+".qrtz_triggers a inner join "+namespace+".qrtz_cron_triggers b on a.TRIGGER_GROUP = b .TRIGGER_GROUP and a.TRIGGER_NAME  = b.TRIGGER_NAME ";
+        try {
+            List<TriggerTask> triggerTasks = jdbcService.executeQuery(connName, sql, triggerTaskProcessor);
+            for (TriggerTask triggerTask : triggerTasks) {
+                String cron = triggerTask.getCron();
+                List<String> nextTimes = new ArrayList<>();
+                CronSequenceGenerator cronSequenceGenerator = new CronSequenceGenerator(cron);
+                Date current = new Date();
+                for (int i = 0; i < 10; i++) {
+                    current = cronSequenceGenerator.next(current);
+                    nextTimes.add(DateFormatUtils.format(current,"yyyy-MM-dd HH:mm:ss"));
+                }
+                triggerTask.setNextTimes(nextTimes);
+            }
+            return triggerTasks;
+        }catch (SQLException e){
+            log.error(e.getMessage());
+            throw new ToolException("当前连接[ "+connName+" ]没有 quartz 相关表");
         }
-
-        String sql = "select  trigger_group,trigger_name,cron_expression from "+namespace+".qrtz_cron_triggers qct  where qct.trigger_group = '"+triggerKey.getGroup()+"' and qct.trigger_name = '"+triggerKey.getName()+"'";
-        TriggerCron triggerCron = jdbcService.executeQuery(connName, sql, triggerCronProcessor);
-        if (triggerCron == null) return triggerCron;
-
-        String cron = triggerCron.getCron();
-        List<String> nextTimes = new ArrayList<>();
-        CronSequenceGenerator cronSequenceGenerator = new CronSequenceGenerator(cron);
-        Date current = new Date();
-        for (int i = 0; i < 10; i++) {
-            current = cronSequenceGenerator.next(current);
-            nextTimes.add(DateFormatUtils.format(current,"yyyy-MM-dd HH:mm:ss"));
-        }
-        triggerCron.setNextTimes(nextTimes);
-        return triggerCron;
     }
 
     /**
@@ -200,7 +190,6 @@ public class QuartzService {
     }
 
     static TriggerTaskProcessor triggerTaskProcessor = new TriggerTaskProcessor();
-    static TriggerCronProcessor triggerCronProcessor = new TriggerCronProcessor();
 
     static class TriggerTaskProcessor implements ResultSetHandler<List<TriggerTask>>{
         @Override
@@ -218,27 +207,12 @@ public class QuartzService {
                 long prevFireTime = rs.getLong("prev_fire_time");
                 long nextFireTime = rs.getLong("next_fire_time");
                 TriggerTask triggerTask = new TriggerTask(triggerKey, jobKey, startTime, prevFireTime, nextFireTime);
+                String cronExpression = rs.getString("cron_expression");
+                triggerTask.setCron(cronExpression);
+
                 triggerTasks.add(triggerTask);
             }
             return triggerTasks;
-        }
-    }
-    static class TriggerCronProcessor implements ResultSetHandler<TriggerCron>{
-
-        @Override
-        public TriggerCron handle(ResultSet rs) throws SQLException {
-            boolean next = rs.next();
-
-            TriggerCron triggerCron = null;
-            if (next) {
-                String triggerGroup = rs.getString("trigger_group");
-                String triggerName = rs.getString("trigger_name");
-                TriggerKey triggerKey = new TriggerKey(triggerGroup, triggerName);
-
-                String cronExpression = rs.getString("cron_expression");
-                triggerCron = new TriggerCron(triggerKey, cronExpression);
-            }
-            return triggerCron;
         }
     }
 
