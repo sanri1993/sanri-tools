@@ -815,11 +815,16 @@ GET {{baseUrl}}/chat/onlineUsers
 ### chat - 获取sessionId
 GET {{baseUrl}}/chat/sessionId
 
+### bindQuartz
+POST {{baseUrl}}/quartz/localhost@job/bindQuartz
+Content-Type: application/json
+
+{
+  "org.quartz.jobStore.tablePrefix": "qrtz_"
+}
+
 ### quartz - triggers
 GET {{baseUrl}}/quartz/triggers?connName=localhost&catalog=job
-
-### quartz - triggerCron
-GET {{baseUrl}}/quartz/trigger/cron?connName=localhost&catalog=job&name=triggertest01&group=test
 
 ### quartz - trigger
 GET {{baseUrl}}/quartz/trigger?connName=localhost@job&group=default&name=mm&classloaderName=job

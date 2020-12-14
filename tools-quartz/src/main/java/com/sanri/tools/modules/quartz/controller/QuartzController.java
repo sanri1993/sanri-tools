@@ -4,6 +4,9 @@ import com.sanri.tools.modules.quartz.dtos.TriggerCron;
 import com.sanri.tools.modules.quartz.dtos.TriggerTask;
 import com.sanri.tools.modules.quartz.service.EditJobParam;
 import com.sanri.tools.modules.quartz.service.QuartzService;
+import lombok.Data;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.quartz.JobKey;
 import org.quartz.SchedulerException;
 import org.quartz.TriggerKey;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +46,34 @@ public class QuartzController {
         quartzService.editJob(connName,editJobParam);
     }
 
+    // 缓存上一次用过的 catalog 和 schema
+    CacheConnectDto cacheLastConn;
+
+    @Data
+    public static final class CacheConnectDto{
+        private String connName;
+        private String catalog;
+        private String schema;
+
+        public CacheConnectDto() {
+        }
+
+        public CacheConnectDto(String connName, String catalog, String schema) {
+            this.connName = connName;
+            this.catalog = catalog;
+            this.schema = schema;
+        }
+    }
+
+    /**
+     * @param connName
+     * @return
+     */
+    @GetMapping("/loadCache")
+    public CacheConnectDto loadCache(){
+        return cacheLastConn;
+    }
+
     /**
      * 查询所有的任务列表
      * @param connName
@@ -51,6 +83,7 @@ public class QuartzController {
      */
     @GetMapping("/triggers")
     public List<TriggerTask> triggers(String connName,String catalog,String schema) throws IOException, SQLException {
+        cacheLastConn = new CacheConnectDto(connName,catalog,schema);
         return quartzService.triggerTasks(connName,catalog,schema);
     }
 

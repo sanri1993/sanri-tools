@@ -8,7 +8,10 @@ GET {{esUrl}}/_cat/master?v
 GET {{esUrl}}/_cat/master?help
 
 ### Headers 查询指定字段 headers
-GET {{esUrl}}/_cat/nodes?h=ip,port,heapPercent,name
+GET {{esUrl}}/_cat/nodes?help
+
+### Headers 查询指定字段 headers
+GET {{esUrl}}/_cat/nodes?h=ip,port,heapPercent,name,node.role
 
 ### Numeric formats  默认的情况下,字节数据,大小和时间值是使用 human-formatted , 所以它们没有使用数值排序,你可以改变它们
 # s(sort) bytes=b , time= 时间格式查看官网 https://www.elastic.co/guide/en/elasticsearch/reference/current/common-options.html#time-units ,size=k/m/g/t/p

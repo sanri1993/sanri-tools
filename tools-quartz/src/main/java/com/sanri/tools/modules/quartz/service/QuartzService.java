@@ -95,16 +95,21 @@ public class QuartzService {
         try {
             List<TriggerTask> triggerTasks = jdbcService.executeQuery(connName, sql, triggerTaskProcessor);
             for (TriggerTask triggerTask : triggerTasks) {
-                String cron = triggerTask.getCron();
-                List<String> nextTimes = new ArrayList<>();
-                CronSequenceGenerator cronSequenceGenerator = new CronSequenceGenerator(cron);
-                Date current = new Date();
-                for (int i = 0; i < 10; i++) {
-                    current = cronSequenceGenerator.next(current);
-                    nextTimes.add(DateFormatUtils.format(current,"yyyy-MM-dd HH:mm:ss"));
+                try {
+                    String cron = triggerTask.getCron();
+                    List<String> nextTimes = new ArrayList<>();
+                    CronSequenceGenerator cronSequenceGenerator = new CronSequenceGenerator(cron);
+                    Date current = new Date();
+                    for (int i = 0; i < 10; i++) {
+                        current = cronSequenceGenerator.next(current);
+                        nextTimes.add(DateFormatUtils.format(current, "yyyy-MM-dd HH:mm:ss"));
+                    }
+                    triggerTask.setNextTimes(nextTimes);
+                }catch (IllegalArgumentException e){
+                    log.error("cron 表达式[{}]错误,不能计算触发时间:{}",triggerTask.getCron(),e.getMessage());
                 }
-                triggerTask.setNextTimes(nextTimes);
             }
+
             return triggerTasks;
         }catch (SQLException e){
             log.error(e.getMessage());
