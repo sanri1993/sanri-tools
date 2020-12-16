@@ -3,7 +3,9 @@ package com.sanri.tools.modules.core.service.file;
 import com.sanri.tools.modules.core.dtos.ConfigPath;
 import com.sanri.tools.modules.core.utils.ZipUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -13,7 +15,10 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.util.*;
 
 @Service
@@ -84,9 +89,9 @@ public class FileManager {
      * @param module
      * @return
      */
-    public Set<String> simpleConfigNames(String module, String baseName){
+    public List<String> simpleConfigNames(String module, String baseName){
         List<ConfigPath> configPaths = configNames(module+"/"+baseName);
-        Set<String> names = new HashSet<>();
+        List<String> names = new ArrayList<>();
         for (ConfigPath configPath : configPaths) {
             names.add(configPath.getPathName());
         }
@@ -153,6 +158,11 @@ public class FileManager {
                 boolean directory = file.isDirectory();
                 configPaths.add(new ConfigPath(name, directory, file));
             }
+        }
+
+        // 配置列表排序, 按照访问时间排序, 上次访问的配置文件优先靠前排序 window 上这个排序无效
+        if (CollectionUtils.isNotEmpty(configPaths)){
+            Collections.sort(configPaths);
         }
         return configPaths;
     }

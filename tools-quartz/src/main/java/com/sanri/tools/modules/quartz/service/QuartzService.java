@@ -245,7 +245,7 @@ public class QuartzService {
                 .logo("null.png").desc("可视化任务调度").build());
 
         // 加载序列化的连接配置
-        Set<String> settings = fileManager.simpleConfigNames(MODULE, "settings");
+        List<String> settings = fileManager.simpleConfigNames(MODULE, "settings");
         for (String connName : settings) {
             String setting = fileManager.readConfig(MODULE, "settings/" + connName);
             Properties properties = new Properties();

@@ -24,11 +24,24 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class PomParserMain {
+
+    @Test
+    public void fileAccessTimeRead() throws IOException {
+        File file = new File("D:\\tmp\\classloader\\job\\com\\itstyle\\quartz\\job/ChickenJob.class");
+        BasicFileAttributes basicFileAttributes = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+        FileTime fileTime = basicFileAttributes.lastAccessTime();
+        System.out.println(new Date(fileTime.to(TimeUnit.MILLISECONDS)));
+    }
 
     @Test
     public void testJmx() throws IOException {

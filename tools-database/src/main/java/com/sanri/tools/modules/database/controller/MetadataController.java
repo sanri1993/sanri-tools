@@ -36,7 +36,7 @@ public class MetadataController {
      * 入参: <br/>
      */
     @GetMapping("/connections")
-    public Set<String> connections(){
+    public List<String> connections(){
         return connectService.names(JdbcService.module);
     }
 

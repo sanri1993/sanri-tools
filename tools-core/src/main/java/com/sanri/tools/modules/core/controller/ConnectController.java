@@ -48,7 +48,7 @@ public class ConnectController {
      * @return
      */
     @GetMapping("/{module}/names")
-    public Set<String> names(@PathVariable("module") String module){
+    public List<String> names(@PathVariable("module") String module){
         return connectService.names(module);
     }
 

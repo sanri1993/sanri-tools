@@ -60,7 +60,7 @@ public class ConnectService {
      * @param module
      * @return
      */
-    public Set<String> names(String module){
+    public List<String> names(String module){
         return fileManager.simpleConfigNames(MODULE,module);
     }
 
