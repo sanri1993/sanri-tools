@@ -7,7 +7,6 @@ import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.database.service.JdbcService;
-import com.sanri.tools.modules.quartz.dtos.TriggerCron;
 import com.sanri.tools.modules.quartz.dtos.TriggerTask;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.dbutils.ResultSetHandler;
@@ -66,7 +65,7 @@ public class QuartzService {
 
         setttings.put(PROP_SCHED_CLASS_LOAD_HELPER_CLASS,CascadingClassLoadHelperExtend.class.getName());
 //        setttings.setProperty("org.quartz.jobStore.tablePrefix","qrtz_");
-        setttings.put("org.quartz.scheduler.instanceName","SchedulerFactory");
+//        setttings.put("org.quartz.scheduler.instanceName","SchedulerFactory");
         Properties properties = new Properties();
         properties.putAll(setttings);
         // 序列化当前配置
@@ -81,7 +80,7 @@ public class QuartzService {
     }
 
     /**
-     * 一般任务数不会过万 , 一次性查出来即可
+     * 一般任务数不会过千, 一次性查出来即可
      * @return
      */
     public List<TriggerTask> triggerTasks(String connName,String catalog,String schema) throws IOException, SQLException {
@@ -203,10 +202,10 @@ public class QuartzService {
             while (rs.next()){
                 String triggerGroup = rs.getString("trigger_group");
                 String triggerName = rs.getString("trigger_name");
-                TriggerKey triggerKey = new TriggerKey(triggerGroup, triggerName);
+                TriggerKey triggerKey = new TriggerKey(triggerName,triggerGroup);
                 String jobGroup = rs.getString("job_group");
                 String jobName = rs.getString("job_name");
-                JobKey jobKey = new JobKey(jobGroup, jobName);
+                JobKey jobKey = new JobKey(jobName,jobGroup);
 
                 long startTime = rs.getLong("start_time");
                 long prevFireTime = rs.getLong("prev_fire_time");

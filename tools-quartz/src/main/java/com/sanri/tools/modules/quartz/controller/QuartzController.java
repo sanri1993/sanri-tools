@@ -1,22 +1,17 @@
 package com.sanri.tools.modules.quartz.controller;
 
-import com.sanri.tools.modules.quartz.dtos.TriggerCron;
 import com.sanri.tools.modules.quartz.dtos.TriggerTask;
 import com.sanri.tools.modules.quartz.service.EditJobParam;
 import com.sanri.tools.modules.quartz.service.QuartzService;
 import lombok.Data;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.quartz.JobKey;
 import org.quartz.SchedulerException;
 import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
