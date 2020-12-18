@@ -167,7 +167,11 @@ public class RedisClusterService {
         try {
             List<Jedis> brokers = brokers(jedisCluster);
             for (Jedis broker : brokers) {
+                Long keySize = broker.dbSize();
+                String jedisRole = redisService.jedisRole(broker);
                 MemoryUse memoryUse = redisService.nodeMemoryUse(broker);
+                memoryUse.setDbSize(keySize);
+                memoryUse.setRole(jedisRole);
                 memoryUses.add(memoryUse);
             }
             return memoryUses;

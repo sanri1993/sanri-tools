@@ -11,6 +11,8 @@ public class MemoryUse {
     private String policy;
     private long system;
     private long lua;
+    private long dbSize;
+    private String role;
 
     public MemoryUse() {
     }

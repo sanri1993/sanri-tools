@@ -144,8 +144,11 @@ public class RedisService{
         for (RedisNode redisNode : redisNodes) {
             HostAndPort hostAndPort = redisNode.getHostAndPort();
             Jedis jedis = new Jedis(hostAndPort.getHost(), hostAndPort.getPort());
+            String jedisRole = jedisRole(jedis);
             try {
                 MemoryUse memoryUse = nodeMemoryUse(jedis);
+                memoryUse.setDbSize(jedis.dbSize());
+                memoryUse.setRole(jedisRole);
                 memoryUses.add(memoryUse);
             }finally {
                 jedis.close();
