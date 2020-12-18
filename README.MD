@@ -80,6 +80,12 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
 
 在首页会读取使用文档,并展示给用户,你可以在 md 文件中做外链,以便链接外部说明文档
 
+#### 说明下注意事项,对于刚开始使用这个工具的人来说
+1. 连接管理中的模块名必须是固定的,只能取 database,kafka,redis,zookeeper,mongo 具体可以在 ConnectService.moduleParamFactory() 方法中查看
+2. 数据库类型只支持 mysql,postgresql,oracle 具体可以在 DatabaseConnectParam 中查看
+3. 类加载器 "上传 dto" 可以是单类文件,无目录结构,java 实体类,但不能是标准结构的; "上传标准 dto" 只能是标准结构类文件
+4. 新建连接是有模板的,如果模板没有加载出来,检查模块名是否正确,可以重新打开来加载配置模板
+
 ### 工具模块间依赖关系,扩展自己的工具时可能需要用到
 
 ```
