@@ -6,6 +6,7 @@ import com.sanri.tools.modules.redis.dtos.params.*;
 import com.sanri.tools.modules.redis.service.RedisClusterService;
 import com.sanri.tools.modules.redis.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +23,7 @@ public class RedisController {
     private RedisService redisService;
 
     @GetMapping("/key/scan")
-    public KeyScanResult scan(ConnParam connParam, RedisScanParam scanParam,SerializerParam serializerParam) throws IOException, ClassNotFoundException {
+    public KeyScanResult scan(@Validated ConnParam connParam, RedisScanParam scanParam, SerializerParam serializerParam) throws IOException, ClassNotFoundException {
         return redisClusterService.scan(connParam,scanParam,serializerParam);
     }
 

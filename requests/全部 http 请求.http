@@ -120,7 +120,7 @@ GET {{baseUrl}}/connect/modules
 POST {{baseUrl}}/connect/createModule
 Content-Type: application/x-www-form-urlencoded
 
-name=redis
+name=redis2
 
 ### 连接管理-获取某个模块的连接列表
 GET {{baseUrl}}/connect/redis/names
@@ -824,7 +824,7 @@ Content-Type: application/json
 }
 
 ### quartz - triggers
-GET {{baseUrl}}/quartz/triggers?connName=localhost&catalog=job
+GET {{baseUrl}}/quartz/triggers?connNaame=localhost&catalog=job
 
 ### quartz - trigger
 GET {{baseUrl}}/quartz/trigger?connName=localhost@job&group=default&name=mm&classloaderName=job

@@ -8,6 +8,7 @@ import com.sanri.tools.modules.core.exception.ToolException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import javax.validation.Path;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StreamCorruptedException;
@@ -98,8 +100,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = ConstraintViolationException.class)
     public ResponseDto constraintViolationException(ConstraintViolationException ex){
         ConstraintViolation<?> constraintViolation = ex.getConstraintViolations().iterator().next();
+        PathImpl propertyPath = (PathImpl) constraintViolation.getPropertyPath();
+        String name = propertyPath.getLeafNode().getName();
         String message = constraintViolation.getMessage();
-        return SystemMessage.ARGS_ERROR2.exception(message).getResponseDto();
+        String logMessage = name + " " + message;
+        log.error(logMessage);
+        return SystemMessage.ARGS_ERROR2.exception(logMessage).getResponseDto();
     }
 
     /**

@@ -12,9 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/classloader")
+@Validated
 public class ClassloaderController {
     @Autowired
     private ClassloaderService classloaderService;
@@ -41,7 +44,7 @@ public class ClassloaderController {
      * @param file
      */
     @PostMapping("/uploadClassesZip")
-    public void uploadClassesZip(MultipartFile file,String classloaderName) throws IOException {
+    public void uploadClassesZip(MultipartFile file,@NotNull String classloaderName) throws IOException {
         File dir = unzipFile(file, classloaderName);
         classloaderService.loadClasses(dir,classloaderName);
     }
@@ -51,7 +54,7 @@ public class ClassloaderController {
      * @param file
      */
     @PostMapping("/uploadClassesZipSimple")
-    public void uploadClassesZipSimple(MultipartFile file,String classloaderName) throws IOException {
+    public void uploadClassesZipSimple(MultipartFile file,@NotNull String classloaderName) throws IOException {
         File dir = unzipFile(file, classloaderName);
         classloaderService.loadParallalClassesFile(dir,classloaderName);
     }
@@ -62,7 +65,7 @@ public class ClassloaderController {
      * @param classloaderName
      */
     @PostMapping("/uploadSingleClass")
-    public void uploadSingleClass(MultipartFile file,String classloaderName) throws IOException {
+    public void uploadSingleClass(MultipartFile file,@NotNull String classloaderName) throws IOException {
         File dir = fileManager.mkTmpDir("classloader/"+classloaderName);
         File classFile = new File(dir, file.getOriginalFilename());
         file.transferTo(classFile);
@@ -75,7 +78,7 @@ public class ClassloaderController {
      * @param classloaderName
      */
     @PostMapping("/uploadSingleJavaFile")
-    public void uploadSingleJavaFile(MultipartFile file,String classloaderName) throws IOException {
+    public void uploadSingleJavaFile(MultipartFile file,@NotNull String classloaderName) throws IOException {
         File dir = fileManager.mkTmpDir("classloader/"+classloaderName);
         File javaFile = new File(dir, file.getOriginalFilename());
         file.transferTo(javaFile);

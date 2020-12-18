@@ -8,8 +8,10 @@ import org.quartz.JobKey;
 import org.quartz.SchedulerException;
 import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/quartz")
+@Validated
 public class QuartzController {
     @Autowired
     private QuartzService quartzService;
@@ -78,7 +81,7 @@ public class QuartzController {
      * @throws SQLException
      */
     @GetMapping("/triggers")
-    public List<TriggerTask> triggers(String connName,String catalog,String schema) throws IOException, SQLException {
+    public List<TriggerTask> triggers(@NotNull String connName, String catalog, String schema) throws IOException, SQLException {
         cacheLastConn = new CacheConnectDto(connName,catalog,schema);
         return quartzService.triggerTasks(connName,catalog,schema);
     }

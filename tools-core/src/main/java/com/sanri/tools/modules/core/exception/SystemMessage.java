@@ -7,8 +7,8 @@ import java.text.MessageFormat;
 public enum  SystemMessage implements ExceptionCause<BusinessException> {
     OK(0,"成功"),
     ARGS_NULL(4000,"参数错误,必填参数 [{0}]"),
-    ARGS_ERROR(4001,"参数错误,错误参数名[{0}],值[{1}],原因:{2}"),
-    ARGS_ERROR2(4001,"参数错误，原因:{0}"),
+    ARGS_ERROR(4001,"参数错误, 参数:{0}={1}; 额外消息:{2}"),
+    ARGS_ERROR2(4001,"参数错误,原因:{0}"),
     NOT_LOGIN(4002,"未登录或 session 失效"),
     PERMISSION_DENIED(4003,"没有权限"),
     DATA_PERMISSION_DENIED(4004,"无数据权限"),

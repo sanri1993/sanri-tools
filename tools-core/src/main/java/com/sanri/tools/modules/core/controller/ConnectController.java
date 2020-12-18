@@ -5,11 +5,14 @@ import com.sanri.tools.modules.core.dtos.ConnectDto;
 import com.sanri.tools.modules.core.dtos.param.*;
 import com.sanri.tools.modules.core.service.file.ConnectService;
 import com.sanri.tools.modules.core.utils.URLUtil;
+import com.sanri.tools.modules.core.validation.custom.EnumStringValue;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -17,6 +20,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/connect")
+@Validated
 public class ConnectController {
     @Autowired
     private ConnectService connectService;
@@ -35,12 +39,12 @@ public class ConnectController {
      * @param name
      */
     @PostMapping("/createModule")
-    public void createModule(String name){
+    public void createModule(@NotNull @EnumStringValue({"database","kafka","redis","zookeeper","mongo"}) String name){
         connectService.createModule(name);
     }
 
     @PostMapping("/deleteModule")
-    public void deleteModule(String name) throws IOException {connectService.dropModule(name);}
+    public void deleteModule(@NotNull String name) throws IOException {connectService.dropModule(name);}
 
     /**
      * 指定模块下的连接列表
