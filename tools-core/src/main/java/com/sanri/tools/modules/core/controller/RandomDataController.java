@@ -11,8 +11,10 @@ import com.sanri.tools.modules.core.service.data.regex.exception.RegexpIllegalEx
 import com.sanri.tools.modules.core.service.data.regex.exception.TypeNotMatchException;
 import com.sanri.tools.modules.core.service.data.regex.exception.UninitializedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/data")
+@Validated
 public class RandomDataController {
     @Autowired
     private RandomDataService randomDataService;
@@ -39,7 +42,7 @@ public class RandomDataController {
      * @throws ClassNotFoundException
      */
     @GetMapping("/random")
-    public Object randomData(String className,String classloaderName) throws ClassNotFoundException {
+    public Object randomData(@NotNull String className, @NotNull String classloaderName) throws ClassNotFoundException {
         ClassLoader classloader = classloaderService.getClassloader(classloaderName);
         return randomDataService.randomData(className,classloader);
     }
@@ -52,7 +55,7 @@ public class RandomDataController {
      * @throws ClassNotFoundException
      */
     @GetMapping("/random/list")
-    public List<Object> randomListData(String className, String classloaderName) throws ClassNotFoundException {
+    public List<Object> randomListData(@NotNull String className, @NotNull String classloaderName) throws ClassNotFoundException {
         List<Object> list = new ArrayList<>();
         ClassLoader classloader = classloaderService.getClassloader(classloaderName);
         for (int i = 0; i < 10; i++) {
@@ -69,7 +72,7 @@ public class RandomDataController {
      * @return
      */
     @GetMapping("/random/regex")
-    public String regexRandomData(String regex) throws RegexpIllegalException, TypeNotMatchException, UninitializedException {
+    public String regexRandomData(@NotNull String regex) throws RegexpIllegalException, TypeNotMatchException, UninitializedException {
         OrdinaryNode ordinaryNode = new OrdinaryNode(regex);
         String random = ordinaryNode.random();
         return random;

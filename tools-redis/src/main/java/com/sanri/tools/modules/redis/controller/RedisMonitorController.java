@@ -8,6 +8,7 @@ import com.sanri.tools.modules.redis.dtos.params.ConnParam;
 import com.sanri.tools.modules.redis.service.RedisClusterService;
 import com.sanri.tools.modules.redis.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @RequestMapping("/redis/monitor")
 @RestController
+@Validated
 public class RedisMonitorController {
     @Autowired
     private RedisClusterService redisClusterService;
@@ -28,7 +30,7 @@ public class RedisMonitorController {
      * @throws IOException
      */
     @GetMapping("/mode")
-    public String mode(ConnParam connParam) throws IOException {
+    public String mode(@Validated ConnParam connParam) throws IOException {
         return redisClusterService.mode(connParam);
     }
 
@@ -39,7 +41,7 @@ public class RedisMonitorController {
      * @throws IOException
      */
     @GetMapping("/dbs")
-    public long dbs(ConnParam connParam) throws IOException {
+    public long dbs(@Validated ConnParam connParam) throws IOException {
         return redisService.dbs(connParam);
     }
 
@@ -50,7 +52,7 @@ public class RedisMonitorController {
      * @throws IOException
      */
     @GetMapping("/nodes")
-    public List<RedisNode> nodes(ConnParam connParam) throws IOException {
+    public List<RedisNode> nodes(@Validated ConnParam connParam) throws IOException {
         return redisClusterService.nodes(connParam);
     }
 
@@ -61,7 +63,7 @@ public class RedisMonitorController {
      * @throws IOException
      */
     @GetMapping("/memoryUses")
-    public List<MemoryUse> memoryUses(ConnParam connParam) throws IOException {
+    public List<MemoryUse> memoryUses(@Validated ConnParam connParam) throws IOException {
         return redisClusterService.memoryUses(connParam);
     }
 
@@ -72,7 +74,7 @@ public class RedisMonitorController {
      * @throws IOException
      */
     @GetMapping("/clientList")
-    public List<ClientConnection> clientList(ConnParam connParam) throws IOException {
+    public List<ClientConnection> clientList(@Validated ConnParam connParam) throws IOException {
         return redisClusterService.clientList(connParam);
     }
 
@@ -84,7 +86,7 @@ public class RedisMonitorController {
      * @throws IOException
      */
     @PostMapping("/client/kill/{clientId}")
-    public String killClient(ConnParam connParam, @PathVariable("clientId") String clientId) throws IOException {
+    public String killClient(@Validated ConnParam connParam, @PathVariable("clientId") String clientId) throws IOException {
         return redisService.killClient(connParam,clientId);
     }
 
@@ -94,7 +96,7 @@ public class RedisMonitorController {
      * @return
      */
     @GetMapping("/slowlogs")
-    public List<RedisSlowlog> redisSlowlogs(ConnParam connParam) throws IOException {
+    public List<RedisSlowlog> redisSlowlogs(@Validated ConnParam connParam) throws IOException {
         return redisClusterService.slowlogs(connParam);
     }
 }

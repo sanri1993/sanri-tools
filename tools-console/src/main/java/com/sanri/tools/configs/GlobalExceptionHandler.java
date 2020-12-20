@@ -82,11 +82,14 @@ public class GlobalExceptionHandler {
         }
     }
 
+    // get 请求绑定实体
     @ExceptionHandler(value = BindException.class)
     public ResponseDto bindException(BindException ex) {
         // ex.getFieldError():随机返回一个对象属性的异常信息。如果要一次性返回所有对象属性异常信息，则调用ex.getAllErrors()
         FieldError fieldError = ex.getFieldError();
         assert fieldError != null;
+        String message = fieldError.getField() + " = " + fieldError.getRejectedValue() + "; cause "+ fieldError.getDefaultMessage();
+        log.error(message);
         return SystemMessage.ARGS_ERROR.exception(fieldError.getField(),fieldError.getRejectedValue()).getResponseDto();
     }
 
@@ -94,9 +97,12 @@ public class GlobalExceptionHandler {
     public ResponseDto methodArgumentNotValidException(MethodArgumentNotValidException e){
         FieldError fieldError = e.getBindingResult().getFieldError();
         assert fieldError != null;
+        String message = fieldError.getField() + " = " + fieldError.getRejectedValue() + "; cause "+ fieldError.getDefaultMessage();
+        log.error(message);
         return SystemMessage.ARGS_ERROR.exception(fieldError.getField(),fieldError.getRejectedValue(),fieldError.getDefaultMessage()).getResponseDto();
     }
 
+    // 方法普通参数验证
     @ExceptionHandler(value = ConstraintViolationException.class)
     public ResponseDto constraintViolationException(ConstraintViolationException ex){
         ConstraintViolation<?> constraintViolation = ex.getConstraintViolations().iterator().next();

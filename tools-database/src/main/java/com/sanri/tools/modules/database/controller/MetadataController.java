@@ -9,10 +9,12 @@ import com.sanri.tools.modules.database.service.TableMarkService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/db/metadata")
+@Validated
 public class MetadataController {
     @Autowired
     private JdbcService jdbcService;
@@ -48,7 +51,7 @@ public class MetadataController {
      * @throws SQLException
      */
     @GetMapping("/catalogs")
-    public List<Catalog> catalogs(String connName) throws IOException, SQLException {
+    public List<Catalog> catalogs(@NotNull String connName) throws IOException, SQLException {
         return jdbcService.refreshConnection(connName);
     }
 
@@ -60,7 +63,7 @@ public class MetadataController {
      * @return
      */
     @GetMapping("/tables")
-    public Collection<TableMetaData> tables(String connName, String catalog) throws SQLException, IOException {
+    public Collection<TableMetaData> tables(@NotNull String connName, String catalog) throws SQLException, IOException {
         Collection<TableMetaData> tables = jdbcService.tables(connName, catalog);
         return tables;
     }
@@ -75,12 +78,12 @@ public class MetadataController {
      * @throws SQLException
      */
     @GetMapping("/refreshCatalogOrSchema")
-    public Collection<TableMetaData> refreshCatalogOrSchema(String connName,String catalog,String schema) throws IOException, SQLException {
+    public Collection<TableMetaData> refreshCatalogOrSchema(@NotNull String connName,String catalog,String schema) throws IOException, SQLException {
         return jdbcService.refreshCatalogOrSchema(connName,catalog,schema);
     }
 
     @GetMapping("/refreshTable")
-    public TableMetaData refreshTable(String connName, String catalog, String schema, String tableName) throws IOException, SQLException {
+    public TableMetaData refreshTable(@NotNull String connName, String catalog, String schema, String tableName) throws IOException, SQLException {
         ActualTableName actualTableName = new ActualTableName(catalog,schema,tableName);
         return jdbcService.refreshTable(connName,actualTableName);
     }
@@ -98,7 +101,7 @@ public class MetadataController {
      * @throws SQLException
      */
     @GetMapping("/searchTables")
-    public List<ExtendTableMetaData> searchTables(String connName, String catalog, String[] schemas, String keyword) throws IOException, SQLException {
+    public List<ExtendTableMetaData> searchTables(@NotNull String connName, String catalog, String[] schemas, String keyword) throws IOException, SQLException {
         // 根据关键字进行过滤
         String searchSchema = "";
         if(StringUtils.isNotBlank(keyword) && keyword.contains(":")){

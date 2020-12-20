@@ -100,7 +100,7 @@ public class ClassloaderController {
      * @return
      */
     @GetMapping("/listLoadedClasses")
-    public Set<String> listLoadedClasses(String classloaderName){
+    public Set<String> listLoadedClasses(@NotNull String classloaderName){
         return classloaderService.listLoadedClasses(classloaderName);
     }
 

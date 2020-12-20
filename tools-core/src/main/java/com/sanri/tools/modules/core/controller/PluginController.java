@@ -8,16 +8,19 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.NotNull;
 import java.io.*;
 import java.util.List;
 import java.util.Set;
 
 @RestController
 @RequestMapping("/plugin")
+@Validated
 public class PluginController {
     @Autowired
     private PluginManager pluginManager;
@@ -45,7 +48,7 @@ public class PluginController {
      * @param key
      */
     @GetMapping("/visited")
-    public void visited(String key){
+    public void visited(@NotNull String key){
         pluginManager.visitedPlugin(key);
     }
 
@@ -54,7 +57,7 @@ public class PluginController {
      * @return
      */
     @GetMapping("/detail")
-    public PluginDto detail(String key) throws IOException {
+    public PluginDto detail(@NotNull String key) throws IOException {
         EnhancePluginDto detail = pluginManager.detail(key);
         if(detail != null) {
             PluginDto pluginDto = detail.getPluginDto();

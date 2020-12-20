@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 
 @RequestMapping("/redis")
 @RestController
+@Validated
 public class RedisController {
     @Autowired
     private RedisClusterService redisClusterService;
@@ -28,7 +30,7 @@ public class RedisController {
     }
 
     @PostMapping("/key/drop")
-    public void dropKeys(ConnParam connParam,String [] keys) throws IOException {
+    public void dropKeys(@Validated ConnParam connParam,String [] keys) throws IOException {
         redisClusterService.dropKeys(connParam,keys);
     }
 
@@ -40,12 +42,12 @@ public class RedisController {
      * @return
      */
     @GetMapping("/key/subKeys")
-    public SubKeyScanResult subKeys(ConnParam connParam, String key, RedisScanParam redisScanParam, SerializerParam serializerParam) throws IOException, ClassNotFoundException {
+    public SubKeyScanResult subKeys(@Validated ConnParam connParam, String key, RedisScanParam redisScanParam, SerializerParam serializerParam) throws IOException, ClassNotFoundException {
         return redisClusterService.subKeyScan(connParam,key,redisScanParam,serializerParam);
     }
 
     @GetMapping("/key/length")
-    public long keyLength(ConnParam connParam,String key,SerializerParam serializerParam) throws IOException {
+    public long keyLength(@Validated ConnParam connParam, @NotNull String key, SerializerParam serializerParam) throws IOException {
         return redisClusterService.keyLength(connParam,key,serializerParam);
     }
 
@@ -61,7 +63,7 @@ public class RedisController {
      * @throws ClassNotFoundException
      */
     @GetMapping("/data")
-    public Object data(ConnParam connParam, SubKeyParam subKeyParam, RangeParam rangeParam, RedisScanParam redisScanParam, SerializerParam serializerParam) throws IOException, ClassNotFoundException {
+    public Object data(@Validated ConnParam connParam, SubKeyParam subKeyParam, RangeParam rangeParam, RedisScanParam redisScanParam, SerializerParam serializerParam) throws IOException, ClassNotFoundException {
         return redisClusterService.data(connParam,subKeyParam,rangeParam,redisScanParam,serializerParam);
     }
 
@@ -74,7 +76,7 @@ public class RedisController {
      * @return
      */
     @GetMapping("/collectionMethods")
-    public Object collectionMethods(ConnParam connParam,String [] keys,String command,SerializerParam serializerParam) throws IOException, ClassNotFoundException {
+    public Object collectionMethods(@Validated ConnParam connParam,String [] keys,String command,SerializerParam serializerParam) throws IOException, ClassNotFoundException {
         return redisClusterService.collectionMethods(connParam,keys,command,serializerParam);
     }
 }

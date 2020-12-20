@@ -9,11 +9,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -21,6 +23,7 @@ import java.util.Date;
 
 @Controller
 @RequestMapping("/file/manager")
+@Validated
 public class FileManagerController {
     @Autowired
     FileManager fileManager;
@@ -32,7 +35,7 @@ public class FileManagerController {
      * @param baseName
      */
     @GetMapping("/download")
-    public ResponseEntity download(String baseName, HttpServletResponse response) throws IOException {
+    public ResponseEntity download(@NotNull String baseName, HttpServletResponse response) throws IOException {
         Resource resource = fileManager.relativeResource(baseName);
         if (resource == null){
             throw new ToolException("未找到资源 "+baseName);
