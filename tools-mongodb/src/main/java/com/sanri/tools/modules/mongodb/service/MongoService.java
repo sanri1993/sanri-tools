@@ -122,7 +122,7 @@ public class MongoService {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module("monitor").author("9420").logo("redis.jpg").desc("mongodb 监控管理").name(module).build());
+        pluginManager.register(PluginDto.builder().module("monitor").author("9420").logo("mongo.jpg").desc("mongodb 监控管理").name(module).build());
     }
 
     /**

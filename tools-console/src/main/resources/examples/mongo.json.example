@@ -1,0 +1,10 @@
+{
+  "connectIdParam": {
+    "module": "mongo",
+    "connName": "localhost"
+  },
+  "connectParam": {
+    "host": "localhost",
+    "port": 27017
+  }
+}
