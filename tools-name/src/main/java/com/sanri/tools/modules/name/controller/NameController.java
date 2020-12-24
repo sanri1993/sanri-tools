@@ -5,8 +5,10 @@ import com.google.common.base.Converter;
 import com.sanri.tools.modules.name.service.BizTranslate;
 import com.sanri.tools.modules.name.service.NameService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,6 +18,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/name")
+@Validated
 public class NameController {
     @Autowired
     private BizTranslate bizTranslate;
@@ -24,7 +27,7 @@ public class NameController {
     private NameService nameService;
 
     @GetMapping("/translate")
-    public Set<String> translate(String orginChars, String tokenizer, String[] tranlates,String[] bizs){
+    public Set<String> translate(@NotNull String orginChars, @NotNull String tokenizer, String[] tranlates, String[] bizs){
         return nameService.translate(orginChars,tokenizer, bizs,tranlates);
     }
 
@@ -79,7 +82,7 @@ public class NameController {
      */
     Converter<String, String> converter = CaseFormat.LOWER_CAMEL.converterTo(CaseFormat.LOWER_UNDERSCORE);
     @GetMapping("/mutiTranslateUnderline")
-    public List<String> mutiTranslateUnderline(String [] words,String english){
+    public List<String> mutiTranslateUnderline(String [] words,@NotNull String english){
         List<String> results = nameService.multiTranslate(words, english);
         List<String> collect = results.stream().map(converter::convert).collect(Collectors.toList());
         return collect;

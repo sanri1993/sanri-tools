@@ -3,6 +3,8 @@ package com.sanri.tools.modules.database.dtos;
 import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
 import lombok.Data;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,8 +19,11 @@ public class MapperBuildConfig {
     // 需要生成的内容
     private FilesConfig filesConfig = new FilesConfig();
 
+    @Valid
     private CodeGeneratorConfig.DataSourceConfig dataSourceConfig;
+    @Valid
     private CodeGeneratorConfig.PackageConfig packageConfig;
+    @NotNull
     private String projectName;
 
     private List<PluginConfig> pluginConfigs = new ArrayList<>();

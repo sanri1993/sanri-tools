@@ -5,11 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.Tolerate;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
 @Builder
 public class JavaBeanBuildConfig {
+    @NotNull
     private String connName;
     private String catalog;
     private List<ActualTableName> tables;
@@ -22,6 +24,7 @@ public class JavaBeanBuildConfig {
     private List<String> exclude;
 
     private String renameStrategy;
+    @NotNull
     private String packageName;
 
     @Tolerate

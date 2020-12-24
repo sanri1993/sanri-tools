@@ -2,14 +2,17 @@ package com.sanri.tools.controller;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.scheduling.support.CronSequenceGenerator;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @RestController
+@Validated
 public class CronController {
 
     /**
@@ -18,7 +21,7 @@ public class CronController {
      * @return
      */
     @PostMapping("/cron/nextExecutionTime")
-    public List<String> cronNextExecutionTime(String expression){
+    public List<String> cronNextExecutionTime(@NotNull String expression){
         List<String> nextTimes = new ArrayList<>();
         CronSequenceGenerator cronSequenceGenerator = new CronSequenceGenerator(expression);
         Date current = new Date();

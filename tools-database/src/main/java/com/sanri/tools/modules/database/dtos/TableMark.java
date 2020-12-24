@@ -3,6 +3,8 @@ package com.sanri.tools.modules.database.dtos;
 import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
 import lombok.Data;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,7 +14,9 @@ import java.util.Set;
  */
 @Data
 public class TableMark {
+    @NotNull
     private String connName;
+    @Valid
     private ActualTableName actualTableName;
     private Set<String> tags = new HashSet<>();
 

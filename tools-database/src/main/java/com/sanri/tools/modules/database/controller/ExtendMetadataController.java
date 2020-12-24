@@ -9,8 +9,11 @@ import com.sanri.tools.modules.database.service.JdbcService;
 import com.sanri.tools.modules.database.service.TableMarkService;
 import com.sanri.tools.modules.database.service.TableRelationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -22,6 +25,7 @@ import java.util.Set;
  */
 @RestController
 @RequestMapping("/db/metadata/extend")
+@Validated
 public class ExtendMetadataController {
     @Autowired
     private TableRelationService tableRelationService;
@@ -44,12 +48,12 @@ public class ExtendMetadataController {
      * @param tableMarks
      */
     @PostMapping("/mark/config/tableMark")
-    public void configTableMark(@RequestBody Set<TableMark> tableMarks){
+    public void configTableMark(@RequestBody @Valid Set<TableMark> tableMarks){
         tableMarkService.configTableMark(tableMarks);
     }
 
     @GetMapping("/mark/tableTags")
-    public Set<String> tableTags(String connName,String catalog,String schema,String tableName){
+    public Set<String> tableTags(@NotNull String connName, String catalog, String schema, @NotNull String tableName){
         ActualTableName actualTableName = new ActualTableName(catalog, schema, tableName);
         TableMark tableMark = tableMarkService.getTableMark(connName,actualTableName);
         return tableMark.getTags();
@@ -60,7 +64,7 @@ public class ExtendMetadataController {
      * @param batchTableRelationParam
      */
     @PostMapping("/relation/config")
-    public void configBatch(@RequestBody BatchTableRelationParam batchTableRelationParam){
+    public void configBatch(@RequestBody @Valid BatchTableRelationParam batchTableRelationParam){
         String connName = batchTableRelationParam.getConnName();
         String catalog = batchTableRelationParam.getCatalog();
 
@@ -75,7 +79,7 @@ public class ExtendMetadataController {
      * @return
      */
     @GetMapping("/relation/parents")
-    public List<TableRelationDto> parents(String connName, String catalog,String schema, String tableName){
+    public List<TableRelationDto> parents(@NotNull String connName, String catalog,String schema, @NotNull String tableName){
         ActualTableName actualTableName = new ActualTableName(catalog, schema, tableName);
         return tableRelationService.parents(connName,actualTableName);
     }
@@ -88,7 +92,7 @@ public class ExtendMetadataController {
      * @return
      */
     @GetMapping("/relation/childs")
-    public List<TableRelationDto> childs(String connName, String catalog,String schema, String tableName){
+    public List<TableRelationDto> childs(@NotNull String connName, String catalog,String schema, @NotNull String tableName){
         ActualTableName actualTableName = new ActualTableName(catalog, schema, tableName);
         return tableRelationService.childs(connName,actualTableName);
     }
@@ -101,13 +105,13 @@ public class ExtendMetadataController {
      * @return
      */
     @GetMapping("/relation/hierarchy")
-    public TableRelationTree hierarchy(String connName, String catalog, String schema,String tableName){
+    public TableRelationTree hierarchy(@NotNull String connName, String catalog, String schema,@NotNull String tableName){
         ActualTableName actualTableName = new ActualTableName(catalog, schema, tableName);
         return tableRelationService.hierarchy(connName,actualTableName);
     }
 
     @GetMapping("/relation/superTypes")
-    public TableRelationTree superTypes(String connName, String catalog, String schema,String tableName){
+    public TableRelationTree superTypes(@NotNull String connName, String catalog, String schema,@NotNull String tableName){
         ActualTableName actualTableName = new ActualTableName(catalog, schema, tableName);
         return tableRelationService.superTypes(connName,actualTableName);
     }

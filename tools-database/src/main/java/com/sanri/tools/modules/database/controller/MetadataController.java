@@ -83,7 +83,7 @@ public class MetadataController {
     }
 
     @GetMapping("/refreshTable")
-    public TableMetaData refreshTable(@NotNull String connName, String catalog, String schema, String tableName) throws IOException, SQLException {
+    public TableMetaData refreshTable(@NotNull String connName, String catalog, String schema, @NotNull String tableName) throws IOException, SQLException {
         ActualTableName actualTableName = new ActualTableName(catalog,schema,tableName);
         return jdbcService.refreshTable(connName,actualTableName);
     }

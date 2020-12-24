@@ -4,12 +4,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 
 @Setter
 public class ActualTableName {
     private String catalog;
     private String schema;
+    @NotNull
     private String tableName;
     private String fullName;
 

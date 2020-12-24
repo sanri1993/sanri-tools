@@ -19,10 +19,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotNull;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -35,6 +37,7 @@ import java.util.stream.Collectors;
  */
 @Controller
 @RequestMapping("/db/metadata")
+@Validated
 public class MetadataControllerShow {
     @Autowired
     private JdbcService jdbcService;
@@ -48,7 +51,7 @@ public class MetadataControllerShow {
      * @return
      */
     @GetMapping("/doc")
-    public ModelAndView generateDoc(String connName, String catalog, String[] schemas,String templateName) throws IOException, SQLException {
+    public ModelAndView generateDoc(@NotNull String connName, String catalog, String[] schemas, @NotNull String templateName) throws IOException, SQLException {
         Set<String> schemasSet = Arrays.stream(schemas).collect(Collectors.toSet());
         List<TableMetaData> filterTables = jdbcService.filterSchemaTables(connName,catalog,schemasSet);
         // 使用过滤后的表生成文档
@@ -61,7 +64,7 @@ public class MetadataControllerShow {
     }
 
     @GetMapping("/doc/download")
-    public void downDoc(String connName, String catalog, String[] schemas,String templateName, HttpServletResponse response) throws IOException, SQLException, TemplateException {
+    public void downDoc(@NotNull String connName, String catalog, String[] schemas,@NotNull String templateName, HttpServletResponse response) throws IOException, SQLException, TemplateException {
         Set<String> schemasSet = Arrays.stream(schemas).collect(Collectors.toSet());
         List<TableMetaData> filterTables = jdbcService.filterSchemaTables(connName, catalog, schemasSet);
 
@@ -91,7 +94,7 @@ public class MetadataControllerShow {
      * @throws TemplateException
      */
     @GetMapping("/doc/download/word")
-    public ResponseEntity<UrlResource> downDocWord(String connName, String catalog, String[] schemas, String templateName) throws IOException, SQLException, TemplateException {
+    public ResponseEntity<UrlResource> downDocWord(@NotNull String connName, String catalog, String[] schemas,@NotNull String templateName) throws IOException, SQLException, TemplateException {
         Set<String> schemasSet = Arrays.stream(schemas).collect(Collectors.toSet());
         List<TableMetaData> filterTables = jdbcService.filterSchemaTables(connName, catalog, schemasSet);
 
@@ -138,7 +141,7 @@ public class MetadataControllerShow {
 
     @PostMapping("/generate")
     @ResponseBody
-    public String generate(String connName,String catalog,String [] schemas) throws IOException, SQLException {
+    public String generate(@NotNull String connName,String catalog,String [] schemas) throws IOException, SQLException {
         Path generate = excelDocService.generate(connName,catalog,schemas);
         return generate.toString();
     }

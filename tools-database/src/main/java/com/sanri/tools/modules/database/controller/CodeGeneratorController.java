@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -33,14 +34,14 @@ public class CodeGeneratorController {
     }
 
     @PostMapping("/build/javaBean")
-    public String javaBeanBuild(@RequestBody JavaBeanBuildConfig javaBeanBuildConfig) throws IOException, SQLException {
+    public String javaBeanBuild(@RequestBody @Valid JavaBeanBuildConfig javaBeanBuildConfig) throws IOException, SQLException {
         File file = codeGeneratorService.javaBeanBuild(javaBeanBuildConfig);
         Path path = fileManager.relativePath(file.toPath());
         return path.toString();
     }
 
     @PostMapping("/build/mapper")
-    public String buildMapper(@RequestBody MapperBuildConfig mapperBuildConfig) throws InterruptedException, SQLException, IOException {
+    public String buildMapper(@RequestBody @Valid MapperBuildConfig mapperBuildConfig) throws InterruptedException, SQLException, IOException {
         File file = codeGeneratorService.mapperBuild(mapperBuildConfig);
         Path path = fileManager.relativePath(file.toPath());
         return path.toString();
@@ -53,7 +54,7 @@ public class CodeGeneratorController {
     }
 
     @PostMapping("/build/project")
-    public String buildProject(@RequestBody CodeGeneratorConfig codeGeneratorConfig) throws IOException, SQLException, InterruptedException {
+    public String buildProject(@RequestBody @Valid CodeGeneratorConfig codeGeneratorConfig) throws IOException, SQLException, InterruptedException {
         File file = codeGeneratorService.projectBuild(codeGeneratorConfig);
         Path path = fileManager.relativePath(file.toPath());
         return path.toString();
@@ -114,7 +115,7 @@ public class CodeGeneratorController {
      * @param content
      */
     @PostMapping("/override")
-    public void override(@RequestBody TemplateContent templateContent) throws IOException {
+    public void override(@RequestBody @Valid TemplateContent templateContent) throws IOException {
         String name = templateContent.getName();
         String content = templateContent.getContent();
         templateService.writeContent(name,content);
@@ -129,12 +130,12 @@ public class CodeGeneratorController {
      * @throws TemplateException
      */
     @PostMapping("/template/code/preview")
-    public String previewCode(@RequestBody PreviewCodeParam previewCodeParam) throws SQLException, IOException, TemplateException {
+    public String previewCode(@RequestBody @Valid PreviewCodeParam previewCodeParam) throws SQLException, IOException, TemplateException {
         return codeGeneratorService.previewCode(previewCodeParam);
     }
 
     @PostMapping("/template/code/generator")
-    public String generator(@RequestBody CodeGeneratorParam codeGeneratorParam) throws SQLException, IOException, TemplateException {
+    public String generator(@RequestBody @Valid CodeGeneratorParam codeGeneratorParam) throws SQLException, IOException, TemplateException {
         Path path = codeGeneratorService.codeGenerator(codeGeneratorParam);
         return path.toString();
     }

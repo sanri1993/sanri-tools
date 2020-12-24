@@ -8,16 +8,19 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 
 @Controller
 @RequestMapping("/swagger")
+@Validated
 public class SwaggerDocController {
     @Autowired
     private SwaggerJsonParser swaggerJsonParser;
@@ -31,7 +34,7 @@ public class SwaggerDocController {
      * @throws IOException
      */
     @GetMapping("/doc")
-    public ModelAndView generaterDoc(String url) throws IOException {
+    public ModelAndView generaterDoc(@NotNull String url) throws IOException {
         Doc doc = swaggerJsonParser.doc(url);
         ModelAndView modelAndView = new ModelAndView("word");
         modelAndView.addObject("doc",doc);
@@ -39,7 +42,7 @@ public class SwaggerDocController {
     }
 
     @GetMapping("/doc/download")
-    public ResponseEntity<ByteArrayResource> docWord(String url) throws IOException {
+    public ResponseEntity<ByteArrayResource> docWord(@NotNull String url) throws IOException {
         Doc doc = swaggerJsonParser.doc(url);
         Context context = new Context();
         context.setVariable("doc",doc);

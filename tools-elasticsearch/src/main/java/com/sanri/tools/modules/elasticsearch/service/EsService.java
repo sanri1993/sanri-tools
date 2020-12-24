@@ -8,5 +8,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class EsService {
-    private Map<String, HttpRequestDto> cache = new ConcurrentHashMap<>();
+    private Map<String, HttpRequestDto> requestTemplates = new ConcurrentHashMap<>();
+
+    public void addReuqest(String uri,HttpRequestDto httpRequestDto){
+        requestTemplates.put(uri,httpRequestDto);
+    }
+
+    public void sendRequest(String id,String baseUrl){
+
+    }
 }

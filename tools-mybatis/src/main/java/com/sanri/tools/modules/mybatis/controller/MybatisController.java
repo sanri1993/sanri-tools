@@ -6,15 +6,19 @@ import com.sanri.tools.modules.mybatis.dtos.ProjectDto;
 import com.sanri.tools.modules.mybatis.service.MybatisService;
 import org.apache.ibatis.mapping.ParameterMapping;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
 @RestController
 @RequestMapping("/mybatis")
+@Validated
 public class MybatisController {
     @Autowired
     private MybatisService mybatisService;
@@ -41,7 +45,7 @@ public class MybatisController {
      * @throws IOException
      */
     @PostMapping("/uploadMapperFile")
-    public void uploadMapperFile(MultipartFile file,String project,String classloaderName) throws IOException {
+    public void uploadMapperFile(MultipartFile file, @NotNull String project, @NotNull String classloaderName) throws IOException {
         mybatisService.newProjectFile(project,classloaderName,file);
     }
 
@@ -51,7 +55,7 @@ public class MybatisController {
      * @return
      */
     @GetMapping("/statementIds")
-    public List<String> statementIds(String project){
+    public List<String> statementIds(@NotNull String project){
         return mybatisService.statementIds(project);
     }
 
@@ -63,7 +67,7 @@ public class MybatisController {
      * @return
      */
     @GetMapping("/statementParams")
-    public List<ParameterMapping> statementParams(String project, String statementId){
+    public List<ParameterMapping> statementParams(@NotNull String project, @NotNull String statementId){
         return mybatisService.statemenetParams(project,statementId);
     }
 
@@ -76,7 +80,7 @@ public class MybatisController {
      * @throws SQLException
      */
     @PostMapping("/boundSql")
-    public BoundSqlResponse boundSql(@RequestBody BoundSqlParam boundSqlParam) throws ClassNotFoundException, IOException, SQLException {
+    public BoundSqlResponse boundSql(@RequestBody @Valid BoundSqlParam boundSqlParam) throws ClassNotFoundException, IOException, SQLException {
         return mybatisService.boundSql(boundSqlParam);
     }
 }

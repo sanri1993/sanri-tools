@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -41,7 +42,7 @@ public class QuartzController {
      * @param editJobParam
      */
     @PostMapping("/{connName}/editJob")
-    public void editJob(@PathVariable("connName") String connName, @RequestBody EditJobParam editJobParam) throws Exception {
+    public void editJob(@PathVariable("connName") String connName, @RequestBody @Valid EditJobParam editJobParam) throws Exception {
         quartzService.editJob(connName,editJobParam);
     }
 
@@ -94,7 +95,7 @@ public class QuartzController {
      * @throws SchedulerException
      */
     @GetMapping("/trigger")
-    public void trigger(String connName,String group,String name) throws Exception {
+    public void trigger(@NotNull String connName,String group,String name) throws Exception {
         JobKey jobKey = new JobKey(name, group);
         quartzService.trigger(connName,jobKey);
     }
@@ -107,7 +108,7 @@ public class QuartzController {
      * @throws SchedulerException
      */
     @GetMapping("/pause")
-    public void pause(String connName,String name,String group) throws Exception {
+    public void pause(@NotNull String connName,String name,String group) throws Exception {
         JobKey jobKey = new JobKey(name, group);
         quartzService.pause(connName,jobKey);
     }
@@ -120,7 +121,7 @@ public class QuartzController {
      * @throws SchedulerException
      */
     @GetMapping("/resume")
-    public void resume(String connName,String name,String group) throws Exception {
+    public void resume(@NotNull String connName,String name,String group) throws Exception {
         JobKey jobKey = new JobKey(name, group);
         quartzService.resume(connName,jobKey);
     }
@@ -135,7 +136,7 @@ public class QuartzController {
      * @throws SchedulerException
      */
     @GetMapping("/remove")
-    public void remove(String connName,String triggerName,String triggerGroup,String jobName,String jobGroup) throws Exception {
+    public void remove(@NotNull String connName,@NotNull String triggerName,@NotNull String triggerGroup,@NotNull String jobName,@NotNull String jobGroup) throws Exception {
         TriggerKey triggerKey = TriggerKey.triggerKey(triggerName, triggerGroup);
         JobKey jobKey = JobKey.jobKey(jobName, jobGroup);
         quartzService.remove(connName,triggerKey,jobKey);

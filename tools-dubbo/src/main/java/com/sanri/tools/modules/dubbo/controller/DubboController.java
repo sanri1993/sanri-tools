@@ -6,14 +6,18 @@ import com.sanri.tools.modules.dubbo.dtos.DubboInvokeParam;
 import com.sanri.tools.modules.dubbo.dtos.DubboLoadMethodParam;
 import com.sanri.tools.modules.dubbo.service.MainDubboService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/dubbo")
+@Validated
 public class DubboController {
     @Autowired
     private MainDubboService dubboService;
@@ -24,7 +28,7 @@ public class DubboController {
      * @return
      */
     @GetMapping("/services")
-    public List<String> services(String connName) throws IOException {
+    public List<String> services(@NotNull String connName) throws IOException {
         return dubboService.services(connName);
     }
 
@@ -35,7 +39,7 @@ public class DubboController {
      * @return
      */
     @GetMapping("/providers")
-    public List<DubboProviderDto> providers(String connName, String serviceName) throws IOException {
+    public List<DubboProviderDto> providers(@NotNull String connName, @NotNull String serviceName) throws IOException {
         return dubboService.providers(connName,serviceName);
     }
 
@@ -50,7 +54,7 @@ public class DubboController {
      * @throws ExecutionException
      */
     @PostMapping("/invoke")
-    public Object invoke(@RequestBody DubboInvokeParam dubboInvokeParam) throws ClassNotFoundException, NoSuchMethodException, RemotingException, InterruptedException, ExecutionException {
+    public Object invoke(@RequestBody @Valid DubboInvokeParam dubboInvokeParam) throws ClassNotFoundException, NoSuchMethodException, RemotingException, InterruptedException, ExecutionException {
         return dubboService.invoke(dubboInvokeParam);
     }
 }

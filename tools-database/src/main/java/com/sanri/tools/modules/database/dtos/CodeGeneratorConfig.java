@@ -4,6 +4,8 @@ import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
 import lombok.Data;
 
 import javax.sql.DataSource;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -15,22 +17,31 @@ public class CodeGeneratorConfig {
     private String projectName;
     private String author;
 
+    @Valid
     private MavenConfig mavenConfig;
+    @Valid
     private DataSourceConfig dataSourceConfig;
+    @Valid
     private PackageConfig packageConfig;
+    @Valid
     private GlobalConfig globalConfig;
+    @Valid
     private FetureConfig fetureConfig;
 
     @Data
     public static class MavenConfig{
+        @NotNull
         private String groupId;
+        @NotNull
         private String artifactId;
+        @NotNull
         private String version = "1.0-SNAPSHOT";
         private String springBootVersion = "2.0.5.RELEASE";
     }
 
     @Data
     public static class DataSourceConfig {
+        @NotNull
         private String connName;
         private String catalog;
         private List<ActualTableName> tables;

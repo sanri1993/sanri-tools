@@ -10,9 +10,12 @@ import com.sanri.tools.modules.database.service.TableMarkService;
 import net.sf.jsqlparser.JSQLParserException;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -26,6 +29,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/db/data")
+@Validated
 public class DataController {
     @Autowired
     private TableMarkService tableMarkService;
@@ -43,7 +47,7 @@ public class DataController {
      * @return
      */
     @PostMapping("/emptyTable")
-    public int emptyTable(String connName, ActualTableName actualTableName) throws IOException, SQLException {
+    public int emptyTable(@NotNull String connName, @Valid ActualTableName actualTableName) throws IOException, SQLException {
         int emptyTable = tableDataService.emptyTable(connName, actualTableName);
         return emptyTable;
     }
@@ -53,7 +57,7 @@ public class DataController {
      * @return
      */
     @GetMapping("/cleanTagTables")
-    public List<String> cleanTagTables(String connName,String catalog,String[] schemas,String tag) throws SQLException, IOException {
+    public List<String> cleanTagTables(@NotNull String connName,String catalog,String[] schemas,@NotNull String tag) throws SQLException, IOException {
         Set<String> schemasSet = Arrays.stream(schemas).collect(Collectors.toSet());
         List<TableMetaData> tagTables = tableMarkService.searchTables(connName,catalog, schemasSet,tag);
         List<String> sqls = new ArrayList<>();
@@ -71,7 +75,7 @@ public class DataController {
      * @param tableDataParam
      */
     @PostMapping("/singleTableRandomData")
-    public void singleTableRandomData(@RequestBody TableDataParam tableDataParam) throws IOException, SQLException, JSQLParserException {
+    public void singleTableRandomData(@RequestBody @Valid TableDataParam tableDataParam) throws IOException, SQLException, JSQLParserException {
         tableDataService.singleTableWriteRandomData(tableDataParam);
     }
 
@@ -81,7 +85,7 @@ public class DataController {
      * @throws IOException
      */
     @PostMapping("/import/excel")
-    public void importDataFromExcel(@RequestPart("config") ExcelImportParam excelImportParam,@RequestPart("excel") MultipartFile multipartFile) throws IOException, SQLException {
+    public void importDataFromExcel(@RequestPart("config") @Valid ExcelImportParam excelImportParam,@RequestPart("excel") MultipartFile multipartFile) throws IOException, SQLException {
         tableDataService.importDataFromExcel(excelImportParam,multipartFile);
     }
 
@@ -94,7 +98,7 @@ public class DataController {
      * @throws JSQLParserException
      */
     @PostMapping("/exportPreview")
-    public ExportPreviewDto exportPreview(@RequestBody DataQueryParam dataQueryParam) throws IOException, SQLException, JSQLParserException {
+    public ExportPreviewDto exportPreview(@RequestBody @Valid DataQueryParam dataQueryParam) throws IOException, SQLException, JSQLParserException {
         DynamicQueryDto dynamicQueryDto = dataService.exportPreview(dataQueryParam);
         String connName = dataQueryParam.getConnName();
         String sql = dataQueryParam.getFirstSql();
@@ -114,7 +118,7 @@ public class DataController {
      * @return
      */
     @PostMapping("/exportData")
-    public ExportProcessDto exportData(@RequestBody DataQueryParam dataQueryParam) throws JSQLParserException, SQLException, IOException {
+    public ExportProcessDto exportData(@RequestBody @Valid DataQueryParam dataQueryParam) throws JSQLParserException, SQLException, IOException {
         ExportProcessDto fileRelativePath = dataService.exportLowMemoryMutiProcessor(dataQueryParam);
         return fileRelativePath;
     }
@@ -127,7 +131,7 @@ public class DataController {
      * @throws SQLException
      */
     @PostMapping("/executeQuery")
-    public List<DynamicQueryDto> executeQuery(@RequestBody DataQueryParam dataQueryParam) throws IOException, SQLException {
+    public List<DynamicQueryDto> executeQuery(@RequestBody @Valid DataQueryParam dataQueryParam) throws IOException, SQLException {
         List<DynamicQueryDto> dynamicQueryDtos = jdbcService.executeDynamicQuery(dataQueryParam.getConnName(), dataQueryParam.getSqls());
         return dynamicQueryDtos;
     }
@@ -139,7 +143,7 @@ public class DataController {
      * @throws SQLException
      */
     @PostMapping("/executeUpdate")
-    public List<Integer> executeUpdate(@RequestBody DataQueryParam dataQueryParam) throws SQLException, IOException {
+    public List<Integer> executeUpdate(@RequestBody @Valid DataQueryParam dataQueryParam) throws SQLException, IOException {
         List<Integer> updates = jdbcService.executeUpdate(dataQueryParam.getConnName(), dataQueryParam.getSqls());
         return updates;
     }

@@ -6,14 +6,17 @@ import com.sanri.tools.modules.soap.service.WsdlPort;
 import com.sanri.tools.modules.soap.service.WsdlService;
 import com.sanri.tools.modules.soap.service.WsdlServiceClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
 @RestController
 @RequestMapping("/soap")
+@Validated
 public class SoapController {
 
     @Autowired
@@ -30,14 +33,14 @@ public class SoapController {
     }
 
     @GetMapping("/ports")
-    public Set<String> ports(String wsdl){
+    public Set<String> ports(@NotNull String wsdl){
         WsdlService wsdlService = wsdlServiceClient.loadWebservice(wsdl);
         Map<String, WsdlPort> wsdlPortMap = wsdlService.getWsdlPortMap();
         return wsdlPortMap.keySet();
     }
 
     @GetMapping("/{port}/methods")
-    public Set<String> methods(String wsdl, @PathVariable("port") String port){
+    public Set<String> methods(@NotNull String wsdl, @PathVariable("port") String port){
         WsdlService wsdlService = wsdlServiceClient.loadWebservice(wsdl);
         if(wsdlService != null){
             WsdlPort wsdlPort = wsdlService.getWsdlPort(port);
@@ -50,7 +53,7 @@ public class SoapController {
     }
 
     @GetMapping("/{port}/{operation}/input")
-    public WsdlParam methodInputParams(String wsdl,@PathVariable("port") String port,@PathVariable("operation") String operation){
+    public WsdlParam methodInputParams(@NotNull String wsdl,@PathVariable("port") String port,@PathVariable("operation") String operation){
         WsdlService wsdlService = wsdlServiceClient.loadWebservice(wsdl);
         if(wsdlService != null){
             WsdlPort wsdlPort = wsdlService.getWsdlPort(port);
@@ -65,7 +68,7 @@ public class SoapController {
     }
 
     @GetMapping("/{port}/{operation}/output")
-    public WsdlParam methodOutputParam(String wsdl,@PathVariable("port") String port,@PathVariable("operation") String operation){
+    public WsdlParam methodOutputParam(@NotNull String wsdl,@PathVariable("port") String port,@PathVariable("operation") String operation){
         WsdlService wsdlService = wsdlServiceClient.loadWebservice(wsdl);
         if(wsdlService != null){
             WsdlPort wsdlPort = wsdlService.getWsdlPort(port);
@@ -87,7 +90,7 @@ public class SoapController {
      * @return
      */
     @GetMapping("/{port}/{operation}/build")
-    public String buildSoapMessageTemplate(String wsdl, @PathVariable("port") String port, @PathVariable("operation") String operation){
+    public String buildSoapMessageTemplate(@NotNull String wsdl, @PathVariable("port") String port, @PathVariable("operation") String operation){
         WsdlService wsdlService = wsdlServiceClient.loadWebservice(wsdl);
         if(wsdlService != null){
             WsdlPort wsdlPort = wsdlService.getWsdlPort(port);
@@ -102,7 +105,7 @@ public class SoapController {
     }
 
     @PostMapping("/{port}/{operation}/request")
-    public String sendRequest(String wsdl, @PathVariable("port") String port, @PathVariable("operation") String operation, @RequestBody String message) throws IOException {
+    public String sendRequest(@NotNull String wsdl, @PathVariable("port") String port, @PathVariable("operation") String operation, @RequestBody String message) throws IOException {
         WsdlService wsdlService = wsdlServiceClient.loadWebservice(wsdl);
         if(wsdlService != null){
             WsdlPort wsdlPort = wsdlService.getWsdlPort(port);
