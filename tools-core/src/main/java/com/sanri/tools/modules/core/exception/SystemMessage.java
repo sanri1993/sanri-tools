@@ -17,13 +17,14 @@ public enum  SystemMessage implements ExceptionCause<BusinessException> {
     ACCESS_DENIED(4007,"禁止访问 {0}"),
 
     SERVICE_CALL_FAIL(5000,"后台服务异常"),
-    NETWORK_ERROR(5001,"网络连接错误或磁盘不可读"),
+    NETWORK_ERROR(5001,"网络错误"),
     DATA_TO_LARGE(5002,"数据过大"),
     REPEAT_DATA(5003,"数据重复 {0}"),
     NOT_SUPPORT_OPERATOR(5004,"不支持的操作"),
     NOT_SUPPORT_MIME(5005,"不支持的 MIME类型,当前类型为:{0}"),
     POOL_OBJECT_NOT_ENOUGH(5006,"对象池[{0}]对象不足"),
     CALL_MODUL_FAIL(5007,"{0} 模块调用错误"),
+    FILE_NOT_FOUND(5008,"文件读写错误"),
 
     FILE_INCOMPLETE(5901,"文件不完整，上传失败"),
     FILE_CORRUPTED(5902,"文件损坏，上传失败"),

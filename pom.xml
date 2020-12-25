@@ -19,7 +19,6 @@
         <module>tools-dubbo</module>
         <module>tools-mongodb</module>
         <module>tools-quartz</module>
-        <module>tools-elasticsearch</module>
     </modules>
 
     <parent>

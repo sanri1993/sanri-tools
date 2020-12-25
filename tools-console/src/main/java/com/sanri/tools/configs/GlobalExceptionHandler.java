@@ -127,7 +127,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(FileNotFoundException.class)
     public ResponseDto fileNotFound(FileNotFoundException e){
         log.error(e.getMessage(),e);
-        return SystemMessage.NETWORK_ERROR.result();
+        return SystemMessage.FILE_NOT_FOUND.result();
     }
 
     @ExceptionHandler(StreamCorruptedException.class)
