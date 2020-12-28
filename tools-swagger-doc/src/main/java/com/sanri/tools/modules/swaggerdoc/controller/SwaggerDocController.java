@@ -17,6 +17,8 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 @Controller
 @RequestMapping("/swagger")
@@ -35,6 +37,7 @@ public class SwaggerDocController {
      */
     @GetMapping("/doc")
     public ModelAndView generaterDoc(@NotNull String url) throws IOException {
+        url = parseUrl(url);
         Doc doc = swaggerJsonParser.doc(url);
         ModelAndView modelAndView = new ModelAndView("word");
         modelAndView.addObject("doc",doc);
@@ -43,6 +46,7 @@ public class SwaggerDocController {
 
     @GetMapping("/doc/download")
     public ResponseEntity<ByteArrayResource> docWord(@NotNull String url) throws IOException {
+        url = parseUrl(url);
         Doc doc = swaggerJsonParser.doc(url);
         Context context = new Context();
         context.setVariable("doc",doc);
@@ -52,8 +56,33 @@ public class SwaggerDocController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentDispositionFormData("attachment", "swagger.doc");
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        ResponseEntity<ByteArrayResource> body = ResponseEntity.ok().headers(headers)
-                .contentLength(byteArrayResource.contentLength()).body(byteArrayResource);
+        headers.add("fileName","swagger.doc");
+        headers.add("Access-Control-Expose-Headers", "fileName");
+        headers.add("Access-Control-Expose-Headers", "Content-Disposition");
+
+        ResponseEntity<ByteArrayResource> body = ResponseEntity.ok()
+                .headers(headers)
+                .contentLength(byteArrayResource.contentLength())
+                .body(byteArrayResource);
         return body;
+    }
+
+    /**
+     *
+     * @param address
+     * @return
+     */
+    private String parseUrl(String address){
+        try {
+            URL url = new URL(address);
+            String host = url.getHost();
+            int port = url.getPort();
+            String protocol = url.getProtocol();
+
+            return protocol+"://"+host+":"+port+"/v2/api-docs";
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return address;
     }
 }

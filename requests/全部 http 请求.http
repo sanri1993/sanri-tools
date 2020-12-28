@@ -714,6 +714,9 @@ Content-Type: application/json
   "args": ["18"]
 }
 
+### dubbo - 查看可用连接
+GET {{baseUrl}}/dubbo/connects
+
 ### mybatis - 上传 mapper 文件
 POST {{baseUrl}}/mybatis/uploadMapperFile
 Content-Type: multipart/form-data; boundary=uploadMapperFile

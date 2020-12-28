@@ -44,6 +44,19 @@ public class ZookeeperService {
     public static final String module = "zookeeper";
 
     /**
+     * 检查路径是否存在
+     * @param connName
+     * @param path
+     * @return
+     */
+    public boolean exists(String connName,String path) throws IOException {
+        ZkClient zkClient = zkClient(connName);
+        path = resolvePath(path);
+        boolean exists = zkClient.exists(path);
+        return exists;
+    }
+
+    /**
      *  列出直接子节点
      * @return
      */

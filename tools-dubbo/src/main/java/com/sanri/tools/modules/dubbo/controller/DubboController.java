@@ -22,6 +22,11 @@ public class DubboController {
     @Autowired
     private MainDubboService dubboService;
 
+    @GetMapping("/connects")
+    public List<String> connects(){
+        return dubboService.connects();
+    }
+
     /**
      * 所有的 dubbo 服务,在某个连接上
      * @param connName

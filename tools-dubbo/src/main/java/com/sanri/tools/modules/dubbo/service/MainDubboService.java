@@ -14,13 +14,17 @@ import com.sanri.tools.modules.core.dtos.ClassStruct;
 import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.exception.ToolException;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
+import com.sanri.tools.modules.core.service.file.ConnectService;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.dubbo.DubboProviderDto;
 import com.sanri.tools.modules.dubbo.dtos.DubboInvokeParam;
 import com.sanri.tools.modules.zookeeper.service.ZookeeperService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -35,6 +39,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class MainDubboService {
 
     @Autowired
@@ -43,6 +48,18 @@ public class MainDubboService {
     private ClassloaderService classloaderService;
     @Autowired
     private PluginManager pluginManager;
+    @Autowired
+    private ConnectService connectService;
+
+    /**
+     * 检查是否存在 dubbo 服务
+     * @param connName
+     * @return
+     * @throws IOException
+     */
+    public boolean checkIsDubbo(String connName) throws IOException {
+        return zookeeperService.exists(connName,"/dubbo");
+    }
 
     /**
      * 这个主要从 zookeeper 上取有哪些服务
@@ -172,5 +189,21 @@ public class MainDubboService {
     @PostConstruct
     public void register(){
         pluginManager.register(PluginDto.builder().module("call").name("dubbo").author("9420").desc("依赖 zookeeper ,在线调用 dubbo 方法").logo("dubbo.jpg").build());
+    }
+
+    public List<String> connects() {
+        List<String> names = connectService.names(ZookeeperService.module);
+        List<String> connects = new ArrayList<>();
+        for (String name : names) {
+            try {
+                boolean isDubbo = checkIsDubbo(name);
+                if (isDubbo){
+                    connects.add(name);
+                }
+            } catch (IOException e) {
+                log.error(e.getMessage(),e);
+            }
+        }
+        return connects;
     }
 }
