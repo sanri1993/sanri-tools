@@ -27,7 +27,10 @@ management:
   endpoints:
     web:
       exposure:
-        include: beans
+        include: '*'
+  endpoint:
+    health:
+      show-details: ALWAYS
 logging:
   level:
     root: info

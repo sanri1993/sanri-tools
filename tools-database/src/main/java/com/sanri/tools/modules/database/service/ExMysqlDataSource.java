@@ -14,6 +14,11 @@ public class ExMysqlDataSource extends MysqlDataSource {
         properties.setProperty("user",user);
         properties.setProperty("remarks", "true");
         properties.setProperty("useInformationSchema", "true");
+        properties.setProperty("Unicode","true");
+        properties.setProperty("characterEncoding","UTF-8");
+        properties.setProperty("serverTimezone","Asia/Shanghai");
+        properties.setProperty("useAffectedRows","true");
+        properties.setProperty("useSSL","false");
         Connection connection = super.getConnection(properties);
         return connection;
     }

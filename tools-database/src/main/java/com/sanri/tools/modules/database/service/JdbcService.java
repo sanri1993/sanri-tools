@@ -598,12 +598,15 @@ public class JdbcService {
                 String catalog = rs.getString("TABLE_CAT");
                 String schema = rs.getString("TABLE_SCHEM");
                 String tableName = rs.getString("TABLE_NAME");
-//                String remarks = rs.getString("REMARKS");
-                String remarks = null;
-                try {
-                    // 解决注释字段乱码问题
-                    remarks = new String(rs.getBytes("REMARKS"),"UTF-8");
-                } catch (UnsupportedEncodingException e) {}
+                String remarks = rs.getString("REMARKS");
+//                String remarks = null;
+//                try {
+//                    // 解决注释字段乱码问题
+//                    byte[] remarksBytes = rs.getBytes("REMARKS");
+//                    if (remarksBytes != null) {
+//                        remarks = new String(remarksBytes, "UTF-8");
+//                    }
+//                } catch (UnsupportedEncodingException e) {}
                 ActualTableName actualTableName = new ActualTableName(catalog, schema, tableName);
                 Table table = new Table(actualTableName, remarks);
                 tables.add(table);
@@ -628,11 +631,14 @@ public class JdbcService {
                 int columnSize = rs.getInt("COLUMN_SIZE");
                 int decimalDigits = rs.getInt("DECIMAL_DIGITS");
                 int nullableInt = rs.getInt("NULLABLE");
-//                String remarks = rs.getString("REMARKS");
-                String remarks = null;
-                try {
-                    remarks = new String(rs.getBytes("REMARKS"),"UTF-8");
-                } catch (UnsupportedEncodingException e) {}
+                String remarks = rs.getString("REMARKS");
+//                String remarks = null;
+//                try {
+//                    byte[] remarksBytes = rs.getBytes("REMARKS");
+//                    if (remarksBytes != null) {
+//                        remarks = new String(remarksBytes, "UTF-8");
+//                    }
+//                } catch (UnsupportedEncodingException e) {}
                 String autoIncrement = rs.getString("IS_AUTOINCREMENT");
 
                 boolean nullable = nullableInt == 1 ? true: false;
