@@ -40,4 +40,7 @@ public class ExtendClassloader extends URLClassLoader {
         return null;
     }
 
+    public String getName() {
+        return name;
+    }
 }

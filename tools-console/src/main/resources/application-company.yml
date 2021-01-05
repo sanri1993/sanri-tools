@@ -7,8 +7,3 @@ logging:
   path: /tmp/logs
 server:
   port: 8084
-
-spring:
-  servlet:
-    multipart:
-      location: /tmp

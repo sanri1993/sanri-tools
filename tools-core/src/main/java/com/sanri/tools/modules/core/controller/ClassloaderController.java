@@ -6,20 +6,17 @@ import com.sanri.tools.modules.core.service.data.RandomDataService;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.core.utils.ZipUtil;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.DefaultParameterNameDiscoverer;
-import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
-import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -105,6 +102,16 @@ public class ClassloaderController {
     }
 
     /**
+     * 当前类加载器加载的类的加强版本
+     * @param classloaderName
+     * @return
+     */
+    @GetMapping("/classLoaderLoadedClasses")
+    public List<ClassStruct> classLoaderLoadedClasses(@NotNull String classloaderName){
+        return classloaderService.classLoaderLoadedClasses(classloaderName);
+    }
+
+    /**
      * 获取某个类的所有方法名
      * @param classloaderName
      * @param className
@@ -118,8 +125,6 @@ public class ClassloaderController {
         return collect;
     }
 
-    ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
-
     /**
      * 获取类结构
      * @param classloaderName
@@ -129,28 +134,7 @@ public class ClassloaderController {
     @GetMapping("/{classloaderName}/{className}/classStruct")
     public ClassStruct classStruct(@PathVariable("classloaderName") String classloaderName, @PathVariable("className") String className) throws ClassNotFoundException {
         Class clazz = classloaderService.loadClass(classloaderName,className);
-        String simpleName = clazz.getSimpleName();
-        String packageName = clazz.getPackage().getName();
-        ClassStruct classStruct = new ClassStruct(simpleName, packageName);
-
-        Field[] declaredFields = clazz.getDeclaredFields();
-        List<ClassStruct.Field> fields = new ArrayList<>();
-        classStruct.setFields(fields);
-        for (Field declaredField : declaredFields) {
-            String fieldName = declaredField.getName();
-            String fieldType = declaredField.getType().getSimpleName();
-            int modifiers = declaredField.getModifiers();
-            ClassStruct.Field field = new ClassStruct.Field(modifiers, fieldName, fieldType);
-            fields.add(field);
-        }
-
-        Method[] declaredMethods = clazz.getDeclaredMethods();
-        List<ClassStruct.Method> methods = new ArrayList<>();
-        classStruct.setMethods(methods);
-        for (Method declaredMethod : declaredMethods) {
-            ClassStruct.Method method = buildMethodDesc(declaredMethod);
-            methods.add(method);
-        }
+        ClassStruct classStruct = classloaderService.classStruct(clazz);
         return classStruct;
     }
 
@@ -169,41 +153,11 @@ public class ClassloaderController {
             int modifiers = method.getModifiers();
             boolean isStatic = Modifier.isStatic(modifiers);
             if (isStatic){
-                ClassStruct.Method methodDesc = buildMethodDesc(method);
+                ClassStruct.Method methodDesc = classloaderService.buildMethodDesc(method);
                 methodDescs.add(methodDesc);
             }
         }
         return methodDescs;
-    }
-
-    /**
-     * 构建自定义的方法描述
-     * @param declaredMethod
-     * @return
-     */
-    private ClassStruct.Method buildMethodDesc(Method declaredMethod) {
-        String methodName = declaredMethod.getName();
-        int modifiers = declaredMethod.getModifiers();
-        String returnType = declaredMethod.getReturnType().getSimpleName();
-        ClassStruct.Method method = new ClassStruct.Method(modifiers, methodName, returnType);
-
-        // 获取方法参数列表
-        Class<?>[] parameterTypes = declaredMethod.getParameterTypes();
-        String[] parameterNames = parameterNameDiscoverer.getParameterNames(declaredMethod);
-        if (ArrayUtils.isNotEmpty(parameterTypes)) {
-            List<ClassStruct.Arg> args = new ArrayList<>();
-            for (int i = 0; i < parameterTypes.length; i++) {
-                Class<?> parameterType = parameterTypes[i];
-                String argName = "arg"+i;
-                if (parameterNames != null){
-                    argName = parameterNames[i];
-                }
-                ClassStruct.Arg arg = new ClassStruct.Arg(parameterType.getSimpleName(),argName );
-                args.add(arg);
-            }
-            method.setArgs(args);
-        }
-        return method;
     }
 
 
@@ -251,7 +205,12 @@ public class ClassloaderController {
     private File unzipFile(MultipartFile file, String classloaderName) throws IOException {
         File dir = fileManager.mkTmpDir("classloader");
         File zipFile = new File(dir, file.getOriginalFilename());
-        file.transferTo(zipFile);
+//        file.transferTo(zipFile);
+        InputStream inputStream = file.getInputStream();
+        FileOutputStream fileOutputStream = new FileOutputStream(zipFile);
+        IOUtils.copy(inputStream,fileOutputStream);
+        inputStream.close();
+        fileOutputStream.close();
 
         File uncompressDir = new File(dir, classloaderName);uncompressDir.mkdir();
         ZipUtil.unzip(zipFile,uncompressDir.getAbsolutePath());

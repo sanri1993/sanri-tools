@@ -1,5 +1,6 @@
 package com.sanri.tools.modules.core.service.classloader;
 
+import com.sanri.tools.modules.core.dtos.ClassStruct;
 import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
@@ -15,6 +16,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.DefaultParameterNameDiscoverer;
+import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -23,7 +26,10 @@ import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -299,6 +305,7 @@ public class ClassloaderService  {
 
     }
 
+
     /**
      * 加载出一个 Class
      * @param classloaderName
@@ -310,5 +317,86 @@ public class ClassloaderService  {
         ClassLoader classloader = getClassloader(classloaderName);
         Class<?> aClass = classloader.loadClass(className);
         return aClass;
+    }
+
+    /**
+     * 查看类加载器加载的类列表 - 加强版本
+     * @param classLoaderName
+     */
+    public List<ClassStruct> classLoaderLoadedClasses(String classLoaderName){
+        ExtendClassloader extendClassloader = CACHED_CLASSLOADER.get(classLoaderName);
+        Vector<Class<?>> loadClasses = extendClassloader.getLoadClasses();
+        Iterator<Class<?>> iterator = loadClasses.iterator();
+        List<ClassStruct> classStructs = new ArrayList<>();
+
+        while (iterator.hasNext()){
+            Class<?> clazz = iterator.next();
+            ClassStruct classStruct = classStruct(clazz);
+            classStructs.add(classStruct);
+        }
+
+        return classStructs;
+    }
+
+    /**
+     * 获取类结构
+     * @param clazz
+     * @return
+     */
+    public ClassStruct classStruct(Class<?> clazz) {
+        String simpleName = clazz.getSimpleName();
+        String packageName = clazz.getPackage().getName();
+        ClassStruct classStruct = new ClassStruct(simpleName, packageName);
+
+        Field[] declaredFields = clazz.getDeclaredFields();
+        List<ClassStruct.Field> fields = new ArrayList<>();
+        classStruct.setFields(fields);
+        for (Field declaredField : declaredFields) {
+            String fieldName = declaredField.getName();
+            String fieldType = declaredField.getType().getSimpleName();
+            int modifiers = declaredField.getModifiers();
+            ClassStruct.Field field = new ClassStruct.Field(modifiers, fieldName, fieldType);
+            fields.add(field);
+        }
+
+        Method[] declaredMethods = clazz.getDeclaredMethods();
+        List<ClassStruct.Method> methods = new ArrayList<>();
+        classStruct.setMethods(methods);
+        for (Method declaredMethod : declaredMethods) {
+            ClassStruct.Method method = buildMethodDesc(declaredMethod);
+            methods.add(method);
+        }
+        return classStruct;
+    }
+
+    ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
+    /**
+     * 构建自定义的方法描述
+     * @param declaredMethod
+     * @return
+     */
+    public ClassStruct.Method buildMethodDesc(Method declaredMethod) {
+        String methodName = declaredMethod.getName();
+        int modifiers = declaredMethod.getModifiers();
+        String returnType = declaredMethod.getReturnType().getSimpleName();
+        ClassStruct.Method method = new ClassStruct.Method(modifiers, methodName, returnType);
+
+        // 获取方法参数列表
+        Class<?>[] parameterTypes = declaredMethod.getParameterTypes();
+        String[] parameterNames = parameterNameDiscoverer.getParameterNames(declaredMethod);
+        if (ArrayUtils.isNotEmpty(parameterTypes)) {
+            List<ClassStruct.Arg> args = new ArrayList<>();
+            for (int i = 0; i < parameterTypes.length; i++) {
+                Class<?> parameterType = parameterTypes[i];
+                String argName = "arg"+i;
+                if (parameterNames != null){
+                    argName = parameterNames[i];
+                }
+                ClassStruct.Arg arg = new ClassStruct.Arg(parameterType.getSimpleName(),argName );
+                args.add(arg);
+            }
+            method.setArgs(args);
+        }
+        return method;
     }
 }
