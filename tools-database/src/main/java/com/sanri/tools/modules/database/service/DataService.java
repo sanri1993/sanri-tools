@@ -1,6 +1,8 @@
 package com.sanri.tools.modules.database.service;
 
+import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.service.file.FileManager;
+import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.database.dtos.*;
 import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +31,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.*;
 import java.nio.file.Path;
 import java.sql.SQLException;
@@ -38,6 +41,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
+
+import static com.sanri.tools.modules.database.service.JdbcService.module;
 
 @Service
 @Slf4j
@@ -53,6 +58,9 @@ public class DataService {
 
     @Autowired
     private TableRelationService tableRelationService;
+
+    @Autowired
+    private PluginManager pluginManager;
 
     /**
      * sql 关联数据查询,返回需要查询的所有 sql 语句
@@ -290,9 +298,10 @@ public class DataService {
             for (int j = 0; j < objects.size(); j++) {
                 DynamicQueryDto.Header colTypeHeader = headers.get(j);
                 String colType = colTypeHeader.getTypeName();
+                String columnName = colTypeHeader.getColumnName();
 
                 Cell cell = dataRow.createCell(j);
-                Object value = objects.get(j);
+                Object value = objects.get(columnName);
 
                 if(value == null){
                     // 空值
@@ -308,10 +317,10 @@ public class DataService {
                     long time = timestamp.getTime();
                     String format = DateFormatUtils.ISO_DATE_FORMAT.format(time);
                     cell.setCellValue(format);
-                }else if("int".equalsIgnoreCase(colType) || "decimal".equalsIgnoreCase(colType)){
+                }else if("int".equalsIgnoreCase(colType) || "decimal".equalsIgnoreCase(colType) || "bigint".equalsIgnoreCase(colType)){
                     cell.setCellType(Cell.CELL_TYPE_NUMERIC);
                     cell.setCellValue(NumberUtils.toLong(ObjectUtils.toString(value)));
-                }else if ("date".equalsIgnoreCase(colType)){
+                }else if ("date".equalsIgnoreCase(colType) || "TIMESTAMP".equalsIgnoreCase(colType)){
                     cell.setCellType(Cell.CELL_TYPE_STRING);
                     cell.setCellValue(ObjectUtils.toString(value));
                 }else if("TINYINT".equalsIgnoreCase(colType)){
@@ -324,8 +333,17 @@ public class DataService {
         }
 
         //设置列宽; 自动列宽
-        for (int i = 0; i < headers.size(); i++) {
-            sheet.autoSizeColumn(i);
-        }
+//        for (int i = 0; i < headers.size(); i++) {
+//            sheet.autoSizeColumn(i);
+//        }
+    }
+
+    @PostConstruct
+    public void register(){
+        pluginManager.register(PluginDto.builder()
+                .module(module).name("dataExport").author("sanri").envs("default")
+                .logo("mysql.jpg")
+                .desc("数据导出功能")
+                .build());
     }
 }
