@@ -1,35 +1,34 @@
 package com.sanri.tools.modules.mongodb.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.mongodb.BasicDBObject;
-import com.mongodb.CommandResult;
-import com.mongodb.DB;
+import com.mongodb.*;
 import com.mongodb.MongoClient;
 import com.mongodb.client.*;
 import com.mongodb.util.JSON;
 import com.sanri.tools.modules.core.dtos.PageResponseDto;
 import com.sanri.tools.modules.core.dtos.PluginDto;
-import com.sanri.tools.modules.core.dtos.param.ConnectParam;
-import com.sanri.tools.modules.core.dtos.param.PageParam;
-import com.sanri.tools.modules.core.dtos.param.SimpleConnectParam;
+import com.sanri.tools.modules.core.dtos.param.*;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
 import com.sanri.tools.modules.core.service.file.ConnectService;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.mongodb.dtos.CollectionDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.IteratorUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -58,6 +57,8 @@ public class MongoService {
         MongoIterable<String> strings = mongoClient.listDatabaseNames();
         MongoCursor<String> iterator = strings.iterator();
         List<String> list = IteratorUtils.toList(iterator);
+        list.remove("admin");
+        list.remove("local");
         return list;
     }
 
@@ -133,9 +134,12 @@ public class MongoService {
     MongoClient mongoClient(String connName) throws IOException {
         MongoClient mongoClient = mongoClientMap.get(connName);
         if (mongoClient == null){
-            SimpleConnectParam simpleConnectParam = (SimpleConnectParam) connectService.readConnParams(module,connName);
-            ConnectParam connectParam = simpleConnectParam.getConnectParam();
-            mongoClient = new MongoClient(connectParam.getHost(),connectParam.getPort());
+            MongoConnectParam mongoConnectParam = (MongoConnectParam) connectService.readConnParams(module,connName);
+            ConnectParam connectParam = mongoConnectParam.getConnectParam();
+            ServerAddress serverAddress = new ServerAddress(connectParam.getHost(), connectParam.getPort());
+            MongoAuthParam mongoAuthParam = mongoConnectParam.getAuthParam();
+            MongoCredential credential = MongoCredential.createCredential(mongoAuthParam.getUsername(), mongoAuthParam.getDatabase(), mongoAuthParam.getPassword().toCharArray());
+            mongoClient = new MongoClient(serverAddress,credential,MongoClientOptions.builder().build());
             mongoClientMap.put(connName,mongoClient);
         }
         return mongoClient;

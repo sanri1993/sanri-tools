@@ -103,8 +103,9 @@ public class ConnectService {
             case "redis":
                 return RedisConnectParam.class;
             case "zookeeper":
-            case "mongo":
                 return SimpleConnectParam.class;
+            case "mongo":
+               return MongoConnectParam.class;
         }
         return null;
     }
