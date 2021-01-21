@@ -106,6 +106,8 @@ public class ConnectService {
                 return SimpleConnectParam.class;
             case "mongo":
                return MongoConnectParam.class;
+            case "elasticsearch":
+                return SimpleConnectParam.class;
         }
         return null;
     }

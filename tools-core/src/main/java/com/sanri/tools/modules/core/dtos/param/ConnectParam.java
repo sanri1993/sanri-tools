@@ -14,6 +14,7 @@ public class ConnectParam {
     private int sessionTimeout = DEFAULT_SESSION_TIMEOUT;
     private int connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
     private int maxAttempts = DEFAULT_MAX_ATTEMPTS;
+
     /**
      * 获取连接字符串
      * @return
@@ -21,4 +22,10 @@ public class ConnectParam {
     public String getConnectString(){
         return host+":"+port;
     }
+
+    /**
+     * 获取 http 协议的地址
+     * @return
+     */
+    public String httpConnectString(){return "http://"+host+":"+port+"/";}
 }
