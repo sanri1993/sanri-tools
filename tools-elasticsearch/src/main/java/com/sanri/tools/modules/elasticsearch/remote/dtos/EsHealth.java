@@ -1,4 +1,4 @@
-package com.sanri.tools.modules.elasticsearch.service.remote.dtos;
+package com.sanri.tools.modules.elasticsearch.remote.dtos;
 
 import lombok.Data;
 

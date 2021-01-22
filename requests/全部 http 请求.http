@@ -849,5 +849,31 @@ Content-Type: application/json
   "cron": "* * * * * ? *"
 }
 
-###
+### es - 创建新连接
+POST {{baseUrl}}/connect/create/elasticsearch
+Content-Type: application/json
 
+{
+  "connectIdParam": {
+    "module": "elasticsearch",
+    "connName": "10.101.40.127"
+  },
+  "connectParam": {
+    "host": "10.101.40.127",
+    "port": 9200
+  }
+}
+
+### es - 查看集群建康
+GET {{baseUrl}}/elasticsearch/health?connName=10.101.40.127
+
+### es - 查看节点情况
+GET {{baseUrl}}/elasticsearch/nodes?connName=10.101.40.127
+
+### es - 查看分片情况
+GET {{baseUrl}}/elasticsearch/shards?connName=10.101.40.127
+
+### es - 查看索引
+GET {{baseUrl}}/elasticsearch/indices?connName=10.101.40.127
+
+###

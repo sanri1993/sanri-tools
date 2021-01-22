@@ -27,5 +27,5 @@ public class ConnectParam {
      * 获取 http 协议的地址
      * @return
      */
-    public String httpConnectString(){return "http://"+host+":"+port+"/";}
+    public String httpConnectString(){return "http://"+host+":"+port;}
 }
