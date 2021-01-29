@@ -59,3 +59,19 @@ Content-Type: application/json
 GET {{esUrl}}/goods/_search/
 Content-Type: application/json
 
+
+### cluster apis
+GET {{esUrl}}/_cluster/state
+
+###  _stats
+GET {{esUrl}}/_stats
+
+###
+GET {{esUrl}}/zt-subscribe-room-inquiry/_search
+Content-Type: application/json
+
+{"query":{"bool":{"must":[],"must_not":[],"should":[{"match_all":{}}]}},"from":0,"size":50,"sort":[{"_score":{"order":"desc"}}],"aggs":{},"version":true};
+
+###
+
+

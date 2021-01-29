@@ -864,16 +864,11 @@ Content-Type: application/json
   }
 }
 
-### es - 查看集群建康
-GET {{baseUrl}}/elasticsearch/health?connName=10.101.40.127
 
-### es - 查看节点情况
-GET {{baseUrl}}/elasticsearch/nodes?connName=10.101.40.127
+### es - 数据查询
+GET {{baseUrl}}/elasticsearch/search/10.101.40.127/third_out_log_index_2020
+Content-Type: application/json
 
-### es - 查看分片情况
-GET {{baseUrl}}/elasticsearch/shards?connName=10.101.40.127
-
-### es - 查看索引
-GET {{baseUrl}}/elasticsearch/indices?connName=10.101.40.127
+{"query":{"bool":{"must":[],"must_not":[],"should":[{"match_all":{}}]}},"from":0,"size":50,"sort":[{"_score":{"order":"desc"}}],"aggs":{},"version":true};
 
 ###

@@ -1,62 +1,88 @@
 package com.sanri.tools.modules.elasticsearch.controller;
 
+import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.dtos.param.SimpleConnectParam;
 import com.sanri.tools.modules.core.service.file.ConnectService;
-import com.sanri.tools.modules.elasticsearch.remote.apis.CatApis;
-import com.sanri.tools.modules.elasticsearch.remote.apis.DocumentApis;
-import com.sanri.tools.modules.elasticsearch.remote.apis.IndexApis;
-import com.sanri.tools.modules.elasticsearch.remote.apis.SearchApis;
-import com.sanri.tools.modules.elasticsearch.remote.dtos.EsHealth;
-import com.sanri.tools.modules.elasticsearch.remote.dtos.EsIndex;
-import com.sanri.tools.modules.elasticsearch.remote.dtos.EsNode;
-import com.sanri.tools.modules.elasticsearch.remote.dtos.EsShard;
+import com.sanri.tools.modules.core.service.plugin.PluginManager;
+import com.sanri.tools.modules.elasticsearch.remote.apis.ClusterApis;
+import com.sanri.tools.modules.elasticsearch.remote.dtos.ClusterModel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.PostConstruct;
+import javax.validation.constraints.NotNull;
 
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/elasticsearch")
 public class EsController {
 
     @Autowired
-    private CatApis catApis;
-    @Autowired
-    private DocumentApis documentApis;
-    @Autowired
-    private IndexApis indexApis;
-    @Autowired
-    private SearchApis searchApis;
-
-    @Autowired
     private ConnectService connectService;
+    @Autowired
+    private PluginManager pluginManager;
 
-    @GetMapping("/health")
-    public List<EsHealth> health(String connName) throws IOException {
+    @Autowired
+    private ClusterApis clusterApis;
+
+//    /**
+//     * 数据量太大了, 使用分开的 api
+//     * @param connName
+//     * @return
+//     * @throws IOException
+//     */
+//    @Deprecated
+//    @GetMapping("/cluster/state")
+//    public ClusterModel clusterModel(@NotNull String connName) throws IOException {
+//        String address = loadAddress(connName);
+//
+//        JSONObject clusterHealth = clusterApis.clusterHealth(address);
+//        JSONObject clusterNodes = clusterApis.clusterNodes(address);
+//        JSONObject clusterState = clusterApis.clusterState(address);
+//        JSONObject status = clusterApis.status(address);
+//        JSONObject nodeStats = clusterApis.nodeStats(address);
+//
+//        ClusterModel clusterModel = new ClusterModel(clusterState, status, nodeStats, clusterNodes, clusterHealth);
+//        return clusterModel;
+//    }
+
+    @GetMapping("/cluster/health")
+    public JSONObject clusterHealth(@NotNull String connName) throws IOException {
         String address = loadAddress(connName);
-        return catApis.health(address);
+        return clusterApis.clusterHealth(address);
     }
 
-    @GetMapping("/nodes")
-    public List<EsNode> nodes(String connName) throws IOException {
+    @GetMapping("/cluster/state")
+    public JSONObject clusterState(@NotNull String connName) throws IOException {
         String address = loadAddress(connName);
-        List<EsNode> nodes = catApis.nodes(address);
-        return nodes;
+        return clusterApis.clusterState(address);
     }
 
-    @GetMapping("/shards")
-    public List<EsShard> shards(String connName) throws IOException {
+    @GetMapping("/cluster/nodes")
+    public JSONObject clusterNodes(@NotNull String connName) throws IOException {
         String address = loadAddress(connName);
-        return catApis.shards(address);
+        return clusterApis.clusterNodes(address);
     }
 
-    @GetMapping("/indices")
-    public List<EsIndex> indices(String connName) throws IOException {
+    @GetMapping("/node/stats")
+    public JSONObject nodeStats(@NotNull String connName) throws IOException {
         String address = loadAddress(connName);
-        return catApis.indices(address);
+        return clusterApis.nodeStats(address);
+    }
+
+    @GetMapping("/status")
+    public JSONObject status(@NotNull String connName) throws IOException {
+        String address = loadAddress(connName);
+        return clusterApis.status(address);
+    }
+
+    @PostMapping("/search/{connName}/{indexName}")
+    public JSONObject search(@PathVariable("connName") String connName,@PathVariable("indexName") String indexName, @RequestBody JSONObject dsl) throws IOException {
+        String address = loadAddress(connName);
+        return clusterApis.search(address,indexName,dsl.toJSONString());
     }
 
     /**
@@ -68,5 +94,10 @@ public class EsController {
     private String loadAddress(String connName) throws IOException {
         SimpleConnectParam simpleConnectParam = (SimpleConnectParam) connectService.readConnParams("elasticsearch",connName);
         return simpleConnectParam.getConnectParam().httpConnectString();
+    }
+
+    @PostConstruct
+    private void register(){
+        pluginManager.register(PluginDto.builder().module("monitor").name("elasticsearch").author("9420").build());
     }
 }
