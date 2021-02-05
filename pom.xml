@@ -88,13 +88,13 @@
 
     <!-- 解决 springboot 自带版本太高问题 -->
     <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
-                <version>5.1.12</version>
-            </dependency>
-        </dependencies>
+<!--        <dependencies>-->
+<!--            <dependency>-->
+<!--                <groupId>mysql</groupId>-->
+<!--                <artifactId>mysql-connector-java</artifactId>-->
+<!--                <version>5.1.12</version>-->
+<!--            </dependency>-->
+<!--        </dependencies>-->
     </dependencyManagement>
 
     <build>

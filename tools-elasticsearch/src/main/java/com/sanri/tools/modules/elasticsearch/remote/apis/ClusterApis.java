@@ -1,8 +1,7 @@
 package com.sanri.tools.modules.elasticsearch.remote.apis;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dtflys.forest.annotation.DataVariable;
-import com.dtflys.forest.annotation.Request;
+import com.dtflys.forest.annotation.*;
 
 public interface ClusterApis {
 
@@ -37,9 +36,17 @@ public interface ClusterApis {
     )
     JSONObject clusterHealth(@DataVariable("baseUrl")  String baseUrl);
 
-    @Request(
+    @Post(
             url = "${baseUrl}/${indexName}/_search?format=json",
-            dataType = "json"
+            dataType = "json",
+            contentType = "application/json"
     )
-    JSONObject search(@DataVariable("baseUrl") String baseUrl,@DataVariable("indexName") String indexName,String dsl);
+    JSONObject indexDataSearch(@DataVariable("baseUrl") String baseUrl, @DataVariable("indexName") String indexName, @Body String dsl);
+
+    @Post(
+            url = "${baseUrl}/_search?format=json",
+            dataType = "json",
+            contentType = "application/json"
+    )
+    JSONObject dslSearch(@DataVariable("baseUrl") String baseUrl,@Body String dsl);
 }

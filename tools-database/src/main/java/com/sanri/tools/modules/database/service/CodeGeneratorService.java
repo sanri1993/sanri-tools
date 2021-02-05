@@ -140,6 +140,10 @@ public class CodeGeneratorService {
         String catalog = dataSourceConfig.getCatalog();
         List<TableMetaData> tableMetaDataList = jdbcService.filterChoseTables(connName, catalog, dataSourceConfig.getTables());
 
+        if (tableMetaDataList.size() > 0) {
+            // 生成实体 Bean
+            JavaBeanInfo javaBeanInfo = new JavaBeanInfo();
+        }
 
         return projectDir;
     }

@@ -1,6 +1,5 @@
 package com.sanri.tools.modules.database.service;
 
-import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.service.file.ConnectService;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;

@@ -1,13 +1,11 @@
 package com.sanri.tools.modules.elasticsearch.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.dtos.param.SimpleConnectParam;
 import com.sanri.tools.modules.core.service.file.ConnectService;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.elasticsearch.remote.apis.ClusterApis;
-import com.sanri.tools.modules.elasticsearch.remote.dtos.ClusterModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -82,7 +80,13 @@ public class EsController {
     @PostMapping("/search/{connName}/{indexName}")
     public JSONObject search(@PathVariable("connName") String connName,@PathVariable("indexName") String indexName, @RequestBody JSONObject dsl) throws IOException {
         String address = loadAddress(connName);
-        return clusterApis.search(address,indexName,dsl.toJSONString());
+        return clusterApis.indexDataSearch(address,indexName,dsl.toJSONString());
+    }
+
+    @PostMapping("/search/{connName}")
+    public JSONObject search(@PathVariable("connName") String connName, @RequestBody JSONObject dsl) throws IOException {
+        String address = loadAddress(connName);
+        return clusterApis.dslSearch(address,dsl.toJSONString());
     }
 
     /**
