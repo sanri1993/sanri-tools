@@ -20,6 +20,7 @@
         <module>tools-mongodb</module>
         <module>tools-quartz</module>
         <module>tools-elasticsearch</module>
+        <module>tools-rocketmq</module>
     </modules>
 
     <parent>
