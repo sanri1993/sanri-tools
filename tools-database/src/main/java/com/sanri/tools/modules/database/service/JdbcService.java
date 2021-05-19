@@ -1,6 +1,7 @@
 package com.sanri.tools.modules.database.service;
 
 import com.sanri.tools.modules.core.dtos.PluginDto;
+import com.sanri.tools.modules.core.dtos.UpdateConnectEvent;
 import com.sanri.tools.modules.core.service.file.ConnectService;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.database.dtos.ConnectionMetaData;
@@ -20,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -34,7 +36,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class JdbcService {
+public class JdbcService implements ApplicationListener<UpdateConnectEvent> {
     @Autowired
     private ConnectService connectService;
     @Autowired
@@ -576,6 +578,17 @@ public class JdbcService {
     static IndexListProcessor indexListProcessor = new IndexListProcessor();
     static PrimaryKeyListProcessor primaryKeyListProcessor = new PrimaryKeyListProcessor();
     public static DynamicQueryProcessor dynamicQueryProcessor = new DynamicQueryProcessor();
+
+    @Override
+    public void onApplicationEvent(UpdateConnectEvent updateConnectEvent) {
+        UpdateConnectEvent.ConnectInfo connectInfo = (UpdateConnectEvent.ConnectInfo) updateConnectEvent.getSource();
+        if (connectInfo.getClazz() == DatabaseConnectParam.class) {
+            String connName = connectInfo.getConnName();
+            dataSourceMap.remove(connName);
+            tableMetaDataMap.remove(connName);
+            log.info("[{}]模块[{}]配置变更,将移除存储的元数据信息",module,connName);
+        }
+    }
 
     private static class SchemaListProcessor implements ResultSetHandler<List<Schema>>{
         @Override

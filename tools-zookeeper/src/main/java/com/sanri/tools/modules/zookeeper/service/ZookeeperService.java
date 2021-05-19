@@ -1,5 +1,7 @@
 package com.sanri.tools.modules.zookeeper.service;
 
+import com.sanri.tools.modules.core.dtos.UpdateConnectEvent;
+import com.sanri.tools.modules.core.dtos.param.RedisConnectParam;
 import com.sanri.tools.modules.core.service.file.ConnectService;
 import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
@@ -19,6 +21,7 @@ import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Id;
 import org.apache.zookeeper.data.Stat;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -30,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Slf4j
-public class ZookeeperService {
+public class ZookeeperService implements ApplicationListener<UpdateConnectEvent> {
     // connName ==> ZkClient
     Map<String, ZkClient> zkClientMap = new ConcurrentHashMap<String, ZkClient>();
 
@@ -216,6 +219,16 @@ public class ZookeeperService {
             try {
                 next.close();
             }catch (Exception e){}
+        }
+    }
+
+    @Override
+    public void onApplicationEvent(UpdateConnectEvent updateConnectEvent) {
+        UpdateConnectEvent.ConnectInfo connectInfo = (UpdateConnectEvent.ConnectInfo) updateConnectEvent.getSource();
+        if (connectInfo.getClazz() == SimpleConnectParam.class && module.equals(connectInfo.getModule())) {
+            String connName = connectInfo.getConnName();
+            zkClientMap.remove(connName);
+            log.info("[{}]模块[{}]配置变更,将移除存储的元数据信息",module,connName);
         }
     }
 }

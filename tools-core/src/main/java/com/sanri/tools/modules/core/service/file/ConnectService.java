@@ -1,26 +1,30 @@
 package com.sanri.tools.modules.core.service.file;
 
-import com.alibaba.fastjson.JSON;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sanri.tools.modules.core.dtos.ConnectDto;
-import com.sanri.tools.modules.core.dtos.PluginDto;
-import com.sanri.tools.modules.core.dtos.param.*;
-import com.sanri.tools.modules.core.service.plugin.PluginManager;
-import com.sanri.tools.modules.core.utils.NetUtil;
-import com.sanri.tools.modules.core.dtos.ConfigPath;
-import com.sanri.tools.modules.core.exception.ToolException;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+
+import com.sanri.tools.modules.core.dtos.UpdateConnectEvent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
+
+import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sanri.tools.modules.core.dtos.ConfigPath;
+import com.sanri.tools.modules.core.dtos.ConnectDto;
+import com.sanri.tools.modules.core.dtos.PluginDto;
+import com.sanri.tools.modules.core.dtos.param.*;
+import com.sanri.tools.modules.core.exception.ToolException;
+import com.sanri.tools.modules.core.service.plugin.PluginManager;
+import com.sanri.tools.modules.core.utils.NetUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -29,6 +33,8 @@ public class ConnectService {
     private FileManager fileManager;
     @Autowired
     private PluginManager pluginManager;
+    @Autowired
+    private ApplicationContext applicationContext;
 
     // 连接都保存在这个目录
     public static final String MODULE = "connect";
@@ -76,7 +82,8 @@ public class ConnectService {
 
     /**
      * 创建连接
-     * @param databaseConnectParam
+     * @param module
+     * @param data
      * @throws IOException
      */
     public void createConnect(String module,String data) throws IOException {
@@ -92,6 +99,7 @@ public class ConnectService {
 
         String connName = abstractConnectParam.getConnectIdParam().getConnName();
         fileManager.writeConfig(MODULE,module+"/"+connName, data);
+        applicationContext.publishEvent(new UpdateConnectEvent(new UpdateConnectEvent.ConnectInfo(connName,data,param,module)));
     }
 
     private Class<?> moduleParamFactory(String module) {
@@ -103,11 +111,10 @@ public class ConnectService {
             case "redis":
                 return RedisConnectParam.class;
             case "zookeeper":
+            case "elasticsearch":
                 return SimpleConnectParam.class;
             case "mongo":
                return MongoConnectParam.class;
-            case "elasticsearch":
-                return SimpleConnectParam.class;
         }
         return null;
     }

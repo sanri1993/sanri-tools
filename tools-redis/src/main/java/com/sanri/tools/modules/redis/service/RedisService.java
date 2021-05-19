@@ -1,6 +1,8 @@
 package com.sanri.tools.modules.redis.service;
 
 import com.sanri.tools.modules.core.dtos.PluginDto;
+import com.sanri.tools.modules.core.dtos.UpdateConnectEvent;
+import com.sanri.tools.modules.core.dtos.param.DatabaseConnectParam;
 import com.sanri.tools.modules.core.exception.ToolException;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
 import com.sanri.tools.modules.core.service.file.ConnectService;
@@ -17,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.*;
 import redis.clients.jedis.exceptions.JedisConnectionException;
@@ -34,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Slf4j
-public class RedisService{
+public class RedisService implements ApplicationListener<UpdateConnectEvent> {
     // 保存的 jedis 客户端
     private Map<String, JedisClient> jedisMap = new ConcurrentHashMap<>();
     @Autowired
@@ -742,6 +745,16 @@ public class RedisService{
             collect.add(deserialize);
         }
         return collect;
+    }
+
+    @Override
+    public void onApplicationEvent(UpdateConnectEvent updateConnectEvent) {
+        UpdateConnectEvent.ConnectInfo connectInfo = (UpdateConnectEvent.ConnectInfo) updateConnectEvent.getSource();
+        if (connectInfo.getClazz() == RedisConnectParam.class) {
+            String connName = connectInfo.getConnName();
+            jedisMap.remove(connName);
+            log.info("[{}]模块[{}]配置变更,将移除存储的元数据信息",module,connName);
+        }
     }
 
     /**
