@@ -2,19 +2,20 @@ package com.sanri.tools.modules.redis.service;
 
 import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.dtos.UpdateConnectEvent;
-import com.sanri.tools.modules.core.dtos.param.DatabaseConnectParam;
+import com.sanri.tools.modules.core.dtos.param.RedisConnectParam;
 import com.sanri.tools.modules.core.exception.ToolException;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
 import com.sanri.tools.modules.core.service.file.ConnectService;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
-import com.sanri.tools.modules.core.dtos.param.AuthParam;
-import com.sanri.tools.modules.core.dtos.param.ConnectParam;
-import com.sanri.tools.modules.core.dtos.param.RedisConnectParam;
-import com.sanri.tools.modules.redis.dtos.*;
-import com.sanri.tools.modules.redis.dtos.params.*;
+import com.sanri.tools.modules.redis.dtos.HashKeyScanResult;
+import com.sanri.tools.modules.redis.dtos.KeyScanResult;
+import com.sanri.tools.modules.redis.dtos.ZSetTuple;
+import com.sanri.tools.modules.redis.dtos.in.*;
+import com.sanri.tools.modules.redis.service.dtos.*;
 import com.sanri.tools.modules.serializer.service.Serializer;
 import com.sanri.tools.modules.serializer.service.SerializerChoseService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -22,24 +23,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.*;
-import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.util.JedisClusterCRC16;
-import redis.clients.util.Slowlog;
-
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.SocketException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Slf4j
 public class RedisService implements ApplicationListener<UpdateConnectEvent> {
-    // 保存的 jedis 客户端
-    private Map<String, JedisClient> jedisMap = new ConcurrentHashMap<>();
+    // 保存的 redis 连接信息
+    private Map<String, RedisConnection> clientMap = new ConcurrentHashMap<>();
     @Autowired
     private ConnectService connectService;
     @Autowired
@@ -53,270 +50,266 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
     private ClassloaderService classloaderService;
 
     /**
-     * 查看有多少个数据库
+     * 扫描 key 信息
      * @param connParam
-     * @return
-     * @throws IOException
-     */
-    public int dbs(ConnParam connParam) throws IOException {
-        JedisClient jedisClient = jedisClient(connParam);
-        List<String> databases = jedisClient.jedis.configGet("databases");
-        int size = NumberUtils.toInt(databases.get(1));
-        return size;
-    }
-
-    /**
-     * 当前运行模式查询
-     * @param connParam
-     * @return
-     * @throws IOException
-     */
-    public String mode(ConnParam connParam) throws IOException {
-        JedisClient jedisClient = jedisClient(connParam);
-        List<RedisNode> redisNodes = masterSlaveNodes(jedisClient.jedis);
-        if (redisNodes.size() == 1){
-            return "standalone";
-        }
-        return "master-slave";
-    }
-
-    /**
-     * 删除连接
-     * @param connName
-     */
-    public void dropConnect(String connName){
-        if (jedisMap.get(connName) == null){
-            return ;
-        }
-        JedisClient jedisClient = jedisMap.get(connName);
-        jedisClient.jedis.close();
-        jedisMap.remove(connName);
-    }
-
-    /**
-     * 非集群节点的 key 扫描 , 这个只统计使用人建立的那个节点的 key , 但不区分那个节点是否为主节点
-     * @param connParam
-     * @param scanParam
-     * @return
-     */
-    public KeyScanResult scan(ConnParam connParam, RedisScanParam redisScanParam, SerializerParam serializerParam) throws IOException, ClassNotFoundException {
-        JedisClient jedisClient = jedisClient(connParam);
-        Jedis jedis = jedisClient.jedis;
-
-        KeyScanResult keyScanResult = nodeScan(jedis, redisScanParam, serializerParam);
-        keyScanResult.setDone(keyScanResult.isFinish());
-        return keyScanResult;
-    }
-
-    /**
-     * 统计所有节点的客户端连接列表
-     * @param connParam
-     * @return
-     * @throws IOException
-     */
-    public List<ClientConnection> clientList(ConnParam connParam) throws IOException {
-        List<ClientConnection> clientConnections = new ArrayList<>();
-
-        JedisClient jedisClient = jedisClient(connParam);
-        List<RedisNode> redisNodes = masterSlaveNodes(jedisClient.jedis);
-        for (RedisNode redisNode : redisNodes) {
-            HostAndPort hostAndPort = redisNode.getHostAndPort();
-            Jedis jedis = new Jedis(hostAndPort.getHost(), hostAndPort.getPort());
-            try {
-                ClientConnection clientConnection = nodeClientList(jedis);
-                clientConnections.add(clientConnection);
-            }finally {
-                jedis.close();
-            }
-        }
-
-        return clientConnections;
-    }
-
-    /**
-     * 内存占用情况
-     * @param connParam
-     * @return
-     * @throws IOException
-     */
-    public List<MemoryUse> memoryUses(ConnParam connParam) throws IOException {
-        List<MemoryUse> memoryUses = new ArrayList<>();
-
-        JedisClient jedisClient = jedisClient(connParam);
-        List<RedisNode> redisNodes = masterSlaveNodes(jedisClient.jedis);
-        for (RedisNode redisNode : redisNodes) {
-            HostAndPort hostAndPort = redisNode.getHostAndPort();
-            Jedis jedis = new Jedis(hostAndPort.getHost(), hostAndPort.getPort());
-            String jedisRole = jedisRole(jedis);
-            try {
-                MemoryUse memoryUse = nodeMemoryUse(jedis);
-                memoryUse.setDbSize(jedis.dbSize());
-                memoryUse.setRole(jedisRole);
-                memoryUses.add(memoryUse);
-            }finally {
-                jedis.close();
-            }
-        }
-
-        return memoryUses;
-    }
-
-    /**
-     * 查询节点列表
-     * @param connParam
-     * @return
-     * @throws IOException
-     */
-    public List<RedisNode> nodes(ConnParam connParam) throws IOException {
-        JedisClient jedisClient = jedisClient(connParam);
-
-        List<RedisNode> redisNodes = masterSlaveNodes(jedisClient.jedis);
-        return redisNodes;
-    }
-
-    /**
-     * key 删除
-     * @param connParam
-     * @param keys
-     * @throws IOException
-     */
-    public void dropKeys(ConnParam connParam,String [] keys) throws IOException {
-        JedisClient jedisClient = jedisClient(connParam);
-
-        jedisClient.jedis.del(keys);
-    }
-
-    /**
-     * 子 key 扫描
-     * @param connParam
-     * @param key
      * @param redisScanParam
      * @param serializerParam
+     * @throws IOException
      * @return
      */
-    public SubKeyScanResult subKeyScan(ConnParam connParam,String key,RedisScanParam redisScanParam,SerializerParam serializerParam) throws IOException, ClassNotFoundException {
-        JedisClient jedisClient = jedisClient(connParam);
+    public KeyScanResult scan(ConnParam connParam, KeyScanParam redisScanParam, SerializerParam serializerParam) throws IOException, ClassNotFoundException {
+        final RedisConnection redisConnection = redisConnection(connParam);
+        KeyScanResult allScanKeyResult = new KeyScanResult();
 
-        return clientSubKeyScan(jedisClient.jedis,key,redisScanParam,serializerParam);
+        final List<RedisNode> masterNodes = redisConnection.getMasterNodes();
+        final Iterator<RedisNode> iterator = masterNodes.iterator();
+        boolean searchBegin = StringUtils.isNotBlank(redisScanParam.getNodeId());
+        while (iterator.hasNext()){
+            final RedisNode redisNode = iterator.next();
+            // 找到第一个搜索的节点
+            if (searchBegin && !redisNode.getId().equals(redisScanParam.getNodeId())){
+                continue;
+            }
+            searchBegin = false;
+
+            final KeyScanResult keyScanResult = nodeScan(redisScanParam, serializerParam, redisNode);
+            allScanKeyResult.getKeys().addAll(keyScanResult.getKeys());
+            allScanKeyResult.setNodeId(keyScanResult.getNodeId());
+            allScanKeyResult.setCursor(keyScanResult.getCursor());
+            if (allScanKeyResult.getKeys().size() >= redisScanParam.getLimit()) {
+                // 已经扫描到足够的数据
+                if (keyScanResult.isFinish()) {
+                    // 如果当前节点已经完成 , 则下次需要扫描下一个节点
+                    if (iterator.hasNext()) {
+                        allScanKeyResult.setNodeId(iterator.next().getId());
+                    }else{
+                        // 没有下一个节点了, 扫描完成
+                        allScanKeyResult.setDone(true);
+                    }
+                }
+                break;
+            }
+
+        }
+
+        // 如果所有节点扫描完成, 还是没有足够的数据,则所有节点扫描完成
+        if (allScanKeyResult.getKeys().size() < redisScanParam.getLimit()){
+            allScanKeyResult.setDone(true);
+        }
+
+        return allScanKeyResult;
     }
 
     /**
-     * 数据查询,对于某些子 key
+     * 删除 key
      * @param connParam
-     * @param subKeyParam
-     * @param param
+     * @param keys
+     * @param serializerParam
      * @return
+     * @throws IOException
      */
-    public Object data(ConnParam connParam,SubKeyParam subKeyParam,RangeParam rangeParam,RedisScanParam redisScanParam,SerializerParam serializerParam) throws IOException, ClassNotFoundException {
-        JedisClient jedisClient = jedisClient(connParam);
-        Jedis client = jedisClient.jedis;
-
+    public Long dropKeys(ConnParam connParam, String[] keys, SerializerParam serializerParam) throws IOException {
         Serializer keySerializer = serializerChoseService.choseSerializer(serializerParam.getKeySerializer());
+        final RedisConnection redisConnection = redisConnection(connParam);
+        byte[][] delKeys = new byte[keys.length][];
+        for (int i = 0; i < keys.length; i++) {
+            final byte[] serialize = keySerializer.serialize(keys[i]);
+            delKeys[i] = serialize;
+        }
+        return redisConnection.del(delKeys);
+    }
+
+    /**
+     * hash 数据扫描
+     * @param connParam
+     * @param hashKeyScanParam
+     * @param serializerParam
+     * @return
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public HashKeyScanResult hscan(ConnParam connParam,HashKeyScanParam hashKeyScanParam,SerializerParam serializerParam) throws IOException, ClassNotFoundException {
+        final RedisConnection redisConnection = redisConnection(connParam);
+        ClassLoader classloader = classloaderService.getClassloader(serializerParam.getClassloaderName());
+        Serializer keySerializer = serializerChoseService.choseSerializer(serializerParam.getKeySerializer());
+        Serializer hashKeySerializer = serializerChoseService.choseSerializer(serializerParam.getHashKey());
+        final Serializer hashValueSerializer = serializerChoseService.choseSerializer(serializerParam.getHashValue());
+
+        byte[] keyBytes = keySerializer.serialize(hashKeyScanParam.getKey());
+        final RedisType redisType = redisConnection.type(keyBytes);
+        if (redisType != RedisType.Hash){
+            throw new ToolException("不支持的 redis 类型[" + redisType + "],在子键[" + hashKeyScanParam.getKey() + "]扫描");
+        }
+
+        // 查询全部
+        if (hashKeyScanParam.isAll()){
+            HashKeyScanResult hashKeyScanResult = new HashKeyScanResult(hashKeyScanParam.getKey());
+            final Map<byte[], byte[]> allData = redisConnection.hgetAll(keyBytes);
+            final Iterator<Map.Entry<byte[], byte[]>> iterator = allData.entrySet().iterator();
+            while (iterator.hasNext()){
+                final Map.Entry<byte[], byte[]> entry = iterator.next();
+                final Object key = hashKeySerializer.deserialize(entry.getKey(), classloader);
+                final Object value = hashValueSerializer.deserialize(entry.getValue(), classloader);
+                hashKeyScanResult.getData().put(Objects.toString(key),value);
+            }
+            hashKeyScanResult.setFields(new ArrayList<>(hashKeyScanResult.getData().keySet()));
+            hashKeyScanResult.setFinish(true);
+            hashKeyScanResult.setCursor("0");
+            return hashKeyScanResult;
+        }
+
+        // 查询部分 fields
+        final String[] queryFields = hashKeyScanParam.getFields();
+        if (ArrayUtils.isNotEmpty(queryFields)){
+            HashKeyScanResult hashKeyScanResult = new HashKeyScanResult(hashKeyScanParam.getKey());
+            hashKeyScanResult.setFinish(true);
+            hashKeyScanResult.setFields(Arrays.asList(queryFields));
+            List<byte[]> queryFieldBytes = new ArrayList<>();
+            for (String queryField : queryFields) {
+                final byte[] serialize = hashKeySerializer.serialize(queryField);
+                queryFieldBytes.add(serialize);
+            }
+            final List<byte[]> hmget = redisConnection.hmget(keyBytes, queryFieldBytes.toArray(new byte[][]{}));
+            for (int i = 0; i < queryFields.length; i++) {
+                Object value = hashValueSerializer.deserialize(hmget.get(i),classloader);
+                hashKeyScanResult.getData().put(queryFields[i],value);
+            }
+            return hashKeyScanResult;
+        }
+
+        // scan 查询
+        int limit = hashKeyScanParam.getLimit();
+        ScanParams scanParams = new ScanParams();
+        scanParams.match(hashKeyScanParam.getPattern()).count(limit);
+        String cursor = hashKeyScanParam.getCursor();
+        List<byte[]> keys = new ArrayList<>();
+        do {
+            ScanResult<Map.Entry<byte[], byte[]>> hscan = redisConnection.hscan(keyBytes, cursor.getBytes(), scanParams);
+            List<Map.Entry<byte[], byte[]>> hscanResult = hscan.getResult();
+            for (Map.Entry<byte[], byte[]> stringStringEntry : hscanResult) {
+                byte[] hashKey = stringStringEntry.getKey();
+                keys.add(hashKey);
+            }
+
+            cursor = hscan.getStringCursor();
+            scanParams.count(limit - hscanResult.size());
+        } while (keys.size() < limit && NumberUtils.toLong(cursor) != 0L);
+
+        List<String> fields = new ArrayList<>();
+        for (byte[] bytes : keys) {
+            Object deserialize = hashKeySerializer.deserialize(bytes, classloader);
+            fields.add(Objects.toString(deserialize));
+        }
+
+        HashKeyScanResult hashKeyScanResult = new HashKeyScanResult(hashKeyScanParam.getKey(),fields, cursor);
+        hashKeyScanResult.setCursor(cursor);
+        if ("0".equals(cursor)) {
+            hashKeyScanResult.setFinish(true);
+        }
+
+        List<byte[]> fieldsBytes = new ArrayList<>();
+        for (String field : fields) {
+            fieldsBytes.add(hashKeySerializer.serialize(field));
+        }
+        final List<byte[]> hmget = redisConnection.hmget(keyBytes, fieldsBytes.toArray(new byte[][]{}));
+        for (int i = 0; i < fieldsBytes.size(); i++) {
+            String key = Objects.toString(hashKeySerializer.deserialize(fieldsBytes.get(i),classloader));
+            Object value = hashValueSerializer.deserialize(hmget.get(i),classloader);
+            hashKeyScanResult.getData().put(key,value);
+        }
+        return hashKeyScanResult;
+    }
+
+    /**
+     * 查询除 hash 类型外的其它数据
+     * @param valueParam
+     * @return
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public Object data(ValueParam valueParam) throws IOException, ClassNotFoundException {
+        final ConnParam connParam = valueParam.getConnParam();
+        final String key = valueParam.getKey();
+        final SerializerParam serializerParam = valueParam.getSerializerParam();
+        final ValueParam.RangeParam rangeParam = valueParam.getRangeParam();
+        final BaseKeyScanParam keyScanParam = valueParam.getKeyScanParam();
+        final ClassLoader classloader = classloaderService.getClassloader(serializerParam.getClassloaderName());
+        final Serializer keySerializer = serializerChoseService.choseSerializer(serializerParam.getKeySerializer());
         Serializer valueSerializer = serializerChoseService.choseSerializer(serializerParam.getValue());
         Serializer hashKeySerializer = serializerChoseService.choseSerializer(serializerParam.getHashKey());
         Serializer hashValueSerializer = serializerChoseService.choseSerializer(serializerParam.getHashValue());
-        ClassLoader classloader = classloaderService.getClassloader(serializerParam.getClassloaderName());
 
-        byte[] keyBytes = keySerializer.serialize(subKeyParam.getKey());
+        final RedisConnection redisConnection = redisConnection(connParam);
+        final byte[] keyBytes = keySerializer.serialize(key);
 
-        String type = client.type(keyBytes);
-        RedisType redisType = RedisType.parse(type);
+        final RedisType redisType = redisConnection.type(keyBytes);
         switch (redisType){
             case string:
-                byte[] value = client.get(keyBytes);
-                return valueSerializer.deserialize(value,classloader);
+                final byte[] bytes = redisConnection.get(keyBytes);
+                return valueSerializer.deserialize(bytes,classloader);
             case List:
-                Long start = rangeParam.getStart();
-                Long stop = rangeParam.getStop();
-                List<byte[]> lrange = client.lrange(keyBytes, start, stop);
-                List<Object> values = new ArrayList<>();
-                for (byte[] bytes : lrange) {
-                    Object deserialize = valueSerializer.deserialize(bytes, classloader);
+                if (valueParam.isAll()){
+                    rangeParam.setStop(redisConnection.llen(keyBytes));
+                }
+                final List<byte[]> lrange = redisConnection.lrange(keyBytes, rangeParam.getStart(), rangeParam.getStop());
+                List<Object> values = new ArrayList<>(lrange.size());
+                for (byte[] valueByte : lrange) {
+                    final Object deserialize = valueSerializer.deserialize(valueByte, classloader);
                     values.add(deserialize);
                 }
                 return values;
-            case Hash:
-                boolean all = subKeyParam.isAll();
-                Map<byte[], byte[]> map = new HashMap<>();
-                Map<Object, Object> mapValues = new HashMap<>();
-                if (all){
-                    map = client.hgetAll(keyBytes);
-                }else{
-                    String[] subKeys = subKeyParam.getSubKeys();
-                    for (String subKey : subKeys) {
-                        byte[] subKeyBytes = hashKeySerializer.serialize(subKey);
-                        byte[] valueBytes = client.hget(keyBytes, subKeyBytes);
-                        map.put(subKeyBytes,valueBytes);
-                    }
-                }
-                Iterator<Map.Entry<byte[], byte[]>> iterator = map.entrySet().iterator();
-                while (iterator.hasNext()){
-                    Map.Entry<byte[], byte[]> next = iterator.next();
-                    byte[] subKey = next.getKey();
-                    byte[] valueBytes = next.getValue();
-
-                    Object hashKey = hashKeySerializer.deserialize(subKey,classloader);
-                    Object hashValue = hashValueSerializer.deserialize(valueBytes, classloader);
-                    mapValues.put(hashKey,hashValue);
-                }
-                return mapValues;
             case Set:
-                if (subKeyParam.isAll()) {
-                    Set<byte[]> smembers = jedisClient.jedis.smembers(keyBytes);
-                    Set<Object> setValues = new HashSet<>();
+                if (valueParam.isAll()){
+                    final Set<byte[]> smembers = redisConnection.smembers(keyBytes);
+                    List<Object> setValues = new ArrayList<>(smembers.size());
                     for (byte[] smember : smembers) {
-                        Object deserialize = valueSerializer.deserialize(smember, classloader);
+                        final Object deserialize = valueSerializer.deserialize(smember, classloader);
                         setValues.add(deserialize);
                     }
                     return setValues;
-                }else {
-                    String cursor = redisScanParam.getCursor();
-                    int limit = redisScanParam.getLimit();
-                    ScanParams scanParams = new ScanParams();
-                    scanParams.match(redisScanParam.getPattern()).count(limit);
-                    List<byte[]> smembers = new ArrayList<>();
-                    do {
-                        ScanResult<byte[]> scan = client.sscan(keyBytes, cursor.getBytes(), scanParams);
-                        List<byte[]> subScan = scan.getResult();
-                        for (byte[] setValue : subScan) {
-                            smembers.add(setValue);
-                        }
-
-                        cursor = scan.getStringCursor();
-                        scanParams.count(limit - subScan.size());
-                    } while (smembers.size() < limit && NumberUtils.toLong(cursor) != 0L);
-
-                    // 对扫描到的数据进行使用序列化解析
-                    List<Object> smemberObjects = new ArrayList<>();
-                    for (byte[] smember : smembers) {
-                        smemberObjects.add(valueSerializer.deserialize(smember, classloader));
-                    }
-                    SubKeyScanResult<Object> subKeyScanResult = new SubKeyScanResult(smemberObjects, cursor);
-                    if ("0".equals(cursor)) {
-                        subKeyScanResult.setFinish(true);
-                    }
-                    return subKeyScanResult;
                 }
+
+                String setCursor = keyScanParam.getCursor();
+                final int setLimit = keyScanParam.getLimit();
+                ScanParams setScanParams = new ScanParams();
+                setScanParams.match(keyScanParam.getPattern()).count(setLimit);
+                List<byte[]> smembers = new ArrayList<>();
+                do {
+                    ScanResult<byte[]> scan = redisConnection.sscan(keyBytes, setCursor.getBytes(), setScanParams);
+                    List<byte[]> subScan = scan.getResult();
+                    for (byte[] setValue : subScan) {
+                        smembers.add(setValue);
+                    }
+
+                    setCursor = scan.getStringCursor();
+                    setScanParams.count(setLimit - subScan.size());
+                } while (smembers.size() < setLimit && NumberUtils.toLong(setCursor) != 0L);
+
+                List<Object> smemberObjects = new ArrayList<>();
+                for (byte[] smember : smembers) {
+                    final Object deserialize = valueSerializer.deserialize(smember, classloader);
+                    smemberObjects.add(deserialize);
+                }
+                return smemberObjects;
             case ZSet:
-                if (rangeParam.getStart() != null && rangeParam.getStop() != null){
-                    Set<Tuple> tuples = client.zrangeWithScores(keyBytes, rangeParam.getStart(), rangeParam.getStop());
-                    List<ZSetTuple> zSetTuples = mapperZsetTuple(valueSerializer,classloader,tuples);
-                    return zSetTuples;
+                if (rangeParam != null){
+                    Set<Tuple> tuples = redisConnection.zrangeWithScores(keyBytes, rangeParam.getStart(), rangeParam.getStop());
+                    return mapperToCustomTuple(classloader, valueSerializer, tuples);
                 }
-                if (rangeParam.getMin() != null && rangeParam.getMax() != null){
-                    Set<Tuple> tuples = client.zrangeByScoreWithScores(keyBytes, rangeParam.getMin(), rangeParam.getMax());
-                    List<ZSetTuple> zSetTuples = mapperZsetTuple(valueSerializer, classloader, tuples);
-                    return zSetTuples;
+                final ValueParam.ScoreRangeParam scoreRangeParam = valueParam.getScoreRangeParam();
+                if (scoreRangeParam != null){
+                    Set<Tuple> tuples = redisConnection.zrangeByScoreWithScores(keyBytes, scoreRangeParam.getMin(), scoreRangeParam.getMax());
+                    return mapperToCustomTuple(classloader, valueSerializer, tuples);
                 }
 
-                String cursor = redisScanParam.getCursor();
-                int limit = redisScanParam.getLimit();
+                String cursor = keyScanParam.getCursor();
+                final int limit = keyScanParam.getLimit();
                 ScanParams scanParams = new ScanParams();
-                scanParams.match(redisScanParam.getPattern()).count(limit);
+                scanParams.match(keyScanParam.getPattern()).count(limit);
 
                 Set<Tuple> tuples = new HashSet<>();
                 do {
-                    ScanResult<Tuple> zscan = client.zscan(keyBytes, cursor.getBytes(), scanParams);
+                    ScanResult<Tuple> zscan = redisConnection.zscan(keyBytes, cursor.getBytes(), scanParams);
                     List<Tuple> subScan = zscan.getResult();
                     tuples.addAll(subScan);
 
@@ -324,351 +317,100 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
                     scanParams.count(limit - subScan.size());
                 }while (tuples.size() < limit && NumberUtils.toLong(cursor) != 0L);
 
-                List<ZSetTuple> zSetTuples = mapperZsetTuple(valueSerializer, classloader, tuples);
-                SubKeyScanResult<ZSetTuple> subKeyScanResult = new SubKeyScanResult<ZSetTuple>(zSetTuples, cursor);
-                if ("0".equals(cursor)){
-                    subKeyScanResult.setFinish(true);
-                }
-                return subKeyScanResult;
-
+                return mapperToCustomTuple(classloader, valueSerializer, tuples);
         }
 
         return null;
     }
 
+
     /**
-     * kill 客户端连接
-     * @param connParam
-     * @param id
+     * 映射成自定义的 tuple
+     * @param classloader
+     * @param valueSerializer
+     * @param tuples
      * @return
      * @throws IOException
+     * @throws ClassNotFoundException
      */
-    public String killClient(ConnParam connParam, String id) throws IOException {
-        JedisClient jedisClient = jedisClient(connParam);
-        String clientKill = jedisClient.jedis.clientKill(id);
-        return clientKill;
-    }
-
-    List<ZSetTuple> mapperZsetTuple(Serializer valueSerializer, ClassLoader classloader, Set<Tuple> tuples) throws IOException, ClassNotFoundException {
-        List<ZSetTuple> zSetTuples = new ArrayList<>();
+    private List<ZSetTuple> mapperToCustomTuple(ClassLoader classloader, Serializer valueSerializer, Set<Tuple> tuples) throws IOException, ClassNotFoundException {
+        List<ZSetTuple> zSetTuples = new ArrayList<>(tuples.size());
         for (Tuple tuple : tuples) {
-            byte[] bytes = tuple.getBinaryElement();
-            double score = tuple.getScore();
-            Object deserialize = valueSerializer.deserialize(bytes, classloader);
-            ZSetTuple zSetTuple = new ZSetTuple(deserialize, score);
+            final ZSetTuple zSetTuple = new ZSetTuple(tuple, valueSerializer, classloader);
             zSetTuples.add(zSetTuple);
         }
         return zSetTuples;
     }
 
-
-    /**
-     * 子键扫描
-     * @param client
-     * @param key
-     * @param redisScanParam
-     * @param serializerParam
-     * @return
-     */
-    private SubKeyScanResult clientSubKeyScan(Jedis client , String key,RedisScanParam redisScanParam,SerializerParam serializerParam) throws IOException, ClassNotFoundException {
-        ClassLoader classloader = classloaderService.getClassloader(serializerParam.getClassloaderName());
-        Serializer keySerializer = serializerChoseService.choseSerializer(serializerParam.getKeySerializer());
-        Serializer hashKeySerializer = serializerChoseService.choseSerializer(serializerParam.getHashKey());
-
-        byte[] keyBytes = keySerializer.serialize(key);
-
-        String type = client.type(keyBytes);
-        RedisType redisType = RedisType.parse(type);
-        if (redisType == null || (redisType != RedisType.Hash )){
-            throw new ToolException("不支持的 redis 类型["+redisType+"],在子键["+key+"]扫描");
-        }
-
-        int limit = redisScanParam.getLimit();
-        ScanParams scanParams = new ScanParams();
-        scanParams.match(redisScanParam.getPattern()).count(limit);
-        String cursor = redisScanParam.getCursor();
-        List<byte[]> keys = new ArrayList<>();
-        switch (redisType){
-            case Hash:
-                do {
-                    ScanResult<Map.Entry<byte[], byte[]>> hscan = client.hscan(keyBytes, cursor.getBytes(), scanParams);
-                    List<Map.Entry<byte[], byte[]>> hscanResult = hscan.getResult();
-                    for (Map.Entry<byte[], byte[]> stringStringEntry : hscanResult) {
-                        byte [] hashKey = stringStringEntry.getKey();
-                        keys.add(hashKey);
-                    }
-
-                    cursor = hscan.getStringCursor();
-                    scanParams.count(limit - hscanResult.size());
-                }while (keys.size() < limit && NumberUtils.toLong(cursor) != 0L);
-                break;
-        }
-
-        List<String> stringKeys = new ArrayList<>();
-        for (byte[] bytes : keys) {
-            Object deserialize = hashKeySerializer.deserialize(bytes, classloader);
-            stringKeys.add(Objects.toString(deserialize));
-        }
-
-        SubKeyScanResult subKeyScanResult = new SubKeyScanResult(stringKeys, cursor);
-        if ("0".equals(cursor)){
-            subKeyScanResult.setFinish(true);
-        }
-
-        return subKeyScanResult;
-    }
-
-    /**
-     * 当前 jedis 角色
-     * @param currentJedis
-     * @return
-     */
-    String jedisRole(Jedis currentJedis) {
-        String info = currentJedis.info("Replication");
-        List<String[]> parser = CommandReply.colonCommandReply.parser(info);
-        for (String[] line : parser) {
-            if (line.length == 2){
-                if ("role".equals(line[0])){
-                    return line[1];
-                }
-            }
-        }
-        return "";
-    }
-
-    /**
-     * 显示当前主机的慢查询
-     * @param jedis
-     * @return
-     */
-    RedisSlowlog slowlogs(Jedis jedis){
-        List<Slowlog> slowlogs = jedis.slowlogGet();
-        String host = jedis.getClient().getHost();
-        int port = jedis.getClient().getPort();
-        HostAndPort hostAndPort = new HostAndPort(host, port);
-        String role = jedisRole(jedis);
-        return new RedisSlowlog(hostAndPort,slowlogs,role);
-    }
-
-    /**
-     * 单台节点数据扫描
-     * @param jedis
-     * @param redisScanParam
-     * @param serializerParam
-     * @return
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    KeyScanResult nodeScan(Jedis jedis,RedisScanParam redisScanParam, SerializerParam serializerParam) throws IOException, ClassNotFoundException {
-        String pattern = redisScanParam.getPattern();
-        int limit = redisScanParam.getLimit();
-        String cursor = redisScanParam.getCursor();
-
-        ScanParams scanParams = new ScanParams();
-        scanParams.count(limit);
-        if(StringUtils.isNotBlank(pattern)) {
-            scanParams.match(pattern);
-        }
-
-        // key 的序列化和类加载器
-        String serializerParamKey = serializerParam.getKeySerializer();
-        String classloaderName = serializerParam.getClassloaderName();
-        Serializer serializer = serializerChoseService.choseSerializer(serializerParamKey);
-        ClassLoader classloader = classloaderService.getClassloader(classloaderName);
-
+    private KeyScanResult nodeScan(KeyScanParam redisScanParam, SerializerParam serializerParam, RedisNode redisNode) throws IOException, ClassNotFoundException {
         Set<byte[]> keys = new HashSet<>();
 
-        // 统计搜索用时,如超时, 直接结束
-        long startSearchTime = System.currentTimeMillis();
-        long searchTime = 0;
+        // 开始搜索 key
+        final Jedis jedis = redisNode.browerJedis();
+        try{
+            int limit = redisScanParam.getLimit();
+            String cursor = redisScanParam.getCursor();
 
-        // 开始搜索
-        do {
-            ScanResult scanResult = jedis.scan(cursor.getBytes(), scanParams);
-            List<byte[]> result = scanResult.getResult();
-            for (byte[] bytes : result) {
-                keys.add(bytes);
-            }
-            cursor = scanResult.getStringCursor();
-            scanParams.count(limit - keys.size());
-            if (redisScanParam.isFast() && !"0".equals(cursor)){
-                // 如果是快速搜索,不需要考虑每次的搜索数量 ,一次查找 1 万条数据
-                // 如果 cursor = 0 第一次搜索还是搜索  20 条数据
-                scanParams.count(10000);
+            ScanParams scanParams = new ScanParams();
+            scanParams.count(limit);
+            if(StringUtils.isNotBlank(redisScanParam.getPattern())) {
+                scanParams.match(redisScanParam.getPattern());
             }
 
-            if (redisScanParam.getTimeout() != -1 ){
-                searchTime = System.currentTimeMillis() - startSearchTime;
-                if (searchTime > redisScanParam.getTimeout()){
-                    Client client = jedis.getClient();
-                    String hostAndPort = client.getHost() + ":" + client.getPort();
-                    log.warn("当前搜索超时,可能是查找的 pattern[{}] 并不存在,在连接 [{}] ",redisScanParam.getPattern(),hostAndPort);
-                    break;
+            // key 的序列化和类加载器
+            String serializerParamKey = serializerParam.getKeySerializer();
+            String classloaderName = serializerParam.getClassloaderName();
+            Serializer serializer = serializerChoseService.choseSerializer(serializerParamKey);
+            ClassLoader classloader = classloaderService.getClassloader(classloaderName);
+
+            // 统计搜索用时,如超时, 直接结束
+            long startSearchTime = System.currentTimeMillis();
+            do {
+                if (redisScanParam.isFast()){
+                    // 如果是快速搜索,不需要考虑每次的搜索数量 ,一次查找 1 万条数据
+                    scanParams.count(10000);
                 }
-            }
-        }while (keys.size() < limit && NumberUtils.toLong(cursor) != 0L );
 
-        // 获取各 key 的属性信息
-        List<KeyScanResult.KeyResult> keyWraps = new ArrayList<>();
-        for (byte[] key : keys) {
-            String type = jedis.type(key);
-            Long ttl = jedis.ttl(key);
-            Long pttl = jedis.pttl(key);
-            long length = keyLength(jedis, key);
-            String keySerializer = Objects.toString(serializer.deserialize(key, classloader));
-            KeyScanResult.KeyResult keyResult = new KeyScanResult.KeyResult(keySerializer, type, ttl, pttl, length);
-            int slot = JedisClusterCRC16.getSlot(key);
-            keyResult.setSlot(slot);
-            keyWraps.add(keyResult);
-        }
-
-        String host = jedis.getClient().getHost();
-        int port = jedis.getClient().getPort();
-        HostAndPort target = new HostAndPort(host, port);
-
-        KeyScanResult keyScanResult = new KeyScanResult(keyWraps, cursor, 0, target);
-        if ("0".equals(cursor)){
-            keyScanResult.setFinish(true);
-        }
-
-        return keyScanResult;
-    }
-
-    /**
-     * 单个节点内存使用情况
-     * @param jedis
-     * @return
-     */
-    MemoryUse nodeMemoryUse(Jedis jedis){
-        String host = jedis.getClient().getHost();
-        int port = jedis.getClient().getPort();
-        HostAndPort target = new HostAndPort(host, port);
-        MemoryUse memoryUse = new MemoryUse(target);
-        String info = jedis.info("Memory");
-        List<String[]> parser = CommandReply.colonCommandReply.parser(info);
-
-        for (String[] line : parser) {
-            if (line.length == 2){
-                if ("used_memory_rss".equals(line[0])){
-                    memoryUse.setRss(NumberUtils.toLong(line[1]));
-                }else if ("used_memory_lua".equals(line[0])){
-                    memoryUse.setLua(NumberUtils.toLong(line[1]));
-                }else if ("maxmemory".equals(line[0])){
-                    memoryUse.setMax(NumberUtils.toLong(line[1]));
-                }else if ("total_system_memory".equals(line[0])){
-                    memoryUse.setSystem(NumberUtils.toLong(line[1]));
-                }else if ("maxmemory_policy".equals(line[0])){
-                    memoryUse.setPolicy(line[1]);
+                ScanResult scanResult = jedis.scan(cursor.getBytes(), scanParams);
+                List<byte[]> result = scanResult.getResult();
+                for (byte[] bytes : result) {
+                    keys.add(bytes);
                 }
-            }
-        }
-        return memoryUse;
-    }
+                cursor = scanResult.getStringCursor();
+                scanParams.count(limit - keys.size());
 
-    /**
-     * 单个节点的客户端连接列表
-     * @param jedis
-     * @return
-     */
-    ClientConnection nodeClientList(Jedis jedis) {
-        String host = jedis.getClient().getHost();
-        int port = jedis.getClient().getPort();
-        HostAndPort target = new HostAndPort(host, port);
-        String role = jedisRole(jedis);
-        ClientConnection clientConnection = new ClientConnection(target,role);
-
-        List<ClientConnection.Client> clients  = new ArrayList<>();
-        clientConnection.setClients(clients);
-
-        Class<ClientConnection.Client> clientClass = ClientConnection.Client.class;
-
-        String clientList = jedis.clientList();
-        List<Map<String, String>> mapList = CommandReply.spaceCommandReply.parserWithHeader(clientList, "id", "addr", "fd", "name", "age", "idle", "flags", "db", "sub", "psub", "multi", "qbuf", "qbuf-free", "obl", "oll", "omem", "events", "cmd");
-        for (Map<String, String> props : mapList) {
-            ClientConnection.Client client = new ClientConnection.Client();
-            clients.add(client);
-
-            Iterator<String> iterator = props.values().iterator();
-            while (iterator.hasNext()){
-                String next = iterator.next();
-                String[] split = StringUtils.split(next, "=", 2);
-                if ("addr".equals(split[0]) && StringUtils.isNotBlank(split[1])){
-                    HostAndPort hostAndPort = HostAndPort.parseString(split[1]);
-                    client.setConnect(hostAndPort);
-                    continue;
-                }
-                Field declaredField = FieldUtils.getDeclaredField(clientClass, split[0], true);
-                if (declaredField != null) {
-                    try {
-                        FieldUtils.writeField(declaredField,client,split[1],true);
-                    } catch (IllegalAccessException e) {
-                        log.error("redis 客户端信息写入字段[{}],值[{}] 失败",split[0],split[1]);
+                if (redisScanParam.getTimeout() != -1 ){
+                    if (System.currentTimeMillis() - startSearchTime > redisScanParam.getTimeout()){
+                        log.warn("当前搜索超时,可能是查找的 pattern[{}] 并不存在,在连接 [{}] ", redisScanParam.getPattern(), redisNode.getMark());
+                        break;
                     }
                 }
-            }
-        }
-        return clientConnection;
-    }
+            }while (keys.size() < limit && NumberUtils.toLong(cursor) != 0L );
 
-    /**
-     * 获取主从模式下所有节点
-     * @param jedis
-     * @return
-     */
-    private synchronized List<RedisNode> masterSlaveNodes(Jedis jedis){
-        List<RedisNode> redisNodes = new ArrayList<>();
-
-        //如果不是集群模式,看是否为主从模式,获取主从结构的所有节点
-        String replication = jedis.info("Replication");
-        Map<String, String> properties = ColonCommandReply.colonCommandReply.parserKeyValue(replication);
-        String connected_slaves = properties.get("connected_slaves");
-        if(StringUtils.isNotBlank(connected_slaves)) {
-            int slaves = NumberUtils.toInt(connected_slaves);
-            if(slaves == 0){
-                // 单机模式
-                RedisNode redisNode = new RedisNode();
-                String host = jedis.getClient().getHost();
-                int port = jedis.getClient().getPort();
-                redisNode.setId(host+":"+port);
-                redisNode.setRole("master");
-                redisNode.setHostAndPort(HostAndPort.parseString(redisNode.getId()));
-                redisNode.setDbSize(jedis.dbSize());
-                return Collections.singletonList(redisNode);
+            // 获取各 key 的属性信息
+            List<KeyScanResult.KeyResult> keyWraps = new ArrayList<>();
+            for (byte[] key : keys) {
+                String type = jedis.type(key);
+                Long ttl = jedis.ttl(key);
+                Long pttl = jedis.pttl(key);
+                long length = keyLength(jedis, key);
+                String keySerializer = Objects.toString(serializer.deserialize(key, classloader));
+                KeyScanResult.KeyResult keyResult = new KeyScanResult.KeyResult(keySerializer, type, ttl, pttl, length);
+                int slot = JedisClusterCRC16.getSlot(key);
+                keyResult.setSlot(slot);
+                keyWraps.add(keyResult);
             }
 
-            // 否则就是主从模式,级联获取所有节点
-            Client client = jedis.getClient();
-            HostAndPort hostAndPort = HostAndPort.parseString(client.getHost() + ":" + client.getPort());
-            findSlaves(hostAndPort,redisNodes,hostAndPort.toString());
-
-        }
-        return redisNodes;
-    }
-    private void findSlaves(HostAndPort hostAndPort,List<RedisNode> redisNodes,String masterId) {
-        // 先添加父节点
-        Jedis jedis = new Jedis(hostAndPort.getHost(), hostAndPort.getPort());
-        String replication = jedis.info("Replication");jedis.disconnect();
-        Map<String, String> properties = ColonCommandReply.colonCommandReply.parserKeyValue(replication);
-        RedisNode redisNode = new RedisNode();
-        redisNode.setId(hostAndPort.toString());
-        redisNode.setRole(properties.get("role"));
-        redisNode.setHostAndPort(hostAndPort);
-        redisNode.setMaster(masterId);
-        redisNode.setDbSize(jedis.dbSize());
-        redisNodes.add(redisNode);
-
-        // 添加子节点
-        Iterator<Map.Entry<String, String>> iterator = properties.entrySet().iterator();
-        while (iterator.hasNext()){
-            Map.Entry<String, String> next = iterator.next();
-            String key = next.getKey();
-            if(key.startsWith("slave")){
-                String value = next.getValue();
-                String[] split = StringUtils.split(value, ',');
-                String host = split[0].split("=")[1];int port = NumberUtils.toInt(split[1].split("=")[1]);
-                findSlaves(HostAndPort.parseString(host+":"+port),redisNodes,hostAndPort.toString());
+            KeyScanResult keyScanResult = new KeyScanResult(keyWraps, cursor, redisNode.getId());
+            if ("0".equals(cursor)){
+                keyScanResult.setFinish(true);
             }
+
+            return keyScanResult;
+        }finally {
+            jedis.close();
         }
+
     }
 
     /**
@@ -699,43 +441,84 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
         return 0;
     }
 
-
-    /**
-     * 判断是否为集群模式
-     * @param jedis
-     * @return
-     */
-    private boolean isCluster(Jedis jedis) {
-        String info = jedis.info("Cluster");
-        Map<String, String> properties = ColonCommandReply.colonCommandReply.parserKeyValue(info);
-        String cluster_enabled = properties.get("cluster_enabled");
-        if("1".equals(cluster_enabled)){
-            return true;
-        }
-        return false;
+    @PostConstruct
+    public void register(){
+        pluginManager.register(PluginDto.builder().module("monitor").name(module).logo("redis.jpg").desc("redis 数据查看,集群信息管理").help("Redis.md").author("sanri").envs("default").build());
     }
 
-    public Object collectionMethods(ConnParam connParam, String[] keys, String command, SerializerParam serializerParam) throws IOException, ClassNotFoundException {
-        JedisClient jedisClient = jedisClient(connParam);
+    @PreDestroy
+    public void destory(){
+        log.info("清除 {} 客户端列表:{}",module, clientMap.keySet());
+        Iterator<RedisConnection> iterator = clientMap.values().iterator();
+        while (iterator.hasNext()){
+            final RedisConnection redisConnection = iterator.next();
+            try {
+                redisConnection.close();
+            }catch (Exception e){}
+        }
+    }
+
+    @Override
+    public void onApplicationEvent(UpdateConnectEvent updateConnectEvent) {
+        UpdateConnectEvent.ConnectInfo connectInfo = (UpdateConnectEvent.ConnectInfo) updateConnectEvent.getSource();
+        if (connectInfo.getClazz() == RedisConnectParam.class) {
+            String connName = connectInfo.getConnName();
+            final RedisConnection redisConnection = clientMap.remove(connName);
+            if (redisConnection != null) {
+                redisConnection.close();
+            }
+            log.info("[{}]模块[{}]配置变更,将移除存储的元数据信息",module,connName);
+        }
+    }
+
+    /**
+     * 获取 redis 连接
+     * @param connParam
+     * @return
+     */
+    public RedisConnection redisConnection(ConnParam connParam) throws IOException {
+        final String connName = connParam.getConnName();
+        final int index = connParam.getIndex();
+
+        if (clientMap.containsKey(connName)){
+            final RedisConnection redisConnection = clientMap.get(connName);
+            if (redisConnection.getRunMode() != RedisRunMode.cluster){
+                redisConnection.select(index);
+            }
+            return redisConnection;
+        }
+
+        // 创建连接
+        final RedisConnectParam redisConnectParam = (RedisConnectParam) connectService.readConnParams(module,connName);
+        final RedisConnection redisConnection = new RedisConnection();
+        redisConnection.refresh(redisConnectParam);
+        redisConnection.select(index);
+        clientMap.put(connName,redisConnection);
+
+        return redisConnection;
+    }
+
+    public Object collectionMethods(ConnParam connParam, String[] members, String command, SerializerParam serializerParam) throws IOException, ClassNotFoundException {
+        final RedisConnection redisConnection = redisConnection(connParam);
 
         Serializer choseSerializer = serializerChoseService.choseSerializer(serializerParam.getValue());
         ClassLoader classloader = classloaderService.getClassloader(serializerParam.getClassloaderName());
 
-        byte [][] keyBytes = new byte [keys.length][];
-        for (int i = 0; i < keys.length; i++) {
-            keyBytes[i] = choseSerializer.serialize(keys[i]);
+        byte [][] keyBytes = new byte [members.length][];
+        for (int i = 0; i < members.length; i++) {
+            keyBytes[i] = choseSerializer.serialize(members[i]);
         }
 
-        Set<byte[]> result = null;
+        Set<byte[]> result = new HashSet<>();
         switch (command){
             case "inter":
-                result = jedisClient.jedis.sinter(keyBytes);
+                result = redisConnection.sinter(keyBytes);
                 break;
             case "diff":
-                result = jedisClient.jedis.sdiff(keyBytes);
+                result = redisConnection.sdiff(keyBytes);
                 break;
             case "union":
-                result = jedisClient.jedis.sunion(keyBytes);
+                result = redisConnection.sunion(keyBytes);
                 break;
         }
 
@@ -745,101 +528,5 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
             collect.add(deserialize);
         }
         return collect;
-    }
-
-    @Override
-    public void onApplicationEvent(UpdateConnectEvent updateConnectEvent) {
-        UpdateConnectEvent.ConnectInfo connectInfo = (UpdateConnectEvent.ConnectInfo) updateConnectEvent.getSource();
-        if (connectInfo.getClazz() == RedisConnectParam.class) {
-            String connName = connectInfo.getConnName();
-            jedisMap.remove(connName);
-            log.info("[{}]模块[{}]配置变更,将移除存储的元数据信息",module,connName);
-        }
-    }
-
-    /**
-     * redis 的数据类型
-     */
-    enum RedisType{
-        string("string"),Set("set"),ZSet("zset"),Hash("hash"),List("list"),None("none");
-        private String value;
-
-        RedisType(String value) {
-            this.value = value;
-        }
-
-        public static RedisType parse(String type){
-            RedisType[] values = RedisType.values();
-            for (RedisType value : values) {
-                if(value.value.equals(type)){
-                    return value;
-                }
-            }
-            return null;
-        }
-    }
-
-    /**
-     * 获取一个客户端
-     * @return
-     */
-    JedisClient jedisClient(ConnParam connParam) throws IOException {
-        String connName = connParam.getConnName();
-        JedisClient jedisClient = jedisMap.get(connName);
-        if(jedisClient == null){
-            // 获取连接参数
-            RedisConnectParam redisConnectParam = (RedisConnectParam) connectService.readConnParams(module,connName);
-            ConnectParam connectParam = redisConnectParam.getConnectParam();
-            Jedis jedis = new Jedis(connectParam.getHost(), connectParam.getPort(), connectParam.getConnectionTimeout(), connectParam.getSessionTimeout());
-            AuthParam authParam = redisConnectParam.getAuthParam();
-            if(authParam != null) {
-                String password = authParam.getPassword();
-                if (StringUtils.isNotBlank(password)) {
-                    jedis.auth(password);
-                }
-            }
-            boolean cluster = isCluster(jedis);
-            if (cluster){
-                jedisClient = new JedisClient(jedis,true);
-            }else{
-                jedisClient = new JedisClient(jedis,false);
-                jedis.select(connParam.getIndex());
-            }
-
-            jedisMap.put(connName,jedisClient);
-        }
-
-        try {
-            jedisClient.jedis.info();
-        }catch (JedisConnectionException e){
-            Throwable cause = e.getCause();
-            if (cause instanceof SocketException){
-                log.warn("[{}] Redis 出现 SocketException 尝试重新连接",connParam.getConnName());
-                // 有 socket 异常进行重新连接
-//                jedisClient.jedis.close();
-                jedisClient.jedis.connect();
-            }
-        }
-
-        return jedisClient;
-    }
-
-    @PostConstruct
-    public void register(){
-        pluginManager.register(PluginDto.builder().module("monitor").name(module).logo("redis.jpg").desc("redis 数据查看,集群信息管理").help("Redis.md").author("sanri").envs("default").build());
-    }
-
-    @PreDestroy
-    public void destory(){
-        log.info("清除 {} 客户端列表:{}",module,jedisMap.keySet());
-        Iterator<JedisClient> iterator = jedisMap.values().iterator();
-        while (iterator.hasNext()){
-            JedisClient next = iterator.next();
-            if(next != null && next.jedis != null){
-                try {
-                    next.jedis.close();
-                } catch (Exception e) {}
-            }
-        }
     }
 }

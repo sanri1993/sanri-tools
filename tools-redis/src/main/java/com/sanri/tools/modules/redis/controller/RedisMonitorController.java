@@ -1,25 +1,25 @@
 package com.sanri.tools.modules.redis.controller;
 
-import com.sanri.tools.modules.redis.dtos.ClientConnection;
-import com.sanri.tools.modules.redis.dtos.MemoryUse;
-import com.sanri.tools.modules.redis.dtos.RedisNode;
-import com.sanri.tools.modules.redis.dtos.RedisSlowlog;
-import com.sanri.tools.modules.redis.dtos.params.ConnParam;
-import com.sanri.tools.modules.redis.service.RedisClusterService;
-import com.sanri.tools.modules.redis.service.RedisService;
+import java.io.IOException;
+import java.util.List;
+
+import com.sanri.tools.modules.redis.controller.dtos.ConnectionInfo;
+import com.sanri.tools.modules.redis.service.dtos.ConnectClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.util.List;
+import com.sanri.tools.modules.redis.dtos.in.ConnParam;
+import com.sanri.tools.modules.redis.service.RedisService;
+import com.sanri.tools.modules.redis.service.dtos.RedisConnection;
+import com.sanri.tools.modules.redis.service.dtos.RedisNode;
+import com.sanri.tools.modules.redis.service.dtos.RedisRunMode;
+import redis.clients.util.Slowlog;
 
 @RequestMapping("/redis/monitor")
 @RestController
 @Validated
 public class RedisMonitorController {
-    @Autowired
-    private RedisClusterService redisClusterService;
     @Autowired
     private RedisService redisService;
 
@@ -30,8 +30,9 @@ public class RedisMonitorController {
      * @throws IOException
      */
     @GetMapping("/mode")
-    public String mode(@Validated ConnParam connParam) throws IOException {
-        return redisClusterService.mode(connParam);
+    public RedisRunMode mode(@Validated ConnParam connParam) throws IOException {
+        final RedisConnection redisConnection = redisService.redisConnection(connParam);
+        return redisConnection.getRunMode();
     }
 
     /**
@@ -41,8 +42,9 @@ public class RedisMonitorController {
      * @throws IOException
      */
     @GetMapping("/dbs")
-    public long dbs(@Validated ConnParam connParam) throws IOException {
-        return redisService.dbs(connParam);
+    public int dbs(@Validated ConnParam connParam) throws IOException {
+        final RedisConnection redisConnection = redisService.redisConnection(connParam);
+        return redisConnection.dbs();
     }
 
     /**
@@ -53,7 +55,22 @@ public class RedisMonitorController {
      */
     @GetMapping("/nodes")
     public List<RedisNode> nodes(@Validated ConnParam connParam) throws IOException {
-        return redisClusterService.nodes(connParam);
+        final RedisConnection redisConnection = redisService.redisConnection(connParam);
+        return redisConnection.getMasterNodes();
+    }
+
+    /**
+     * 聚合接口, 获取连接信息
+     * @param connParam
+     * @return
+     */
+    @GetMapping("/connInfo")
+    public ConnectionInfo connInfo(@Validated ConnParam connParam) throws IOException {
+        final RedisConnection redisConnection = redisService.redisConnection(connParam);
+        final RedisRunMode runMode = redisConnection.getRunMode();
+        final List<RedisNode> masterNodes = redisConnection.getMasterNodes();
+
+        return new ConnectionInfo(runMode,masterNodes);
     }
 
     /**
@@ -62,9 +79,14 @@ public class RedisMonitorController {
      * @return
      * @throws IOException
      */
-    @GetMapping("/memoryUses")
-    public List<MemoryUse> memoryUses(@Validated ConnParam connParam) throws IOException {
-        return redisClusterService.memoryUses(connParam);
+    @GetMapping("/memory")
+    public RedisNode.Memory memoryUse(@Validated ConnParam connParam, String nodeId) throws IOException {
+        final RedisConnection redisConnection = redisService.redisConnection(connParam);
+        RedisNode redisNode = redisConnection.findRedisNodeById(nodeId);
+        if (redisNode != null) {
+            return redisNode.calcMemory();
+        }
+        return null;
     }
 
     /**
@@ -74,8 +96,13 @@ public class RedisMonitorController {
      * @throws IOException
      */
     @GetMapping("/clientList")
-    public List<ClientConnection> clientList(@Validated ConnParam connParam) throws IOException {
-        return redisClusterService.clientList(connParam);
+    public List<ConnectClient> clientList(@Validated ConnParam connParam,String nodeId) throws IOException {
+        final RedisConnection redisConnection = redisService.redisConnection(connParam);
+        final RedisNode redisNodeById = redisConnection.findRedisNodeById(nodeId);
+        if (redisNodeById != null) {
+            return redisConnection.clientList(redisNodeById);
+        }
+        return null;
     }
 
     /**
@@ -86,8 +113,13 @@ public class RedisMonitorController {
      * @throws IOException
      */
     @PostMapping("/client/kill/{clientId}")
-    public String killClient(@Validated ConnParam connParam, @PathVariable("clientId") String clientId) throws IOException {
-        return redisService.killClient(connParam,clientId);
+    public String killClient(@Validated ConnParam connParam, @PathVariable("clientId") String clientId,String nodeId) throws IOException {
+        final RedisConnection redisConnection = redisService.redisConnection(connParam);
+        final RedisNode redisNodeById = redisConnection.findRedisNodeById(nodeId);
+        if (redisNodeById != null) {
+            return redisConnection.killClient(redisNodeById,clientId);
+        }
+        return null;
     }
 
     /**
@@ -96,7 +128,12 @@ public class RedisMonitorController {
      * @return
      */
     @GetMapping("/slowlogs")
-    public List<RedisSlowlog> redisSlowlogs(@Validated ConnParam connParam) throws IOException {
-        return redisClusterService.slowlogs(connParam);
+    public List<Slowlog> redisSlowlogs(@Validated ConnParam connParam, String nodeId) throws IOException {
+        final RedisConnection redisConnection = redisService.redisConnection(connParam);
+        final RedisNode redisNodeById = redisConnection.findRedisNodeById(nodeId);
+        if (redisNodeById != null) {
+            return redisConnection.slowlogs(redisNodeById);
+        }
+        return null;
     }
 }

@@ -1,12 +1,10 @@
-package com.sanri.tools.modules.redis.dtos.params;
+package com.sanri.tools.modules.redis.dtos.in;
 
 import lombok.Data;
 
 @Data
-public class RedisScanParam {
-    private String pattern;
-    private int limit;
-    private String cursor;
+public class KeyScanParam extends BaseKeyScanParam{
+    private String nodeId;
 
     // 非快速搜索时,超时设置
     private long timeout = -1;

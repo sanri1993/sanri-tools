@@ -1,4 +1,4 @@
-package com.sanri.tools.modules.redis.dtos.params;
+package com.sanri.tools.modules.redis.dtos.in;
 
 import lombok.Data;
 

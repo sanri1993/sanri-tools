@@ -126,7 +126,7 @@ name=redis2
 GET {{baseUrl}}/connect/redis/names
 
 ### 连接管理-获取某个连接详情
-GET {{baseUrl}}/connect/redis/10.101.72.43
+GET {{baseUrl}}/connect/redis/192.168.12.21
 
 ### 连接管理-获取所有连接
 GET {{baseUrl}}/connect/all
@@ -141,10 +141,10 @@ Content-Type: application/json
 {
   "connectIdParam": {
     "module": "redis",
-    "connName": "192.168.0.134"
+    "connName": "192.168.31.100"
   },
   "connectParam": {
-    "host": "192.168.0.134",
+    "host": "192.168.31.100",
     "port": 6379
   }
 }
@@ -551,8 +551,20 @@ GET {{baseUrl}}/redis/monitor/mode?connName=10.101.72.43
 ### redis - 查看 redis 的节点列表
 GET {{baseUrl}}/redis/monitor/nodes?connName=10.101.72.43
 
+### redis - 查看连接信息
+GET {{baseUrl}}/redis/monitor/connInfo?connName=192.168.12.21&index=2
+
+### redis - 获取客户端连接列表和占用连接数
+GET {{baseUrl}}/redis/monitor/clientList?connName=192.168.0.134
+
+### redis - 获取内存占用
+GET {{baseUrl}}/redis/monitor/memoryUses?connName=192.168.0.134
+
+### redis - 获取数据量
+GET {{baseUrl}}/redis/monitor/dbs?connName=192.168.12.21&index=2
+
 ### redis - scan 某个 key ,可以模糊查询
-GET {{baseUrl}}/redis/key/scan?connName=10.101.72.43&pattern=*IR*&limit=20&cursor=1435|0&keySerializer=string
+GET {{baseUrl}}/redis/key/scan?connName=192.168.12.21&index=2&pattern=*&limit=20&cursor=229&keySerializer=string
 
 ### redis - 读取某个具体的 key
 GET {{baseUrl}}/redis/data?connName=192.168.0.134&key=abc&subKeys=mm,mm2&keySerializer=string&value=string&hashKey=string&hashValue=string
@@ -562,12 +574,6 @@ GET {{baseUrl}}/redis/key/subKeys?connName=192.168.0.134&key=abc&pattern=*&limit
 
 ### redis -  key 长度
 GET {{baseUrl}}/redis/key/length?connName=192.168.0.134&key=abc
-
-### redis - 获取客户端连接列表和占用连接数
-GET {{baseUrl}}/redis/monitor/clientList?connName=192.168.0.134
-
-### redis - 获取内存占用
-GET {{baseUrl}}/redis/monitor/memoryUses?connName=192.168.0.134
 
 ### redis - 删除 key
 POST {{baseUrl}}/redis/dropKeys?connName=10.101.72.43&keys=abc,def

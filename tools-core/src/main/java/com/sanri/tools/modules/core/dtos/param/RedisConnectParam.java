@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class RedisConnectParam extends AbstractConnectParam {
-    private AuthParam authParam;
+    private AuthParam authParam = new AuthParam();
 }

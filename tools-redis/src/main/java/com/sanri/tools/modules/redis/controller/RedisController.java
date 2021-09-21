@@ -1,9 +1,8 @@
 package com.sanri.tools.modules.redis.controller;
 
+import com.sanri.tools.modules.redis.dtos.HashKeyScanResult;
 import com.sanri.tools.modules.redis.dtos.KeyScanResult;
-import com.sanri.tools.modules.redis.dtos.SubKeyScanResult;
-import com.sanri.tools.modules.redis.dtos.params.*;
-import com.sanri.tools.modules.redis.service.RedisClusterService;
+import com.sanri.tools.modules.redis.dtos.in.*;
 import com.sanri.tools.modules.redis.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -20,36 +19,33 @@ import java.io.IOException;
 @Validated
 public class RedisController {
     @Autowired
-    private RedisClusterService redisClusterService;
-    @Autowired
     private RedisService redisService;
 
     @GetMapping("/key/scan")
-    public KeyScanResult scan(@Validated ConnParam connParam, RedisScanParam scanParam, SerializerParam serializerParam) throws IOException, ClassNotFoundException {
-        return redisClusterService.scan(connParam,scanParam,serializerParam);
+    public KeyScanResult scan(@Validated ConnParam connParam, KeyScanParam keyScanParam, SerializerParam serializerParam) throws IOException, ClassNotFoundException {
+        return redisService.scan(connParam,keyScanParam,serializerParam);
     }
 
     @PostMapping("/key/drop")
-    public void dropKeys(@Validated ConnParam connParam,String [] keys) throws IOException {
-        redisClusterService.dropKeys(connParam,keys);
+    public Long dropKeys(@Validated ConnParam connParam,String [] keys, SerializerParam serializerParam) throws IOException {
+        return redisService.dropKeys(connParam,keys,serializerParam);
     }
 
     /**
-     * 适用于类型是 hash , set , zset 类型的
      * @param scanParam
      * @param connParam
      * @param key
      * @return
      */
-    @GetMapping("/key/subKeys")
-    public SubKeyScanResult subKeys(@Validated ConnParam connParam, String key, RedisScanParam redisScanParam, SerializerParam serializerParam) throws IOException, ClassNotFoundException {
-        return redisClusterService.subKeyScan(connParam,key,redisScanParam,serializerParam);
+    @GetMapping("/key/hscan")
+    public HashKeyScanResult hscan(@Validated ConnParam connParam, HashKeyScanParam hashKeyScanParam, SerializerParam serializerParam) throws IOException, ClassNotFoundException {
+        return redisService.hscan(connParam,hashKeyScanParam,serializerParam);
     }
 
-    @GetMapping("/key/length")
-    public long keyLength(@Validated ConnParam connParam, @NotNull String key, SerializerParam serializerParam) throws IOException {
-        return redisClusterService.keyLength(connParam,key,serializerParam);
-    }
+//    @GetMapping("/key/length")
+//    public long keyLength(@Validated ConnParam connParam, @NotNull String key, SerializerParam serializerParam) throws IOException {
+//        return redisService.keyLength(connParam,key,serializerParam);
+//    }
 
     /**
      * 查询数据
@@ -63,20 +59,20 @@ public class RedisController {
      * @throws ClassNotFoundException
      */
     @GetMapping("/data")
-    public Object data(@Validated ConnParam connParam, SubKeyParam subKeyParam, RangeParam rangeParam, RedisScanParam redisScanParam, SerializerParam serializerParam) throws IOException, ClassNotFoundException {
-        return redisClusterService.data(connParam,subKeyParam,rangeParam,redisScanParam,serializerParam);
+    public Object data(@Validated ValueParam valueParam) throws IOException, ClassNotFoundException {
+        return redisService.data(valueParam);
     }
 
     /**
      * 集合操作 , 交(inter),并(union),差(diff)
      * @param connParam
-     * @param keys
+     * @param members
      * @param command
      * @param serializerParam
      * @return
      */
     @GetMapping("/collectionMethods")
-    public Object collectionMethods(@Validated ConnParam connParam,String [] keys,String command,SerializerParam serializerParam) throws IOException, ClassNotFoundException {
-        return redisClusterService.collectionMethods(connParam,keys,command,serializerParam);
+    public Object collectionMethods(@Validated ConnParam connParam,String [] members,String command,SerializerParam serializerParam) throws IOException, ClassNotFoundException {
+        return redisService.collectionMethods(connParam,members,command,serializerParam);
     }
 }

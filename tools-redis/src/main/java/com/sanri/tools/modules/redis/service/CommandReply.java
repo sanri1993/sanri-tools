@@ -30,7 +30,11 @@ public class CommandReply {
         for (int i = 0; i < lines.length; i++) {
             String line = StringUtils.trim(lines[i]);
             String[] items = StringUtils.split(line, separator);
-            itemList.add(items);
+            String[] trimItems = new String[items.length];
+            for (int j = 0; j < items.length; j++) {
+                trimItems[j] = StringUtils.trim(items[j]);
+            }
+            itemList.add(trimItems);
         }
         return itemList;
     }

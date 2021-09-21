@@ -1,27 +1,30 @@
 package com.sanri.tools.modules.redis.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import redis.clients.jedis.HostAndPort;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
 public class KeyScanResult {
-    private List<KeyResult> keys;
+    private List<KeyResult> keys = new ArrayList<>();
+    private String nodeId;
     private String cursor;
-    private int hostIndex;
-    private HostAndPort target;
+    // 标志本节点是否完成
+    @JsonIgnore
     private boolean finish;
+    // 标志所有节点是否完成
     private boolean done;
 
     public KeyScanResult() {
     }
 
-    public KeyScanResult(List<KeyResult> keys, String cursor, int hostIndex, HostAndPort target) {
+    public KeyScanResult(List<KeyResult> keys, String cursor, String nodeId) {
         this.keys = keys;
         this.cursor = cursor;
-        this.hostIndex = hostIndex;
-        this.target = target;
+        this.nodeId = nodeId;
     }
 
     @Data
