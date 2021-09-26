@@ -7,28 +7,27 @@ import com.sanri.tools.modules.core.exception.ToolException;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
 import com.sanri.tools.modules.core.service.file.ConnectService;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
-import com.sanri.tools.modules.redis.dtos.HashKeyScanResult;
-import com.sanri.tools.modules.redis.dtos.KeyScanResult;
-import com.sanri.tools.modules.redis.dtos.ZSetTuple;
+import com.sanri.tools.modules.redis.dtos.*;
 import com.sanri.tools.modules.redis.dtos.in.*;
 import com.sanri.tools.modules.redis.service.dtos.*;
 import com.sanri.tools.modules.serializer.service.Serializer;
 import com.sanri.tools.modules.serializer.service.SerializerChoseService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.*;
+import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.util.JedisClusterCRC16;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
-import java.lang.reflect.Field;
+import java.net.SocketTimeoutException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -108,12 +107,12 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
      * @return
      * @throws IOException
      */
-    public Long dropKeys(ConnParam connParam, String[] keys, SerializerParam serializerParam) throws IOException {
+    public Long delKeys(ConnParam connParam, List<String> keys, SerializerParam serializerParam) throws IOException {
         Serializer keySerializer = serializerChoseService.choseSerializer(serializerParam.getKeySerializer());
         final RedisConnection redisConnection = redisConnection(connParam);
-        byte[][] delKeys = new byte[keys.length][];
-        for (int i = 0; i < keys.length; i++) {
-            final byte[] serialize = keySerializer.serialize(keys[i]);
+        byte[][] delKeys = new byte[keys.size()][];
+        for (int i = 0; i < keys.size(); i++) {
+            final byte[] serialize = keySerializer.serialize(keys.get(i));
             delKeys[i] = serialize;
         }
         return redisConnection.del(delKeys);
@@ -211,11 +210,13 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
         for (String field : fields) {
             fieldsBytes.add(hashKeySerializer.serialize(field));
         }
-        final List<byte[]> hmget = redisConnection.hmget(keyBytes, fieldsBytes.toArray(new byte[][]{}));
-        for (int i = 0; i < fieldsBytes.size(); i++) {
-            String key = Objects.toString(hashKeySerializer.deserialize(fieldsBytes.get(i),classloader));
-            Object value = hashValueSerializer.deserialize(hmget.get(i),classloader);
-            hashKeyScanResult.getData().put(key,value);
+        if(CollectionUtils.isNotEmpty(fieldsBytes)) {
+            final List<byte[]> hmget = redisConnection.hmget(keyBytes, fieldsBytes.toArray(new byte[][]{}));
+            for (int i = 0; i < fieldsBytes.size(); i++) {
+                String key = Objects.toString(hashKeySerializer.deserialize(fieldsBytes.get(i), classloader));
+                Object value = hashValueSerializer.deserialize(hmget.get(i), classloader);
+                hashKeyScanResult.getData().put(key, value);
+            }
         }
         return hashKeyScanResult;
     }
@@ -285,12 +286,12 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
                     setScanParams.count(setLimit - subScan.size());
                 } while (smembers.size() < setLimit && NumberUtils.toLong(setCursor) != 0L);
 
-                List<Object> smemberObjects = new ArrayList<>();
+                List<Object> members = new ArrayList<>();
                 for (byte[] smember : smembers) {
                     final Object deserialize = valueSerializer.deserialize(smember, classloader);
-                    smemberObjects.add(deserialize);
+                    members.add(deserialize);
                 }
-                return smemberObjects;
+                return new SetScanResult(members,setCursor);
             case ZSet:
                 if (rangeParam != null){
                     Set<Tuple> tuples = redisConnection.zrangeWithScores(keyBytes, rangeParam.getStart(), rangeParam.getStop());
@@ -317,10 +318,12 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
                     scanParams.count(limit - subScan.size());
                 }while (tuples.size() < limit && NumberUtils.toLong(cursor) != 0L);
 
-                return mapperToCustomTuple(classloader, valueSerializer, tuples);
+                final List<ZSetTuple> zSetTuples = mapperToCustomTuple(classloader, valueSerializer, tuples);
+                return new ZSetScanResult(zSetTuples,cursor);
         }
 
-        return null;
+        log.info("暂时还不运行当前类型的数据获取:{}",key);
+        throw new ToolException("暂时还不运行当前类型的数据获取:"+key);
     }
 
 
@@ -491,7 +494,26 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
         // 创建连接
         final RedisConnectParam redisConnectParam = (RedisConnectParam) connectService.readConnParams(module,connName);
         final RedisConnection redisConnection = new RedisConnection();
-        redisConnection.refresh(redisConnectParam);
+        try {
+            redisConnection.refresh(redisConnectParam);
+        }catch (JedisConnectionException e){
+            Throwable cause = e;Throwable parent = e;
+            while ((cause = e.getCause()) != null){
+                parent = cause;
+            }
+            if (parent instanceof SocketTimeoutException){
+                // 连接超时, 直接删除当前连接
+                final RedisConnection remove = clientMap.remove(connName);
+                try {
+                    remove.close();
+                }catch (Exception e2){
+                    log.error("关闭连接时异常:{}",e2.getMessage());
+                }
+                log.error("连接 {} 网络超时,将移除连接",connName);
+                throw new ToolException("连接 "+connName+" 网络超时,将移除此连接,刷新可以重新加载此连接");
+            }
+            throw e;
+        }
         redisConnection.select(index);
         clientMap.put(connName,redisConnection);
 
@@ -528,5 +550,23 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
             collect.add(deserialize);
         }
         return collect;
+    }
+
+    public Long hdel(DelFieldsParam delFieldsParam) throws IOException {
+        final ConnParam connParam = delFieldsParam.getConnParam();
+        final RedisConnection redisConnection = redisConnection(connParam);
+
+        final SerializerParam serializerParam = delFieldsParam.getSerializerParam();
+        Serializer keySerializer = serializerChoseService.choseSerializer(serializerParam.getKeySerializer());
+        Serializer hashKeySerializer = serializerChoseService.choseSerializer(serializerParam.getHashKey());
+        ClassLoader classloader = classloaderService.getClassloader(serializerParam.getClassloaderName());
+
+        final byte[] key = keySerializer.serialize(delFieldsParam.getKey());
+        byte[][] fields = new byte[delFieldsParam.getFields().size()][];
+        for (int i = 0; i < delFieldsParam.getFields().size(); i++) {
+            fields[i] = hashKeySerializer.serialize(delFieldsParam.getFields().get(i));
+        }
+
+        return redisConnection.hdel(key,fields);
     }
 }

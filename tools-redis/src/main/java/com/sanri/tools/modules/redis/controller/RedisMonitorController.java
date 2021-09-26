@@ -14,6 +14,7 @@ import com.sanri.tools.modules.redis.service.RedisService;
 import com.sanri.tools.modules.redis.service.dtos.RedisConnection;
 import com.sanri.tools.modules.redis.service.dtos.RedisNode;
 import com.sanri.tools.modules.redis.service.dtos.RedisRunMode;
+import redis.clients.jedis.Jedis;
 import redis.clients.util.Slowlog;
 
 @RequestMapping("/redis/monitor")

@@ -6,12 +6,8 @@ import com.sanri.tools.modules.redis.dtos.in.*;
 import com.sanri.tools.modules.redis.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.NotNull;
 import java.io.IOException;
 
 @RequestMapping("/redis")
@@ -26,9 +22,9 @@ public class RedisController {
         return redisService.scan(connParam,keyScanParam,serializerParam);
     }
 
-    @PostMapping("/key/drop")
-    public Long dropKeys(@Validated ConnParam connParam,String [] keys, SerializerParam serializerParam) throws IOException {
-        return redisService.dropKeys(connParam,keys,serializerParam);
+    @PostMapping("/key/del")
+    public Long delKeys(@RequestBody DelKeysParam delKeysParam) throws IOException {
+        return redisService.delKeys(delKeysParam.getConnParam(),delKeysParam.getKeys(),delKeysParam.getSerializerParam());
     }
 
     /**
@@ -42,10 +38,17 @@ public class RedisController {
         return redisService.hscan(connParam,hashKeyScanParam,serializerParam);
     }
 
-//    @GetMapping("/key/length")
-//    public long keyLength(@Validated ConnParam connParam, @NotNull String key, SerializerParam serializerParam) throws IOException {
-//        return redisService.keyLength(connParam,key,serializerParam);
-//    }
+    /**
+     * hash 删除部分 key
+     * @param connParam
+     * @param key
+     * @param fields
+     * @return
+     */
+    @PostMapping("/key/hash/hdel")
+    public Long hdel(@RequestBody DelFieldsParam delFieldsParam) throws IOException {
+        return redisService.hdel(delFieldsParam);
+    }
 
     /**
      * 查询数据
@@ -58,8 +61,8 @@ public class RedisController {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    @GetMapping("/data")
-    public Object data(@Validated ValueParam valueParam) throws IOException, ClassNotFoundException {
+    @PostMapping("/data")
+    public Object data(@RequestBody ValueParam valueParam) throws IOException, ClassNotFoundException {
         return redisService.data(valueParam);
     }
 

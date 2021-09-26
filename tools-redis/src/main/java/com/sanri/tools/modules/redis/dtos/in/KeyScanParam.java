@@ -11,4 +11,8 @@ public class KeyScanParam extends BaseKeyScanParam{
 
     // 是否快速搜索,数据量不能保证每页数量,一般用于查找单个 key 的情况
     private boolean fast;
+
+    public boolean isFast() {
+        return fast && !"*".equals(pattern);
+    }
 }

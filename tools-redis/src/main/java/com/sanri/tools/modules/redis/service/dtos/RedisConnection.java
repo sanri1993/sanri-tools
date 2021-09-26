@@ -162,6 +162,18 @@ public class RedisConnection {
         }
     }
 
+    public Long hdel(byte [] key, byte[]... fields){
+        if (runMode == RedisRunMode.cluster){
+            return clusterNode.getJedisCluster().hdel(key,fields);
+        }
+        final Jedis jedis = masterNode.browerJedis();
+        try{
+            return jedis.hdel(key,fields);
+        }finally {
+            jedis.close();
+        }
+    }
+
 
     public long llen(byte [] key){
         if (runMode == RedisRunMode.cluster){

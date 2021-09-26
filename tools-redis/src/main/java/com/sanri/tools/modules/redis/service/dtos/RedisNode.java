@@ -40,6 +40,7 @@ public class RedisNode {
     private JedisPool jedisPool;
     private int index;
 
+    @JsonIgnore
     private RedisNode masterNode;
     private List<RedisNode> slaveNodes = new ArrayList<>();
 
