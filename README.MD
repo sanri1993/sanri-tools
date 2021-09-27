@@ -4,8 +4,6 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
 
 目前已经提供一些常用的工具,读者也可以开发自己的工具注册进来 ,欢迎 pr 或者提 issue 
 
-博客地址: https://www.cnblogs.com/sanri1993/
-
 ## Giteye chart
 [![Giteye chart](https://chart.giteye.net/gitee/sanri/sanri-tools-maven/RMY45L94.png)](https://giteye.net/chart/RMY45L94)
 
@@ -20,7 +18,7 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
 ## 已经有的工具,分模块展示
 1. tools-core
    * 类加载管理 上传类 zip , class, java 文件到类加载器
-   * 连接管理 创建 zookeeper, redis , database 等连接
+   * 连接管理 创建 zookeeper, redis, database, kafka 等连接
    * 文件管理 系统的临时文件和配置文件的管理,提供临时文件下载功能 
    * 插件管理 插件注册,提供给前端可访问的插件,做了一个监控指标,根据插件点击次数和最后访问时间来排序插件
    * 数据管理 可以给 class 随机生成数据,使用正则表达式生成数据,和爬网站数据功能
@@ -37,7 +35,7 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
    * 监控每一个节点使用的内存信息
    * 监控每一个节点的连接数,主机占用连接数信息,杀掉某个连接
    * 监控每一个节点的慢查询
-   * 注: 快速搜索功能不一定快速 , 做这个功能的目的是和精确数量来比较的,如果要精确数量,
+   * 注: 快速搜索(现改名单KEY)功能不一定快速, 做这个功能的目的是和精确数量来比较的,如果要精确数量,
    那我每次 scan 的 limit 参数必须较正, 一次搜索的数量就少了, 但如果不需要精确数量的话 , 我可以一次 limit 1000 条,可以加快搜索速度 , 
    这个适用于用户知道了很精确的 key ,对于一个有 100 万 key 的集群来说搜索会快很多
 5. tools-kafka
@@ -185,7 +183,7 @@ module 在前端是做为一级菜单,然后 name 是二级菜单 , 同一个模
 
 前端美图 [https://gitee.com/sanri/sanri-tools-maven/issues/I1UEJR](https://gitee.com/sanri/sanri-tools-maven/issues/I1UEJR)
 
-如果对这个前端不满意,可以使用接口进行自定义开发, 本项目只是提供数据服务
+如果对这个前端不满意,可以使用接口进行自定义开发, 本项目只是提供数据服务; 也可以自研模块 
 
 #### 界面美图
 
