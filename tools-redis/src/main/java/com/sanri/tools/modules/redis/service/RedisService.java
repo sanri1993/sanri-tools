@@ -250,6 +250,7 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
                 return valueSerializer.deserialize(bytes,classloader);
             case List:
                 if (valueParam.isAll()){
+                    rangeParam.setEnable(true);
                     rangeParam.setStop(redisConnection.llen(keyBytes));
                 }
                 final List<byte[]> lrange = redisConnection.lrange(keyBytes, rangeParam.getStart(), rangeParam.getStop());
@@ -293,12 +294,16 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
                 }
                 return new SetScanResult(members,setCursor);
             case ZSet:
-                if (rangeParam != null){
+                if (valueParam.isAll()){
+                    rangeParam.setEnable(true);
+                    rangeParam.setStop(redisConnection.zcard(keyBytes));
+                }
+                if (rangeParam != null && rangeParam.isEnable()){
                     Set<Tuple> tuples = redisConnection.zrangeWithScores(keyBytes, rangeParam.getStart(), rangeParam.getStop());
                     return mapperToCustomTuple(classloader, valueSerializer, tuples);
                 }
                 final ValueParam.ScoreRangeParam scoreRangeParam = valueParam.getScoreRangeParam();
-                if (scoreRangeParam != null){
+                if (scoreRangeParam != null && scoreRangeParam.isEnable()){
                     Set<Tuple> tuples = redisConnection.zrangeByScoreWithScores(keyBytes, scoreRangeParam.getMin(), scoreRangeParam.getMax());
                     return mapperToCustomTuple(classloader, valueSerializer, tuples);
                 }

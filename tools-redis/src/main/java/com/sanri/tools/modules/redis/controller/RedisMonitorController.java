@@ -14,6 +14,7 @@ import com.sanri.tools.modules.redis.service.RedisService;
 import com.sanri.tools.modules.redis.service.dtos.RedisConnection;
 import com.sanri.tools.modules.redis.service.dtos.RedisNode;
 import com.sanri.tools.modules.redis.service.dtos.RedisRunMode;
+import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.Jedis;
 import redis.clients.util.Slowlog;
 
@@ -113,12 +114,12 @@ public class RedisMonitorController {
      * @return
      * @throws IOException
      */
-    @PostMapping("/client/kill/{clientId}")
-    public String killClient(@Validated ConnParam connParam, @PathVariable("clientId") String clientId,String nodeId) throws IOException {
+    @PostMapping("/client/kill")
+    public String killClient(@Validated ConnParam connParam, HostAndPort client, String nodeId) throws IOException {
         final RedisConnection redisConnection = redisService.redisConnection(connParam);
         final RedisNode redisNodeById = redisConnection.findRedisNodeById(nodeId);
         if (redisNodeById != null) {
-            return redisConnection.killClient(redisNodeById,clientId);
+            return redisConnection.killClient(redisNodeById,client);
         }
         return null;
     }

@@ -211,6 +211,19 @@ public class RedisConnection {
         }
     }
 
+    public long zcard(byte[] keyBytes) {
+        if (runMode == RedisRunMode.cluster){
+            return clusterNode.getJedisCluster().zcard(keyBytes);
+        }
+        final Jedis jedis = masterNode.browerJedis();
+        try{
+            return jedis.zcard(keyBytes);
+        }finally {
+            jedis.close();
+        }
+
+    }
+
     public Set<Tuple> zrangeWithScores(byte [] key, long start, long stop){
         if (runMode == RedisRunMode.cluster){
             return clusterNode.getJedisCluster().zrangeWithScores(key,start,stop);
@@ -415,12 +428,14 @@ public class RedisConnection {
         }
     }
 
-    public String killClient(RedisNode redisNode, String clientId) {
+    public String killClient(RedisNode redisNode, HostAndPort hostAndPort) {
         final Jedis jedis = redisNode.browerJedis();
         try{
-            return jedis.clientKill(clientId);
+            return jedis.clientKill(hostAndPort.toString());
         }finally {
             jedis.close();
         }
     }
+
+
 }

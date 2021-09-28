@@ -19,12 +19,14 @@ public class ValueParam {
 
     @Data
     public static final class RangeParam {
+        private boolean enable;
         private long start;
         private long stop;
     }
 
     @Data
     public static final class ScoreRangeParam {
+        private boolean enable;
         private Double min;
         private Double max;
     }
