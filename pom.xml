@@ -21,6 +21,7 @@
         <module>tools-quartz</module>
         <module>tools-elasticsearch</module>
         <module>tools-rocketmq</module>
+        <module>tools-tcp</module>
     </modules>
 
     <parent>

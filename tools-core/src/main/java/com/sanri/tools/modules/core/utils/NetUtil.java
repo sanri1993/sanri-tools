@@ -1,6 +1,7 @@
 package com.sanri.tools.modules.core.utils;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -80,7 +81,10 @@ public class NetUtil {
                     inetAddress = inetAddresses.nextElement();
                     if (inetAddress != null && inetAddress instanceof Inet4Address) { // IPV4
                         ip = inetAddress.getHostAddress();
-                        ipList.add(ip);
+                        if (!(ip.contains("127.0.0.1") || ip.contains("0::0::0"))){
+                            ipList.add(ip);
+                        }
+
                     }
                 }
             }

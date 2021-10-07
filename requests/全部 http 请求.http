@@ -877,4 +877,26 @@ Content-Type: application/json
 
 {"query":{"bool":{"must":[],"must_not":[],"should":[{"match_all":{}}]}},"from":0,"size":50,"sort":[{"_score":{"order":"desc"}}],"aggs":{},"version":true};
 
-###
+### tcp client state
+GET {{baseUrl}}/tcp/client/state
+
+### tcp client close
+GET {{baseUrl}}/tcp/client/close
+
+### tcp client sendCommand
+GET {{baseUrl}}/tcp/client/sendCommand?ascii=abc
+
+### tcp client open
+GET {{baseUrl}}/tcp/client/open?host=localhost&port=10086
+
+### tcp server state
+GET {{baseUrl}}/tcp/server/state
+
+### tcp server close
+GET {{baseUrl}}/tcp/server/close
+
+### tcp server sendCommand
+GET {{baseUrl}}/tcp/server/sendCommand?ascii=abc
+
+### tcp server open
+GET {{baseUrl}}/tcp/server/open?port=10086
