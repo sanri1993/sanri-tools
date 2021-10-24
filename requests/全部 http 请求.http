@@ -877,4 +877,46 @@ Content-Type: application/json
 
 {"query":{"bool":{"must":[],"must_not":[],"should":[{"match_all":{}}]}},"from":0,"size":50,"sort":[{"_score":{"order":"desc"}}],"aggs":{},"version":true};
 
-###
+### 创建模块(git)
+POST {{baseUrl}}/connect/createModule
+Content-Type: application/x-www-form-urlencoded
+
+name=git
+
+### 创建连接(git 分组)
+POST {{baseUrl}}/connect/create/git
+Content-Type: application/json
+
+{
+  "connectIdParam": {
+    "module": "git",
+    "connName": "sanri"
+  }
+}
+
+### 拉取一个仓库到 sanri 分组
+GET {{baseUrl}}/git/cloneRepository?group=yuanian&url=https://192.168.48.50/ecs-platform/fssc_eam.git
+
+### 查看分组列表
+GET {{baseUrl}}/git/groups
+
+### 查看分组仓库列表
+GET {{baseUrl}}/git/repositorys?group=yuanian
+
+### 查看仓库分支列表
+GET {{baseUrl}}/git/branchs?group=yuanian&repository=fssc_eam
+
+### 切换到 master
+GET {{baseUrl}}/git/switchBranch?group=sanri&repository=sanri-tools-maven&branchName=master
+
+### 查看提交记录
+GET {{baseUrl}}/git/commits?group=yuanian&repository=fssc_eam
+
+### 查看变更文件
+GET {{baseUrl}}/git/changeFiles?group=sanri&repository=sanri-tools-maven&commitBeforeId=80a809cb934f19429742f8bd52fcf9790d128cb8&commitAfterId=4c70183e86b5fb8e927ada1123a934043a2eb52a
+
+### 创建补丁包
+GET {{baseUrl}}/git/createPatch?group=yuanian&repository=fssc_eam&commitBeforeId=ee96f706febb1ae01563461a87ee63e55a78bf38&commitAfterId=c7c1715e7b9700842bdf1b4c1621e9897d30330f
+
+### 查看模块信息
+GET {{baseUrl}}/git/modules?group=yuanian&repository=fssc_eam
