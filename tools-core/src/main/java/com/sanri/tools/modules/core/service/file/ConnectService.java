@@ -76,7 +76,7 @@ public class ConnectService {
      * @param connName
      * @return
      */
-    public String content( String module,String connName) throws IOException {
+    public String content(String module,String connName) throws IOException {
         return fileManager.readConfig(MODULE,module+"/"+connName);
     }
 
@@ -115,6 +115,8 @@ public class ConnectService {
                 return SimpleConnectParam.class;
             case "mongo":
                return MongoConnectParam.class;
+            case "git":
+                return GitParam.class;
         }
         return null;
     }
@@ -125,6 +127,10 @@ public class ConnectService {
     public AbstractConnectParam readConnParams(String module,String connName) throws IOException {
         String content = content(module, connName);
         Class<?> paramClass = moduleParamFactory(module);
+        if (content == null){
+            log.error("当前模块[{}],没有连接[{}]",module,connName);
+            throw new ToolException("当前模块" + module + " 没有连接" + connName);
+        }
 //        AbstractConnectParam abstractConnectParam = (AbstractConnectParam) JSON.parseObject(content, paramClass);
         Object readValue = objectMapper.readValue(content, paramClass);
         return (AbstractConnectParam) readValue;

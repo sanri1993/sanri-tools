@@ -22,6 +22,7 @@
         <module>tools-elasticsearch</module>
         <module>tools-rocketmq</module>
         <module>tools-tcp</module>
+        <module>tools-patchcode</module>
     </modules>
 
     <parent>

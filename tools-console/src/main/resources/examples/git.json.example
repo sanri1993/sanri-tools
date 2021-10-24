@@ -1,0 +1,11 @@
+{
+  "connectIdParam": {
+    "module": "git",
+    "connName": "sanri"
+  },
+  "authParam": {
+    "username": "root",
+    "password": "h123"
+  },
+  "sshKey":null
+}

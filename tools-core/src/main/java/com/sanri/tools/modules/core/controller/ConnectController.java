@@ -39,7 +39,7 @@ public class ConnectController {
      * @param name
      */
     @PostMapping("/createModule")
-    public void createModule(@NotNull @EnumStringValue({"database","kafka","redis","zookeeper","mongo"}) String name){
+    public void createModule(@NotNull @EnumStringValue({"database","kafka","redis","zookeeper","mongo","git"}) String name){
         connectService.createModule(name);
     }
 
