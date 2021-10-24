@@ -272,7 +272,7 @@ public class ServerService extends ChannelInboundHandlerAdapter  {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module("tcp").name("tcpclient").author("sanri").logo("null.png").desc("客户端调试工具").envs("default").build());
-        pluginManager.register(PluginDto.builder().module("tcp").name("tcpserver").author("sanri").logo("null.png").desc("服务端调试工具").envs("default").build());
+        pluginManager.register(PluginDto.builder().module("tcp").name("tcpclient").author("sanri").logo("tcp.jpg").desc("客户端调试工具").envs("default").build());
+        pluginManager.register(PluginDto.builder().module("tcp").name("tcpserver").author("sanri").logo("tcp.jpg").desc("服务端调试工具").envs("default").build());
     }
 }

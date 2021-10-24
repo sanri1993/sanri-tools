@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 @ServerEndpoint(value = "/compile/message/{id}")
 @Component
-public class WebSocketService {
+public class WebSocketCompileService {
     private static final Map<String,Session> sessionMap = new ConcurrentHashMap<>();
     /**
      * 连接建立成功调用的方法

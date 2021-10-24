@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
-import com.sanri.tools.modules.core.utils.RandomUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -68,7 +67,7 @@ public class GitService {
     private static final String module = "git";
 
     @Autowired
-    private WebSocketService webSocketService;
+    private WebSocketCompileService webSocketService;
 
     /**
      * @param group 表示连接管理中的连接名
@@ -531,6 +530,6 @@ public class GitService {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module(module).name("git").author("sanri").logo("null.png").desc("git代码管理").envs("default").build());
+        pluginManager.register(PluginDto.builder().module("docs").name("git").author("sanri").logo("git.jpg").desc("git代码管理").envs("default").build());
     }
 }

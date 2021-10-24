@@ -77,7 +77,15 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
     * 数据库列表,集合列表
     * 数据查询
 15. tools-elasticsearch
-    * 计划中,欢迎网友提供需求
+    * 数据监控
+    * 数据查询
+16. tools-tcp
+    * tcp-client 用于设备调试时,给服务端发送数据
+    * tcp-server 用于设备调试时,模拟服务端
+17. tools-patchcode
+    * 需要发代码增量包时, 可以进行编译,拉取最新包,并打增量包 
+    * 依赖于本地 maven 编译
+
     
 ### 每一个模块的使用文档
 对于一个工具来说,使用文档是比较重要的,使用文档放到每个模块的 resources 中, 然后通过 PluginManager 注册进来
