@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.Proxy;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -15,23 +16,26 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import com.sanri.tools.modules.core.dtos.param.AbstractConnectParam;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.*;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.eclipse.jgit.api.*;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.ObjectReader;
-import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.*;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.*;
+import org.eclipse.jgit.transport.http.HttpConnection;
+import org.eclipse.jgit.transport.http.HttpConnectionFactory;
+import org.eclipse.jgit.transport.http.JDKHttpConnectionFactory;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
+import org.eclipse.jgit.util.HttpSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
@@ -95,9 +99,10 @@ public class GitService {
         cloneCommand.call();
     }
 
-    public String[] groups(){
-        final File baseDir = fileManager.mkTmpDir(baseDirName);
-        return baseDir.list();
+    public List<String> groups(){
+//        final File baseDir = fileManager.mkTmpDir(baseDirName);
+//        return baseDir.list();
+        return connectService.names(module);
     }
 
     public String[] repositorys(String group){
@@ -200,7 +205,16 @@ public class GitService {
     public void compile(String websocketId,String group, String repository, String pomRelativePath) throws IOException, InterruptedException {
         final File repositoryDir = repositoryDir(group, repository);
         final File pomFile = repositoryDir.toPath().resolve(pomRelativePath).toFile();
-        final Process cleanCompile = RuntimeUtil.exec(pomFile.getParentFile(), "C:\\pathdev\\apache-maven-3.6.3\\bin\\mvn.cmd clean compile");
+
+        final GitParam gitParam = (GitParam) connectService.readConnParams(module, group);
+        final String mavenHome = gitParam.getMavenHome();
+        final String mavenConfigFilePath = gitParam.getMavenConfigFilePath();
+
+        final String cmd = System.getProperty("os.name").contains("Linux") ? mavenHome+"/bin/mvn" : mavenHome+"/bin/mvn.cmd";
+        final String [] cmdarray = new String[]{cmd,"-f",pomFile.getAbsolutePath(),"-s",mavenConfigFilePath,"-Dmaven.test.skip=true","clean","compile"};
+        log.info("执行的命令为:{}", StringUtils.join(cmdarray," "));
+        webSocketService.sendMessage(websocketId,StringUtils.join(cmdarray," "));
+        final Process cleanCompile = Runtime.getRuntime().exec(cmdarray);
         final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(cleanCompile.getInputStream(), StandardCharsets.UTF_8));
         String line = "";
         while ((line = bufferedReader.readLine()) != null){
@@ -503,7 +517,28 @@ public class GitService {
             if (authParam != null) {
                 final UsernamePasswordCredentialsProvider usernamePasswordCredentialsProvider = new UsernamePasswordCredentialsProvider(authParam.getUsername(), authParam.getPassword());
                 transportCommand.setCredentialsProvider(usernamePasswordCredentialsProvider);
+//                StoredConfig config = transportCommand.getRepository().getConfig();
+//                if (config != null) {
+//                    config.setBoolean("http", null, "sslVerify", false);
+//                }
             }
+        }
+    }
+
+    static {
+        HttpTransport.setConnectionFactory(new InsecureHttpConnectionFactory());
+    }
+    static class InsecureHttpConnectionFactory implements HttpConnectionFactory {
+        @Override
+        public HttpConnection create(URL url ) throws IOException {
+            return create( url, null );
+        }
+
+        @Override
+        public HttpConnection create( URL url, Proxy proxy ) throws IOException {
+            HttpConnection connection = new JDKHttpConnectionFactory().create( url, proxy );
+            HttpSupport.disableSslVerify( connection );
+            return connection;
         }
     }
 

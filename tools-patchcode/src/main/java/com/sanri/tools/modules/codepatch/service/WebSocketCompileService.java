@@ -1,14 +1,18 @@
 package com.sanri.tools.modules.codepatch.service;
 
+import com.alibaba.fastjson.JSON;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
+import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +24,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class WebSocketCompileService {
     private static final Map<String,Session> sessionMap = new ConcurrentHashMap<>();
+
+    private static GitService gitService;
+
     /**
      * 连接建立成功调用的方法
      */
@@ -36,6 +43,20 @@ public class WebSocketCompileService {
     public void onClose(@PathParam("id") String id) {
         log.info("关闭 session 连接:{}",id);
         sessionMap.remove(id);
+    }
+
+    @Data
+    public static final class CompileMessage{
+        private String group;
+        private String repository;
+        private String websocketId;
+        private String relativePath;
+    }
+
+    @OnMessage
+    public void onMessage(String message,Session session) throws IOException, InterruptedException {
+        final CompileMessage compileMessage = JSON.parseObject(message, CompileMessage.class);
+        gitService.compile(compileMessage.getWebsocketId(),compileMessage.getGroup(),compileMessage.getRepository(),compileMessage.getRelativePath());
     }
 
     @OnError
@@ -61,5 +82,10 @@ public class WebSocketCompileService {
             log.error("session 已经关闭, 发送消息失败:{}",message);
         }
 
+    }
+
+    @Autowired
+    public void setGitService(GitService gitService) {
+        WebSocketCompileService.gitService = gitService;
     }
 }

@@ -33,7 +33,7 @@ public class GitController {
     }
 
     @GetMapping("/groups")
-    public String[] groups(){
+    public List<String> groups(){
         return gitService.groups();
     }
 
@@ -64,10 +64,12 @@ public class GitController {
     public List<GroupRepository> groupRepositorys(){
         List<GroupRepository> groupRepositories = new ArrayList<>();
 
-        final String[] groups = gitService.groups();
+        final List<String> groups = gitService.groups();
         for (String group : groups) {
             final String[] repositorys = gitService.repositorys(group);
-            groupRepositories.add(new GroupRepository(group, Arrays.asList(repositorys)));
+            if (repositorys != null) {
+                groupRepositories.add(new GroupRepository(group, Arrays.asList(repositorys)));
+            }
         }
         return groupRepositories;
     }

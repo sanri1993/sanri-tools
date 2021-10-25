@@ -7,5 +7,7 @@
     "username": "root",
     "password": "h123"
   },
-  "sshKey":null
+  "sshKey":null,
+  "mavenHome": "d:/test",
+  "mavenConfigFilePath":"d:/test/conf/settings.xml"
 }

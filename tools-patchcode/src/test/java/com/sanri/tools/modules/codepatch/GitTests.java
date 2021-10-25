@@ -36,8 +36,8 @@ public class GitTests {
 
     @Test
     public void testGroups() throws GitAPIException, URISyntaxException, IOException {
-        final String[] groups = gitService.groups();
-        System.out.println(StringUtils.join(groups));
+//        final String[] groups = gitService.groups();
+//        System.out.println(StringUtils.join(groups));
     }
 
     @Test
