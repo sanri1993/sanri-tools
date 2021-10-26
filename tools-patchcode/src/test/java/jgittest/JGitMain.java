@@ -38,10 +38,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class JGitMain {
@@ -313,7 +310,7 @@ public class JGitMain {
         TreeWalk treeWalk = new TreeWalk(repository, repository.newObjectReader());
         treeWalk.reset(tree);
         while (treeWalk.next()){
-            System.out.println();
+            System.out.println(treeWalk);
         }
 
         revWalk.dispose();
@@ -336,6 +333,74 @@ public class JGitMain {
                 final String destination = fetchRefSpec.getDestination();
                 System.out.println(destination);
             }
+        }
+    }
+
+    /**
+     * 测试下一个提交
+     * @throws IOException
+     */
+    @Test
+    public void test12() throws IOException {
+        String dir = "D:\\test\\sanri-tools-maven";
+        final File repositoryDir = new File(dir);
+        Git git = Git.open(repositoryDir);
+
+        final Repository repository = git.getRepository();
+        final RevWalk revWalk = new RevWalk(repository);
+
+        final RevCommit revCommit = repository.parseCommit(repository.resolve("9b3a4953f9938f9f63c013cbd43e98327947cac8"));
+        revWalk.markStart(revCommit);
+        revWalk.next();
+        final RevCommit nextCommit = revWalk.next();
+        System.out.println(nextCommit.getShortMessage());
+    }
+
+    /**
+     * 测试初始化提交
+     */
+    @Test
+    public void test13() throws IOException {
+        String dir = "D:\\test\\sanri-tools-maven";
+        final File repositoryDir = new File(dir);
+        Git git = Git.open(repositoryDir);
+
+        final Repository repository = git.getRepository();
+        try(TreeWalk treeWalk = new TreeWalk(repository)){
+            final RevCommit revCommit = repository.parseCommit(repository.resolve("cfc6a1b4100416428d90ac83872f3a521af290e7"));
+            treeWalk.reset(revCommit.getTree().getId());
+            treeWalk.setRecursive(true);
+            while (treeWalk.next()){
+                final String path = treeWalk.getPathString();
+                final FileMode fileMode = treeWalk.getFileMode();
+                System.out.println(fileMode+" "+path);
+            }
+        }
+    }
+
+    /**
+     * 提交记录的差异, 多个提交 >2
+     */
+    @Test
+    public void test14() throws IOException {
+        String dir = "D:\\test\\sanri-tools-maven";
+        final File repositoryDir = new File(dir);
+        Git git = Git.open(repositoryDir);
+
+        List<String> commitIds = Arrays.asList("4c70183e86b5fb8e927ada1123a934043a2eb52a","80a809cb934f19429742f8bd52fcf9790d128cb8");
+
+        final Repository repository = git.getRepository();
+        final RevWalk revWalk = new RevWalk(repository);
+
+        List<List<DiffEntry>> allDiffEntries = new ArrayList<>();
+        try(TreeWalk treeWalk = new TreeWalk(repository)){
+            for (String commitId : commitIds) {
+                final RevCommit revCommit = repository.parseCommit(repository.resolve(commitId));
+                treeWalk.addTree(revCommit.getTree());
+            }
+
+            final List<DiffEntry> scan = DiffEntry.scan(treeWalk);
+            System.out.println(scan);
         }
     }
 

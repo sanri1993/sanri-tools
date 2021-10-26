@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
-import com.sanri.tools.modules.core.dtos.param.AbstractConnectParam;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -34,7 +33,7 @@ import org.eclipse.jgit.transport.*;
 import org.eclipse.jgit.transport.http.HttpConnection;
 import org.eclipse.jgit.transport.http.HttpConnectionFactory;
 import org.eclipse.jgit.transport.http.JDKHttpConnectionFactory;
-import org.eclipse.jgit.treewalk.CanonicalTreeParser;
+import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.util.HttpSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -294,21 +293,16 @@ public class GitService {
         final Git git = openGit(group, repositoryName);
 
         final Repository repository = git.getRepository();
-        final RevWalk revWalk = new RevWalk(repository);
-        final RevCommit revCommit = revWalk.parseCommit(repository.resolve(commitBeforeId));
-        final RevCommit nextCommit = revWalk.parseCommit(repository.resolve(commitAfterId));
-        try {
-            try (ObjectReader reader = repository.newObjectReader()) {
-                CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
-                oldTreeIter.reset(reader, nextCommit.getTree().getId());
-                CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
-                newTreeIter.reset(reader, revCommit.getTree().getId());
 
-                final List<DiffEntry> call = git.diff().setOldTree(oldTreeIter).setNewTree(newTreeIter).call();
-                return call;
-            }
-        }finally {
-            revWalk.dispose();
+        try (TreeWalk treeWalk = new TreeWalk(repository);final RevWalk revWalk = new RevWalk(repository);) {
+            final RevCommit revCommit = revWalk.parseCommit(repository.resolve(commitBeforeId));
+            final RevCommit nextCommit = revWalk.parseCommit(repository.resolve(commitAfterId));
+
+            treeWalk.addTree(revCommit.getTree());
+            treeWalk.addTree(nextCommit.getTree());
+            treeWalk.setRecursive(true);
+            final List<DiffEntry> scan = DiffEntry.scan(treeWalk);
+            return scan;
         }
     }
 
@@ -317,6 +311,53 @@ public class GitService {
         compilePath.put("src/main/java","classes");
         compilePath.put("src/main/resources","classes");
         compilePath.put("src/main/webapp","/");
+    }
+
+    /**
+     * 选中多个 commitId 时, 创建补丁包
+     * 从后往前, 找相临 commit 做文件差异, 然后后面的差异覆盖前面的差异
+     * @param group
+     * @param repository
+     * @param commitIds
+     */
+    public void createPatch(String group,String repositoryName,List<String> commitIds) throws IOException, GitAPIException {
+        final Git git = openGit(group, repositoryName);
+
+        final Repository repository = git.getRepository();
+
+        Collections.reverse(commitIds);
+
+        List<List<DiffEntry>> allDiffEntries = new ArrayList<>();
+        try(TreeWalk treeWalk = new TreeWalk(repository);){
+            for (String commitId : commitIds) {
+                final RevCommit revCommit = repository.parseCommit(repository.resolve(commitId));
+                try(RevWalk revWalk = new RevWalk(repository);){
+                    revWalk.markStart(revCommit);
+                    revWalk.next();
+                    final RevCommit nextCommit = revWalk.next();
+                    if (nextCommit != null){
+                        treeWalk.reset(revCommit.getTree());
+                        treeWalk.setRecursive(true);
+                        treeWalk.addTree(nextCommit.getTree());
+                        final List<DiffEntry> diffEntries = DiffEntry.scan(treeWalk);
+                        allDiffEntries.add(diffEntries);
+                    }else{
+                        treeWalk.reset(revCommit.getTree());
+                        treeWalk.setRecursive(true);
+                        List<DiffEntry> diffEntries = new ArrayList<>();
+                        while (treeWalk.next()){
+                            final String pathString = treeWalk.getPathString();
+                            final DiffEntryAdd diffEntryAdd = new DiffEntryAdd(pathString);
+                            diffEntries.add(diffEntryAdd);
+                        }
+                        allDiffEntries.add(diffEntries);
+                    }
+                }
+            }
+        }
+
+
+
     }
 
     /**
