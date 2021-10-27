@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import com.sanri.tools.modules.core.utils.NetUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -202,6 +203,9 @@ public class GitService {
      * @return 执行编译 mvn 退出码
      */
     public void compile(String websocketId,String group, String repository, String pomRelativePath) throws IOException, InterruptedException {
+        // 多人操作时, 编译需要加锁
+        lock(group,repository);
+
         final File repositoryDir = repositoryDir(group, repository);
         final File pomFile = repositoryDir.toPath().resolve(pomRelativePath).toFile();
 
@@ -226,6 +230,9 @@ public class GitService {
     }
 
     public void pull(String group, String repositoryName) throws IOException, GitAPIException, URISyntaxException {
+        // 多人操作时, 拉取需要加锁
+        lock(group,repositoryName);
+
         Git git = openGit(group, repositoryName);
         final PullCommand pullCommand = git.pull();
         final Collection<Ref> call = git.lsRemote().call();
@@ -254,6 +261,9 @@ public class GitService {
     }
 
     public String switchBranch(String group, String repositoryName, String branchName) throws IOException, GitAPIException, URISyntaxException {
+        // 多人操作时, 切换分支需要加锁
+        lock(group,repositoryName);
+
         final Git git = openGit(group, repositoryName);
         //如果分支在本地已存在，直接checkout即可。
         if (this.branchNameExist(git, branchName)) {
@@ -612,6 +622,42 @@ public class GitService {
     static {
         HttpTransport.setConnectionFactory(new InsecureHttpConnectionFactory());
     }
+
+    public void lock(String group, String repository) throws IOException {
+        final File baseDir = fileManager.mkTmpDir(baseDirName);
+        final File lockFile = new File(baseDir,group + repository + "lock");
+        final String remoteAddr = NetUtil.remoteAddr();
+        if (lockFile.exists()){
+            final String ip = FileUtils.readFileToString(lockFile);
+            if (StringUtils.isNotBlank(remoteAddr) && remoteAddr.equals(ip)){
+//                log.info("重入锁ip : {}",ip);
+                // 可重入
+                return ;
+            }
+            throw new IllegalStateException("当前仓库 "+group+" - "+repository+" 已经被" + ip + " 锁定");
+        }
+        // 锁定仓库
+        FileUtils.writeStringToFile(lockFile,remoteAddr);
+    }
+
+    public void unLock(String group, String repository,boolean force) throws IOException {
+        final File baseDir = fileManager.mkTmpDir(baseDirName);
+        final File lockFile = new File(baseDir,group + repository + "lock");
+        if (!lockFile.exists()){
+            // 无需解锁
+            return ;
+        }
+        final String remoteAddr = NetUtil.remoteAddr();
+        final String ip = FileUtils.readFileToString(lockFile);
+        if (!ip.equals(remoteAddr) && !force){
+            throw new IllegalStateException("无法解锁,联系:"+ip);
+        }
+        final boolean delete = lockFile.delete();
+        if (!delete){
+            throw new ToolException("解锁失败, 联系管理者");
+        }
+    }
+
     static class InsecureHttpConnectionFactory implements HttpConnectionFactory {
         @Override
         public HttpConnection create(URL url ) throws IOException {

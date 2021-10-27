@@ -126,4 +126,14 @@ public class GitController {
 
         return path.toString();
     }
+
+    @GetMapping("/lock")
+    public void lock(String group, String repository) throws IOException {
+        gitService.lock(group,repository);
+    }
+
+    @GetMapping("/unLock")
+    public void unLock(String group, String repository,String force) throws IOException {
+        gitService.unLock(group,repository,Boolean.parseBoolean(force));
+    }
 }
