@@ -289,23 +289,6 @@ public class GitService {
         return commits;
     }
 
-    public List<DiffEntry> loadChangeFiles(String group,String repositoryName,String commitBeforeId,String commitAfterId) throws IOException, GitAPIException {
-        final Git git = openGit(group, repositoryName);
-
-        final Repository repository = git.getRepository();
-
-        try (TreeWalk treeWalk = new TreeWalk(repository);final RevWalk revWalk = new RevWalk(repository);) {
-            final RevCommit revCommit = revWalk.parseCommit(repository.resolve(commitBeforeId));
-            final RevCommit nextCommit = revWalk.parseCommit(repository.resolve(commitAfterId));
-
-            treeWalk.addTree(revCommit.getTree());
-            treeWalk.addTree(nextCommit.getTree());
-            treeWalk.setRecursive(true);
-            final List<DiffEntry> scan = DiffEntry.scan(treeWalk);
-            return scan;
-        }
-    }
-
     Map<String,String> compilePath = new HashMap<>();
     {
         compilePath.put("src/main/java","classes");
@@ -316,11 +299,12 @@ public class GitService {
     /**
      * 选中多个 commitId 时, 创建补丁包
      * 从后往前, 找相临 commit 做文件差异, 然后后面的差异覆盖前面的差异
-     * @param group
      * @param repository
+     * @param group
      * @param commitIds
+     * @return
      */
-    public void createPatch(String group,String repositoryName,List<String> commitIds) throws IOException, GitAPIException {
+    public ChangeFiles createPatch(String group, String repositoryName, List<String> commitIds) throws IOException, GitAPIException {
         final Git git = openGit(group, repositoryName);
 
         final Repository repository = git.getRepository();
@@ -356,8 +340,33 @@ public class GitService {
             }
         }
 
+        // 得到最后的记录变更
+        Map<String,DiffEntry> diffEntryMap = new LinkedHashMap();
+        for (List<DiffEntry> diffEntries : allDiffEntries) {
+            for (DiffEntry diffEntry : diffEntries) {
+                final DiffEntry.ChangeType changeType = diffEntry.getChangeType();
+                switch (changeType){
+                    case DELETE:
+                        final String oldPath = diffEntry.getOldPath();
+                        diffEntryMap.put(oldPath,diffEntry);
+                        break;
+                    case MODIFY:
+                    case ADD:
+                    case COPY:
+                    case RENAME:
+                        final String newPath = diffEntry.getNewPath();
+                        diffEntryMap.put(newPath,diffEntry);
+                }
+            }
+        }
 
+        final List<DiffEntry> diffEntries = new ArrayList<>(diffEntryMap.values());
 
+        final File repositoryDir = repositoryDir(group, repositoryName);
+
+        final ChangeFiles changeFiles = loadChangeFiles(repositoryDir,diffEntries);
+        changeFiles.setCommitIds(commitIds);
+        return changeFiles;
     }
 
     /**
@@ -368,10 +377,27 @@ public class GitService {
      * @param commitAfterId
      * @return
      */
-    public File createPatch(String group, String repositoryName, String commitBeforeId, String commitAfterId) throws IOException, GitAPIException {
-        final List<DiffEntry> diffEntries = loadChangeFiles(group, repositoryName, commitBeforeId, commitAfterId);
-        final File repositoryDir = repositoryDir(group, repositoryName);
+    public ChangeFiles createPatch(String group, String repositoryName, String commitBeforeId, String commitAfterId) throws IOException, GitAPIException {
+        final Git git = openGit(group, repositoryName);
+        final Repository repository = git.getRepository();
 
+        try (TreeWalk treeWalk = new TreeWalk(repository);final RevWalk revWalk = new RevWalk(repository);) {
+            final RevCommit revCommit = revWalk.parseCommit(repository.resolve(commitBeforeId));
+            final RevCommit nextCommit = revWalk.parseCommit(repository.resolve(commitAfterId));
+
+            treeWalk.addTree(revCommit.getTree());
+            treeWalk.addTree(nextCommit.getTree());
+            treeWalk.setRecursive(true);
+            final List<DiffEntry> scan = DiffEntry.scan(treeWalk);
+            final File repositoryDir = repositoryDir(group, repositoryName);
+            final ChangeFiles changeFiles = loadChangeFiles(repositoryDir, scan);
+
+            changeFiles.setCommitIds(Arrays.asList(commitBeforeId,commitAfterId));
+            return changeFiles;
+        }
+    }
+
+    private ChangeFiles loadChangeFiles(File repositoryDir,List<DiffEntry> diffEntries){
         List<FileInfo> modifyFileInfos = new ArrayList<>();
         List<FileInfo> deleteFileInfos = new ArrayList<>();
         for (DiffEntry diffEntry : diffEntries) {
@@ -402,7 +428,7 @@ public class GitService {
                             while (iterator.hasNext()){
                                 final File file = iterator.next();
                                 if (!(baseName+".class").equals(file.getName()) && !file.getName().contains("$")){
-                                    // 去掉找到的错误文件
+                                    // 去掉找到的错误文件(名称同前缀的)
                                     iterator.remove();
                                 }
                             }
@@ -436,6 +462,21 @@ public class GitService {
             }
         }
 
+        return new ChangeFiles(modifyFileInfos,deleteFileInfos);
+    }
+
+    /**
+     * 从变更记录中找到所有编译后的文件
+     * @param group
+     * @param repositoryName
+     * @param diffEntries
+     * @return
+     * @throws IOException
+     */
+    public File findCompileFiles(String group, String repositoryName, ChangeFiles changeFiles) throws IOException {
+        final List<FileInfo> modifyFileInfos = changeFiles.getModifyFileInfos();
+        final List<FileInfo> deleteFileInfos = changeFiles.getDeleteFileInfos();
+
         // 创建压缩包
         final File patch = fileManager.mkTmpDir("gitpatch/" + System.currentTimeMillis());
         patch.mkdirs();
@@ -443,8 +484,11 @@ public class GitService {
         // 写入总计信息
         final File allChange = new File(patch, "allchange.txt");
         List<String> allChangeText = new ArrayList<>();
-        for (DiffEntry diffEntry : diffEntries) {
-            allChangeText.add(diffEntry.toString());
+        for (FileInfo fileInfo : modifyFileInfos) {
+            allChangeText.add(fileInfo.getDiffEntry().toString());
+        }
+        for (FileInfo deleteFileInfo : deleteFileInfos) {
+            allChangeText.add(deleteFileInfo.getDiffEntry().toString());
         }
         FileUtils.writeLines(allChange,allChangeText);
 
@@ -493,7 +537,6 @@ public class GitService {
         final File zip = ZipUtil.zip(patch);
 
         FileUtils.deleteDirectory(patch);
-
         return zip;
     }
 

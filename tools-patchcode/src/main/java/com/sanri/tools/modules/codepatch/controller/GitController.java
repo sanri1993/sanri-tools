@@ -7,9 +7,7 @@ import com.sanri.tools.modules.core.service.file.FileManager;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -96,15 +94,35 @@ public class GitController {
         return gitService.listCommits(group,repository,1000);
     }
 
+    @PostMapping("/v2/changeFiles")
+    public ChangeFiles changeFilesV2(@RequestBody BatchCommitIdPatch batchCommitIdPatch) throws IOException, GitAPIException {
+        final String group = batchCommitIdPatch.getGroup();
+        final String repository = batchCommitIdPatch.getRepository();
+        return gitService.createPatch(group,repository,batchCommitIdPatch.getCommitIds());
+    }
+
     @GetMapping("/changeFiles")
-    public List<DiffEntry> changeFiles(String group, String repository,String commitBeforeId,String commitAfterId) throws IOException, GitAPIException {
-        return gitService.loadChangeFiles(group, repository, commitBeforeId, commitAfterId);
+    public ChangeFiles changeFiles(String group, String repository,String commitBeforeId,String commitAfterId) throws IOException, GitAPIException {
+        final ChangeFiles changeFiles = gitService.createPatch(group, repository, commitBeforeId, commitAfterId);
+        return changeFiles;
     }
 
     @GetMapping("/createPatch")
     public String createPatch(String group, String repository,String commitBeforeId,String commitAfterId) throws IOException, GitAPIException {
-        final File patch = gitService.createPatch(group, repository, commitBeforeId, commitAfterId);
-        final Path path = fileManager.relativePath(patch.toPath());
+        final ChangeFiles changeFiles = gitService.createPatch(group, repository, commitBeforeId, commitAfterId);
+        final File compileFile = gitService.findCompileFiles(group, repository, changeFiles);
+        final Path path = fileManager.relativePath(compileFile.toPath());
+
+        return path.toString();
+    }
+
+    @PostMapping("/v2/createPatch")
+    public String createPatchV2(@RequestBody BatchCommitIdPatch batchCommitIdPatch) throws IOException, GitAPIException {
+        final String group = batchCommitIdPatch.getGroup();
+        final String repository = batchCommitIdPatch.getRepository();
+        final ChangeFiles changeFiles = gitService.createPatch(group, repository, batchCommitIdPatch.getCommitIds());
+        final File compileFile = gitService.findCompileFiles(group, repository, changeFiles);
+        final Path path = fileManager.relativePath(compileFile.toPath());
 
         return path.toString();
     }

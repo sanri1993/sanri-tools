@@ -72,18 +72,18 @@ public class GitTests {
         gitService.pull(group,repository);
     }
 
-    @Test
-    public void testChangeFiles() throws IOException, GitAPIException {
-        final List<DiffEntry> diffEntries = gitService.loadChangeFiles(group, repository, "25cfde622100fce5fdd58ed51a084b6a00370db6", "c20a02d06ded8c36c3d23d130f154ddca63ae8f1");
-        for (DiffEntry diffEntry : diffEntries) {
-            System.out.println(diffEntry);
-        }
-    }
+//    @Test
+//    public void testChangeFiles() throws IOException, GitAPIException {
+//        final List<DiffEntry> diffEntries = gitService.loadChangeFiles(group, repository, "25cfde622100fce5fdd58ed51a084b6a00370db6", "c20a02d06ded8c36c3d23d130f154ddca63ae8f1");
+//        for (DiffEntry diffEntry : diffEntries) {
+//            System.out.println(diffEntry);
+//        }
+//    }
 
     @Test
     public void testCreatePatch() throws IOException, GitAPIException {
-        final File file = gitService.createPatch(group, repository, "25cfde622100fce5fdd58ed51a084b6a00370db6", "c20a02d06ded8c36c3d23d130f154ddca63ae8f1");
-        System.out.println(file);
+//        final File file = gitService.createPatch(group, repository, "25cfde622100fce5fdd58ed51a084b6a00370db6", "c20a02d06ded8c36c3d23d130f154ddca63ae8f1");
+//        System.out.println(file);
     }
 
     @Test
