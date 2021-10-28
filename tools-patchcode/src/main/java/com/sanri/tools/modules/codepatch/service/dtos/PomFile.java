@@ -1,10 +1,12 @@
 package com.sanri.tools.modules.codepatch.service.dtos;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
+import java.util.Date;
 
 @Data
 public class PomFile implements Comparable<PomFile>{
@@ -13,6 +15,9 @@ public class PomFile implements Comparable<PomFile>{
 
     private String relativePath;
     private String moduleName;
+    // 模块上次编译时间
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date lastCompileTime;
 
     public PomFile() {
     }

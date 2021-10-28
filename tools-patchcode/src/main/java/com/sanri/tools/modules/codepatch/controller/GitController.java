@@ -42,7 +42,7 @@ public class GitController {
     }
 
     @GetMapping("/modules")
-    public List<Module> modules(String group, String repository){
+    public List<Module> modules(String group, String repository) throws IOException {
         return gitService.modules(group, repository);
     }
 
@@ -136,5 +136,10 @@ public class GitController {
     @GetMapping("/unLock")
     public void unLock(String group, String repository,String force) throws IOException {
         gitService.unLock(group,repository,Boolean.parseBoolean(force));
+    }
+
+    @GetMapping("/newCompileTime")
+    public long newCompileTime(String group, String repository) throws IOException {
+        return gitService.newCompileTime(group, repository);
     }
 }

@@ -15,20 +15,21 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
 
-import com.sanri.tools.modules.core.utils.NetUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.*;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.eclipse.jgit.api.*;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.lib.*;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.*;
@@ -39,8 +40,11 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.util.HttpSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
 import org.springframework.util.ReflectionUtils;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.jcraft.jsch.Session;
 import com.sanri.tools.modules.codepatch.service.dtos.*;
 import com.sanri.tools.modules.core.dtos.PluginDto;
@@ -50,6 +54,7 @@ import com.sanri.tools.modules.core.exception.ToolException;
 import com.sanri.tools.modules.core.service.file.ConnectService;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
+import com.sanri.tools.modules.core.utils.NetUtil;
 import com.sanri.tools.modules.core.utils.URLUtil;
 import com.sanri.tools.modules.core.utils.ZipUtil;
 
@@ -131,13 +136,48 @@ public class GitService {
     }
 
     /**
+     * 获取仓库最新的编译时间
+     * @param group
+     * @param repository
+     * @return
+     */
+    public long newCompileTime(String group,String repository) throws IOException {
+        final File baseDir = fileManager.mkTmpDir(baseDirName);
+        final File infoFile = new File(baseDir,group + repository + "info");
+        if (!infoFile.exists()){
+            return -1;
+        }
+        final JSONObject jsonObject = JSON.parseObject(FileUtils.readFileToString(infoFile));
+        final Iterator<String> iterator = jsonObject.keySet().iterator();
+        long maxTime = -1;
+        while (iterator.hasNext()){
+            final String key = iterator.next();
+            if (key.startsWith("lastCompileSuccessTime_")){
+                final Long aLong = jsonObject.getLong(key);
+                if (aLong > maxTime ){
+                    maxTime = aLong;
+                }
+            }
+        }
+        return maxTime;
+    }
+
+    /**
      * 获取模块信息
      * @param group
      * @param repository
      * @return
      */
-    public List<Module> modules(String group,String repository){
+    public List<Module> modules(String group,String repository) throws IOException {
         final List<PomFile> pomFiles = loadAllPomFile(group, repository);
+        for (PomFile pomFile : pomFiles) {
+            final String relativePath = pomFile.getRelativePath();
+            final String pathMd5 = DigestUtils.md5DigestAsHex(relativePath.getBytes());
+            final Long property = (Long) configRepositoryProperty(group, repository, "lastCompileSuccessTime_" + pathMd5, null);
+            if(property != null){
+                pomFile.setLastCompileTime(new Date(property));
+            }
+        }
         if (CollectionUtils.isNotEmpty(pomFiles)) {
             Collections.sort(pomFiles);
 
@@ -163,6 +203,16 @@ public class GitService {
                     final boolean isChildren = curPath.startsWith(path) && curPath != path && Math.abs(curPath.getNameCount() - path.getNameCount()) < 2;
                     if (isChildren){
                         findChildModule.getChildrens().add(module);
+
+                        // 计算上次编译时间, 子模块如果旧于父模块编译时间,则继承父模块
+                        final Date parentLastCompileTime = findChildModule.getLastCompileTime();
+                        final Date childLastCompileTime = module.getLastCompileTime();
+                        if (parentLastCompileTime != null && childLastCompileTime != null && childLastCompileTime.before(parentLastCompileTime)){
+                            module.setLastCompileTime(parentLastCompileTime);
+                        }else if (childLastCompileTime == null && parentLastCompileTime != null){
+                            module.setLastCompileTime(parentLastCompileTime);
+                        }
+
                     }
                 }
             }
@@ -231,8 +281,41 @@ public class GitService {
             webSocketService.sendMessage(websocketId,line);
         }
         final int waitFor = cleanCompile.waitFor();
+        if (waitFor == 0){
+            // 记录上次编译成功时间
+            final String pathMd5 = DigestUtils.md5DigestAsHex(pomRelativePath.getBytes());
+            configRepositoryProperty(group,repository,"lastCompileSuccessTime_" + pathMd5,System.currentTimeMillis());
+        }
         webSocketService.sendMessage(websocketId,waitFor+"");
         RuntimeUtil.destroy(cleanCompile);
+    }
+
+    /**
+     * 添加或者获取仓库属性
+     * @param group
+     * @param repository
+     * @param key
+     * @param value
+     * @throws IOException
+     */
+    public Object configRepositoryProperty(String group, String repository, String key, Object value) throws IOException {
+        final File baseDir = fileManager.mkTmpDir(baseDirName);
+        final File infoFile = new File(baseDir,group + repository + "info");
+        JSONObject jsonObject = null;
+        if (!infoFile.exists()){
+            jsonObject = new JSONObject();
+        }else{
+            final String existJson = FileUtils.readFileToString(infoFile);
+            jsonObject = JSON.parseObject(existJson);
+            if (value == null){
+                return jsonObject.get(key);
+            }
+        }
+
+        jsonObject.put(key,value);
+        FileUtils.writeStringToFile(infoFile,jsonObject.toJSONString());
+
+        return jsonObject.get(key);
     }
 
     public void pull(String group, String repositoryName) throws IOException, GitAPIException, URISyntaxException {
