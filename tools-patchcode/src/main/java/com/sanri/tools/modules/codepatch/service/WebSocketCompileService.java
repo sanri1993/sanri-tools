@@ -58,7 +58,11 @@ public class WebSocketCompileService {
     public void onMessage(String message,Session session) throws IOException, InterruptedException {
         final CompileMessage compileMessage = JSON.parseObject(message, CompileMessage.class);
         final InetSocketAddress remoteAddress = WebsocketUtil.getRemoteAddress(session);
-        gitService.compile(remoteAddress.getHostName(),compileMessage.getWebsocketId(),compileMessage.getGroup(),compileMessage.getRepository(),compileMessage.getRelativePath());
+        try {
+            gitService.compile(remoteAddress.getHostName(), compileMessage.getWebsocketId(), compileMessage.getGroup(), compileMessage.getRepository(), compileMessage.getRelativePath());
+        }catch (Exception e){
+            sendMessage(compileMessage.websocketId, e.getMessage());
+        }
     }
 
     @OnError
