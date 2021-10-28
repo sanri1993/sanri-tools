@@ -254,14 +254,6 @@ public class GitService {
      * @return 执行编译 mvn 退出码
      */
     public void compile(String ip,String websocketId,String group, String repository, String pomRelativePath) throws IOException, InterruptedException {
-        // 多人操作时, 编译需要加锁
-        try {
-            lock(ip, group, repository);
-        }catch (IllegalStateException e){
-            webSocketService.sendMessage(websocketId,e.getMessage());
-            return ;
-        }
-
         final File repositoryDir = repositoryDir(group, repository);
         final File pomFile = repositoryDir.toPath().resolve(pomRelativePath).toFile();
 
