@@ -9,6 +9,7 @@ import org.eclipse.jgit.diff.DiffEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -45,10 +46,10 @@ public class GitController {
         return gitService.modules(group, repository);
     }
 
-    @GetMapping("/compile")
-    public void compile(String websocketId,String group, String repository, String pomRelativePath) throws IOException, InterruptedException {
-        gitService.compile(websocketId,group,repository,pomRelativePath);
-    }
+//    @GetMapping("/compile")
+//    public void compile(HttpServletRequest request,String websocketId,String group, String repository, String pomRelativePath) throws IOException, InterruptedException {
+//        gitService.compile(request.getRemoteAddr(),websocketId,group,repository,pomRelativePath);
+//    }
 
     @GetMapping("/repositorys")
     public String [] repositorys(String group){
@@ -128,8 +129,8 @@ public class GitController {
     }
 
     @GetMapping("/lock")
-    public void lock(String group, String repository) throws IOException {
-        gitService.lock(group,repository);
+    public void lock(HttpServletRequest request,String group, String repository) throws IOException {
+        gitService.lock(request.getRemoteAddr(),group,repository);
     }
 
     @GetMapping("/unLock")

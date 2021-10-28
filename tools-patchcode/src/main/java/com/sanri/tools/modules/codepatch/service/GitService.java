@@ -15,6 +15,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 
 import com.sanri.tools.modules.core.utils.NetUtil;
 import org.apache.commons.collections.CollectionUtils;
@@ -202,9 +203,14 @@ public class GitService {
      * @param pomRelativePath
      * @return 执行编译 mvn 退出码
      */
-    public void compile(String websocketId,String group, String repository, String pomRelativePath) throws IOException, InterruptedException {
+    public void compile(String ip,String websocketId,String group, String repository, String pomRelativePath) throws IOException, InterruptedException {
         // 多人操作时, 编译需要加锁
-        lock(group,repository);
+        try {
+            lock(ip, group, repository);
+        }catch (IllegalStateException e){
+            webSocketService.sendMessage(websocketId,e.getMessage());
+            return ;
+        }
 
         final File repositoryDir = repositoryDir(group, repository);
         final File pomFile = repositoryDir.toPath().resolve(pomRelativePath).toFile();
@@ -231,11 +237,10 @@ public class GitService {
 
     public void pull(String group, String repositoryName) throws IOException, GitAPIException, URISyntaxException {
         // 多人操作时, 拉取需要加锁
-        lock(group,repositoryName);
+        lock(NetUtil.request().getRemoteAddr(),group,repositoryName);
 
         Git git = openGit(group, repositoryName);
         final PullCommand pullCommand = git.pull();
-        final Collection<Ref> call = git.lsRemote().call();
         addAuth(group,pullCommand);
         final PullResult pullResult = pullCommand.call();
         log.info("拉取数据结果",pullResult);
@@ -262,7 +267,7 @@ public class GitService {
 
     public String switchBranch(String group, String repositoryName, String branchName) throws IOException, GitAPIException, URISyntaxException {
         // 多人操作时, 切换分支需要加锁
-        lock(group,repositoryName);
+        lock(NetUtil.request().getRemoteAddr(),group,repositoryName);
 
         final Git git = openGit(group, repositoryName);
         //如果分支在本地已存在，直接checkout即可。
@@ -623,13 +628,13 @@ public class GitService {
         HttpTransport.setConnectionFactory(new InsecureHttpConnectionFactory());
     }
 
-    public void lock(String group, String repository) throws IOException {
+    public void lock(String remoteAddr,String group, String repository) throws IOException {
         final File baseDir = fileManager.mkTmpDir(baseDirName);
         final File lockFile = new File(baseDir,group + repository + "lock");
-        final String remoteAddr = NetUtil.remoteAddr();
+//        final String remoteAddr = NetUtil.remoteAddr();
         if (lockFile.exists()){
             final String ip = FileUtils.readFileToString(lockFile);
-            if (StringUtils.isNotBlank(remoteAddr) && remoteAddr.equals(ip)){
+            if (StringUtils.isBlank(remoteAddr) || remoteAddr.equals(ip)){
 //                log.info("重入锁ip : {}",ip);
                 // 可重入
                 return ;

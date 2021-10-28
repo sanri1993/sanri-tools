@@ -129,6 +129,9 @@ public class NetUtil {
         return unique;
     }
 
+    public static HttpServletRequest request(){
+        return ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
+    }
     /**
      * 远程地址
      * @return

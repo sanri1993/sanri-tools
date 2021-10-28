@@ -13,6 +13,7 @@ import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +57,8 @@ public class WebSocketCompileService {
     @OnMessage
     public void onMessage(String message,Session session) throws IOException, InterruptedException {
         final CompileMessage compileMessage = JSON.parseObject(message, CompileMessage.class);
-        gitService.compile(compileMessage.getWebsocketId(),compileMessage.getGroup(),compileMessage.getRepository(),compileMessage.getRelativePath());
+        final InetSocketAddress remoteAddress = WebsocketUtil.getRemoteAddress(session);
+        gitService.compile(remoteAddress.toString(),compileMessage.getWebsocketId(),compileMessage.getGroup(),compileMessage.getRepository(),compileMessage.getRelativePath());
     }
 
     @OnError
