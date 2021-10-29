@@ -265,7 +265,7 @@ public class GitService {
         final String [] cmdarray = new String[]{cmd,"-f",pomFile.getAbsolutePath(),"-s",mavenConfigFilePath,"-Dmaven.test.skip=true","clean","compile"};
         log.info("执行的命令为:{}", StringUtils.join(cmdarray," "));
         webSocketService.sendMessage(websocketId,StringUtils.join(cmdarray," "));
-        final Process cleanCompile = Runtime.getRuntime().exec(cmdarray);
+        final Process cleanCompile = Runtime.getRuntime().exec(cmdarray,null,new File(System.getProperty("user.home")));
         final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(cleanCompile.getInputStream(), StandardCharsets.UTF_8));
         String line = "";
         while ((line = bufferedReader.readLine()) != null){
