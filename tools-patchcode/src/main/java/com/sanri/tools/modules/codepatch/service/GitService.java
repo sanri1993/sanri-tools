@@ -712,7 +712,7 @@ public class GitService {
 //        final String remoteAddr = NetUtil.remoteAddr();
         if (lockFile.exists()){
             final String ip = FileUtils.readFileToString(lockFile);
-            if (StringUtils.isBlank(remoteAddr) || remoteAddr.equals(ip)){
+            if (StringUtils.isBlank(ip) || StringUtils.isBlank(remoteAddr) || remoteAddr.equals(ip)){
 //                log.info("重入锁ip : {}",ip);
                 // 可重入
                 return ;
