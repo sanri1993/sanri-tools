@@ -271,7 +271,7 @@ public class GitService {
         final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(cleanCompile.getInputStream(), StandardCharsets.UTF_8));
         String line = "";
         while ((line = bufferedReader.readLine()) != null){
-            System.out.println(line);
+//            System.out.println(line);
             webSocketService.sendMessage(websocketId,line);
         }
         final int waitFor = cleanCompile.waitFor();
