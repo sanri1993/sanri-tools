@@ -150,9 +150,10 @@ public class GitService {
         final JSONObject jsonObject = JSON.parseObject(FileUtils.readFileToString(infoFile));
         final Iterator<String> iterator = jsonObject.keySet().iterator();
         long maxTime = -1;
+        final String currentBranch = currentBranch(group, repository);
         while (iterator.hasNext()){
             final String key = iterator.next();
-            if (key.startsWith("lastCompileSuccessTime_")){
+            if (key.startsWith("lastCompileSuccessTime_"+currentBranch+"_")){
                 final Long aLong = jsonObject.getLong(key);
                 if (aLong > maxTime ){
                     maxTime = aLong;
@@ -173,7 +174,8 @@ public class GitService {
         for (PomFile pomFile : pomFiles) {
             final String relativePath = pomFile.getRelativePath();
             final String pathMd5 = DigestUtils.md5DigestAsHex(relativePath.getBytes());
-            final Long property = (Long) configRepositoryProperty(group, repository, "lastCompileSuccessTime_" + pathMd5, null);
+            final String currentBranch = currentBranch(group, repository);
+            final Long property = (Long) configRepositoryProperty(group, repository, "lastCompileSuccessTime_"+currentBranch+"_" + pathMd5, null);
             if(property != null){
                 pomFile.setLastCompileTime(new Date(property));
             }
@@ -276,7 +278,8 @@ public class GitService {
         if (waitFor == 0){
             // 记录上次编译成功时间
             final String pathMd5 = DigestUtils.md5DigestAsHex(pomRelativePath.getBytes());
-            configRepositoryProperty(group,repository,"lastCompileSuccessTime_" + pathMd5,System.currentTimeMillis());
+            final String currentBranch = currentBranch(group, repository);
+            configRepositoryProperty(group,repository,"lastCompileSuccessTime_"+currentBranch+"_"+ pathMd5,System.currentTimeMillis());
         }
         webSocketService.sendMessage(websocketId,waitFor+"");
         RuntimeUtil.destroy(cleanCompile);
