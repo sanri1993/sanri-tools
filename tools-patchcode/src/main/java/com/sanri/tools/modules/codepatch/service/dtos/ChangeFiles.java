@@ -101,6 +101,13 @@ public class ChangeFiles {
             this.path = path;
             this.modifyTime = modifyTime;
         }
+
+        public long getTime(){
+            if (modifyTime == null){
+                return -1;
+            }
+            return modifyTime.getTime();
+        }
     }
 
     public List<FileInfo> getDeleteFileInfos() {
