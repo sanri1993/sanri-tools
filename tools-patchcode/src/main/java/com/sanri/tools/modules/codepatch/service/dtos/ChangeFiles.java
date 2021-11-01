@@ -1,12 +1,15 @@
 package com.sanri.tools.modules.codepatch.service.dtos;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.jgit.diff.DiffEntry;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,7 +48,8 @@ public class ChangeFiles {
         return fileInfos.stream().map(modifyFileInfo ->
                 new ChangeFile(modifyFileInfo.getDiffEntry().getChangeType(),
                         modifyFileInfo.getRelativePath().toString(),
-                        modifyFileInfo.getCompileFiles().stream().map(File::toPath).map(Path::toString).collect(Collectors.toList())
+                        modifyFileInfo.getCompileFiles().stream().map(File::toPath).map(Path::toString).collect(Collectors.toList()),
+                        modifyFileInfo.getCompileFiles().stream().map(File::toPath).map(Path::toFile).collect(Collectors.toList())
                         )).collect(Collectors.toList());
     }
 
@@ -57,7 +61,11 @@ public class ChangeFiles {
     public static final class ChangeFile{
         private DiffEntry.ChangeType changeType;
         private String relativePath;
+        // 编译路径, 将使用 compileFiles
+        @Deprecated
         private List<String> compilePaths = new ArrayList<>();
+        // 带编译时间的编译路径
+        private List<CompileFile> compileFiles = new ArrayList<>();
 
         public ChangeFile() {
         }
@@ -66,6 +74,32 @@ public class ChangeFiles {
             this.changeType = changeType;
             this.relativePath = relativePath;
             this.compilePaths = compilePaths;
+        }
+
+        public ChangeFile(DiffEntry.ChangeType changeType, String relativePath, List<String> compilePaths, List<File> files) {
+            this.changeType = changeType;
+            this.relativePath = relativePath;
+            this.compilePaths = compilePaths;
+            if (CollectionUtils.isNotEmpty(files)){
+                for (File file : files) {
+                    compileFiles.add(new CompileFile(file.getPath(), new Date(file.lastModified())));
+                }
+            }
+        }
+    }
+
+    @Data
+    public static final class CompileFile{
+        private String path;
+        @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+        private Date modifyTime;
+
+        public CompileFile() {
+        }
+
+        public CompileFile(String path, Date modifyTime) {
+            this.path = path;
+            this.modifyTime = modifyTime;
         }
     }
 
