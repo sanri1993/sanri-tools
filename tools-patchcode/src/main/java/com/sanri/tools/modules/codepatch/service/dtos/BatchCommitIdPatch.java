@@ -9,5 +9,7 @@ import java.util.List;
 public class BatchCommitIdPatch {
     private String group;
     private String repository;
+    private String commitBeforeId;
+    private String commitAfterId;
     private List<String> commitIds = new ArrayList<>();
 }

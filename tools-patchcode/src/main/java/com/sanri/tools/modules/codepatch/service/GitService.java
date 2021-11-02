@@ -93,6 +93,12 @@ public class GitService {
         // 获取当前要创建的目录名,并检测是否存在
         final String repositoryName = FilenameUtils.getBaseName(URLUtil.pathLast(url));
         final File repositoryDir = new File(baseDir, group+"/"+repositoryName);
+        boolean onlyGitHideDir = repositoryDir.exists() && repositoryDir.list().length == 1 && ".git".equals(repositoryDir.list()[0]);
+        if (onlyGitHideDir){
+            // 如果只有一个 .git 目录, 则为上次下载失败, 删除重新下载
+            final File gitHideDir = new File(repositoryDir, ".git");
+            FileUtils.deleteDirectory(gitHideDir);
+        }
         if (repositoryDir.exists() && !ArrayUtils.isEmpty(repositoryDir.list())){
             log.error("仓库[{}]已经存在",repositoryDir.getAbsolutePath());
             throw new ToolException("仓库"+repositoryName+"已经存在");
@@ -413,9 +419,9 @@ public class GitService {
                     revWalk.next();
                     final RevCommit nextCommit = revWalk.next();
                     if (nextCommit != null){
-                        treeWalk.reset(revCommit.getTree());
+                        treeWalk.reset(nextCommit.getTree());
                         treeWalk.setRecursive(true);
-                        treeWalk.addTree(nextCommit.getTree());
+                        treeWalk.addTree(revCommit.getTree());
                         final List<DiffEntry> diffEntries = DiffEntry.scan(treeWalk);
                         allDiffEntries.add(diffEntries);
                     }else{
