@@ -2,13 +2,16 @@ package com.sanri.tools.modules.redis.controller;
 
 import com.sanri.tools.modules.redis.dtos.HashKeyScanResult;
 import com.sanri.tools.modules.redis.dtos.KeyScanResult;
+import com.sanri.tools.modules.redis.dtos.TreeKey;
 import com.sanri.tools.modules.redis.dtos.in.*;
 import com.sanri.tools.modules.redis.service.RedisService;
+import com.sanri.tools.modules.redis.service.RedisTreeKeyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 @RequestMapping("/redis")
 @RestController
@@ -16,6 +19,13 @@ import java.io.IOException;
 public class RedisController {
     @Autowired
     private RedisService redisService;
+    @Autowired
+    private RedisTreeKeyService redisTreeKeyService;
+
+    @GetMapping("/key/tree")
+    public List<TreeKey> treeKeys(@Validated ConnParam connParam) throws IOException {
+        return redisTreeKeyService.treeKeys(connParam);
+    }
 
     @GetMapping("/key/scan")
     public KeyScanResult scan(@Validated ConnParam connParam, KeyScanParam keyScanParam, SerializerParam serializerParam) throws IOException, ClassNotFoundException {

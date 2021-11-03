@@ -3,6 +3,7 @@ package com.sanri.tools.test;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.junit.Test;
 import redis.clients.jedis.*;
+import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.util.Slowlog;
 
 import java.io.IOException;
@@ -11,6 +12,8 @@ import java.util.List;
 import java.util.Set;
 
 public class RedisMain {
+
+
     @Test
     public void slowlog(){
         Jedis jedis = new Jedis("192.168.0.134",6379);
