@@ -106,7 +106,11 @@ public class RedisNode {
     public void refreshSelf(HostAndPort hostAndPort,RedisConnectParam redisConnectParam){
         final ConnectParam connectParam = redisConnectParam.getConnectParam();
 
-        this.jedisPool = new JedisPool(jedisPoolConfig, hostAndPort.getHost(), hostAndPort.getPort(), connectParam.getConnectionTimeout(),redisConnectParam.getAuthParam().getPassword());;
+        String password = redisConnectParam.getAuthParam().getPassword();
+        if (StringUtils.isBlank(password)){
+            password = null;
+        }
+        this.jedisPool = new JedisPool(jedisPoolConfig, hostAndPort.getHost(), hostAndPort.getPort(), connectParam.getConnectionTimeout(),password);
         final Jedis jedis = jedisPool.getResource();
         try{
             id = hostAndPort.toString();
