@@ -38,9 +38,9 @@ public class RedisController {
     }
 
     /**
-     * @param scanParam
+     * @param hashKeyScanParam
      * @param connParam
-     * @param key
+     * @param serializerParam
      * @return
      */
     @GetMapping("/key/hscan")
@@ -50,9 +50,7 @@ public class RedisController {
 
     /**
      * hash 删除部分 key
-     * @param connParam
-     * @param key
-     * @param fields
+     * @param delFieldsParam
      * @return
      */
     @PostMapping("/key/hash/hdel")
@@ -62,11 +60,7 @@ public class RedisController {
 
     /**
      * 查询数据
-     * @param connParam
-     * @param subKeyParam
-     * @param rangeParam
-     * @param redisScanParam
-     * @param serializerParam
+     * @param valueParam
      * @return
      * @throws IOException
      * @throws ClassNotFoundException
