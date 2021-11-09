@@ -26,4 +26,8 @@ public enum RedisType {
 		}
 		return None;
 	}
+
+	public String getValue() {
+		return value;
+	}
 }

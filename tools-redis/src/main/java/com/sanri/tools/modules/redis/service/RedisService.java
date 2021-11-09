@@ -427,7 +427,7 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
      * @param keyBytes
      * @return
      */
-    long keyLength(Jedis client, byte[] keyBytes) {
+    public long keyLength(Jedis client, byte[] keyBytes) {
         String type = client.type(keyBytes);
         RedisType redisType = RedisType.parse(type);
         if (redisType == null){
@@ -451,7 +451,8 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module("monitor").name(module).logo("redis.jpg").desc("redis 数据查看,集群信息管理").help("Redis.md").author("sanri").envs("default").build());
+        pluginManager.register(PluginDto.builder().module("monitor").name(module).logo("redis.jpg").desc("Redis 数据查看(不再维护,请使用分模块的 Redis 工具),集群信息管理").help("Redis.md").author("sanri").envs("default").build());
+        pluginManager.register(PluginDto.builder().module("monitor").name(module+"2").logo("redis.jpg").desc("Redis 数据查看,集群信息管理,分模块的 Redis 工具").help("Redis.md").author("sanri").envs("default").build());
     }
 
     @PreDestroy

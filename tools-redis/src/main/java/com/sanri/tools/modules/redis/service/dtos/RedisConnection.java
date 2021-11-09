@@ -306,6 +306,70 @@ public class RedisConnection {
         }
     }
 
+    public Long ttl(byte[] key) {
+        if (runMode == RedisRunMode.cluster){
+            return clusterNode.getJedisCluster().ttl(key);
+        }
+        final Jedis jedis = masterNode.browerJedis();
+        try{
+            return jedis.ttl(key);
+        }finally {
+            jedis.close();
+        }
+    }
+
+    public Long pttl(byte [] key){
+        if (runMode == RedisRunMode.cluster){
+            return clusterNode.getJedisCluster().pttl(key);
+        }
+        final Jedis jedis = masterNode.browerJedis();
+        try{
+            return jedis.pttl(key);
+        }finally {
+            jedis.close();
+        }
+    }
+
+    public long length(byte [] key){
+        final RedisType redisType = type(key);
+        if (runMode == RedisRunMode.cluster){
+            final JedisCluster jedisCluster = clusterNode.getJedisCluster();
+            switch (redisType){
+                case string:
+                    return jedisCluster.strlen(key);
+                case Hash:
+                    return jedisCluster.hlen(key);
+                case List:
+                    return jedisCluster.llen(key);
+                case Set:
+                    return jedisCluster.scard(key);
+                case ZSet:
+                    return jedisCluster.zcard(key);
+            }
+            log.error("未知类型:{}",jedisCluster.type(key));
+            return -1;
+        }
+        final Jedis jedis = masterNode.browerJedis();
+        try{
+            switch (redisType){
+                case string:
+                    return jedis.strlen(key);
+                case Set:
+                    return jedis.scard(key);
+                case ZSet:
+                    return jedis.zcard(key);
+                case List:
+                    return jedis.llen(key);
+                case Hash:
+                    return jedis.hlen(key);
+            }
+            log.error("未知类型:{}",jedis.type(key));
+            return -1;
+        }finally {
+            jedis.close();
+        }
+    }
+
     public ScanResult<Map.Entry<byte[], byte[]>> hscan(byte[] key, byte [] cursor, ScanParams scanParams){
         if (runMode == RedisRunMode.cluster){
             return clusterNode.getJedisCluster().hscan(key, cursor, scanParams);
@@ -436,6 +500,5 @@ public class RedisConnection {
             jedis.close();
         }
     }
-
 
 }

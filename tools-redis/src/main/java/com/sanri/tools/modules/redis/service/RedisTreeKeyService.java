@@ -1,10 +1,15 @@
 package com.sanri.tools.modules.redis.service;
 
 import com.sanri.tools.modules.core.exception.ToolException;
+import com.sanri.tools.modules.redis.dtos.KeyScanResult;
 import com.sanri.tools.modules.redis.dtos.TreeKey;
 import com.sanri.tools.modules.redis.dtos.in.ConnParam;
+import com.sanri.tools.modules.redis.dtos.in.SerializerParam;
 import com.sanri.tools.modules.redis.service.dtos.RedisConnection;
 import com.sanri.tools.modules.redis.service.dtos.RedisNode;
+import com.sanri.tools.modules.redis.service.dtos.RedisType;
+import com.sanri.tools.modules.serializer.service.Serializer;
+import com.sanri.tools.modules.serializer.service.SerializerChoseService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -12,6 +17,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.ScanParams;
+import redis.clients.jedis.ScanResult;
 
 import java.io.IOException;
 import java.util.*;
@@ -21,9 +28,71 @@ import java.util.*;
 public class RedisTreeKeyService {
     @Autowired
     private RedisService redisService;
+    @Autowired
+    private SerializerChoseService serializerChoseService;
 
     // 1 万条以下的数据可以使用
-    public static final long supportKeys = 10000;
+    public static final long supportKeys = 20000;
+
+    /**
+     * 查询某个 key 的详细信息
+     * @param connParam
+     * @param key
+     * @param serializerParam
+     * @return
+     * @throws IOException
+     */
+    public KeyScanResult.KeyResult keyInfo(ConnParam connParam, String key, SerializerParam serializerParam) throws IOException {
+        final RedisConnection redisConnection = redisService.redisConnection(connParam);
+        Serializer serializer = serializerChoseService.choseSerializer(serializerParam.getKeySerializer());
+        final byte[] keyBytes = serializer.serialize(key);
+        final RedisType type = redisConnection.type(keyBytes);
+        final Long ttl = redisConnection.ttl(keyBytes);
+        final Long pttl = redisConnection.pttl(keyBytes);
+        final long length = redisConnection.length(keyBytes);
+        final KeyScanResult.KeyResult keyResult = new KeyScanResult.KeyResult(key, type.getValue(), ttl, pttl, length);
+        return keyResult;
+    }
+
+    /**
+     * 按照 key 的模式进行删除
+     * @param connParam
+     * @param keyPattern
+     * @return
+     */
+    public long dropKeyPattern(ConnParam connParam, String keyPattern) throws IOException {
+        final RedisConnection redisConnection = redisService.redisConnection(connParam);
+        final List<RedisNode> masterNodes = redisConnection.getMasterNodes();
+
+        long count = 0 ;
+        for (RedisNode masterNode : masterNodes) {
+            final Jedis jedis = masterNode.browerJedis();
+            try{
+                String cursor = "0";
+                ScanParams scanParams = new ScanParams();
+                scanParams.match(keyPattern).count(1000);
+                do {
+                    ScanResult<String> scan = null;
+                    try {
+                        scan = jedis.scan(cursor, scanParams);
+                        final List<String> result = scan.getResult();
+                        jedis.del(result.toArray(new String[]{}));
+                        count += result.size();
+                    }finally {
+                        if (scan == null){cursor = "0";}else{
+                            cursor = scan.getStringCursor();
+                        }
+                    }
+
+                }while (!"0".equals(cursor));
+            }finally {
+                if (jedis != null){
+                    jedis.close();
+                }
+            }
+        }
+        return count;
+    }
 
     /**
      *
@@ -80,8 +149,9 @@ public class RedisTreeKeyService {
 
     /**
      * 追加树
-     * @param top
+     * @param parent
      * @param parts
+     * @param deep
      */
     public void appendTree(String [] parts, TreeKey parent, int deep){
         if (deep >= parts.length){

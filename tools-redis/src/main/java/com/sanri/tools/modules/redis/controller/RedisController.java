@@ -27,6 +27,22 @@ public class RedisController {
         return redisTreeKeyService.treeKeys(connParam);
     }
 
+    /**
+     * 查询某个 key 的详细信息
+     * @param connParam
+     * @param key
+     * @return
+     */
+    @GetMapping("/key/info")
+    public KeyScanResult.KeyResult keyInfo(@Validated ConnParam connParam, String key,SerializerParam serializerParam) throws IOException {
+        return redisTreeKeyService.keyInfo(connParam,key,serializerParam);
+    }
+
+    @GetMapping("/key/del/pattern")
+    public long delKeyPattern(@Validated ConnParam connParam,String keyPattern) throws IOException {
+        return redisTreeKeyService.dropKeyPattern(connParam, keyPattern);
+    }
+
     @GetMapping("/key/scan")
     public KeyScanResult scan(@Validated ConnParam connParam, KeyScanParam keyScanParam, SerializerParam serializerParam) throws IOException, ClassNotFoundException {
         return redisService.scan(connParam,keyScanParam,serializerParam);

@@ -195,6 +195,8 @@ module 在前端是做为一级菜单,然后 name 是二级菜单 , 同一个模
 
 #### 界面美图
 
+![](images/home.png)
+
 ![](images/连接管理.png)
 
 ![](images/数据库元数据.png)
@@ -205,6 +207,9 @@ module 在前端是做为一级菜单,然后 name 是二级菜单 , 同一个模
 
 ![](images/kafka消费组.png)
 
+![](images/redis分模块.png)
+
+![](images/git.png)
 
 
 ### 数据库的文档生成
