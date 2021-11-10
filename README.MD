@@ -179,7 +179,7 @@ tools-soap
 
 @since 2.0.0  java -jar -Xms256m -Xmx256m sanritools.jar 
 
-@since 2.2.1 java -Dloader.path=sanritoolslib -Xms256m -Xmx256m -jar sanritools.jar
+@since 2.2.0 java -Dloader.path=sanritoolslib -Xms256m -Xmx256m -jar sanritools.jar
 
 **如何查看当前正在开发的工具版本**
 
