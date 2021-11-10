@@ -11,9 +11,19 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
 
 ## 工具理念
 
-1. 轻量级,只依赖于文件系统,无权限管理
+1. 轻量级,只依赖于文件系统,无权限管理, 读者可以自行开发权限模块
 2. 多模块,可插拨设计,只加载想要的工具
-3. 做数据监控和数据的可视化工具,不像别的工具,这个可以直接看到数据明文,而不是乱码
+3. 做数据监控和数据的可视化工具,这个可以直接看到数据明文,而不是乱码
+4. 尽量做到开发中用到的中间件一体式监控和数据查看
+
+### 想对读者说的话
+* 欢迎来提交 issue 或者 pr , 不要在评论中说还有一堆问题之类的, 因为你这样说我也不知道哪里有问题, 评论中也没办法截图, 加入官方群来说也行
+* 本工具适用群体是开发, 不是运维监控, 也不适用于监控生产数据
+
+### 更新记录(代码库重要功能更新记录, 不是发行版)
+
+* 2021.11.09 增加 Redis 树形 Key
+* 2021.11.01 增加 git 增量工具
 
 ## 已经有的工具,分模块展示
 1. tools-core
@@ -30,13 +40,15 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
 4. tools-redis
    * 支持集群,主从和单机,展示节点主机,端口,角色,父节点; 集群可以展示槽位分配 
    * key 列表查询,可以查询集群所有节点,hashKey 列表查询,key 的长度,ttl , type 展示
+   * 批量删除 key , 根据前缀删除 key(这个在树状 KEY 标签页提供支持)
    * 查询某个 key 的数据,可以根据序列化和类加载器展示成友好的方式,支持(string,hash,list,set,zset)
    * 在线求 set 类型的数据交集,并集,差集
    * 监控每一个节点使用的内存信息
    * 监控每一个节点的连接数,主机占用连接数信息,杀掉某个连接
    * 监控每一个节点的慢查询
+   * 树状结构展示 Key 列表, 这个对于用习惯了 RDM 的人可能是个必须项,目前我的工具也提供了支持; 但其实这种展示结构只能处理当 key 数量比较少的时候, RDM 也只是 scan 了前 10000 条数据来展示树,对于生产环境还会卡死
    * 注: 快速搜索(现改名单KEY)功能不一定快速, 做这个功能的目的是和精确数量来比较的,如果要精确数量,
-   那我每次 scan 的 limit 参数必须较正, 一次搜索的数量就少了, 但如果不需要精确数量的话 , 我可以一次 limit 1000 条,可以加快搜索速度 , 
+   那我每次 scan 的 limit 参数必须较正, 一次搜索的数量就少了, 但如果不需要精确数量的话 , 我可以一次 limit 10000 条,可以加快搜索速度 , 
    这个适用于用户知道了很精确的 key ,对于一个有 100 万 key 的集群来说搜索会快很多
 5. tools-kafka
    * 消费组列表,删除消费组,消费组消费的主题列表,消费组消费主题某分区消费数据情况,消费组消费主题某分区附近的数据
@@ -85,7 +97,26 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
 17. tools-patchcode
     * 需要发代码增量包时, 可以进行编译,拉取最新包,并打增量包 
     * 依赖于本地 maven 编译
+    * 重要说明: 
+       * 当前只支持 git 仓库, 例: (gitlab,github,gitee), 
+       * 编译的实时展示将消耗大量浏览器占用内存, 编译大型项目时需要将编译实时窗口关闭在后台控制台看输出结果 
+       * 当 下载仓库或者 pull 出现冲突之类的问题时, 需要手动操作, 目录在 $tmp/gitrepositorys/$group/$repository
 
+### 计划中的模块 
+**目前已经经过公司实践并且功能强大的模块有**
+
+* tools-redis
+* tools-kafka
+* tools-database
+* tools-patchcode
+
+**计划加强的模块有**
+* tools-tcp
+* tools-mybatis
+
+**其它计划模块**
+
+欢迎网友提供点子 
     
 ### 每一个模块的使用文档
 对于一个工具来说,使用文档是比较重要的,使用文档放到每个模块的 resources 中, 然后通过 PluginManager 注册进来
@@ -93,7 +124,7 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
 在首页会读取使用文档,并展示给用户,你可以在 md 文件中做外链,以便链接外部说明文档
 
 #### 说明下注意事项,对于刚开始使用这个工具的人来说
-1. 连接管理中的模块名必须是固定的,只能取 database,kafka,redis,zookeeper,mongo 具体可以在 ConnectService.moduleParamFactory() 方法中查看
+1. 连接管理中的模块名必须是固定的,只能取 database,kafka,redis,zookeeper,mongo,git 具体可以在 ConnectService.moduleParamFactory() 方法中查看
 2. 数据库类型只支持 mysql,postgresql,oracle 具体可以在 DatabaseConnectParam 中查看
 3. 类加载器 "上传 dto" 可以是单类文件,无目录结构,java 实体类,但不能是标准结构的; "上传标准 dto" 只能是标准结构类文件
 4. 新建连接是有模板的,如果模板没有加载出来,检查模块名是否正确,可以重新打开来加载配置模板
@@ -144,7 +175,7 @@ tools-soap
 
 [https://gitee.com/sanri/sanri-tools-maven/releases](https://gitee.com/sanri/sanri-tools-maven/releases)
 
-@since 2.0.0  java -jar sanritools.jar 
+@since 2.0.0  java -jar -Xms256m -Xmx256m sanritools.jar 
 
 2.0.0 版本之前,下载的 release 为 tomcat ,双击 bin/start.bat 启动
 
@@ -163,7 +194,7 @@ tools-soap
 注: tools-console 的 webapp.zip 是一个比较旧的版本(20201211),后面的打包版本会放在[前端项目Release](https://gitee.com/sanri/sanritoolsvue/releases)
 
 ## 如何扩展自己的工具
-新增一个模块,如 tools-xxx ,然后依赖于 tools-core 
+1. 新增一个模块,如 tools-xxx ,然后依赖于 tools-core 
 ```xml
 <dependency>
     <groupId>${project.groupId}</groupId>
@@ -171,7 +202,7 @@ tools-soap
     <version>${project.version}</version>
 </dependency>
 ```
-最后将模块使用插件管理注册进来
+2. 然后将模块使用插件管理注册进来
 ```java
 @Autowired
 private PluginManager pluginManager;
@@ -183,6 +214,16 @@ public void register(){
 ```
 module 在前端是做为一级菜单,然后 name 是二级菜单 , 同一个模块下可以注册多个功能项, 插件的开发和工作中开发 controller 没有区别 
 
+3. 将开发的模块集成进工具
+在 tools-console/pom.xml 中添加 
+```java
+<dependency>
+    <groupId>${project.groupId}</groupId>
+    <artifactId>tools-xxx</artifactId>
+    <version>${project.version}</version>
+</dependency>
+```
+
 ### 关于单元测试
 工具使用了更方便的单元测试,直接发送 http 请求来测试,所有的单元测试都在 requests/全部 http 请求.http 中
 
@@ -191,7 +232,7 @@ module 在前端是做为一级菜单,然后 name 是二级菜单 , 同一个模
 
 前端美图 [https://gitee.com/sanri/sanri-tools-maven/issues/I1UEJR](https://gitee.com/sanri/sanri-tools-maven/issues/I1UEJR)
 
-如果对这个前端不满意,可以使用接口进行自定义开发, 本项目只是提供数据服务; 也可以自研模块 
+如果对这个前端不满意,可以使用接口进行自定义开发, 本项目只是提供数据服务
 
 #### 界面美图
 
@@ -261,7 +302,7 @@ dataSource  : 数据源,引用类 ConnectionMetaData
 * 技术讨论、二次开发等咨询、问题和建议，请移步到微信群，我会在第一时间进行解答和回复
 * 如需关注项目最新动态，请Watch、Star项目，同时也是对项目最好的支持
 * 微信扫码并关注我，获得项目最新动态及更新提醒,拉你进入微信技术群
-* 如果有需要支持的中间件,可以提交 pr , 或者微信联系我
+* 如果有需要支持的中间件,可以提交 pr, 或者微信联系我
 
 ![我的微信](https://images.gitee.com/uploads/images/2020/0802/183913_c89fb735_409739.jpeg)
 
