@@ -177,6 +177,8 @@ public class GitService {
      */
     public List<Module> modules(String group,String repository) throws IOException {
         final List<PomFile> pomFiles = loadAllPomFile(group, repository);
+
+        // 添加上次编译时间
         for (PomFile pomFile : pomFiles) {
             final String relativePath = pomFile.getRelativePath();
             final String pathMd5 = DigestUtils.md5DigestAsHex(relativePath.getBytes());
@@ -186,6 +188,8 @@ public class GitService {
                 pomFile.setLastCompileTime(new Date(property));
             }
         }
+
+        // 构建模块
         if (CollectionUtils.isNotEmpty(pomFiles)) {
             Collections.sort(pomFiles);
 

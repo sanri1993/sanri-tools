@@ -17,6 +17,7 @@
 * 数据查询，支持 string，list，hash，set，zset ；序列化方式可选 json，jdk ，kryo，hex，hessian
 * set 数据类型支持集合的交，并，差操作
 * 批量删除 key 
+* 支持树状结构的 key 展示, 以 key 模式删除 key 
 
 ### 主要实现逻辑
 1. RedisNode 类做为主要功能类, 表示一个 Redis 节点, 在刷新他的连接数据的时候, 会一直往上找到父节点, 一直往下找到所有的子节点
