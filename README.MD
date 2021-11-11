@@ -197,6 +197,23 @@ sanritoolslib [下载地址](https://gitee.com/sanri/sanri-tools-maven/attach_fi
 
 注: tools-console 的 webapp.zip 是一个比较旧的版本(20201211),后面的打包版本会放在[前端项目Release](https://gitee.com/sanri/sanritoolsvue/releases)
 
+### 使用工具(此处只是简单描述,更加详细的说明在 WIKI 或者 issue 中查找)
+* 创建连接
+
+  1. 基础数据->连接管理->新模块( 可以创建 database, redis, kafka, mongo,zookeeper, git) 等模块 
+  2. 在模块里新建连接, 这个连接是有模板的, 其中, 数据库连接中的 dbType 可以是 (mysql, postgresql, oracle ) 之中的一种 
+* 重要参数说明(默认情况, 可以自行修改)
+
+```shell
+配置目录: /tmp/sanritools/configs
+临时目录: /tmp/sanritools/temp
+外部lib: /tmp/sanritools/libs
+日志目录: /tmp/sanritools/logs
+后端端口: 8084
+```
+
+
+
 ## 如何扩展自己的工具
 1. 新增一个模块,如 tools-xxx ,然后依赖于 tools-core 
 ```xml
