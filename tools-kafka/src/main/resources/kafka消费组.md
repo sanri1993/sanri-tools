@@ -2,9 +2,9 @@
 
 ### 界面美图
 
-![kafka消费组](C:\Users\091795960\Desktop\sanritools2.0\kafka消费组.png)
+![kafka消费组](../../../../images/kafka消费组.png)
 
-![kafka数据查询](C:\Users\091795960\Desktop\sanritools2.0\kafka数据查询.png)
+![kafka数据查询](../../../../images/kafka数据查询.png)
 
 ### 功能说明
 

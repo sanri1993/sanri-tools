@@ -2,11 +2,11 @@
 
 ### 界面美图 
 
-![Redis](C:\Users\091795960\Desktop\sanritools2.0\Redis.png)
+![Redis](../../../../images/Redis.png)
 
-![Redis-2](C:\Users\091795960\Desktop\sanritools2.0\Redis-2.png)
+![Redis-2](../../../../images/Redis-2.png)
 
-![Redis-3](C:\Users\091795960\Desktop\sanritools2.0\Redis-3.png)
+![Redis-3](../../../../images/Redis-3.png)
 
 ### 功能支持
 
