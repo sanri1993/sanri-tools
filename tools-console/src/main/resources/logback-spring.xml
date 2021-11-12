@@ -21,16 +21,15 @@
         </encoder>
     </appender>
 
-    <appender name="FILE"
-              class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy
-                class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logging.path}/sanritools${server.port}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!--日志文件输出的文件名 -->
-            <fileNamePattern>${logging.path}/sanritools${server.port}%d{yyyyMMdd}%i.log</fileNamePattern>
-            <!--文件最多保留的天数 -->
-            <maxHistory>7</maxHistory>
+            <fileNamePattern>${logging.path}/.%d{yyyyMMdd}%i.log</fileNamePattern>
+            <!-- 归档文件最大数量 -->
+            <maxHistory>15</maxHistory>
             <!--文件最大为多少 -->
-            <maxFileSize>50MB</maxFileSize>
+            <maxFileSize>100MB</maxFileSize>
         </rollingPolicy>
         <encoder>
             <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符 -->
@@ -39,7 +38,7 @@
     </appender>
 
     <root level="INFO">
-        <appender-ref ref="CONSOLE"></appender-ref>
-        <appender-ref ref="FILE"></appender-ref>
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
     </root>
 </configuration>
