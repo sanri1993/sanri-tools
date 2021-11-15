@@ -181,9 +181,9 @@ tools-soap
 
 2.0.0 版本之前,下载的 release 为 tomcat ,双击 bin/start.bat 启动
 
-@since 2.0.0  java -Xms256m -Xmx256m --data.path.config=配置文件存储路径 --data.path.tmp=临时文件存储路径 -jar  sanritools.jar 
+@since 2.0.0  java -Xms256m -Xmx256m -Ddata.path.config=配置文件存储路径 -Ddata.path.tmp=临时文件存储路径 -jar  sanritools.jar 
 
-@since 2.2.0 java -Dloader.path=sanritoolslib --data.path.config=配置文件存储路径 --data.path.tmp=临时文件存储路径 -Xms256m -Xmx256m -jar sanritools.jar
+@since 2.2.0 java -Dloader.path=sanritoolslib -Ddata.path.config=配置文件存储路径 -Ddata.path.tmp=临时文件存储路径 -Xms256m -Xmx256m -jar sanritools.jar
 
 sanritoolslib [下载地址](https://gitee.com/sanri/sanri-tools-maven/attach_files/877457/download)
 
