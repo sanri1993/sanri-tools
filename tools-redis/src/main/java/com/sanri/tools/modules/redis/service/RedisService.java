@@ -504,8 +504,12 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
             redisConnection.refresh(redisConnectParam);
         }catch (JedisConnectionException e){
             Throwable cause = e;Throwable parent = e;
-            while ((cause = e.getCause()) != null){
+            int deep = 0 ;
+            while ((cause = cause.getCause()) != null){
                 parent = cause;
+                if (++deep > 10){
+                    break;
+                }
             }
             if (parent instanceof SocketTimeoutException){
                 // 连接超时, 直接删除当前连接
