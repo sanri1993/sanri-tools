@@ -183,9 +183,28 @@ tools-soap
 
 @since 2.0.0  java -Xms256m -Xmx256m -Ddata.path.config=配置文件存储路径 -Ddata.path.tmp=临时文件存储路径 -jar  sanritools.jar 
 
-@since 2.2.0 java -Dloader.path=sanritoolslib -Ddata.path.config=配置文件存储路径 -Ddata.path.tmp=临时文件存储路径 -Xms256m -Xmx256m -jar sanritools.jar
+@since 2.2.0 
+```shell script
+java -Dloader.path=sanritoolslib \
+--data.path.config=/tmp/sanritools/configs \
+--data.path.tmp=/tmp/sanritools/temp \
+--data.path.libs=/tmp/sanritools/libs \
+--logging.path=/tmp/sanritools/logs \
+--server.port=8084 \
+-Xms256m -Xmx256m -jar sanritools.jar
+```
 
 sanritoolslib [下载地址](https://gitee.com/sanri/sanri-tools-maven/attach_files/877457/download)
+
+* 重要参数说明(默认情况, 可以自行修改; **使用工具前一定要先行创建这些目录, 否则无法使用**)
+
+```shell
+配置目录: /tmp/sanritools/configs
+临时目录: /tmp/sanritools/temp
+外部lib: /tmp/sanritools/libs
+日志目录: /tmp/sanritools/logs
+后端端口: 8084
+```
 
 **如何查看当前正在开发的工具版本**
 
@@ -206,15 +225,7 @@ sanritoolslib [下载地址](https://gitee.com/sanri/sanri-tools-maven/attach_fi
 
   1. 基础数据->连接管理->新模块( 可以创建 database, redis, kafka, mongo,zookeeper, git) 等模块 
   2. 在模块里新建连接, 这个连接是有模板的, 其中, 数据库连接中的 dbType 可以是 (mysql, postgresql, oracle ) 之中的一种 
-* 重要参数说明(默认情况, 可以自行修改; **使用工具前一定要先行创建这些目录, 否则无法使用**)
 
-```shell
-配置目录: /tmp/sanritools/configs
-临时目录: /tmp/sanritools/temp
-外部lib: /tmp/sanritools/libs
-日志目录: /tmp/sanritools/logs
-后端端口: 8084
-```
 
 
 
