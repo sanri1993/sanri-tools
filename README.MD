@@ -33,6 +33,7 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
 ### 权限设计
 
 #### 存储设计
+```
 grouptop          --admin(User) 
   group1
     group11       --user1(User) --role1(Role) --resource1(Resource)
@@ -41,7 +42,7 @@ grouptop          --admin(User)
     group12
   group2          --user1(User) --resource1(Resource)
     group21
-    
+ 
 role1 --resource1(Resource),resource2(Resource)
 
 user1 --role1,role2 group111,group112
@@ -50,7 +51,7 @@ Group(name,path)
 Role(name,$Groups,$Resource)
 Resource(name,$Groups)
 User(name,$Roles,$Groups)
-
+```
 #### 实现说明 
 不管代码中还是说明文档,对于安全模块, 组织和分组是一个意思
 
