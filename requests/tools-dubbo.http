@@ -1,0 +1,21 @@
+### dubbo - 获取所有的服务
+GET {{baseUrl}}/dubbo/services?connName=192.168.2.134_2181
+
+### dubbo - 获取所有提供者
+GET {{baseUrl}}/dubbo/providers?connName=192.168.2.134_2181&serviceName=com.mmc.dubbo.api.user.UserService
+
+### dubbo - 调用方法
+POST {{baseUrl}}/dubbo/invoke
+Content-Type: application/json
+
+{
+  "connName": "192.168.2.134_2181",
+  "serviceName": "com.mmc.dubbo.api.user.UserService",
+  "classloaderName": "user",
+  "methodName": "getCurrentById",
+  "providerURL": "dubbo://192.168.2.101:30880/com.mmc.dubbo.api.user.UserService?anyhost=true&application=mmc-dubbo-provider&dubbo=2.6.2&generic=false&interface=com.mmc.dubbo.api.user.UserService&methods=getCurrentById,insert&pid=35288&side=provider&timestamp=1596275905147",
+  "args": ["18"]
+}
+
+### dubbo - 查看可用连接
+GET {{baseUrl}}/dubbo/connects

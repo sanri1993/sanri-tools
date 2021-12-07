@@ -246,8 +246,8 @@ public class RedisNode {
     private boolean isCluster(Jedis jedis){
         String info = jedis.info("Cluster");
         Map<String, String> properties = ColonCommandReply.colonCommandReply.parserKeyValue(info);
-        String cluster_enabled = properties.get("cluster_enabled");
-        if("1".equals(cluster_enabled)){
+        String clusterEnabled = properties.get("cluster_enabled");
+        if("1".equals(clusterEnabled)){
             this.info.setCluster(true);
         }else{
             this.info.setCluster(false);

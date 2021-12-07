@@ -1,0 +1,38 @@
+### zookeeper - 列出子节点
+GET {{baseUrl}}/zookeeper/childrens?connName=192.168.72.42_2181&path=/hd/kafka
+
+### zookeeper - 元数据 meta
+GET {{baseUrl}}/zookeeper/meta?connName=192.168.72.43&path=/brokers
+
+### zookeeper - acls 权限
+GET {{baseUrl}}/zookeeper/acls?connName=192.168.72.43&path=/brokers
+
+### zookeeper - 读取数据
+GET {{baseUrl}}/zookeeper/readData?connName=192.168.72.43&path=/brokers/ids/1&serializer=string
+
+### zookeeper - 写入数据
+POST {{baseUrl}}/zookeeper/writeData
+Content-Type: application/x-www-form-urlencoded
+
+connName=192.168.2.134_2181&path=/abc&data=zookeeperop
+
+### zookeeper - 删除节点
+POST {{baseUrl}}/zookeeper/deleteNode
+Content-Type: application/x-www-form-urlencoded
+
+connName=192.168.2.134_2181&path=/abc
+
+### zookeeper - 列出收藏夹
+GET {{baseUrl}}/zookeeper/favorites?connName=192.168.2.134_2181
+
+### zookeeper - 添加收藏
+POST {{baseUrl}}/zookeeper/addFavorite
+Content-Type: application/x-www-form-urlencoded
+
+connName=192.168.2.134_2181&name=dubbo&path=/dubbo
+
+### zookeeper - 删除收藏
+POST {{baseUrl}}/zookeeper/removeFavorite
+Content-Type: application/x-www-form-urlencoded
+
+connName=192.168.2.134_2181&name=dubbo

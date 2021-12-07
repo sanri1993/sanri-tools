@@ -1,0 +1,35 @@
+### redis - mode 查询
+GET {{baseUrl}}/redis/monitor/mode?connName=10.101.72.43
+
+### redis - 查看 redis 的节点列表
+GET {{baseUrl}}/redis/monitor/nodes?connName=10.101.72.43
+
+### redis - 查看连接信息
+GET {{baseUrl}}/redis/monitor/connInfo?connName=192.168.12.21&index=2
+
+### redis - 获取客户端连接列表和占用连接数
+GET {{baseUrl}}/redis/monitor/clientList?connName=192.168.0.134
+
+### redis - 获取内存占用
+GET {{baseUrl}}/redis/monitor/memoryUses?connName=192.168.0.134
+
+### redis - 获取数据量
+GET {{baseUrl}}/redis/monitor/dbs?connName=192.168.12.21&index=2
+
+### redis - scan 某个 key ,可以模糊查询
+GET {{baseUrl}}/redis/key/scan?connName=192.168.12.21&index=2&pattern=*&limit=20&cursor=229&keySerializer=string
+
+### redis - 读取某个具体的 key
+GET {{baseUrl}}/redis/data?connName=192.168.0.134&key=abc&subKeys=mm,mm2&keySerializer=string&value=string&hashKey=string&hashValue=string
+
+### redis -  扫描 hashKey
+GET {{baseUrl}}/redis/key/subKeys?connName=192.168.0.134&key=abc&pattern=*&limit=2&keySerializer=string&value=string&hashKey=string&hashValue=string&cursor=0
+
+### redis -  key 长度
+GET {{baseUrl}}/redis/key/length?connName=192.168.0.134&key=abc
+
+### redis - 删除 key
+POST {{baseUrl}}/redis/dropKeys?connName=10.101.72.43&keys=abc,def
+
+### redis - 找出所有以某个前缀开头的 key
+GET {{baseUrl}}/redis/prefixKeys?connName=10.101.72.43&match=ab*

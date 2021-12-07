@@ -1,0 +1,2 @@
+### 序列化 - 可用的序列化列表
+GET {{baseUrl}}/serializer/names

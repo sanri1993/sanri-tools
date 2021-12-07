@@ -1,33 +1,24 @@
 package com.sanri.tools.modules.mongodb.service;
 
-import com.alibaba.fastjson.JSONObject;
 import com.mongodb.*;
 import com.mongodb.MongoClient;
 import com.mongodb.client.*;
-import com.mongodb.util.JSON;
 import com.sanri.tools.modules.core.dtos.PageResponseDto;
 import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.dtos.param.*;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
-import com.sanri.tools.modules.core.service.file.ConnectService;
+import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.mongodb.dtos.CollectionDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.IteratorUtils;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -36,10 +27,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MongoService {
     private Map<String, MongoClient> mongoClientMap = new ConcurrentHashMap<>();
 
-    private static final String module = "mongo";
+    private static final String MODULE = "mongo";
 
     @Autowired
-    private ConnectService connectService;
+    private ConnectServiceFileBase connectService;
     @Autowired
     private PluginManager pluginManager;
 
@@ -123,7 +114,7 @@ public class MongoService {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module("monitor").author("9420").logo("mongo.jpg").desc("mongodb 监控管理").name(module).build());
+        pluginManager.register(PluginDto.builder().module("monitor").author("9420").logo("mongo.jpg").desc("mongodb 监控管理").name(MODULE).build());
     }
 
     /**
@@ -134,7 +125,7 @@ public class MongoService {
     MongoClient mongoClient(String connName) throws IOException {
         MongoClient mongoClient = mongoClientMap.get(connName);
         if (mongoClient == null){
-            MongoConnectParam mongoConnectParam = (MongoConnectParam) connectService.readConnParams(module,connName);
+            MongoConnectParam mongoConnectParam = (MongoConnectParam) connectService.readConnParams(MODULE,connName);
             ConnectParam connectParam = mongoConnectParam.getConnectParam();
             ServerAddress serverAddress = new ServerAddress(connectParam.getHost(), connectParam.getPort());
             MongoAuthParam mongoAuthParam = mongoConnectParam.getAuthParam();
@@ -147,7 +138,7 @@ public class MongoService {
 
     @PreDestroy
     public void destory(){
-        log.info("清除 {} 客户端列表:{}",module,mongoClientMap.keySet());
+        log.info("清除 {} 客户端列表:{}", MODULE,mongoClientMap.keySet());
         Iterator<MongoClient> iterator = mongoClientMap.values().iterator();
         while (iterator.hasNext()){
             MongoClient next = iterator.next();

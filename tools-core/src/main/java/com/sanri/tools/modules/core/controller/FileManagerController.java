@@ -26,13 +26,13 @@ import java.util.Date;
 @Validated
 public class FileManagerController {
     @Autowired
-    FileManager fileManager;
+    private FileManager fileManager;
 
     /**
      * 给定的 baseName 相对于临时目录如果是文件直接下载
      * 如果是目录,查看里面是不是只有一个文件,如果只有一个文件则下载那个文件
      * 如果是目录,但目录里面有很多文件,则打包成 zip 下载
-     * @param baseName
+     * @param baseName 相对于临时目录的路径
      */
     @GetMapping("/download")
     public ResponseEntity download(@NotNull String baseName, HttpServletResponse response) throws IOException {

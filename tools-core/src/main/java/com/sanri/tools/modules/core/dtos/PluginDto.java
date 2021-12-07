@@ -8,25 +8,46 @@ import lombok.experimental.Tolerate;
 @Builder
 public class PluginDto {
     /**
-     * 模块标识信息
+     * 模块名
      */
     private String module;
+    /**
+     * 插件名
+     */
     private String name;
 
     /**
-     * 插件详细信息
+     * 插件作者
      */
     private String author;
+    /**
+     * logo
+     */
     private String logo;
+    /**
+     * 插件标题
+     */
     private String title;
+    /**
+     * 插件描述
+     */
     private String desc;
+    /**
+     * 插件帮助信息
+     */
     private String help;
+    /**
+     * 插件帮助信息文档
+     */
     private String helpContent;
 
     /**
-     * 环境和依赖项
+     * 环境
      */
     private String envs;
+    /**
+     * 依赖项
+     */
     private String dependencies;
 
     @Tolerate

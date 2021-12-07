@@ -1,0 +1,20 @@
+### es - 创建新连接
+POST {{baseUrl}}/connect/create/elasticsearch
+Content-Type: application/json
+
+{
+  "connectIdParam": {
+    "module": "elasticsearch",
+    "connName": "10.101.40.127"
+  },
+  "connectParam": {
+    "host": "10.101.40.127",
+    "port": 9200
+  }
+}
+
+### es - 数据查询
+GET {{baseUrl}}/elasticsearch/search/10.101.40.127/third_out_log_index_2020
+Content-Type: application/json
+
+{"query":{"bool":{"must":[],"must_not":[],"should":[{"match_all":{}}]}},"from":0,"size":50,"sort":[{"_score":{"order":"desc"}}],"aggs":{},"version":true}

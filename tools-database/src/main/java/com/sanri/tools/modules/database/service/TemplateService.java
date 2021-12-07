@@ -59,7 +59,7 @@ public class TemplateService {
     // 模板或者方案内容
     public String content(String name) throws IOException {
         File dir = fileManager.mkConfigDir(basePath);
-        return  FileUtils.readFileToString(new File(dir, name));
+        return FileUtils.readFileToString(new File(dir, name), StandardCharsets.UTF_8);
     }
     // 方案依赖的模板列表
     public List<String> schemaTemplates(String name) throws IOException {
@@ -72,7 +72,7 @@ public class TemplateService {
         String fileName = trueFileName(name);
 
         File file = new File(dir, fileName);
-        FileUtils.writeStringToFile(file,content);
+        FileUtils.writeStringToFile(file, content, StandardCharsets.UTF_8);
     }
 
     // 上传一个模板
@@ -102,7 +102,6 @@ public class TemplateService {
 
     /**
      * 根据元数据和模板解析模板文件
-     * @param template
      * @param currentTable
      * @param renameStrategy
      * @return
@@ -123,14 +122,13 @@ public class TemplateService {
     }
 
     private void commonTemplateData(Map<String, Object> context) {
-        context.put("date", DateFormatUtils.ISO_DATE_FORMAT.format(System.currentTimeMillis()));
-        context.put("time", DateFormatUtils.ISO_TIME_NO_T_FORMAT.format(System.currentTimeMillis()));
+        context.put("date", DateFormatUtils.ISO_8601_EXTENDED_DATE_FORMAT.format(System.currentTimeMillis()));
+        context.put("time", DateFormatUtils.ISO_8601_EXTENDED_TIME_FORMAT.format(System.currentTimeMillis()));
         context.put("author", System.getProperty("user.name"));
     }
 
     /**
      * 根据需要的表, 生成模板代码
-     * @param templateName
      * @param renameStrategy
      * @param filterTables
      * @return
@@ -159,7 +157,7 @@ public class TemplateService {
                 String process = freeMarkerTemplate.process(template, context);
                 String fileName = StringUtils.capitalize(FilenameUtils.getBaseName(template.getName()));
                 File file = new File(generatorDir, fileName);
-                FileUtils.writeStringToFile(file,process);
+                FileUtils.writeStringToFile(file, process, StandardCharsets.UTF_8);
             }else {
                 for (TableMetaData filterTable : filterTables) {
                     ActualTableName actualTableName = filterTable.getActualTableName();
@@ -177,7 +175,7 @@ public class TemplateService {
                     String fileNameSuffix = StringUtils.capitalize(FilenameUtils.getBaseName(name));
 
                     File file = new File(generatorDir, className + fileNameSuffix);
-                    FileUtils.writeStringToFile(file, process);
+                    FileUtils.writeStringToFile(file, process, StandardCharsets.UTF_8);
                 }
             }
         }

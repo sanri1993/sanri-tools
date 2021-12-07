@@ -55,6 +55,8 @@ public class ChatService {
                         WebSocketClient client = serviceEndpoint.client(to);
                         client.sendMessage(clientMessage);
                     }
+                    break;
+                default:
             }
         }
 
@@ -70,6 +72,9 @@ public class ChatService {
     }
 
     enum ChatCommand{
+        /**
+         * 发送消息
+         */
         SEND_MESSAGE
     }
 

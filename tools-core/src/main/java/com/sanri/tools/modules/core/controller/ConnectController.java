@@ -3,8 +3,8 @@ package com.sanri.tools.modules.core.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.sanri.tools.modules.core.dtos.ConnectDto;
 import com.sanri.tools.modules.core.dtos.param.*;
-import com.sanri.tools.modules.core.service.file.ConnectService;
-import com.sanri.tools.modules.core.utils.URLUtil;
+import com.sanri.tools.modules.core.security.UserService;
+import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
 import com.sanri.tools.modules.core.validation.custom.EnumStringValue;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,20 +14,18 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/connect")
 @Validated
 public class ConnectController {
     @Autowired
-    private ConnectService connectService;
+    private ConnectServiceFileBase connectService;
 
     /**
      * 模块列表
-     * @return
+     * @return 模块列表
      */
     @GetMapping("/modules")
     public List<String> modules(){
@@ -36,19 +34,24 @@ public class ConnectController {
 
     /**
      * 创建一个新模块
-     * @param name
+     * @param name 模块名称
      */
     @PostMapping("/createModule")
     public void createModule(@NotNull @EnumStringValue({"database","kafka","redis","zookeeper","mongo","git"}) String name){
         connectService.createModule(name);
     }
 
+    /**
+     * 删除一个模块
+     * @param name 模块名称
+     * @throws IOException
+     */
     @PostMapping("/deleteModule")
     public void deleteModule(@NotNull String name) throws IOException {connectService.dropModule(name);}
 
     /**
      * 指定模块下的连接列表
-     * @param module
+     * @param module 模块名称
      * @return
      */
     @GetMapping("/{module}/names")
@@ -58,7 +61,7 @@ public class ConnectController {
 
     /**
      * 列出所有连接
-     * @return
+     * @return 连接列表
      */
     @GetMapping("/all")
     public List<ConnectDto> connects(){
@@ -66,8 +69,8 @@ public class ConnectController {
     }
     /**
      * 获取连接详情
-     * @param module
-     * @param connName
+     * @param module 模块名
+     * @param connName 连接名
      * @return
      */
     @GetMapping("/{module}/{connName}")
@@ -77,7 +80,7 @@ public class ConnectController {
 
     /**
      * 创建连接
-     * @param module
+     * @param module 模块名称
      * @param data 动态数据 ; {@link  AbstractConnectParam}
      * @throws IOException
      */
@@ -88,8 +91,8 @@ public class ConnectController {
 
     /**
      * 删除连接; 这个删除不会删除真实连接,真实连接会在项目关闭后释放连接
-     * @param module
-     * @param connName
+     * @param module 模块名称
+     * @param connName 连接名
      */
     @PostMapping("/dropConnect/{module}/{connName}")
     public void dropConnect(@PathVariable("module") String module,@PathVariable("connName")String connName){
@@ -98,8 +101,8 @@ public class ConnectController {
 
     /**
      * 获取连接示例
-     * @param module
-     * @param format
+     * @param module 模块名称
+     * @param format 连接格式名称
      * @return
      * @throws IOException
      */

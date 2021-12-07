@@ -37,6 +37,9 @@ public class NameService {
     @Autowired
     private PluginManager pluginManager;
 
+    public NameService() {
+    }
+
     @Autowired(required = false)
     public NameService(List<EnglishTranslate> englishTranslates) {
         if (CollectionUtils.isNotEmpty(englishTranslates)){
@@ -155,7 +158,7 @@ public class NameService {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module("call").name(BizTranslate.module).author("9420").logo("translate.gif").desc("快速对方法或变量取名").build());
+        pluginManager.register(PluginDto.builder().module("call").name(BizTranslate.MODULE).author("9420").logo("translate.gif").desc("快速对方法或变量取名").build());
     }
 
     /**

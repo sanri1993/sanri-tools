@@ -23,8 +23,7 @@ public class SoapController {
     private WsdlServiceClient wsdlServiceClient;
 
     /**
-     * 目前已经有的 wsdl 解析列表
-     * 这个不做存储
+     * 目前已经有的 wsdl 解析列表,这个不做存储
      * @return
      */
     @GetMapping("/services")
@@ -32,6 +31,11 @@ public class SoapController {
         return wsdlServiceClient.services();
     }
 
+    /**
+     * 列出所有的端点
+     * @param wsdl wsdl 地址
+     * @return
+     */
     @GetMapping("/ports")
     public Set<String> ports(@NotNull String wsdl){
         WsdlService wsdlService = wsdlServiceClient.loadWebservice(wsdl);
@@ -39,6 +43,12 @@ public class SoapController {
         return wsdlPortMap.keySet();
     }
 
+    /**
+     * 获取端点所有的方法
+     * @param wsdl wsdl 地址
+     * @param port port 名称
+     * @return
+     */
     @GetMapping("/{port}/methods")
     public Set<String> methods(@NotNull String wsdl, @PathVariable("port") String port){
         WsdlService wsdlService = wsdlServiceClient.loadWebservice(wsdl);
@@ -52,6 +62,13 @@ public class SoapController {
         return null;
     }
 
+    /**
+     * 获取方法的所有入参信息
+     * @param wsdl wsdl 地址
+     * @param port 端点名称
+     * @param operation 方法名称
+     * @return
+     */
     @GetMapping("/{port}/{operation}/input")
     public WsdlParam methodInputParams(@NotNull String wsdl,@PathVariable("port") String port,@PathVariable("operation") String operation){
         WsdlService wsdlService = wsdlServiceClient.loadWebservice(wsdl);
@@ -67,6 +84,13 @@ public class SoapController {
         return null;
     }
 
+    /**
+     * 获取方法的所有出参信息
+     * @param wsdl wsdl 地址
+     * @param port 端点名称
+     * @param operation 方法名称
+     * @return
+     */
     @GetMapping("/{port}/{operation}/output")
     public WsdlParam methodOutputParam(@NotNull String wsdl,@PathVariable("port") String port,@PathVariable("operation") String operation){
         WsdlService wsdlService = wsdlServiceClient.loadWebservice(wsdl);
@@ -84,9 +108,9 @@ public class SoapController {
 
     /**
      * 构建 soap 消息模板,后面让用户输入参数后就可以调用了
-     * @param wsdl
-     * @param port
-     * @param operation
+     * @param wsdl wsdl 地址
+     * @param port 端点名称
+     * @param operation 方法名称
      * @return
      */
     @GetMapping("/{port}/{operation}/build")
@@ -104,6 +128,15 @@ public class SoapController {
         return null;
     }
 
+    /**
+     * 发起方法调用
+     * @param wsdl wsdl 地址
+     * @param port 端点名称
+     * @param operation 方法名称
+     * @param message 请求消息
+     * @return
+     * @throws IOException
+     */
     @PostMapping("/{port}/{operation}/request")
     public String sendRequest(@NotNull String wsdl, @PathVariable("port") String port, @PathVariable("operation") String operation, @RequestBody String message) throws IOException {
         WsdlService wsdlService = wsdlServiceClient.loadWebservice(wsdl);

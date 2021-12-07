@@ -45,7 +45,7 @@ public class BusinessException extends RuntimeException {
             int argIndex=0;
             for (argIndex=0;argIndex<args.length;argIndex++) {
                 Object arg = args[argIndex];
-                argsStringArray[argIndex] = ObjectUtils.toString(arg);
+                argsStringArray[argIndex] = String.valueOf(arg);
             }
             for (;argIndex<argsStringArray.length;argIndex++){
                 argsStringArray[argIndex] = "";

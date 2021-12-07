@@ -10,9 +10,17 @@ import org.apache.commons.lang3.time.DateUtils;
  */
 @Data
 public class EnhancePluginDto implements Comparable<EnhancePluginDto>{
+    /**
+     * 插件信息
+     */
     private PluginDto pluginDto;
-    // 总共调用次数,上次被使用时间
+    /**
+     * 总共调用次数
+     */
     private int totalCalls;
+    /**
+     * 上次调用时间
+     */
     private long lastCallTime;
 
     public static final long FIVE_MINUTES = 5 * 60 * 1000;

@@ -1,8 +1,9 @@
 data:
   path:
-    config: /tmp/sanritools/configs
+    configs: /tmp/sanritools/configs
     tmp: /tmp/sanritools/temp
     libs: /tmp/sanritools/libs
+    data: /tmp/sanritools/data
 logging:
   path: /tmp/sanritools/logs
 server:

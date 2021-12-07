@@ -10,21 +10,17 @@ import com.alibaba.dubbo.rpc.RpcResult;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.sanri.tools.modules.core.dtos.ClassStruct;
 import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.exception.ToolException;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
-import com.sanri.tools.modules.core.service.file.ConnectService;
+import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.dubbo.DubboProviderDto;
 import com.sanri.tools.modules.dubbo.dtos.DubboInvokeParam;
 import com.sanri.tools.modules.zookeeper.service.ZookeeperService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -36,7 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -49,7 +44,7 @@ public class MainDubboService {
     @Autowired
     private PluginManager pluginManager;
     @Autowired
-    private ConnectService connectService;
+    private ConnectServiceFileBase connectService;
 
     /**
      * 检查是否存在 dubbo 服务

@@ -14,6 +14,9 @@ import java.util.Set;
 public class SerializerChoseService {
     private Map<String,Serializer> serializerMap = new HashMap<>();
 
+    public SerializerChoseService() {
+    }
+
     @Autowired(required = false)
     public SerializerChoseService(List<Serializer> serializers){
         for (Serializer serializer : serializers) {

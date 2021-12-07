@@ -6,8 +6,6 @@ import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.core.utils.MybatisXNode;
 import com.sanri.tools.modules.core.utils.MybatisXPathParser;
-import jdk.internal.org.objectweb.asm.ClassReader;
-import jdk.internal.org.objectweb.asm.tree.ClassNode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
@@ -15,6 +13,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.tree.ClassNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
@@ -34,6 +34,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -43,7 +44,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ClassloaderService  {
     // classloaderName ==> ClassLoader
-    private Map<String,ExtendClassloader> CACHED_CLASSLOADER = new HashMap<>();
+    private static final  Map<String,ExtendClassloader> CACHED_CLASSLOADER = new HashMap<>();
 
     @Autowired
     private CompileService compileService;
@@ -152,7 +153,7 @@ public class ClassloaderService  {
      * @param targetJavaFile
      */
     public void loadSingleJavaFile(File targetJavaFile,String classloaderName) throws IOException {
-        String content = FileUtils.readFileToString(targetJavaFile);
+        String content = FileUtils.readFileToString(targetJavaFile, StandardCharsets.UTF_8);
         FileUtils.deleteQuietly(targetJavaFile);
 
         SimpleJavaBeanBuilder simpleJavaBeanBuilder = compileService.javaBeanAdapter(content);
@@ -308,8 +309,8 @@ public class ClassloaderService  {
 
     /**
      * 加载出一个 Class
-     * @param classloaderName
-     * @param className
+     * @param classloaderName 类加载器名称
+     * @param className 类名
      * @return
      * @throws ClassNotFoundException
      */

@@ -1,0 +1,29 @@
+### google 翻译
+GET http://translate.google.cn/translate_a/single?client=gtx&sl=zh-CN&tl=en&dt=t&q=查询当前组织下的审核人
+
+### 翻译取名工具
+GET {{baseUrl}}/name/translate?orginChars=查询当前组织下的审核人&tokenizer=ik&tranlates=baidu
+
+### 所有的英语翻译
+GET {{baseUrl}}/name/englishs
+
+### 所有的分词器
+GET {{baseUrl}}/name/tokenizers
+
+### 所有的业务词
+GET {{baseUrl}}/name/bizs
+
+### 业务词详情
+GET {{baseUrl}}/name/detail/common
+
+### 写入业务词
+POST {{baseUrl}}/name/mirror/write/common
+Content-Type: application/x-www-form-urlencoded
+
+用户=user
+人=people
+### 多列翻译
+GET {{baseUrl}}/name/multiTranslate?words=审核人&words=消息中心&words=查询当前组织下的审核人&english=baidu
+
+### 多列翻译下划线方式
+GET {{baseUrl}}/name/mutiTranslateUnderline?words=审核人&words=消息中心&words=查询当前组织下的审核人&english=baidu

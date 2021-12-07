@@ -1,0 +1,325 @@
+### 获取所有数据库连接
+GET {{baseUrl}}/db/metadata/connections
+
+### 获取所有 catalogs
+GET {{baseUrl}}/db/metadata/catalogs?connName=localhost
+
+### 获取 catalog 的所有表
+GET {{baseUrl}}/db/metadata/tables?connName=localhost&catalog=test
+
+### 刷新所有的表
+GET {{baseUrl}}/db/metadata/refreshTables?connName=localhost&catalog=test&schema=
+
+### 表元数据 - 刷新表的列
+GET {{baseUrl}}/db/metadata/refreshColumns?connName=localhost&catalog=test&tableName=batch
+
+### 表元数据 - 刷新表的主键
+GET {{baseUrl}}/db/metadata/refreshPrimaryKeys?connName=localhost&catalog=test&tableName=batch
+
+### 表元数据 - 刷新表的索引
+GET {{baseUrl}}/db/metadata/refreshIndexs?connName=localhost&catalog=test&tableName=batch
+
+### 表元数据 - 搜索表
+GET {{baseUrl}}/db/metadata/searchTables?connName=lo&catalog=hdsc_db&schemas=mct&keyword=mct_push_rule_config_event_items
+
+### 标记表-常用标记
+GET {{baseUrl}}/db/metadata/extend/mark/tags
+
+### 标记表-标记表
+POST {{baseUrl}}/db/metadata/extend/mark/config/tableMark
+Content-Type: application/json
+
+[
+  {
+    "connName": "lo",
+    "actualTableName": {
+      "catalog": null,
+      "schema": "mct",
+      "tableName": "mct_system_config"
+    },
+    "tags": [
+      "config"
+    ]
+  }
+]
+
+### 标记表-获取表标记
+GET {{baseUrl}}/db/metadata/extend/mark/tableTags?connName=lo&schema=mct&tableName=mct_system_config
+
+### 标记表-查找某个标记的表
+GET {{baseUrl}}/db/metadata/extend/mark/tagTables?connName=lo&schema=mct&tag=config
+
+### 表关系 - 配置表关系
+POST {{baseUrl}}/db/metadata/extend/relation/config
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "catalog": null,
+  "tableRelations": [
+    {
+      "sourceTableName": {
+        "schema": "mct",
+        "tableName": "mct_event_record_biz"
+      },
+      "targetTableName": {
+        "schema": "mct",
+        "tableName": "mct_event_record_plc"
+      },
+      "sourceColumnName": "uuid",
+      "targetColumnName": "uuid",
+      "relation": "ONE_ONE"
+    }
+  ]
+}
+
+### 数据库 - 表关系 - 查询表引用的关系
+GET {{baseUrl}}/db/metadata/extend/relation/parents?connName=lo&schema=mct&tableName=mct_event_handler
+
+### 数据库 - 表关系  - 查询表的下级引用
+GET {{baseUrl}}/db/metadata/extend/relation/childs?connName=lo&schema=mct&tableName=mct_event_record_biz
+
+### 数据库 - 表关系  - 查询表的关联层级
+GET {{baseUrl}}/db/metadata/extend/relation/hierarchy?connName=lo&schema=mct&tableName=mct_event_record_biz
+
+### 数据库 - 数据 - 单表随机数据生成
+POST {{baseUrl}}/db/data/singleTableRandomData
+Content-Type: application/json
+
+{
+  "connName": "localhost",
+  "actualTableName": {
+    "catalog": "test",
+    "tableName": "test_index"
+  },
+  "size": 120,
+  "columnMappers": [
+    {
+      "columnName": "title",
+      "random": "T(com.sanri.tools.modules.core.utils.RandomUtil).chinese(64,null)"
+    },
+    {
+      "columnName": "idcard",
+      "random": "T(com.sanri.tools.modules.core.utils.RandomUtil).idcard()"
+    },
+    {
+      "columnName": "age",
+      "random": "T(org.apache.commons.lang3.RandomUtils).nextInt(1,140)"
+    },
+    {
+      "columnName": "author",
+      "random": "T(com.sanri.tools.modules.core.utils.RandomUtil).chinese(32,null)"
+    },
+    {
+      "columnName": "report_time",
+      "random": "T(org.apache.commons.lang3.time.DateFormatUtils).ISO_8601_EXTENDED_DATETIME_FORMAT.format(T(com.sanri.tools.modules.core.utils.RandomUtil).date())"
+    }
+  ]
+}
+
+### 数据库 - 数据 - 单表随机数据生成(关联其它表)
+POST {{baseUrl}}/db/data/singleTableRandomData
+Content-Type: application/json
+
+{
+  "connName": "localhost",
+  "actualTableName": {
+    "catalog": "test",
+    "tableName": "emp"
+  },
+  "size": 100,
+  "columnMappers": [
+    {
+      "columnName": "empno",
+      "random": "T(org.apache.commons.lang3.RandomStringUtils).randomNumeric(4)"
+    },
+    {
+      "columnName": "ename",
+      "random": "T(com.sanri.tools.modules.core.utils.RandomUtil).chinese(5,null)"
+    },
+    {
+      "columnName": "deptno",
+      "sql": "select deptno from test.dept"
+    }
+  ]
+}
+
+### 数据库 - 数据 - 导入数据
+POST {{baseUrl}}/db/data/import/excel
+Content-Type: multipart/form-data; boundary=importData
+
+--importData
+Content-Disposition: form-data; name="excel"; filename="acc_auth_history_record.xlsx"
+Content-Type: application/octet-stream
+
+< d:/test/acc_auth_history_record.xlsx
+--importData
+Content-Disposition: form-data; name="config"
+Content-Type: application/json
+
+{
+"connName": "localhost",
+"actualTableName": {
+    "catalog": "test",
+    "tableName": "test_index"
+},
+"startRow": 2,
+"mapping": [
+    {
+      "columnName": "title",
+      "index": 35
+    },{
+      "columnName": "author",
+      "index": 31
+    },
+    {
+      "columnName": "idcard",
+      "random": "T(com.sanri.tools.modules.core.utils.RandomUtil).idcard()"
+    },
+    {
+      "columnName": "age",
+      "random": "T(org.apache.commons.lang3.RandomUtils).nextInt(1,140)"
+    },
+    {
+      "columnName": "report_time",
+      "random": "T(org.apache.commons.lang3.time.DateFormatUtils).ISO_8601_EXTENDED_DATETIME_FORMAT.format(T(com.sanri.tools.modules.core.utils.RandomUtil).date())"
+    }
+ ]
+}
+
+### 数据表 - 数据 - 导出数据预览
+POST {{baseUrl}}/db/data/exportPreview
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "sql": "select * from mct.mct_event_record_common"
+}
+
+### 数据表 - 数据 - 导出数据
+POST {{baseUrl}}/db/data/exportData
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "sqls": ["select * from mct.mct_event_record_common"],
+  "traceId": "abc"
+}
+### 数据表 - 数据 - 执行查询
+POST {{baseUrl}}/db/data/executeQuery
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "sqls": ["select * from mct.mct_event_record_common limit 10"],
+  "traceId": "abc"
+}
+### 数据表 - 数据 - 执行 ddl
+POST {{baseUrl}}/db/data/executeUpdate
+Content-Type: application/json
+
+{
+  "connName": "localhost",
+  "sqls": ["create table abc(name varchar(32))"],
+  "traceId": "abc"
+}
+### 数据表 - 配置数据(nacos,diamond) - 所有分组信息
+GET {{baseUrl}}/db/data/config/groups?connName=lo&schemaName=nacos
+
+### 数据表 - 配置数据 - 分组的 dataIds
+GET {{baseUrl}}/db/data/config/dataIds?connName=lo&schemaName=nacos&groupId=scp-st-messagecenter-component
+
+### 数据表 - 配置数据 - 获取配置数据详情
+GET {{baseUrl}}/db/data/config/content?connName=lo&schemaName=nacos&groupId=scp-st-messagecenter-component&dataId=scp-st-messagecenter-component-dev.properties
+
+### 数据库 - 代码生成 - 列出所有重命名策略
+GET {{baseUrl}}/db/code/renameStrategies
+
+### 数据表 - 代码生成 - 生成 javaBean
+POST {{baseUrl}}/db/code/build/javaBean
+Content-Type: application/json
+
+{
+  "connName": "lo",
+  "catalog": null,
+  "schema": "mct",
+  "tableNames": [
+    "mct_event_record_common","mct_event_record","mct_event_handler"
+  ],
+  "lombok": true,
+  "swagger2": false,
+  "persistence": false,
+  "serializer": false,
+  "packageName": "com.sanri.entity",
+  "renameStrategy": "defaultRenameStragtegy"
+}
+
+
+### 数据库 - 代码生成 - mapper 生成 ;  mybatis , tk.mybatis
+POST {{baseUrl}}/db/code/build/mapper
+Content-Type: application/json
+
+
+### 数据库 - 代码生成 - 列出所有模板
+GET {{baseUrl}}/db/code/templates
+
+### 数据库 - 代码生成 - 查询某个模板详情
+GET {{baseUrl}}/db/code/mapper.xml.32322.ftl/content
+
+### 数据库 - 代码生成 - 建立一个方案
+POST {{baseUrl}}/db/code/override
+Content-Type: application/json
+
+{
+  "name": "base.schema",
+  "content": "mapper.xml.32322.ftl"
+}
+
+### 数据库 - 代码生成 - 列出所有方案
+GET {{baseUrl}}/db/code/schemas
+
+### 数据库 - 代码生成 - 列出某个方案的模板列表
+GET {{baseUrl}}/db/code/base.schema/templates
+
+### 数据库 - 代码生成 - 预览模板代码
+POST {{baseUrl}}/db/code/template/code/preview
+Content-Type: application/json
+
+{
+  "template": "mapper.xml.32322.ftl",
+  "connName": "localhost",
+  "renameStrategyName": "defaultRenameStragtegy",
+  "actualTableName": {
+    "catalog": "test",
+    "tableName": "batch"
+  },
+  "packageConfig": {
+    "mapper": "com.sanri.test.mapper"
+  }
+}
+
+### 数据库 - 代码生成  - 生成代码
+POST {{baseUrl}}/db/code/template/code/generator
+
+Content-Type: application/json
+
+{
+  "renameStrategyName": "defaultRenameStragtegy",
+  "templates": [
+    "mapper.xml.32322.ftl"
+  ],
+  "dataSourceConfig": {
+    "connName": "localhost",
+    "catalog": "test",
+    "tableNames": ["batch"]
+  },
+  "packageConfig": {
+    "mapper": "com.sanri.test.mapper"
+  }
+}
+
+### 生成数据库文档
+POST {{baseUrl}}/db/metadata/generate?connName=lo&schemas=mct
+
+### 添加注释
+GET {{baseUrl}}/comments

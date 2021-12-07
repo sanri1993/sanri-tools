@@ -36,8 +36,8 @@ public class RandomDataController {
 
     /**
      * 随机填充数据
-     * @param className
-     * @param classloaderName
+     * @param className 类名
+     * @param classloaderName 类加载器名称
      * @return
      * @throws ClassNotFoundException
      */
@@ -49,8 +49,8 @@ public class RandomDataController {
 
     /**
      * 随机填充列表数据
-     * @param className
-     * @param classloaderName
+     * @param className 类名
+     * @param classloaderName 类加载器名称
      * @return
      * @throws ClassNotFoundException
      */
@@ -67,8 +67,8 @@ public class RandomDataController {
 
     /**
      * 使用正则表达式随机填充数据
-     * @param className
-     * @param classloaderName
+     * @param className         类名
+     * @param classloaderName   类加载器名称
      * @return
      */
     @GetMapping("/random/regex")
@@ -82,8 +82,7 @@ public class RandomDataController {
     /**
      * 爬取数据
      * 这里提供的类 需要有 @Request 标记
-     * @param className
-     * @param classloaderName
+     * @param spiderDataParam 爬取数据参数
      * @return
      */
     @PostMapping("/spider")

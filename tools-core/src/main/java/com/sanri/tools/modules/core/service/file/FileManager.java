@@ -5,7 +5,6 @@ import com.sanri.tools.modules.core.utils.ZipUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -15,37 +14,41 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
-import java.nio.file.Files;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
 import java.util.*;
 
 @Service
 @Slf4j
 public class FileManager {
     private File configBase;
-    private File tmpBase ;
+    private File tmpBase;
+    private File dataBase;
 
     public FileManager(FileManagerProperties fileManagerProperties){
-        configBase = fileManagerProperties.getConfig();
+        configBase = fileManagerProperties.getConfigs();
         tmpBase = fileManagerProperties.getTmp();
+        dataBase = fileManagerProperties.getData();
     }
 
     @PostConstruct
     public void init(){
         log.info("配置文件目录:{}",configBase);
         log.info("临时文件目录:{}",tmpBase);
+        log.info("数据文件目录:{}",dataBase);
         if(configBase != null){
             configBase.mkdirs();
         }
         if(tmpBase != null){
             tmpBase.mkdirs();
         }
+        if (dataBase != null){
+            dataBase.mkdirs();
+        }
     }
 
     /**
-     * 返回所有模块
+     * 返回所有配置目录模块
      * @return
      */
     public List<String> modules(){
@@ -56,18 +59,42 @@ public class FileManager {
      * 写入配置信息
      * @param module 模块路径
      * @param baseName 基础文件名称 可使用子路径 a/b
-     * @param configs 配置信息
+     * @param content 配置信息
      */
     public void writeConfig(String module,String baseName,String content) throws IOException {
         //content 可能有编码操作，需要解码
         content = URLDecoder.decode(content,"utf-8");
         File moduleDir = new File(configBase, module);
         // check module exists
-        if(!moduleDir.exists())moduleDir.mkdir();
+        if(!moduleDir.exists()) {
+            moduleDir.mkdir();
+        }
 
         File configFile = new File(moduleDir, baseName);
         configFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile(configFile,content);
+        FileUtils.writeStringToFile(configFile,content,StandardCharsets.UTF_8);
+    }
+
+    /**
+     * 读取配置
+     * @param module
+     * @param baseName
+     * @return
+     */
+    public String readConfig(String module, String baseName) throws IOException {
+        if(StringUtils.isBlank(baseName)) {
+            return "";
+        }
+        File moduleDir = new File(configBase, module);
+        // check module exists
+        if(!moduleDir.exists()) {
+            moduleDir.mkdir();
+        }
+        File file = new File(moduleDir, baseName);
+        if(!file.exists()){
+            return null;
+        }
+        return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
     }
 
     /**
@@ -106,7 +133,9 @@ public class FileManager {
     public List<ConfigPath> configNames(String module){
         File moduleDir = new File(configBase, module);
         // check module exists
-        if(!moduleDir.exists())moduleDir.mkdir();
+        if(!moduleDir.exists()) {
+            moduleDir.mkdir();
+        }
 
         List<ConfigPath> configPaths = convertDir2ConfigPaths(moduleDir);
         return configPaths;
@@ -124,29 +153,13 @@ public class FileManager {
         }
         File moduleDir = new File(configBase, module);
         // check module exists
-        if(!moduleDir.exists())moduleDir.mkdir();
+        if(!moduleDir.exists()) {
+            moduleDir.mkdir();
+        }
 
         File targetDir = new File(moduleDir, baseName);
         List<ConfigPath> configPaths = convertDir2ConfigPaths(targetDir);
         return configPaths;
-    }
-
-    /**
-     * 读取配置
-     * @param modulee
-     * @param baseName
-     * @return
-     */
-    public String readConfig(String module, String baseName) throws IOException {
-        if(StringUtils.isBlank(baseName))return "";
-        File moduleDir = new File(configBase, module);
-        // check module exists
-        if(!moduleDir.exists())moduleDir.mkdir();
-        File file = new File(moduleDir, baseName);
-        if(!file.exists()){
-            return null;
-        }
-        return FileUtils.readFileToString(file);
     }
 
     private List<ConfigPath> convertDir2ConfigPaths(File moduleDir) {
@@ -174,7 +187,9 @@ public class FileManager {
      */
     public Resource relativeResource(String baseName) {
         File file = new File(tmpBase, baseName);
-        if(!file.exists())return null;
+        if(!file.exists()) {
+            return null;
+        }
 
         if(file.isFile()){
             return new FileSystemResource(file);
@@ -216,6 +231,19 @@ public class FileManager {
     public File mkConfigDir(String baseName){
         File file = new File(configBase, baseName);
         if(!file.exists()){
+            file.mkdirs();
+        }
+        return file;
+    }
+
+    /**
+     * 创建数据目录
+     * @param baseName
+     * @return
+     */
+    public File mkDataDir(String baseName){
+        final File file = new File(dataBase, baseName);
+        if (!file.exists()){
             file.mkdirs();
         }
         return file;

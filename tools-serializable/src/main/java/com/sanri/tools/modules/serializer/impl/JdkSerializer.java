@@ -18,7 +18,9 @@ public class JdkSerializer implements Serializer {
 
     @Override
     public byte[] serialize(Object o) throws IOException {
-        if(o == null) return new byte[0];
+        if(o == null) {
+            return new byte[0];
+        }
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ObjectOutputStream outputStream = new ObjectOutputStream(byteArrayOutputStream);
         outputStream.writeObject(o);
@@ -28,7 +30,9 @@ public class JdkSerializer implements Serializer {
 
     @Override
     public Object deserialize(byte[] bytes,ClassLoader classLoader) throws IOException, ClassNotFoundException {
-        if(bytes == null) return  null;
+        if(bytes == null) {
+            return  null;
+        }
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
         CustomObjectInputStream objectInputStream = new CustomObjectInputStream(byteArrayInputStream,classLoader);
 

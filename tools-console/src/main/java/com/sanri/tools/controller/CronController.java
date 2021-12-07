@@ -17,8 +17,8 @@ public class CronController {
 
     /**
      * 小工具 , 计算 cron 表达式下次执行时间
-     * @param expression
-     * @return
+     * @param expression cron 表达式
+     * @return 计算的后面所有执行时间
      */
     @PostMapping("/cron/nextExecutionTime")
     public List<String> cronNextExecutionTime(@NotNull String expression){

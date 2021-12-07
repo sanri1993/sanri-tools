@@ -2,13 +2,12 @@ package com.sanri.tools.modules.database.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.sanri.tools.modules.core.service.file.ConnectService;
+import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
 import com.sanri.tools.modules.database.dtos.TableMark;
 import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,7 @@ public class TableMarkService {
     @Autowired
     private FileManager fileManager;
     @Autowired
-    private ConnectService connectService;
+    private ConnectServiceFileBase connectService;
 
     /**
      * 配置表标签,直接覆盖的方式
@@ -55,7 +54,7 @@ public class TableMarkService {
      */
     private void serializable(){
         try {
-            fileManager.writeConfig(JdbcService.module,"metadata/tablemark", JSON.toJSONString(tableMarkMap));
+            fileManager.writeConfig(JdbcService.MODULE,"metadata/tablemark", JSON.toJSONString(tableMarkMap));
         } catch (IOException e) {
             log.error("tableMark serializable error : {}",e.getMessage(),e);
         }
@@ -64,7 +63,7 @@ public class TableMarkService {
     @PostConstruct
     private void init(){
         try {
-            String tableMark = fileManager.readConfig(JdbcService.module, "metadata/tablemark");
+            String tableMark = fileManager.readConfig(JdbcService.MODULE, "metadata/tablemark");
             if(StringUtils.isNotBlank(tableMark)){
                 TypeReference<Map<String, Map<ActualTableName,TableMark>>> typeReference = new TypeReference<Map<String,Map<ActualTableName,TableMark>>>(){};
                 tableMarkMap = JSON.parseObject(tableMark, typeReference);

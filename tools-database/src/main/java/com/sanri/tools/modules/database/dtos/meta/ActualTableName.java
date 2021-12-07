@@ -9,10 +9,22 @@ import java.util.Arrays;
 
 @Setter
 public class ActualTableName {
+    /**
+     * 数据库 catalog
+     */
     private String catalog;
+    /**
+     * 数据库 schema
+     */
     private String schema;
+    /**
+     * 表名
+     */
     @NotNull
     private String tableName;
+    /**
+     * 完全限定名
+     */
     private String fullName;
 
     public ActualTableName() {
@@ -32,7 +44,9 @@ public class ActualTableName {
             return false;
         }
         ActualTableName other = (ActualTableName) obj;
-        if (getFullName() == null && other.getFullName() == null )return true;
+        if (getFullName() == null && other.getFullName() == null ) {
+            return true;
+        }
 
         return getFullName().equals(other.getFullName());
     }

@@ -23,6 +23,7 @@ public class DatabaseConnectParam extends AbstractConnectParam{
                 return "org.postgresql.Driver";
             case dbType_oracle:
                 return "oracle.jdbc.driver.OracleDriver";
+            default:
         }
 
         return null;
@@ -50,6 +51,7 @@ public class DatabaseConnectParam extends AbstractConnectParam{
                 properties.setProperty("remarks", "true");
                 properties.setProperty("useInformationSchema", "true");
                 break;
+            default:
         }
 
         return properties;

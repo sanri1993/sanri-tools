@@ -22,6 +22,12 @@ public class RedisController {
     @Autowired
     private RedisTreeKeyService redisTreeKeyService;
 
+    /**
+     * Redis 树状 key 节点
+     * @param connParam 连接参数
+     * @return
+     * @throws IOException
+     */
     @GetMapping("/key/tree")
     public List<TreeKey> treeKeys(@Validated ConnParam connParam) throws IOException {
         return redisTreeKeyService.treeKeys(connParam);
@@ -29,8 +35,8 @@ public class RedisController {
 
     /**
      * 查询某个 key 的详细信息
-     * @param connParam
-     * @param key
+     * @param connParam 连接参数
+     * @param key key
      * @return
      */
     @GetMapping("/key/info")
@@ -38,25 +44,47 @@ public class RedisController {
         return redisTreeKeyService.keyInfo(connParam,key,serializerParam);
     }
 
+    /**
+     * 按照 key 模式删除一个 key
+     * @param connParam 连接参数
+     * @param keyPattern keyPattern
+     * @return
+     * @throws IOException
+     */
     @GetMapping("/key/del/pattern")
     public long delKeyPattern(@Validated ConnParam connParam,String keyPattern) throws IOException {
         return redisTreeKeyService.dropKeyPattern(connParam, keyPattern);
     }
 
+    /**
+     * 扫描 key
+     * @param connParam 连接参数
+     * @param keyScanParam 扫描参数
+     * @param serializerParam 序列化参数
+     * @return
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     @GetMapping("/key/scan")
     public KeyScanResult scan(@Validated ConnParam connParam, KeyScanParam keyScanParam, SerializerParam serializerParam) throws IOException, ClassNotFoundException {
         return redisService.scan(connParam,keyScanParam,serializerParam);
     }
 
+    /**
+     * 批量删除 key
+     * @param delKeysParam 删除 key 参数
+     * @return
+     * @throws IOException
+     */
     @PostMapping("/key/del")
     public Long delKeys(@RequestBody DelKeysParam delKeysParam) throws IOException {
         return redisService.delKeys(delKeysParam.getConnParam(),delKeysParam.getKeys(),delKeysParam.getSerializerParam());
     }
 
     /**
-     * @param hashKeyScanParam
-     * @param connParam
-     * @param serializerParam
+     * @param connParam 连接参数
+     * @param hashKeyScanParam  hashKey 扫描参数
+     * @param serializerParam 序列化参数
      * @return
      */
     @GetMapping("/key/hscan")
@@ -66,7 +94,7 @@ public class RedisController {
 
     /**
      * hash 删除部分 key
-     * @param delFieldsParam
+     * @param delFieldsParam 字段删除参数
      * @return
      */
     @PostMapping("/key/hash/hdel")
@@ -76,7 +104,7 @@ public class RedisController {
 
     /**
      * 查询数据
-     * @param valueParam
+     * @param valueParam 读取值参数
      * @return
      * @throws IOException
      * @throws ClassNotFoundException
@@ -88,10 +116,10 @@ public class RedisController {
 
     /**
      * 集合操作 , 交(inter),并(union),差(diff)
-     * @param connParam
-     * @param members
-     * @param command
-     * @param serializerParam
+     * @param connParam 连接参数
+     * @param members 需要操作的元素列表
+     * @param command 执行的命令,inter,union,diff
+     * @param serializerParam 序列化参数
      * @return
      */
     @GetMapping("/collectionMethods")

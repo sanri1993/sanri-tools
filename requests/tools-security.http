@@ -1,0 +1,143 @@
+### 安全 - 登录
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+  "username": "sanri",
+  "password": "0"
+}
+
+> {%
+var keyValue = response.headers.toString().split('\n');
+var Authorization = undefined;
+for (var i=0;i<keyValue.length;i++){
+    var one = keyValue[i];
+    if(one.startsWith('Authorization')){
+       Authorization = one.split(':')[1];
+        break;
+    }
+}
+if(Authorization){
+    client.global.set("Authorization",Authorization.trim())
+}else{
+    client.log('未找到 Authorization')
+}
+
+%}
+
+#############################管理员维护信息############################################
+### 安全-管理员-用户列表
+GET {{baseUrl}}/security/admin/users
+Authorization: {{Authorization}}
+
+### 安全-管理员-角色列表
+GET {{baseUrl}}/security/admin/roles
+Authorization: {{Authorization}}
+
+### 安全 - 组织树
+GET {{baseUrl}}/security/admin/group/tree
+Authorization: {{Authorization}}
+
+### 安全 - 资源列表
+GET {{baseUrl}}/security/admin/resources
+Authorization: {{Authorization}}
+
+###########################当前用户信息################################################
+### 安全 - 退出登录
+POST {{baseUrl}}/logout
+
+### 安全 - 当前用户 - 用户名
+GET {{baseUrl}}/profile/username
+Authorization: {{Authorization}}
+
+### 安全 - 当前用户 - 用户
+GET {{baseUrl}}/profile/user
+Authorization: {{Authorization}}
+
+### 安全 - 当前用户 - 完整信息
+GET {{baseUrl}}/profile
+Authorization: {{Authorization}}
+
+### 安全 - 当前用户 - 可授权角色信息查询
+GET {{baseUrl}}/profile/query/roles
+Authorization: {{Authorization}}
+
+### 安全 - 当前用户 - 可授权分组信息查询
+GET {{baseUrl}}/profile/query/groups
+Authorization: {{Authorization}}
+
+### 安全 - 当前用户 - 可授权资源信息查询
+GET {{baseUrl}}/profile/query/resources
+Authorization: {{Authorization}}
+
+########################当前用户操作#################################
+### 安全 - 添加用户
+POST {{baseUrl}}/profile/user/add
+Authorization: {{Authorization}}
+Content-Type: application/x-www-form-urlencoded
+
+username=sanri
+
+### 安全 - 添加角色
+POST {{baseUrl}}/profile/role/add
+Authorization: {{Authorization}}
+Content-Type: application/x-www-form-urlencoded
+
+roleName=operator
+
+### 安全 - 添加组织
+POST {{baseUrl}}/profile/group/add
+Authorization: {{Authorization}}
+Content-Type: application/x-www-form-urlencoded
+
+relativePath=operator
+
+### 安全 - 删除用户
+POST {{baseUrl}}/profile/user/delete
+Content-Type: application/x-www-form-urlencoded
+Authorization: {{Authorization}}
+
+username=sanri
+
+### 安全 - 删除角色
+POST {{baseUrl}}/profile/role/delete
+Content-Type: application/x-www-form-urlencoded
+Authorization: {{Authorization}}
+
+role=operator
+
+### 安全 - 删除分组
+POST {{baseUrl}}/profile/group/delete
+Authorization: {{Authorization}}
+Content-Type: application/x-www-form-urlencoded
+
+relativePath=a/b/c/
+###################安全管理############################
+
+### 安全 - 用户授权 - 角色
+POST {{baseUrl}}/security/user/grantRoles
+Authorization: {{Authorization}}
+Content-Type: application/x-www-form-urlencoded
+
+username=sanri&roles=operator
+
+### 安全 - 用户授权 - 分组
+POST {{baseUrl}}/security/user/grantGroups
+Authorization: {{Authorization}}
+Content-Type: application/x-www-form-urlencoded
+
+username=sanri&groups=sanri/,operator/
+
+### 安全 - 角色授权 - 资源
+POST {{baseUrl}}/security/role/resource/reset
+Authorization: {{Authorization}}
+Content-Type: application/x-www-form-urlencoded
+
+roleName=operator&resources=redis_redis
+
+### 安全 - 角色授权 - 分组
+POST {{baseUrl}}/security/role/group/reset
+Authorization: {{Authorization}}
+Content-Type: application/x-www-form-urlencoded
+
+roleName=operator&groups=operator/,redis/,soap/

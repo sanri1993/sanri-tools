@@ -1,9 +1,10 @@
 package com.sanri.tools.modules.kafka.dtos;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
+@EqualsAndHashCode
 public class SimpleTopicPartition {
     private String topic;
     private int partition;

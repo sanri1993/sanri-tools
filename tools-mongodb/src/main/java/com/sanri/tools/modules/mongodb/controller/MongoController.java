@@ -26,7 +26,7 @@ public class MongoController {
 
     /**
      * 查询所有的库
-     * @param connName
+     * @param connName 连接名称
      * @return
      * @throws IOException
      */
@@ -37,8 +37,8 @@ public class MongoController {
 
     /**
      * 查询某个库里的所有集合
-     * @param connName
-     * @param databaseName
+     * @param connName 连接名称
+     * @param databaseName 数据库名称
      * @return
      * @throws IOException
      */
@@ -49,8 +49,8 @@ public class MongoController {
 
     /**
      * mongo 分页数据查询
-     * @param mongoQueryParam
-     * @param pageParam
+     * @param mongoQueryParam mongo 查询参数
+     * @param pageParam 分页参数
      * @return
      * @throws IOException
      * @throws ClassNotFoundException

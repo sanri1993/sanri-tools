@@ -88,10 +88,14 @@ public class JsoupSpiderDataService {
                 Field[] declaredFields = currentClass.getDeclaredFields();
                 for (Field declaredField : declaredFields) {
                     Select select = AnnotationUtils.getAnnotation(declaredField, Select.class);
-                    if(select == null)continue;
+                    if(select == null) {
+                        continue;
+                    }
 
                     String cssQuery = select.value();
-                    if(StringUtils.isBlank(cssQuery))continue;
+                    if(StringUtils.isBlank(cssQuery)) {
+                        continue;
+                    }
 
                     Elements elements = element.select(cssQuery);
                     if(elements != null && elements.size() > 0){

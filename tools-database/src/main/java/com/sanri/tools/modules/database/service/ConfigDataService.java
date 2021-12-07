@@ -3,7 +3,6 @@ package com.sanri.tools.modules.database.service;
 import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import lombok.extern.slf4j.Slf4j;
-import oracle.jdbc.proxy.annotation.Post;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.ColumnListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
@@ -72,7 +71,7 @@ public class ConfigDataService {
 
     @PostConstruct
     public void init(){
-        pluginManager.register(PluginDto.builder().module(JdbcService.module)
+        pluginManager.register(PluginDto.builder().module(JdbcService.MODULE)
                 .name("configData").author("9420")
                 .logo("nacos.jpg")
                 .help("配置数据.md")

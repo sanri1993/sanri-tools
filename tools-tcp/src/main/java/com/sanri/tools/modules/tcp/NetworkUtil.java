@@ -19,10 +19,14 @@ public class NetworkUtil {
         while (networkInterfaces.hasMoreElements()) {
             NetworkInterface networkInterface = networkInterfaces.nextElement();
             final boolean up = networkInterface.isUp();
-            if (!up) continue;
+            if (!up) {
+                continue;
+            }
 
             final boolean loopback = networkInterface.isLoopback();
-            if (loopback)continue;
+            if (loopback) {
+                continue;
+            }
 
             final String displayName = networkInterface.getDisplayName();
             if (networkInterface.isVirtual() || displayName.toLowerCase().contains("vm")){

@@ -45,7 +45,7 @@ public class PluginController {
 
     /**
      * 访问某个插件
-     * @param key
+     * @param key 插件标识 module:name
      */
     @GetMapping("/visited")
     public void visited(@NotNull String key){
@@ -54,6 +54,7 @@ public class PluginController {
 
     /**
      * 获取插件详情
+     * @param key 插件标识 module:name
      * @return
      */
     @GetMapping("/detail")

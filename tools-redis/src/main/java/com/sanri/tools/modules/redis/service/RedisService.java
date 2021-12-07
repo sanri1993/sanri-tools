@@ -5,7 +5,7 @@ import com.sanri.tools.modules.core.dtos.UpdateConnectEvent;
 import com.sanri.tools.modules.core.dtos.param.RedisConnectParam;
 import com.sanri.tools.modules.core.exception.ToolException;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
-import com.sanri.tools.modules.core.service.file.ConnectService;
+import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.redis.dtos.*;
 import com.sanri.tools.modules.redis.dtos.in.*;
@@ -37,11 +37,11 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
     // 保存的 redis 连接信息
     private Map<String, RedisConnection> clientMap = new ConcurrentHashMap<>();
     @Autowired
-    private ConnectService connectService;
+    private ConnectServiceFileBase connectService;
     @Autowired
     private PluginManager pluginManager;
 
-    public static final String module = "redis";
+    public static final String MODULE = "redis";
 
     @Autowired
     private SerializerChoseService serializerChoseService;
@@ -325,6 +325,7 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
 
                 final List<ZSetTuple> zSetTuples = mapperToCustomTuple(classloader, valueSerializer, tuples);
                 return new ZSetScanResult(zSetTuples,cursor);
+            default:
         }
 
         log.info("暂时还不运行当前类型的数据获取:{}",key);
@@ -444,6 +445,7 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
                 return client.llen(keyBytes);
             case Hash:
                 return client.hlen(keyBytes);
+            default:
         }
 
         return 0;
@@ -451,13 +453,13 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
 
     @PostConstruct
     public void register(){
-        pluginManager.register(PluginDto.builder().module("monitor").name(module).logo("redis.jpg").desc("Redis 数据查看(不再维护,请使用分模块的 Redis 工具),集群信息管理").help("Redis.md").author("sanri").envs("default").build());
-        pluginManager.register(PluginDto.builder().module("monitor").name(module+"2").logo("redis.jpg").desc("Redis 数据查看,集群信息管理,分模块的 Redis 工具").help("Redis.md").author("sanri").envs("default").build());
+        pluginManager.register(PluginDto.builder().module("monitor").name(MODULE).logo("redis.jpg").desc("Redis 数据查看(不再维护,请使用分模块的 Redis 工具),集群信息管理").help("Redis.md").author("sanri").envs("default").build());
+        pluginManager.register(PluginDto.builder().module("monitor").name(MODULE +"2").logo("redis.jpg").desc("Redis 数据查看,集群信息管理,分模块的 Redis 工具").help("Redis.md").author("sanri").envs("default").build());
     }
 
     @PreDestroy
     public void destory(){
-        log.info("清除 {} 客户端列表:{}",module, clientMap.keySet());
+        log.info("清除 {} 客户端列表:{}", MODULE, clientMap.keySet());
         Iterator<RedisConnection> iterator = clientMap.values().iterator();
         while (iterator.hasNext()){
             final RedisConnection redisConnection = iterator.next();
@@ -476,7 +478,7 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
             if (redisConnection != null) {
                 redisConnection.close();
             }
-            log.info("[{}]模块[{}]配置变更,将移除存储的元数据信息",module,connName);
+            log.info("[{}]模块[{}]配置变更,将移除存储的元数据信息", MODULE,connName);
         }
     }
 
@@ -498,7 +500,7 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
         }
 
         // 创建连接
-        final RedisConnectParam redisConnectParam = (RedisConnectParam) connectService.readConnParams(module,connName);
+        final RedisConnectParam redisConnectParam = (RedisConnectParam) connectService.readConnParams(MODULE,connName);
         final RedisConnection redisConnection = new RedisConnection();
         try {
             redisConnection.refresh(redisConnectParam);
@@ -552,6 +554,7 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
             case "union":
                 result = redisConnection.sunion(keyBytes);
                 break;
+            default:
         }
 
         Set<Object> collect = new HashSet<>();

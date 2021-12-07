@@ -345,6 +345,7 @@ public class RedisConnection {
                     return jedisCluster.scard(key);
                 case ZSet:
                     return jedisCluster.zcard(key);
+                default:
             }
             log.error("未知类型:{}",jedisCluster.type(key));
             return -1;
@@ -362,6 +363,7 @@ public class RedisConnection {
                     return jedis.llen(key);
                 case Hash:
                     return jedis.hlen(key);
+                default:
             }
             log.error("未知类型:{}",jedis.type(key));
             return -1;

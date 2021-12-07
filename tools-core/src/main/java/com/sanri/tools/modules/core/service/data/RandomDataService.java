@@ -196,9 +196,9 @@ public class RandomDataService {
             if(lowerCase.contains("status") || lowerCase.contains("state") || lowerCase.contains("type")){
                 value = RandomUtil.status("1","2","3");
             }else
-            if(lowerCase.contains("time") || (lowerCase.contains("date") && !lowerCase.equals("update")) || lowerCase.contains("birthday")){
+            if(lowerCase.contains("time") || (lowerCase.contains("date") && !"update".equals(lowerCase)) || lowerCase.contains("birthday")){
                 // 这里可以做时间格式转换,获取字段上的配置
-                value =  DateFormatUtils.ISO_DATETIME_FORMAT.format(RandomUtil.date());
+                value =  DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT.format(RandomUtil.date());
             } else
             if(lowerCase.contains("lat")){
                 String randomLongLat = RandomUtil.randomLongLat(25, 115, 26, 160);

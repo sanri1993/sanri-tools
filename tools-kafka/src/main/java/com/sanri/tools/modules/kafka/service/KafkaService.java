@@ -3,7 +3,7 @@ package com.sanri.tools.modules.kafka.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.sanri.tools.modules.core.service.file.ConnectService;
+import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
 import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.kafka.dtos.*;
@@ -32,7 +32,6 @@ import javax.management.remote.JMXServiceURL;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.text.NumberFormat;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -48,13 +47,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public class KafkaService {
     @Autowired
-    private ConnectService connectService;
+    private ConnectServiceFileBase connectService;
     @Autowired
     private ZookeeperService zookeeperService;
     @Autowired
     private PluginManager pluginManager;
 
-    public static final String module = "kafka";
+    public static final String MODULE = "kafka";
 
     private static final Map<String, AdminClient> adminClientMap = new ConcurrentHashMap<>();
 
@@ -65,7 +64,7 @@ public class KafkaService {
      * @throws IOException
      */
     public List<BrokerInfo> brokers(String clusterName) throws IOException {
-        KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(module, clusterName);
+        KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(MODULE, clusterName);
         String chroot = kafkaConnectParam.getChroot();
         List<BrokerInfo> brokerInfos = readZookeeperBrokers(clusterName, chroot);
         return brokerInfos;
@@ -399,7 +398,7 @@ public class KafkaService {
 
         try {
             // 这个方法巨慢,直接去 zk 上拿分区数据算了
-            KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(module, clusterName);
+            KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(MODULE, clusterName);
             int partitions = 0;
 //            try {
 //                partitions = zookeeperService.countChildren(clusterName, kafkaConnectParam.getChroot() + "/brokers/topics/" + topic + "/partitions");
@@ -462,8 +461,9 @@ public class KafkaService {
                 }
             }
         }finally {
-            if(consumer != null)
+            if(consumer != null) {
                 consumer.close();
+            }
         }
         Collections.sort(topicLogSizes,(a,b) -> a.getPartition() - b.getPartition());
         return topicLogSizes;
@@ -476,7 +476,7 @@ public class KafkaService {
      * @throws IOException
      */
     public KafkaConsumer<byte[], byte[]> loadConsumerClient(String clusterName) throws IOException {
-        KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(module, clusterName);
+        KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(MODULE, clusterName);
         Map<String, Object> properties = kafkaConnectParam.getKafka().buildConsumerProperties();
         // 设置为 byte[] 序列化
         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,"org.apache.kafka.common.serialization.ByteArrayDeserializer");
@@ -493,7 +493,7 @@ public class KafkaService {
     public AdminClient loadAdminClient(String clusterName) throws IOException {
         AdminClient adminClient = adminClientMap.get(clusterName);
         if(adminClient == null){
-            KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(module, clusterName);
+            KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(MODULE, clusterName);
             KafkaProperties kafka = kafkaConnectParam.getKafka();
             Map<String, Object> kafkaProperties = kafka.buildAdminProperties();
             adminClient = AdminClient.create(kafkaProperties);
@@ -537,7 +537,7 @@ public class KafkaService {
      */
     private static final String JMX = "service:jmx:rmi:///jndi/rmi://%s/jmxrmi";
     public Collection<MBeanMonitorInfo> monitor(String clusterName, Class clazz, String topic) throws IOException, MalformedObjectNameException, AttributeNotFoundException, MBeanException, ReflectionException, InstanceNotFoundException {
-        KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(module, clusterName);
+        KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(MODULE, clusterName);
         List<BrokerInfo> brokers = readZookeeperBrokers(kafkaConnectParam.getConnectIdParam().getConnName(),kafkaConnectParam.getChroot());
 
         List<MBeanMonitorInfo> mBeanInfos = new ArrayList<>();
@@ -616,7 +616,7 @@ public class KafkaService {
 
     @PreDestroy
     public void destory(){
-        log.info("清除 {} 客户端列表:{}",module,adminClientMap.keySet());
+        log.info("清除 {} 客户端列表:{}", MODULE,adminClientMap.keySet());
         Iterator<AdminClient> iterator = adminClientMap.values().iterator();
         while (iterator.hasNext()){
             AdminClient next = iterator.next();
@@ -662,7 +662,7 @@ public class KafkaService {
         consumer.setEnableAutoCommit(true);
 
         // 然后调用 连接服务,将配置序列化
-        connectService.createConnect(module, JSON.toJSONString(kafkaConnectParam));
+        connectService.createConnect(MODULE, JSON.toJSONString(kafkaConnectParam));
     }
 
 }

@@ -1,0 +1,49 @@
+### mybatis - 上传 mapper 文件
+POST {{baseUrl}}/mybatis/uploadMapperFile
+Content-Type: multipart/form-data; boundary=uploadMapperFile
+
+--uploadMapperFile
+Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
+Content-Type: application/octet-stream
+
+< d:/test/ScheduleMapper.xml
+--uploadMapperFile
+Content-Disposition: form-data; name="project"
+Content-Type: application/x-www-form-urlencoded
+
+ir
+--uploadMapperFile
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+entity
+### mybatis 的 mapper 文件不会在启动的时候加载, 需要手动 reload
+GET {{baseUrl}}/mybatis/reload
+
+### mybatis - 列出所有当前加载的项目
+GET {{baseUrl}}/mybatis/projects
+
+### mybatis 获取加载到的 sqlId
+GET {{baseUrl}}/mybatis/statementIds?project=ir
+
+### mybatis - 获取 sqlId 需要的参数
+GET {{baseUrl}}/mybatis/statementParams?project=ir&statementId=com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition
+
+### mybatis 执行获取绑定的 sql
+POST {{baseUrl}}/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "ir",
+  "connName": "lo",
+  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
+  "className": "java.util.HashMap",
+  "arg": {
+    "value": {
+      "scheduleMode": "normal",
+      "pageSize": 10,
+      "start": 0,
+      "isExamine": 0
+    }
+  }
+}

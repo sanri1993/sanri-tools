@@ -33,6 +33,13 @@ public class CodeGeneratorController {
         return codeGeneratorService.renameStrategies();
     }
 
+    /**
+     * 构建一个 javaBean
+     * @param javaBeanBuildConfig 配置参数
+     * @return
+     * @throws IOException
+     * @throws SQLException
+     */
     @PostMapping("/build/javaBean")
     public String javaBeanBuild(@RequestBody @Valid JavaBeanBuildConfig javaBeanBuildConfig) throws IOException, SQLException {
         File file = codeGeneratorService.javaBeanBuild(javaBeanBuildConfig);
@@ -40,6 +47,14 @@ public class CodeGeneratorController {
         return path.toString();
     }
 
+    /**
+     * 构建一个 mapper 文件
+     * @param mapperBuildConfig 构建配置
+     * @return
+     * @throws InterruptedException
+     * @throws SQLException
+     * @throws IOException
+     */
     @PostMapping("/build/mapper")
     public String buildMapper(@RequestBody @Valid MapperBuildConfig mapperBuildConfig) throws InterruptedException, SQLException, IOException {
         File file = codeGeneratorService.mapperBuild(mapperBuildConfig);
@@ -53,6 +68,14 @@ public class CodeGeneratorController {
         return null;
     }
 
+    /**
+     * 代码生成配置
+     * @param codeGeneratorConfig 代码生成配置参数
+     * @return
+     * @throws IOException
+     * @throws SQLException
+     * @throws InterruptedException
+     */
     @PostMapping("/build/project")
     public String buildProject(@RequestBody @Valid CodeGeneratorConfig codeGeneratorConfig) throws IOException, SQLException, InterruptedException {
         File file = codeGeneratorService.projectBuild(codeGeneratorConfig);
@@ -71,7 +94,7 @@ public class CodeGeneratorController {
 
     /**
      * 某一个方案引用的模板列表
-     * @param schema
+     * @param schema 方案名
      * @return
      * @throws IOException
      */
@@ -91,7 +114,7 @@ public class CodeGeneratorController {
 
     /**
      * 模板文件内容
-     * @param template
+     * @param template 模板名称
      * @return
      */
     @GetMapping("/{template}/content")
@@ -102,7 +125,7 @@ public class CodeGeneratorController {
     /**
      * 上传一个模板,相同模板直接覆盖,需要注意是否有相同模板
      * 文件名格式为: 模板名称.后缀.模板引擎
-     * @param file
+     * @param file 模板文件
      */
     @PostMapping("/template/upload")
     public void uploadTemplate(MultipartFile file) throws IOException {
@@ -111,8 +134,8 @@ public class CodeGeneratorController {
 
     /**
      * 重写模板或方案
-     * @param name
-     * @param content
+     * @param name 模板名称
+     * @param content 内容
      */
     @PostMapping("/override")
     public void override(@RequestBody @Valid TemplateContent templateContent) throws IOException {

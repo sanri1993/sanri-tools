@@ -65,11 +65,13 @@ public class RegexValidate {
 	 * 功能:正则验证</br>
 	 */
 	public static boolean validate(String value, Pattern pattern) {
-		if (value == null)
-			return false;
+		if (value == null) {
+            return false;
+        }
 //		if (pattern.matcher(value).matches())	//修改 bug 匹配不上 at 2016/10/14
-		if(pattern.matcher(value).find())
-			return true;
+		if(pattern.matcher(value).find()) {
+            return true;
+        }
 		return false;
 	}
 	/**
@@ -79,8 +81,9 @@ public class RegexValidate {
 	 * 功能:正则提取字符串</br>
 	 */
 	public static List<String> match(String value, Pattern pattern) {
-		if (value == null)
-			return null;
+		if (value == null) {
+            return null;
+        }
 
 		List<String> matchs = new ArrayList<>();
 		Matcher matcher = pattern.matcher(value);

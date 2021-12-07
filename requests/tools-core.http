@@ -1,0 +1,219 @@
+### 类加载器 - 所有的类加载器
+GET {{baseUrl}}/classloader/classloaders
+Authorization: {{Authorization}}
+
+### 类加载器 - 查看类加载器加载的类
+GET {{baseUrl}}/classloader/listLoadedClasses?classloaderName=job
+
+### 类加载器 - 查看某个类的所有方法信息
+GET {{baseUrl}}/classloader/user/com.mmc.dubbo.api.user.UserFact/methodNames
+
+### 类加载器- 查看类结构
+GET {{baseUrl}}/classloader/user/com.mmc.dubbo.api.user.UserFact/classStruct
+
+### 类加载器 - 构建方法参数
+GET {{baseUrl}}/classloader/user/com.mmc.dubbo.api.user.UserService/insert/buildParams
+
+### 类加载器 - 上传 zip 包, 需要类有严格的目录结构
+POST {{baseUrl}}/classloader/uploadClassesZip
+Content-Type: multipart/form-data; boundary=uploadClassesZip
+
+--uploadClassesZip
+Content-Disposition: form-data; name="file"; filename="messagecenterdao.zip"
+Content-Type: application/octet-stream
+
+< d:/test/messagecenterdao.zip
+--uploadClassesZip
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+messagecenterdao
+
+### 类加载器 - 上传 zip 包, 不需要严格的目录结构
+POST {{baseUrl}}/classloader/uploadClassesZipSimple
+Content-Type: multipart/form-data; boundary=uploadClassesZip
+
+--uploadClassesZip
+Content-Disposition: form-data; name="file"; filename="job.zip"
+Content-Type: application/octet-stream
+
+< d:/test/job.zip
+--uploadClassesZip
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+job
+### 类加载器 - 上传单个 class 文件
+POST {{baseUrl}}/classloader/uploadSingleClass
+Content-Type: multipart/form-data; boundary=uploadSingleClass
+
+--uploadSingleClass
+Content-Disposition: form-data; name="file"; filename="ParkingLotBean.class"
+Content-Type: application/octet-stream
+
+< d:/test/ParkingLotBean.class
+--uploadSingleClass
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+park
+### 类加载器 - 上传单个 java 文件,将自动编译
+POST {{baseUrl}}/classloader/uploadSingleJavaFile
+Content-Type: multipart/form-data; boundary=uploadSingleJavaFile
+
+--uploadSingleJavaFile
+Content-Disposition: form-data; name="file"; filename="ParkMessageDto.java"
+Content-Type: application/octet-stream
+
+< d:/test/ParkMessageDto.java
+--uploadSingleJavaFile
+Content-Disposition: form-data; name="classloaderName"
+Content-Type: application/x-www-form-urlencoded
+
+park
+
+### 数据 - 类加载器随机数据生成
+GET {{baseUrl}}/data/random?className=com.sanri.tools.modules.core.dtos.param.DatabaseConnectParam&classloaderName=
+
+### 数据 - 类加载器随机数据生成 List
+GET {{baseUrl}}/data/random/list?className=com.sanri.tools.modules.core.dtos.param.DatabaseConnectParam&classloaderName=
+
+### 数据 - 正则表达式生成数据
+GET {{baseUrl}}/data/random/regex?regex=\d{10}[a-z]{2}\s\w{5}
+
+### 数据 - 爬虫数据
+POST {{baseUrl}}/data/spider
+Content-Type: application/json
+
+{
+  "className": "com.sanri.app.jsoup.biquge1.NovelSearch",
+  "classloaderName": "jsoup",
+  "params": {
+    "keyword": "校花的贴身高手"
+  }
+}
+
+### 插件 - 获取所有插件名称
+GET {{baseUrl}}/plugin/names
+
+### 插件 - 插件列表,经过排序的
+GET {{baseUrl}}/plugin/list
+
+### 插件 - 获取插件详情
+GET {{baseUrl}}/plugin/detail?key=database:metadata
+
+### 插件 - 访问插件
+GET {{baseUrl}}/plugin/visited?key=kafka:main
+
+### 插件 - 序列化数据到文件
+GET {{baseUrl}}/plugin/serializer
+
+### 连接管理-获取所有模块
+GET {{baseUrl}}/connect/modules
+
+### 连接管理 - 创建新模块
+POST {{baseUrl}}/connect/createModule
+Content-Type: application/x-www-form-urlencoded
+
+name=redis2
+
+### 连接管理-获取某个模块的连接列表
+GET {{baseUrl}}/connect/redis/names
+
+### 连接管理-获取某个连接详情
+GET {{baseUrl}}/connect/redis/192.168.12.21
+
+### 连接管理-获取所有连接
+GET {{baseUrl}}/connect/all
+
+### 连接管理- 获取连接示例
+GET {{baseUrl}}/connect/kafka/yaml/example
+
+### 创建 redis 连接
+POST {{baseUrl}}/connect/create/redis
+Content-Type: application/json
+
+{
+  "connectIdParam": {
+    "module": "redis",
+    "connName": "192.168.31.100"
+  },
+  "connectParam": {
+    "host": "192.168.31.100",
+    "port": 6379
+  }
+}
+
+
+### 创建数据库连接
+POST {{baseUrl}}/connect/create/database
+Content-Type: application/json
+
+{
+  "connectIdParam": {
+    "module": "database",
+    "connName": "localhost"
+  },
+  "connectParam": {
+    "host": "localhost",
+    "port": 3306
+  },
+  "authParam": {
+    "username": "root",
+    "password": "h123"
+  },
+  "dbType": "mysql",
+  "database": "test"
+}
+
+### 创建 zookeeper 连接
+POST {{baseUrl}}/connect/create/zookeeper
+Content-Type: application/json
+
+{
+  "connectIdParam": {
+    "module": "zookeeper",
+    "connName": "10.101.72.43_2182"
+  },
+  "connectParam": {
+    "host": "10.101.72.43",
+    "port": 2182
+  }
+}
+
+
+### 安全连接 - 模块列表
+GET {{baseUrl}}/security/connect/modules
+Authorization: {{Authorization}}
+
+### 安全连接 - 创建模块
+POST {{baseUrl}}/security/connect/createModule
+Authorization: {{Authorization}}
+Content-Type: application/x-www-form-urlencoded
+
+name=database
+
+### 安全连接 - 所有连接列表
+GET {{baseUrl}}/security/connect/connects
+Authorization: {{Authorization}}
+
+### 安全连接 - 模块可访问连接列表
+GET {{baseUrl}}/security/connect/moduleConnects?module=database
+Authorization: {{Authorization}}
+
+### 安全连接 - 创建一个连接
+POST {{baseUrl}}/security/connect/writeConfig
+Authorization: {{Authorization}}
+Content-Type: application/json
+
+{
+  "module": "database",
+  "baseName": "192.168.1.1",
+  "configTypeName": "json",
+  "group": "/a/b/c",
+  "content": "dsafasdfasdfsadfsadfasdfasdfsadfdsafsadfasfd"
+}
+
+### 安全连接 - 加载连接内容
+GET {{baseUrl}}/security/connect/loadContent?module=database&baseName=192.168.1.1
+Authorization: {{Authorization}}

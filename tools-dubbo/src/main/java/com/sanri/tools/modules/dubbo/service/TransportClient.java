@@ -36,6 +36,7 @@ import java.util.concurrent.Executors;
 public class TransportClient {
 
 
+    @SuppressWarnings("AlibabaThreadPoolCreation")
     protected static final ChannelFactory channelFactory = new NioClientSocketChannelFactory(
             Executors.newCachedThreadPool(new NamedThreadFactory("NettyClientBoss", true)),
             Executors.newCachedThreadPool(new NamedThreadFactory("NettyClientWorker", true)),

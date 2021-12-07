@@ -23,6 +23,7 @@
         <module>tools-rocketmq</module>
         <module>tools-tcp</module>
         <module>tools-patchcode</module>
+        <module>tools-security</module>
     </modules>
 
     <parent>
@@ -124,7 +125,7 @@
                     <compilerArguments>
                         <!--                        <verbose />-->
                         <!-- 将jdk的依赖jar打入项目中，这样项目中使用的jdk的依赖就能正常使用 主要是加载 asm 的包 -->
-                        <bootclasspath>${java.home}/lib/rt.jar;${java.home}/lib/jce.jar;${java.home}/lib/jsse.jar;${java.home}/lib/tools.jar</bootclasspath>
+<!--                        <bootclasspath>${java.home}/lib/rt.jar;${java.home}/lib/jce.jar;${java.home}/lib/jsse.jar;${java.home}/lib/tools.jar</bootclasspath>-->
                     </compilerArguments>
                 </configuration>
             </plugin>

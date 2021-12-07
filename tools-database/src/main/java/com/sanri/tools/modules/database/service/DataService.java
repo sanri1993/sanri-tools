@@ -1,6 +1,7 @@
 package com.sanri.tools.modules.database.service;
 
 import com.sanri.tools.modules.core.dtos.PluginDto;
+import com.sanri.tools.modules.core.service.NamedThreadFactory;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.database.dtos.*;
@@ -20,7 +21,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.poi.ss.usermodel.Cell;
@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 
-import static com.sanri.tools.modules.database.service.JdbcService.module;
+import static com.sanri.tools.modules.database.service.JdbcService.MODULE;
 
 @Service
 @Slf4j
@@ -106,9 +106,9 @@ public class DataService {
 
     /**
      *
-     * @param mainTable
-     * @param childs
-     * @param where
+     * @param main
+     * @param subTableRelation
+     * @param selectBody
      * @return
      */
     private String childRelationsSql(ActualTableName main,TableRelationTree subTableRelation, SelectBody selectBody) {
@@ -133,6 +133,7 @@ public class DataService {
                 equalsTo.setRightExpression(new Column("b.event_record_id"));
                 SelectUtils.addJoin(select,subTable,equalsTo);
                 break;
+            default:
         }
 
         return null;
@@ -192,7 +193,7 @@ public class DataService {
     static final int exportPerLimit = 10000;
 
     // 数据导出线程池 私用
-    ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1,10,0, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<>(100));
+    ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1,10,0, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<>(100),new NamedThreadFactory("exportExcel"));
     /**
      * 多线程导出数据
      * @param dataQueryParam
@@ -239,7 +240,7 @@ public class DataService {
             plainSelect.setLimit(limit);
             final String currentSql = select.toString();
 
-            threadPoolExecutor.submit(new Thread() {
+            threadPoolExecutor.submit(new Runnable() {
                 @Override
                 public void run() {
                     FileOutputStream fileOutputStream = null;
@@ -309,7 +310,7 @@ public class DataService {
                     continue;
                 }
                 if("char".equalsIgnoreCase(colType) || "varchar".equalsIgnoreCase(colType)) {
-                    cell.setCellValue(ObjectUtils.toString(value));
+                    cell.setCellValue(String.valueOf(value));
                     cell.setCellType(Cell.CELL_TYPE_STRING);
                 }else if ("datetime".equalsIgnoreCase(colType)){
                     cell.setCellType(Cell.CELL_TYPE_STRING);
@@ -319,13 +320,13 @@ public class DataService {
                     cell.setCellValue(format);
                 }else if("int".equalsIgnoreCase(colType) || "decimal".equalsIgnoreCase(colType) || "bigint".equalsIgnoreCase(colType)){
                     cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-                    cell.setCellValue(NumberUtils.toLong(ObjectUtils.toString(value)));
+                    cell.setCellValue(NumberUtils.toLong(String.valueOf(value)));
                 }else if ("date".equalsIgnoreCase(colType) || "TIMESTAMP".equalsIgnoreCase(colType)){
                     cell.setCellType(Cell.CELL_TYPE_STRING);
-                    cell.setCellValue(ObjectUtils.toString(value));
+                    cell.setCellValue(String.valueOf(value));
                 }else if("TINYINT".equalsIgnoreCase(colType)){
                     cell.setCellType(Cell.CELL_TYPE_STRING);
-                    cell.setCellValue(ObjectUtils.toString(value));
+                    cell.setCellValue(String.valueOf(value));
                 }else {
                     log.error("不支持的数据库类型,需要添加类型支持:{},value:{}",colType,value);
                 }
@@ -341,7 +342,7 @@ public class DataService {
     @PostConstruct
     public void register(){
         pluginManager.register(PluginDto.builder()
-                .module(module).name("dataExport").author("sanri").envs("default")
+                .module(MODULE).name("dataExport").author("sanri").envs("default")
                 .logo("mysql.jpg")
                 .desc("数据导出功能")
                 .build());

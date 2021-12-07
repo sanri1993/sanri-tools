@@ -11,6 +11,23 @@ import java.io.File;
 @Data
 @ConfigurationProperties(prefix = "data.path")
 public class FileManagerProperties {
-    private File config;
+    /**
+     * 基础路径配置, 如果后面的路径没配置,则会默认以这个为基础路径 , 即
+     * configs: $base/configs
+     * tmp: $base/tmp
+     * data: $base/data
+     */
+    private File base;
+    /**
+     * 配置文件路径
+     */
+    private File configs;
+    /**
+     * 临时文件路径
+     */
     private File tmp;
+    /**
+     * 数据目录
+     */
+    private File data;
 }

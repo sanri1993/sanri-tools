@@ -29,6 +29,63 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
 * 2021.11.09 增加 Redis 树形 Key
 * 2021.11.01 增加 git 增量工具
 
+
+### 权限设计
+
+#### 存储设计
+grouptop          --admin(User) 
+  group1
+    group11       --user1(User) --role1(Role) --resource1(Resource)
+      group111
+        group111  --resource3(Resource)
+    group12
+  group2          --user1(User) --resource1(Resource)
+    group21
+    
+role1 --resource1(Resource),resource2(Resource)
+
+user1 --role1,role2 group111,group112
+
+Group(name,path)
+Role(name,$Groups,$Resource)
+Resource(name,$Groups)
+User(name,$Roles,$Groups)
+
+#### 实现说明 
+不管代码中还是说明文档,对于安全模块, 组织和分组是一个意思
+
+资源访问属性: 用户属于哪些个组织, 可以访问这些个组织(包含)及以下组织下所有的资源及角色包含的资源
+
+资源分配属性: 用户拥有的资源可以分配给用户可以访问的用户
+  * 用户属性: 用户可以访问用户所在分组及其以下分组的用户
+  * 角色属性: 用户可以访问用户拥有的角色所在分组及其子分组所有的角色
+  * 资源属性: 用户可以访问用户拥有的角色拥有的资源所在分组及其子分组所有的资源
+
+后台资源拦截: URL 匹配, 使用每个模块的拦截配置, 没有配置的 url 需要登录才能使用 authority.conf
+
+模块资源提供: 可访问的资源(插件,按扭)由每个模块给出,在 tools-security 模块动态配置, 可提供动态配置 resources.conf
+
+不管用户,角色还是资源,都是有多个分组的, 其中第一个分组为主分组; 每个用户都必须要有一个分组
+#### 配置文件
+**authority.conf格式说明**
+
+* 每行一个权限配置
+* antMatch=角色配置表达式(JS)
+* 示例: /security/users/**=admin && data 表示需要 admin 和 data 角色同时存在时才能访问 /security/users 里面的接口
+
+**resources.conf格式说明**
+
+* 每行一个资源配置
+* 资源名:访问路径:类型(Menu,Button):父级资源名称:分组
+* 示例: 
+connect:connect:Menu:
+connectlist:connect/all:Menu:connect:/core
+
+#### 数据权限设计
+* tools-core 中添加 UserService 接口,由 tools-security 实现
+* 每个模块如需要控制数据权限需要自行注入 UserService , 非强依赖方式 `@Autowired(required = false)`
+* 当 UserService 不空时, 可以调用里面的方式获取用户属性来控制数据
+
 ## 已经有的工具,分模块展示
 1. tools-core
    * 类加载管理 上传类 zip , class, java 文件到类加载器
@@ -183,28 +240,9 @@ tools-soap
 
 @since 2.0.0  java -Xms256m -Xmx256m -Ddata.path.config=配置文件存储路径 -Ddata.path.tmp=临时文件存储路径 -jar  sanritools.jar 
 
-@since 2.2.0 
-```shell script
-java -Dloader.path=sanritoolslib \
---data.path.config=/tmp/sanritools/configs \
---data.path.tmp=/tmp/sanritools/temp \
---data.path.libs=/tmp/sanritools/libs \
---logging.path=/tmp/sanritools/logs \
---server.port=8084 \
--Xms256m -Xmx256m -jar sanritools.jar
-```
+@since 2.2.0 java -Dloader.path=sanritoolslib --data.path.config=配置文件存储路径 --data.path.tmp=临时文件存储路径 -Xms256m -Xmx256m -jar sanritools.jar
 
 sanritoolslib [下载地址](https://gitee.com/sanri/sanri-tools-maven/attach_files/877457/download)
-
-* 重要参数说明(默认情况, 可以自行修改; **使用工具前一定要先行创建这些目录, 否则无法使用**)
-
-```shell
-配置目录: /tmp/sanritools/configs
-临时目录: /tmp/sanritools/temp
-外部lib: /tmp/sanritools/libs
-日志目录: /tmp/sanritools/logs
-后端端口: 8084
-```
 
 **如何查看当前正在开发的工具版本**
 
@@ -225,7 +263,16 @@ sanritoolslib [下载地址](https://gitee.com/sanri/sanri-tools-maven/attach_fi
 
   1. 基础数据->连接管理->新模块( 可以创建 database, redis, kafka, mongo,zookeeper, git) 等模块 
   2. 在模块里新建连接, 这个连接是有模板的, 其中, 数据库连接中的 dbType 可以是 (mysql, postgresql, oracle ) 之中的一种 
+  
+* 重要可变更参数说明(默认情况, 可以自行修改; **使用工具前一定要先行创建这些目录, 否则无法使用**)
 
+```shell
+配置目录: /tmp/sanritools/configs
+临时目录: /tmp/sanritools/temp
+外部lib: /tmp/sanritools/libs
+日志目录: /tmp/sanritools/logs
+后端端口: 8084
+```
 
 
 
@@ -261,7 +308,12 @@ module 在前端是做为一级菜单,然后 name 是二级菜单 , 同一个模
 ```
 
 ### 关于单元测试
-工具使用了更方便的单元测试,直接发送 http 请求来测试,所有的单元测试都在 requests/全部 http 请求.http 中
+工具使用了更方便的单元测试,直接发送 http 请求来测试,所有的单元测试都在 requests/模块名.http 文件中
+
+**如果添加了权限, 则需要这样发起请求**
+
+1. 先调用登录请求, 它在 `tools-security.http` 请求里面的第一个请求
+2. 然后在请求头中添加 token 信息: `Authorization: {{Authorization}}`
 
 ### 关于项目前端
 官方前端 [https://gitee.com/sanri/sanritoolsvue](https://gitee.com/sanri/sanritoolsvue)

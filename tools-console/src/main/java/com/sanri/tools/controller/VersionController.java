@@ -13,8 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class VersionController {
    @Autowired
-   VersionService versionService;
+   private VersionService versionService;
 
+   /**
+    *
+    * @return 项目当前版本信息
+    */
    @GetMapping("/current")
    public String current(){
        return versionService.currentVersion();

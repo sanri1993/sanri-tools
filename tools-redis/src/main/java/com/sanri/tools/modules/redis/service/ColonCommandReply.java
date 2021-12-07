@@ -14,7 +14,9 @@ public class ColonCommandReply extends CommandReply {
         Map<String,String> pairs = new HashMap<>();
 
         for (String[] line : parser) {
-            if(line.length < 2)continue;
+            if(line.length < 2) {
+                continue;
+            }
             String key = line[0];
             StringBuffer stringBuffer = new StringBuffer();
             for (int i = 1; i < line.length ; i++) {

@@ -77,13 +77,16 @@
             <artifactId>tools-tcp</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>tools-patchcode</artifactId>
             <version>${project.version}</version>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>${project.groupId}</groupId>-->
+<!--            <artifactId>tools-security</artifactId>-->
+<!--            <version>${project.version}</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -242,6 +245,8 @@
                         <exclude>com.microsoft.sqlserver:sqljdbc4</exclude>
                         <exclude>org.wltea.analyzer:IKAnalyzer</exclude>
                         <exclude>org.mybatis:mybatis</exclude>
+                        <exclude>org.eclipse.jdt:core</exclude>
+                        <exclude>org.eclipse.core:*</exclude>
                     </excludes>
                 </configuration>
                 <executions>

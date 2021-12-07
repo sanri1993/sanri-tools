@@ -2,6 +2,7 @@ package com.sanri.tools.modules.core.dtos;
 
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,9 +11,21 @@ import java.util.List;
  */
 @Data
 public class ClassStruct {
-    private List<Field> fields;
-    private List<Method> methods;
+    /**
+     * 字段列表
+     */
+    private List<Field> fields = new ArrayList<>();
+    /**
+     * 方法列表
+     */
+    private List<Method> methods = new ArrayList<>();
+    /**
+     * 类名
+     */
     private String name;
+    /**
+     * 包名
+     */
     private String packageName;
 
     public ClassStruct() {
@@ -25,7 +38,13 @@ public class ClassStruct {
 
     @Data
     public static abstract class Member{
+        /**
+         * 修饰符
+         */
         protected int modifys;
+        /**
+         * 名称
+         */
         protected String name;
 
         public Member(int modifys, String name) {
@@ -39,8 +58,14 @@ public class ClassStruct {
 
     @Data
     public static class Method extends Member{
+        /**
+         * 返回类型
+         */
         private String returnType;
-        private List<Arg> args;
+        /**
+         * 参数列表
+         */
+        private List<Arg> args = new ArrayList<>();
 
         public Method() {
         }
@@ -59,7 +84,13 @@ public class ClassStruct {
 
     @Data
     public static class Arg{
+        /**
+         * 参数类型
+         */
         private String type;
+        /**
+         * 参数名称
+         */
         private String name;
 
         public Arg() {
@@ -73,6 +104,9 @@ public class ClassStruct {
 
     @Data
     public static class Field extends Member{
+        /**
+         * 字段类型
+         */
         private String type;
 
         public Field() {

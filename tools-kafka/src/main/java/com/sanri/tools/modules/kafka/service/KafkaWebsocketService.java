@@ -156,7 +156,7 @@ public class KafkaWebsocketService {
                                 // send message to client
                                 Session clientSession = notifyConsumerRecordClient.getSession();
                                 Date date = new Date(consumerRecord.timestamp());
-                                String format = DateFormatUtils.ISO_DATETIME_FORMAT.format(date);
+                                String format = DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT.format(date);
                                 ExtendConsumerRecord extendConsumerRecord = new ExtendConsumerRecord(deserialize, consumerRecord.partition(), consumerRecord.offset(), format);
 
                                 clientSession.getAsyncRemote().sendText(JSON.toJSONString(extendConsumerRecord));
@@ -164,8 +164,9 @@ public class KafkaWebsocketService {
                         }
                     }
                 }finally {
-                    if(consumer != null)
+                    if(consumer != null) {
                         consumer.close();
+                    }
                 }
             } catch (IOException | InterruptedException | ExecutionException e) {
                 log.error("未能加载 kafka 客户端 [{}]",e.getMessage(),e);

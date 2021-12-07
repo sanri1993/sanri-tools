@@ -5,10 +5,22 @@ import lombok.Data;
 
 import java.util.Date;
 
+/**
+ *  {module:[{},{}],module2:[{},{}]}
+ */
 @Data
-public class ConnectDto { // {module:[{},{}],module2:[{},{}]}
+public class ConnectDto {
+    /**
+     * 模块名称
+     */
     private String module;
+    /**
+     * 连接名称
+     */
     private String name;
+    /**
+     * 上次修改时间
+     */
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date lastModified;
 

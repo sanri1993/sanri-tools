@@ -31,7 +31,9 @@ public class DubboLoadMethodParam {
 
     public List<String> methodList(){
         String[] strings = methodArray();
-        if (strings != null)return Arrays.asList(strings);
+        if (strings != null) {
+            return Arrays.asList(strings);
+        }
         return null;
     }
 }

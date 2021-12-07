@@ -41,7 +41,9 @@ public class ApprovedFileValidator implements ConstraintValidator<ApprovedFile, 
 
     @Override
     public boolean isValid(MultipartFile multipartFile, ConstraintValidatorContext context) {
-        if(multipartFile == null)return true;
+        if(multipartFile == null) {
+            return true;
+        }
         // 先判断文件大小，和后缀，然后读字节来判断文件类型
         long size = multipartFile.getSize();
         if(size > maxFileSize && maxFileSize != -1){

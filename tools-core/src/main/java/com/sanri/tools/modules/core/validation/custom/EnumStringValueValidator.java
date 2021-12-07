@@ -15,7 +15,9 @@ public class EnumStringValueValidator implements ConstraintValidator<EnumStringV
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
-        if(StringUtils.isBlank(value))return true;
+        if(StringUtils.isBlank(value)) {
+            return true;
+        }
         return ArrayUtils.contains(values,value);
     }
 }

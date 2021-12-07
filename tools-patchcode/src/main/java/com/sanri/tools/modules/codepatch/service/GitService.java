@@ -22,7 +22,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.*;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.eclipse.jgit.api.*;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -51,7 +50,7 @@ import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.dtos.param.AuthParam;
 import com.sanri.tools.modules.core.dtos.param.GitParam;
 import com.sanri.tools.modules.core.exception.ToolException;
-import com.sanri.tools.modules.core.service.file.ConnectService;
+import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.core.utils.NetUtil;
@@ -70,11 +69,11 @@ public class GitService {
     private PluginManager pluginManager;
 
     @Autowired
-    private ConnectService connectService;
+    private ConnectServiceFileBase connectService;
 
     private String baseDirName = "gitrepositorys";
 
-    private static final String module = "git";
+    private static final String MODULE = "git";
 
     @Autowired
     private WebSocketCompileService webSocketService;
@@ -114,7 +113,7 @@ public class GitService {
     public List<String> groups(){
 //        final File baseDir = fileManager.mkTmpDir(baseDirName);
 //        return baseDir.list();
-        return connectService.names(module);
+        return connectService.names(MODULE);
     }
 
     public String[] repositorys(String group){
@@ -153,7 +152,7 @@ public class GitService {
         if (!infoFile.exists()){
             return -1;
         }
-        final JSONObject jsonObject = JSON.parseObject(FileUtils.readFileToString(infoFile));
+        final JSONObject jsonObject = JSON.parseObject(FileUtils.readFileToString(infoFile, StandardCharsets.UTF_8));
         final Iterator<String> iterator = jsonObject.keySet().iterator();
         long maxTime = -1;
         final String currentBranch = currentBranch(group, repository);
@@ -269,7 +268,7 @@ public class GitService {
         final File repositoryDir = repositoryDir(group, repository);
         final File pomFile = repositoryDir.toPath().resolve(pomRelativePath).toFile();
 
-        final GitParam gitParam = (GitParam) connectService.readConnParams(module, group);
+        final GitParam gitParam = (GitParam) connectService.readConnParams(MODULE, group);
         final String mavenHome = gitParam.getMavenHome();
         final String mavenConfigFilePath = gitParam.getMavenConfigFilePath();
 
@@ -310,7 +309,7 @@ public class GitService {
         if (!infoFile.exists()){
             jsonObject = new JSONObject();
         }else{
-            final String existJson = FileUtils.readFileToString(infoFile);
+            final String existJson = FileUtils.readFileToString(infoFile, StandardCharsets.UTF_8);
             jsonObject = JSON.parseObject(existJson);
             if (value == null){
                 return jsonObject.get(key);
@@ -318,7 +317,7 @@ public class GitService {
         }
 
         jsonObject.put(key,value);
-        FileUtils.writeStringToFile(infoFile,jsonObject.toJSONString());
+        FileUtils.writeStringToFile(infoFile, jsonObject.toJSONString(), StandardCharsets.UTF_8);
 
         return jsonObject.get(key);
     }
@@ -459,6 +458,8 @@ public class GitService {
                     case RENAME:
                         final String newPath = diffEntry.getNewPath();
                         diffEntryMap.put(newPath,diffEntry);
+                        break;
+                    default:
                 }
             }
         }
@@ -561,6 +562,7 @@ public class GitService {
                     final Path relativePath = repositoryDir.toPath().relativize(deleteFile.toPath());
                     deleteFileInfos.add(new FileInfo(diffEntry,relativePath));
                     break;
+                default:
 
             }
         }
@@ -690,7 +692,7 @@ public class GitService {
             final List<RemoteConfig> allRemoteConfigs = RemoteConfig.getAllRemoteConfigs(transportCommand.getRepository().getConfig());
             urIish = allRemoteConfigs.get(0).getURIs().get(0);
         }
-        final GitParam gitParam = (GitParam) connectService.readConnParams(module, group);
+        final GitParam gitParam = (GitParam) connectService.readConnParams(MODULE, group);
         if ("git".equals(urIish.getScheme())){
             transportCommand.setTransportConfigCallback(new TransportConfigCallback() {
                 @Override
@@ -721,7 +723,7 @@ public class GitService {
         final File lockFile = new File(baseDir,group + repository + "lock");
 //        final String remoteAddr = NetUtil.remoteAddr();
         if (lockFile.exists()){
-            final String ip = FileUtils.readFileToString(lockFile);
+            final String ip = FileUtils.readFileToString(lockFile, StandardCharsets.UTF_8);
             if (StringUtils.isBlank(ip) || StringUtils.isBlank(remoteAddr) || remoteAddr.equals(ip)){
 //                log.info("重入锁ip : {}",ip);
                 // 可重入
@@ -730,7 +732,7 @@ public class GitService {
             throw new IllegalStateException("当前仓库 "+group+" - "+repository+" 已经被" + ip + " 锁定");
         }
         // 锁定仓库
-        FileUtils.writeStringToFile(lockFile,remoteAddr);
+        FileUtils.writeStringToFile(lockFile, remoteAddr, StandardCharsets.UTF_8);
     }
 
     public void unLock(String group, String repository,boolean force) throws IOException {
@@ -741,7 +743,7 @@ public class GitService {
             return ;
         }
         final String remoteAddr = NetUtil.remoteAddr();
-        final String ip = FileUtils.readFileToString(lockFile);
+        final String ip = FileUtils.readFileToString(lockFile, StandardCharsets.UTF_8);
         if (!ip.equals(remoteAddr) && !force){
             throw new IllegalStateException("无法解锁,联系:"+ip);
         }

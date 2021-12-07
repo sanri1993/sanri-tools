@@ -17,8 +17,12 @@ public class EnumIntValueValidatorForString implements ConstraintValidator<EnumI
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
-        if (StringUtils.isBlank(value)) return true;
-        if (!NumberUtils.isCreatable(value)) return false;
+        if (StringUtils.isBlank(value)) {
+            return true;
+        }
+        if (!NumberUtils.isCreatable(value)) {
+            return false;
+        }
         int intValue = NumberUtils.toInt(value);
         return ArrayUtils.contains(values, intValue);
     }

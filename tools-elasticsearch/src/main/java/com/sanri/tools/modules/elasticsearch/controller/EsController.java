@@ -3,7 +3,7 @@ package com.sanri.tools.modules.elasticsearch.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.dtos.param.SimpleConnectParam;
-import com.sanri.tools.modules.core.service.file.ConnectService;
+import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.elasticsearch.remote.apis.ClusterApis;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import java.io.IOException;
 public class EsController {
 
     @Autowired
-    private ConnectService connectService;
+    private ConnectServiceFileBase connectService;
     @Autowired
     private PluginManager pluginManager;
 

@@ -14,7 +14,9 @@ public enum  SystemMessage implements ExceptionCause<BusinessException> {
     DATA_PERMISSION_DENIED(4004,"无数据权限"),
     SIGN_ERROR(4005,"签名错误,你的签名串为 [{0}]"),
     CHANNEL_NOT_SUPPORT(4006,"非法访问"),
-    ACCESS_DENIED(4007,"禁止访问 {0}"),
+    ACCESS_DENIED(4007,"禁止访问"),
+    ACCESS_DENIED_ARGS(4008,"禁止访问,{0}"),
+    LOGIN_FAIL(4009,"登录失败 {0}"),
 
     SERVICE_CALL_FAIL(5000,"后台服务异常"),
     NETWORK_ERROR(5001,"网络错误"),
@@ -62,7 +64,7 @@ public enum  SystemMessage implements ExceptionCause<BusinessException> {
      */
     public ResponseDto result(Object ... args){
         String message = responseDto.getMessage();
-        responseDto.setMessage(String.format(message,args));
+        responseDto.setMessage(MessageFormat.format(message,args));
         return responseDto;
     }
 

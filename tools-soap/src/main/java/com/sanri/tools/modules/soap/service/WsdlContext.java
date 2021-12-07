@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -50,8 +51,8 @@ public class WsdlContext {
 			URI soap11File = rootPath.resolve("soap/soap11.xml");
 			URI soap12File = rootPath.resolve("soap/soap12.xml");
 
-			BASE_SOAP11_DOCUMENT = IOUtils.toString(soap11File);
-			BASE_SOAP12_DOCUMENT = IOUtils.toString(soap12File);
+			BASE_SOAP11_DOCUMENT = IOUtils.toString(soap11File, StandardCharsets.UTF_8);
+			BASE_SOAP12_DOCUMENT = IOUtils.toString(soap12File, StandardCharsets.UTF_8);
 		} catch (URISyntaxException | IOException e) {
 			log.info("init load soap xml error : {}",e.getMessage(),e);
 		}

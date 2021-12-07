@@ -48,6 +48,10 @@ public class MetadataControllerShow {
 
     /**
      * 生成数据库文档
+     * @param catalog  数据库 catalog
+     * @param connName  连接名称
+     * @param schemas  数据库 schema
+     * @param templateName  需要生成的模板文件名称
      * @return
      */
     @GetMapping("/doc")

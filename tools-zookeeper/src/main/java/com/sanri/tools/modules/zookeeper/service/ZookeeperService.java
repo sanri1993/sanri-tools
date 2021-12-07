@@ -1,8 +1,7 @@
 package com.sanri.tools.modules.zookeeper.service;
 
 import com.sanri.tools.modules.core.dtos.UpdateConnectEvent;
-import com.sanri.tools.modules.core.dtos.param.RedisConnectParam;
-import com.sanri.tools.modules.core.service.file.ConnectService;
+import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
 import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.core.dtos.param.ConnectParam;
@@ -38,7 +37,7 @@ public class ZookeeperService implements ApplicationListener<UpdateConnectEvent>
     Map<String, ZkClient> zkClientMap = new ConcurrentHashMap<String, ZkClient>();
 
     @Autowired
-    private ConnectService connectService;
+    private ConnectServiceFileBase connectService;
     @Autowired
     private SerializerChoseService serializerChoseService;
     @Autowired

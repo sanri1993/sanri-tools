@@ -1,0 +1,23 @@
+### mongodb - 创建连接
+POST {{baseUrl}}/connect/create/mongo
+Content-Type: application/json
+
+{
+  "connectIdParam": {
+    "module": "mongo",
+    "connName": "192.168.108.130"
+  },
+  "connectParam": {
+    "host": "192.168.108.130",
+    "port": 27017
+  }
+}
+
+### mongo - 查询所有库
+GET {{baseUrl}}/mongo/databaseNames?connName=192.168.108.130
+
+### mongo - 查询库的所有集合
+GET {{baseUrl}}/mongo/collectionNames/mall-port?connName=192.168.108.130
+
+### mongo - 数据筛选
+GET {{baseUrl}}/mongo/queryPage?connName=192.168.108.130&databaseName=mall-port&collectionName=goods&pageNo=1&pageSize=10

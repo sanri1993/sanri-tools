@@ -5,7 +5,13 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 @Setter
 public class PageParam {
+	/**
+	 * 页号
+	 */
 	private String pageNo;
+	/**
+	 * 页大小
+	 */
 	private String pageSize;
 
 	public Integer getPageNo() {

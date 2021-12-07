@@ -38,7 +38,8 @@ public class ClassloaderController {
 
     /**
      * 上传 zip 文件,创建类加载器,类文件需要严格的目录结构
-     * @param file
+     * @param file 标准目录结构 zip 文件
+     * @param classloaderName  类加载器名称
      */
     @PostMapping("/uploadClassesZip")
     public void uploadClassesZip(MultipartFile file,@NotNull String classloaderName) throws IOException {
@@ -48,7 +49,8 @@ public class ClassloaderController {
 
     /**
      * 上传 zip 文件,创建类加载器,类文件不需要严格的目录结构
-     * @param file
+     * @param file zip文件,类不需要标准文件结构
+     * @param classloaderName 类加载器名称
      */
     @PostMapping("/uploadClassesZipSimple")
     public void uploadClassesZipSimple(MultipartFile file,@NotNull String classloaderName) throws IOException {
@@ -58,8 +60,8 @@ public class ClassloaderController {
 
     /**
      * 上传单个 class 文件到指定类加载器
-     * @param file
-     * @param classloaderName
+     * @param file 单个 class 文件
+     * @param classloaderName 类加载器名称
      */
     @PostMapping("/uploadSingleClass")
     public void uploadSingleClass(MultipartFile file,@NotNull String classloaderName) throws IOException {
@@ -71,8 +73,8 @@ public class ClassloaderController {
 
     /**
      * 上传单个 java 文件,将自动编译成 class 加进类加载器
-     * @param file
-     * @param classloaderName
+     * @param file 单个 java 文件
+     * @param classloaderName 类加载器名称
      */
     @PostMapping("/uploadSingleJavaFile")
     public void uploadSingleJavaFile(MultipartFile file,@NotNull String classloaderName) throws IOException {
@@ -84,7 +86,7 @@ public class ClassloaderController {
 
     /**
      * 类加载器列表
-     * @return
+     * @return 所有的类加载器
      */
     @GetMapping("/classloaders")
     public Set<String> classloaders(){
@@ -93,8 +95,8 @@ public class ClassloaderController {
 
     /**
      * 列出当前类加载器加载的类
-     * @param classloaderName
-     * @return
+     * @param classloaderName 类加载器名称
+     * @return 所有加载的类全路径
      */
     @GetMapping("/listLoadedClasses")
     public Set<String> listLoadedClasses(@NotNull String classloaderName){
@@ -103,8 +105,8 @@ public class ClassloaderController {
 
     /**
      * 当前类加载器加载的类的加强版本
-     * @param classloaderName
-     * @return
+     * @param classloaderName 类加载器名称
+     * @return 加载的类的简单类结构信息列表
      */
     @GetMapping("/classLoaderLoadedClasses")
     public List<ClassStruct> classLoaderLoadedClasses(@NotNull String classloaderName){
@@ -113,9 +115,9 @@ public class ClassloaderController {
 
     /**
      * 获取某个类的所有方法名
-     * @param classloaderName
-     * @param className
-     * @return
+     * @param classloaderName 类加载器名称
+     * @param className 类名
+     * @return 方法名列表
      */
     @GetMapping("/{classloaderName}/{className}/methodNames")
     public List<String> methodNames(@PathVariable("classloaderName") String classloaderName, @PathVariable("className") String className) throws ClassNotFoundException {
@@ -127,9 +129,9 @@ public class ClassloaderController {
 
     /**
      * 获取类结构
-     * @param classloaderName
-     * @param className
-     * @return
+     * @param classloaderName 类加载器名称
+     * @param className  类名
+     * @return 这个类的简单类结构
      */
     @GetMapping("/{classloaderName}/{className}/classStruct")
     public ClassStruct classStruct(@PathVariable("classloaderName") String classloaderName, @PathVariable("className") String className) throws ClassNotFoundException {
@@ -140,9 +142,9 @@ public class ClassloaderController {
 
     /**
      * 获取一个类所有的静态方法
-     * @param className
-     * @param classloaderName
-     * @return
+     * @param className 类名
+     * @param classloaderName 类加载器名称
+     * @return 静态方法列表
      * @throws ClassNotFoundException
      */
     @GetMapping("/{classloaderName}/{className}/staticMethods")
@@ -163,9 +165,9 @@ public class ClassloaderController {
 
     /**
      * 构建方法参数,需要保证方法名是唯一的,如果有重载方法,将只取第一个重载方法的参数
-     * @param classloaderName
-     * @param className
-     * @param methodName
+     * @param classloaderName 类加载器名称
+     * @param className 类名
+     * @param methodName 方法名
      * @return
      */
     @GetMapping("/{classloaderName}/{className}/{methodName}/buildParams")

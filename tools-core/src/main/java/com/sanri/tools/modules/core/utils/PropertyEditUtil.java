@@ -23,7 +23,7 @@ import java.util.Map.Entry;
 @Slf4j
 public final class PropertyEditUtil {
 	
-	private static PrimitiveHandler DEFAULT_PRIMITIVE_HANDLER;
+	private static final PrimitiveHandler DEFAULT_PRIMITIVE_HANDLER;
 	
 	static{
 		DEFAULT_PRIMITIVE_HANDLER = new PrimitiveHandler() {
@@ -32,7 +32,7 @@ public final class PropertyEditUtil {
 			public Object handler(String name, Object dest, Object source) {
 				// source 一定不为空,肯定要空判断
 				Class<? extends Object> clazz = source.getClass();
-				String sourceValue_  = ObjectUtils.toString(source,"0");
+				String sourceValue_  = Objects.toString(source,"0");
 				if(clazz == int.class){
 					int sourceValue = NumberUtils.toInt(sourceValue_);
 					if(sourceValue == 0 ){
@@ -110,7 +110,9 @@ public final class PropertyEditUtil {
 	 */
 	public static <T> T getSimpleProperty(Object source,String name,Class<T> valueClass){
 		Object simpleProperty = getSimpleProperty(source, name);
-		if(simpleProperty == null) return null;
+		if(simpleProperty == null) {
+            return null;
+        }
 		
 		//类型匹配才做转换
 		if(simpleProperty.getClass() == valueClass){

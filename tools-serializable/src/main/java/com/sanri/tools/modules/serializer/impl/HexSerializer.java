@@ -17,8 +17,9 @@ public class HexSerializer implements Serializer {
 
     @Override
     public byte[] serialize(Object o){
-        if (o == null)
+        if (o == null) {
             return new byte[0];
+        }
         //只能转换字符串
         if(o instanceof String){
             String source = (String) o;

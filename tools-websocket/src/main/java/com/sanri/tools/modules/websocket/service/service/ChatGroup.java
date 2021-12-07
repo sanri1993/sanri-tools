@@ -43,7 +43,9 @@ public class ChatGroup {
     public void broadcast(ClientMessage clientMessage,WebSocketClient self){
         String sessionId = self.getSessionId();
         for (WebSocketClient client : members.values()) {
-            if (client.getSessionId().equals(sessionId))continue;
+            if (client.getSessionId().equals(sessionId)) {
+                continue;
+            }
             client.sendMessage(clientMessage);
         }
     }

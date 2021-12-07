@@ -2,7 +2,7 @@ package com.sanri.tools.modules.database.service;
 
 import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.dtos.UpdateConnectEvent;
-import com.sanri.tools.modules.core.service.file.ConnectService;
+import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
 import com.sanri.tools.modules.database.dtos.ConnectionMetaData;
 import com.sanri.tools.modules.database.dtos.DynamicQueryDto;
@@ -18,7 +18,6 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.ColumnListHandler;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.StopWatch;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
@@ -27,7 +26,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,11 +36,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class JdbcService implements ApplicationListener<UpdateConnectEvent> {
     @Autowired
-    private ConnectService connectService;
+    private ConnectServiceFileBase connectService;
     @Autowired
     private PluginManager pluginManager;
 
-    public static final String module = "database";
+    public static final String MODULE = "database";
 
     // connName ==> DataSource
     private Map<String, DataSource> dataSourceMap = new ConcurrentHashMap<>();
@@ -488,7 +486,7 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> {
      * @return
      */
     public ConnectionMetaData connectionMetaData(String connName) throws IOException, SQLException {
-        DatabaseConnectParam databaseConnectParam = (DatabaseConnectParam) connectService.readConnParams(module, connName);
+        DatabaseConnectParam databaseConnectParam = (DatabaseConnectParam) connectService.readConnParams(MODULE, connName);
         AuthParam authParam = databaseConnectParam.getAuthParam();
         DataSource dataSource = dataSource(connName);
         String connectionURL = "";
@@ -586,7 +584,7 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> {
             String connName = connectInfo.getConnName();
             dataSourceMap.remove(connName);
             tableMetaDataMap.remove(connName);
-            log.info("[{}]模块[{}]配置变更,将移除存储的元数据信息",module,connName);
+            log.info("[{}]模块[{}]配置变更,将移除存储的元数据信息", MODULE,connName);
         }
     }
 
@@ -769,7 +767,7 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> {
             databaseName = split[1];
         }
 
-        DatabaseConnectParam databaseConnectParam = (DatabaseConnectParam) connectService.readConnParams(JdbcService.module, connName);
+        DatabaseConnectParam databaseConnectParam = (DatabaseConnectParam) connectService.readConnParams(JdbcService.MODULE, connName);
 
         String database = databaseConnectParam.getDatabase();
         if (StringUtils.isBlank(databaseName)) {
@@ -812,6 +810,8 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> {
                     oracleDataSource.setDriverType("thin");
                     oracleDataSource.setURL("jdbc:oracle:thin:@"+connectParam.getHost()+":"+connectParam.getPort()+":"+ database);
                     dataSource = oracleDataSource;
+                    break;
+                default:
             }
 
             dataSourceMap.put(connName+"@"+databaseName,dataSource);
@@ -822,7 +822,7 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> {
     @PostConstruct
     public void register(){
         pluginManager.register(PluginDto.builder()
-                .module(module).name("metadata").author("sanri").envs("default")
+                .module(MODULE).name("metadata").author("sanri").envs("default")
                 .logo("mysql.jpg")
                 .desc("数据库元数据,支持mysql,postgresql,oracle 和支持元数据据的数据库,可扩展功能数据库文档,代码生成")
                 .help("数据表处理工具.md")

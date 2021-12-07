@@ -60,7 +60,9 @@ public class TranslateCharSequence {
      */
     public boolean isTranslate(String perChar){
         Boolean aBoolean = charTranslate.get(perChar);
-        if(aBoolean == null)return false;
+        if(aBoolean == null) {
+            return false;
+        }
         return aBoolean.booleanValue();
     }
 

@@ -56,7 +56,7 @@ public class MybatisService {
     @Autowired
     private JdbcService jdbcService;
 
-    public static final String module = "mybatis";
+    public static final String MODULE = "mybatis";
 
     // projectName => Configuration
     private Map<String, Configuration> projectConfigurationMap = new ConcurrentHashMap<>();
@@ -85,7 +85,7 @@ public class MybatisService {
      * @param file
      */
     public void newProjectFile(String project,String classloaderName, MultipartFile file) throws IOException {
-        File projectDir = fileManager.mkTmpDir(module + "/" + project);
+        File projectDir = fileManager.mkTmpDir(MODULE + "/" + project);
         file.transferTo(new File(projectDir,file.getOriginalFilename()));
 
         loadMapperFile(project,file.getOriginalFilename(),classloaderName);
@@ -102,7 +102,7 @@ public class MybatisService {
         ClassLoader classloader = classloaderService.getClassloader(classloaderName);
         Resources.setDefaultClassLoader(classloader);
 
-        Resource resource = fileManager.relativeResource(module + "/" + project + "/" + fileName);
+        Resource resource = fileManager.relativeResource(MODULE + "/" + project + "/" + fileName);
         InputStream inputStream = resource.getInputStream();
         Configuration configuration = projectConfigurationMap.computeIfAbsent(project, k -> {
             classloaderBind.put(k,classloaderName);
@@ -125,10 +125,10 @@ public class MybatisService {
      */
     private void serializer() {
         String collect = classloaderBind.entrySet().stream().map(entry -> StringUtils.join(Arrays.asList(entry.getKey(), entry.getValue()), ':')).collect(Collectors.joining("\n"));
-        File moduleDir = fileManager.mkTmpDir(module);
+        File moduleDir = fileManager.mkTmpDir(MODULE);
         File bindClassloader = new File(moduleDir, "bindClassloader");
         try {
-            FileUtils.writeStringToFile(bindClassloader,collect);
+            FileUtils.writeStringToFile(bindClassloader, collect, StandardCharsets.UTF_8);
         } catch (IOException e) {
             log.error("MybatisService serializer error : {}",e.getMessage(),e);
         }
@@ -178,7 +178,9 @@ public class MybatisService {
 
         String classloaderName = boundSqlParam.getClassloaderName();
         ClassLoader classloader = classloaderService.getClassloader(classloaderName);
-        if (classloader == null)classloader = ClassLoader.getSystemClassLoader();
+        if (classloader == null) {
+            classloader = ClassLoader.getSystemClassLoader();
+        }
 
         JSONObject arg = boundSqlParam.getArg();
         String className = boundSqlParam.getClassName();
@@ -226,7 +228,7 @@ public class MybatisService {
      */
     public void reload() throws IOException {
         projectConfigurationMap.clear();
-        File moduleDir = fileManager.mkTmpDir(module);
+        File moduleDir = fileManager.mkTmpDir(MODULE);
         // 获取类加载器绑定
         File bind = new File(moduleDir, "bindClassloader");
         List<String> lines = FileUtils.readLines(bind, StandardCharsets.UTF_8);

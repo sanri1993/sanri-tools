@@ -14,7 +14,9 @@ public class EnumIntValueValidatorForInteger implements ConstraintValidator<Enum
 
     @Override
     public boolean isValid(Integer value, ConstraintValidatorContext constraintValidatorContext) {
-        if(value == null)return true;
+        if(value == null) {
+            return true;
+        }
         return ArrayUtils.contains(values,value);
     }
 }

@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import com.sanri.tools.modules.core.dtos.UpdateConnectEvent;
+import com.sanri.tools.modules.core.security.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -28,13 +29,15 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class ConnectService {
+public class ConnectServiceFileBase {
     @Autowired
     private FileManager fileManager;
     @Autowired
     private PluginManager pluginManager;
     @Autowired
     private ApplicationContext applicationContext;
+    @Autowired(required = false)
+    private UserService userService;
 
     // 连接都保存在这个目录
     public static final String MODULE = "connect";
@@ -117,6 +120,7 @@ public class ConnectService {
                return MongoConnectParam.class;
             case "git":
                 return GitParam.class;
+            default:
         }
         return null;
     }

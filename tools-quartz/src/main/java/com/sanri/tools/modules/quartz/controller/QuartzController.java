@@ -27,8 +27,8 @@ public class QuartzController {
 
     /**
      * 绑定一个 quartz
-     * @param connName
-     * @param settings
+     * @param connName 连接名
+     * @param settings 设置
      * @throws Exception
      */
     @PostMapping("/{connName}/bindQuartz")
@@ -38,8 +38,8 @@ public class QuartzController {
 
     /**
      * 添加或修改一个 job
-     * @param connName
-     * @param editJobParam
+     * @param connName 连接名
+     * @param editJobParam 任务参数
      */
     @PostMapping("/{connName}/editJob")
     public void editJob(@PathVariable("connName") String connName, @RequestBody @Valid EditJobParam editJobParam) throws Exception {
@@ -66,7 +66,6 @@ public class QuartzController {
     }
 
     /**
-     * @param connName
      * @return
      */
     @GetMapping("/loadCache")
@@ -76,7 +75,9 @@ public class QuartzController {
 
     /**
      * 查询所有的任务列表
-     * @param connName
+     * @param connName 连接名
+     * @param catalog 数据库  catalog
+     * @param schema  数据库 schema
      * @return
      * @throws IOException
      * @throws SQLException
@@ -89,9 +90,9 @@ public class QuartzController {
 
     /**
      * 触发任务
-     * @param connName
-     * @param group
-     * @param name
+     * @param connName 连接名
+     * @param group 分组名
+     * @param name 任务名
      * @throws SchedulerException
      */
     @GetMapping("/trigger")
@@ -102,9 +103,9 @@ public class QuartzController {
 
     /**
      * 暂停
-     * @param connName
-     * @param name
-     * @param group
+     * @param connName 连接名
+     * @param name 任务名
+     * @param group 任务分组
      * @throws SchedulerException
      */
     @GetMapping("/pause")
@@ -115,9 +116,9 @@ public class QuartzController {
 
     /**
      * 恢复
-     * @param connName
-     * @param name
-     * @param group
+     * @param connName 连接名
+     * @param name 任务名
+     * @param group 任务分组
      * @throws SchedulerException
      */
     @GetMapping("/resume")
@@ -128,11 +129,11 @@ public class QuartzController {
 
     /**
      * 移除
-     * @param connName
-     * @param triggerName
-     * @param triggerGroup
-     * @param jobName
-     * @param jobGroup
+     * @param connName 连接名称
+     * @param triggerName 触发器名称
+     * @param triggerGroup 触发器分组
+     * @param jobName 任务名
+     * @param jobGroup 任务分组
      * @throws SchedulerException
      */
     @GetMapping("/remove")

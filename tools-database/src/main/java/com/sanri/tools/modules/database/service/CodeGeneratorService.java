@@ -34,11 +34,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.*;
 
-import static com.sanri.tools.modules.database.service.JdbcService.module;
+import static com.sanri.tools.modules.database.service.JdbcService.MODULE;
 
 @Service
 @Slf4j
@@ -177,8 +178,8 @@ public class CodeGeneratorService {
             context.put("beanConfig", javaBeanBuildConfig);
             context.put("table", filterTable);
             context.put("author", System.getProperty("user.name"));
-            context.put("date", DateFormatUtils.ISO_DATE_FORMAT.format(System.currentTimeMillis()));
-            context.put("time", DateFormatUtils.ISO_TIME_NO_T_FORMAT.format(System.currentTimeMillis()));
+            context.put("date", DateFormatUtils.ISO_8601_EXTENDED_DATE_FORMAT.format(System.currentTimeMillis()));
+            context.put("time", DateFormatUtils.ISO_8601_EXTENDED_TIME_FORMAT.format(System.currentTimeMillis()));
             // 准备 context
             File entityFile = new File(javaBeanDir, javaBeanInfo.getClassName() + ".java");
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(entityFile));
@@ -280,7 +281,7 @@ public class CodeGeneratorService {
             File director = getDirector(src, targetPackage);
 
             File targetFile = new File(director, generatedJavaFile.getFileName());
-            FileUtils.writeStringToFile(targetFile,generatedJavaFile.getFormattedContent());
+            FileUtils.writeStringToFile(targetFile, generatedJavaFile.getFormattedContent(), StandardCharsets.UTF_8);
         }
 
         for (GeneratedXmlFile generatedXmlFile : generatedXmlFiles) {
@@ -288,7 +289,7 @@ public class CodeGeneratorService {
             File director = getDirector(src, targetPackage);
 
             File targetFile = new File(director, generatedXmlFile.getFileName());
-            FileUtils.writeStringToFile(targetFile,generatedXmlFile.getFormattedContent());
+            FileUtils.writeStringToFile(targetFile, generatedXmlFile.getFormattedContent(), StandardCharsets.UTF_8);
         }
 
         return src;
@@ -337,7 +338,7 @@ public class CodeGeneratorService {
     @PostConstruct
     public void register(){
         pluginManager.register(PluginDto.builder()
-                .module(module).name("codeGenerate").author("sanri").envs("default")
+                .module(MODULE).name("codeGenerate").author("sanri").envs("default")
                 .logo("mysql.jpg")
                 .desc("代码生成功能")
                 .help("代码生成.md")

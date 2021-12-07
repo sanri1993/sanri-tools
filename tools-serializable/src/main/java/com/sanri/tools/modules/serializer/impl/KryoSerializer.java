@@ -33,7 +33,9 @@ public class KryoSerializer implements Serializer {
 
     @Override
     public byte[] serialize(Object data)  {
-        if (data == null) return new byte[0];
+        if (data == null) {
+            return new byte[0];
+        }
         Kryo kryo = kryos.get();
         kryo.setReferences(false);
 
@@ -46,7 +48,9 @@ public class KryoSerializer implements Serializer {
 
     @Override
     public Object deserialize(byte[] bytes,ClassLoader classLoader)  {
-        if (bytes == null) return null;
+        if (bytes == null) {
+            return null;
+        }
 
         Kryo kryo = kryos.get();
         kryo.setClassLoader(classLoader);

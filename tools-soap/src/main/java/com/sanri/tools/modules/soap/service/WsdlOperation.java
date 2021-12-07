@@ -136,6 +136,8 @@ public class WsdlOperation {
 				break;
 			case SOAP12:
 				httpEntity = new StringEntity(soapMessage,ContentType.APPLICATION_SOAP_XML);
+				break;
+			default:
 		}
 		if (httpEntity == null){
 			log.error("不支持的 soap 请求 {}",soapType);

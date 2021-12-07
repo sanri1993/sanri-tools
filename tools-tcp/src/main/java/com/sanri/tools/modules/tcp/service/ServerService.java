@@ -236,13 +236,24 @@ public class ServerService extends ChannelInboundHandlerAdapter  {
             this.connectTime = connectTime;
         }
 
+        @Override
         public boolean equals(Object other){
-            if (other == null)return false;
-            if (other == this)return true;
-            if (!(other instanceof ClientKey))return false;
+            if (other == null) {
+                return false;
+            }
+            if (other == this) {
+                return true;
+            }
+            if (!(other instanceof ClientKey)) {
+                return false;
+            }
             ClientKey clientKey = (ClientKey) other;
-            if (clientKey.hostAndPort == hostAndPort)return true;
-            if (clientKey.hostAndPort == null || hostAndPort == null)return false;
+            if (clientKey.hostAndPort == hostAndPort) {
+                return true;
+            }
+            if (clientKey.hostAndPort == null || hostAndPort == null) {
+                return false;
+            }
 
             return hostAndPort.equals(clientKey.hostAndPort);
         }

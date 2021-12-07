@@ -7,7 +7,13 @@ import java.util.List;
 
 @Data
 public class GroupRepository {
+    /**
+     * 分组名
+     */
     private String group;
+    /**
+     * 仓库列表
+     */
     private List<String> repositorys = new ArrayList<>();
 
     public GroupRepository() {

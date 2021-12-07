@@ -1,0 +1,30 @@
+### bindQuartz
+POST {{baseUrl}}/quartz/localhost@job/bindQuartz
+Content-Type: application/json
+
+{
+  "org.quartz.jobStore.tablePrefix": "qrtz_"
+}
+
+### quartz - triggers
+GET {{baseUrl}}/quartz/triggers?connNaame=localhost&catalog=job
+
+### quartz - trigger
+GET {{baseUrl}}/quartz/trigger?connName=localhost@job&group=default&name=mm&classloaderName=job
+
+### quartz - pause
+GET {{baseUrl}}/quartz/pause?connName=localhost@job&group=default&name=mm&classloaderName=job
+
+### quartz - add job
+POST {{baseUrl}}/quartz/localhost@job/editJob
+Content-Type: application/json
+
+{
+  "name": "mm",
+  "group": "default",
+  "description": "一个测试添加 job 的功能 ",
+  "className": "com.itstyle.quartz.job.CleanUnRelatedImageJob",
+  "classloaderName": "job",
+  "jobMethodName": "",
+  "cron": "* * * * * ? *"
+}

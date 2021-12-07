@@ -24,7 +24,8 @@ public class ExportProcessDto {
         this.relativePath = relativePath;
         BigDecimal bigDecimal = new BigDecimal(current).divide(new BigDecimal(total)).setScale(2, RoundingMode.HALF_DOWN);
         this.percent = bigDecimal.toString();
-        if (current == total){
+        float diff = 1e-6f;
+        if (Math.abs(current - total) < diff){
             this.finish = true;
         }
     }

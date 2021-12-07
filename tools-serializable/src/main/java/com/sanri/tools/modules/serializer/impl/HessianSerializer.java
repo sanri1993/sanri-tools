@@ -20,7 +20,9 @@ public class HessianSerializer implements Serializer {
 
     @Override
     public byte[] serialize(Object o) throws IOException {
-        if (o == null)return new byte[0];
+        if (o == null) {
+            return new byte[0];
+        }
 
         ByteArrayOutputStream byteArrayOutputStream  = new ByteArrayOutputStream();
         // Hessian的序列化输出
@@ -38,8 +40,9 @@ public class HessianSerializer implements Serializer {
 
     @Override
     public Object deserialize(byte[] bytes,ClassLoader classLoader) throws IOException {
-        if (bytes == null)
+        if (bytes == null) {
             return null;
+        }
 
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
         // Hessian的反序列化读取对象

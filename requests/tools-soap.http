@@ -1,0 +1,26 @@
+### soap工具 - 加载一个 webservice port
+GET {{baseUrl}}/soap/ports?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
+
+### soap工具 - 查看某一个 port 的所有方法列表
+GET {{baseUrl}}/soap/WeatherWebServiceSoap/methods?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
+
+### soap工具 - 获取某个方法入参
+GET {{baseUrl}}/soap/WeatherWebServiceSoap/getWeatherbyCityName/input?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
+
+### soap 工具 - 获取某个方法出参
+GET {{baseUrl}}/soap/WeatherWebServiceSoap/getWeatherbyCityName/output?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
+
+### soap 工具 - 构建 soap 参数
+GET {{baseUrl}}/soap/WeatherWebServiceSoap/getWeatherbyCityName/build?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
+
+### soap 工具 - 发起查询
+POST {{baseUrl}}/soap/WeatherWebServiceSoap/getWeatherbyCityName/request?wsdl=http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl
+Content-Type: text/plain
+
+<?xml version="1.0" encoding="UTF-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <soap:Body xmlns="http://WebXml.com.cn/">
+  <getWeatherbyCityName>
+            <theCityName>深圳</theCityName>
+        </getWeatherbyCityName>
+    </soap:Body>
+</soap:Envelope>

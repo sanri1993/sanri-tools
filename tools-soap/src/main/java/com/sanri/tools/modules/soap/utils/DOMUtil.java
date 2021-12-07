@@ -159,7 +159,7 @@ public class DOMUtil {
             Attr attribute = (Attr) attributes.item(i);  
               
             // Note - doesn't account for namespaces.  Not needed here !  
-            if(attribute.getValue().equals("")) {  
+            if("".equals(attribute.getValue())) {
                 attributes.removeNamedItem(attribute.getName());  
             }  
         }  

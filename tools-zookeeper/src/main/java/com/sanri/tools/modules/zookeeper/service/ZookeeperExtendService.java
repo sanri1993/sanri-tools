@@ -23,7 +23,7 @@ public class ZookeeperExtendService {
     private Map<String, Set<PathFavorite>> pathFavorites = new HashMap<>();
 
     @Autowired
-    FileManager fileManager;
+    private FileManager fileManager;
 
     /**
      * 添加收藏 ,前端需要把所有的收藏全拿过来,后端直接覆盖

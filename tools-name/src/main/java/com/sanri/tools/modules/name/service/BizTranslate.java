@@ -2,15 +2,11 @@ package com.sanri.tools.modules.name.service;
 
 import com.sanri.tools.modules.core.service.file.FileManager;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringBufferInputStream;
 import java.io.StringReader;
 import java.util.*;
 
@@ -20,10 +16,12 @@ public class BizTranslate {
     @Autowired
     private FileManager fileManager;
 
-    public static final String module = "translate";
+    public static final String MODULE = "translate";
 
     public void doTranslate(String[] bizs, TranslateCharSequence translateCharSequence) {
-        if (bizs == null) return ;
+        if (bizs == null) {
+            return ;
+        }
 
         // 按顺序找到所有的业务词映射, 后面的覆盖前面的
         Properties properties = new Properties();
@@ -52,16 +50,16 @@ public class BizTranslate {
     }
 
     public List<String> bizs() {
-        return fileManager.simpleConfigNames(module);
+        return fileManager.simpleConfigNames(MODULE);
     }
 
     public List<String> mirrors(String biz) throws IOException {
-        String content = fileManager.readConfig(module, biz);
+        String content = fileManager.readConfig(MODULE, biz);
         return Arrays.asList(StringUtils.split(content,'\n'));
     }
 
     public Properties bizMirrmorKeyValue(String biz) throws IOException {
-        String content = fileManager.readConfig(module, biz);
+        String content = fileManager.readConfig(MODULE, biz);
         StringReader stringReader = new StringReader(content);
         Properties properties = new Properties();
         properties.load(stringReader);
@@ -71,6 +69,6 @@ public class BizTranslate {
 
 
     public void writeMirror(String biz, String content) throws IOException {
-        fileManager.writeConfig(module,biz,content);
+        fileManager.writeConfig(MODULE,biz,content);
     }
 }

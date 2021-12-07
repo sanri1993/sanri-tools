@@ -148,8 +148,8 @@ public final class IdCard18Model {
      * @return
      */
     public static char calcCheckcode(String idcard17) {
-        char chars[] = idcard17.toCharArray();
-        int charInts[] = new int[chars.length];
+        char[] chars = idcard17.toCharArray();
+        int[] charInts = new int[chars.length];
         for (int i = 0; i < charInts.length; i++) {
             charInts[i] = NumberUtils.toInt(String.valueOf(chars[i]));
         }
@@ -168,7 +168,9 @@ public final class IdCard18Model {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj == null || !(obj instanceof IdCard18Model))return false;
+        if(obj == null || !(obj instanceof IdCard18Model)) {
+            return false;
+        }
         return this.toString().equalsIgnoreCase(obj.toString());
     }
 }

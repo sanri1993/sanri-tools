@@ -16,9 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -151,7 +149,7 @@ public class TableRelationService {
      */
     public void serializable(){
         try {
-            fileManager.writeConfig(JdbcService.module,"metadata/relations",JSON.toJSONString(tableRelationDtoMap));
+            fileManager.writeConfig(JdbcService.MODULE,"metadata/relations",JSON.toJSONString(tableRelationDtoMap));
         } catch (IOException e) {
             log.error("table relation serializable error : {}",e.getMessage(),e);
         }
@@ -163,7 +161,7 @@ public class TableRelationService {
     @PostConstruct
     public void init(){
         try {
-            String readFileToString = fileManager.readConfig(JdbcService.module, "metadata/relations");
+            String readFileToString = fileManager.readConfig(JdbcService.MODULE, "metadata/relations");
             if(StringUtils.isBlank(readFileToString)){
                 return ;
             }

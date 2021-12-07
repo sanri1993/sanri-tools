@@ -14,8 +14,9 @@ public interface Serializer {
      * 序列化成字节数组
      * @param data
      * @return
+     * @throws IOException
      */
-    public byte[] serialize(Object data) throws IOException;
+    byte[] serialize(Object data) throws IOException;
 
     /**
      * 反序列化成对象,需要知道是哪个类加载器
@@ -23,5 +24,5 @@ public interface Serializer {
      * @param classLoader
      * @return
      */
-    public Object deserialize(byte[] bytes,ClassLoader classLoader) throws IOException, ClassNotFoundException;
+    Object deserialize(byte[] bytes,ClassLoader classLoader) throws IOException, ClassNotFoundException;
 }

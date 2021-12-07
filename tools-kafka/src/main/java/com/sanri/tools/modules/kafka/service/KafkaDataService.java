@@ -3,7 +3,7 @@ package com.sanri.tools.modules.kafka.service;
 import com.alibaba.fastjson.JSON;
 import com.sanri.tools.modules.core.dtos.param.KafkaConnectParam;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
-import com.sanri.tools.modules.core.service.file.ConnectService;
+import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.core.utils.NetUtil;
 import com.sanri.tools.modules.kafka.dtos.*;
@@ -54,7 +54,7 @@ public class KafkaDataService {
     @Autowired
     private ClassloaderService classloaderService;
     @Autowired
-    private ConnectService connectService;
+    private ConnectServiceFileBase connectService;
     @Autowired
     private FileManager fileManager;
 
@@ -73,7 +73,7 @@ public class KafkaDataService {
 
         MatchAllDocsQuery matchAllDocsQuery = new MatchAllDocsQuery();
         Directory directory = new SimpleFSDirectory(dir);
-        IndexReader indexReader = IndexReader.open(directory);
+        IndexReader indexReader = DirectoryReader.open(directory);
         IndexSearcher indexSearcher = new IndexSearcher(indexReader);
 
         Serializer serializer = serializerChoseService.choseSerializer("jdk");
@@ -104,6 +104,7 @@ public class KafkaDataService {
                 case 3:
                     data = serializer.deserialize(Hex.decodeHex(dataStringValue),ClassLoader.getSystemClassLoader());
                     break;
+                default:
             }
             datas.add(new PartitionKafkaData(offset,data,timestamp,partition));
         }
@@ -379,8 +380,9 @@ public class KafkaDataService {
                 }
             }
         }finally {
-            if(consumer != null)
+            if(consumer != null) {
                 consumer.close();
+            }
         }
 
         //数据排序
@@ -396,7 +398,7 @@ public class KafkaDataService {
     public void sendJsonData(SendJsonDataParam sendJsonDataParam) throws IOException, ExecutionException, InterruptedException {
         String clusterName = sendJsonDataParam.getClusterName();
 
-        KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(KafkaService.module,clusterName);
+        KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(KafkaService.MODULE,clusterName);
         Map<String, Object> properties = kafkaConnectParam.getKafka().buildProducerProperties();
         properties.put("key.serializer","org.apache.kafka.common.serialization.StringSerializer");
         properties.put("value.serializer","org.apache.kafka.common.serialization.StringSerializer");
@@ -421,7 +423,7 @@ public class KafkaDataService {
 
         String clusterName = sendObjectDataParam.getClusterName();
 
-        KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(KafkaService.module,clusterName);
+        KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(KafkaService.MODULE,clusterName);
         Map<String, Object> properties = kafkaConnectParam.getKafka().buildProducerProperties();
         properties.put("key.serializer","org.apache.kafka.common.serialization.StringSerializer");
         properties.put("value.serializer","org.apache.kafka.common.serialization.ByteArraySerializer");

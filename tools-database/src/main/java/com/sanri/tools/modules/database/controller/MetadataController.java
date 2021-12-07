@@ -1,6 +1,6 @@
 package com.sanri.tools.modules.database.controller;
 
-import com.sanri.tools.modules.core.service.file.ConnectService;
+import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
 import com.sanri.tools.modules.database.dtos.ExtendTableMetaData;
 import com.sanri.tools.modules.database.dtos.TableMark;
 import com.sanri.tools.modules.database.dtos.meta.*;
@@ -27,20 +27,17 @@ public class MetadataController {
     @Autowired
     private JdbcService jdbcService;
     @Autowired
-    private ConnectService connectService;
+    private ConnectServiceFileBase connectService;
     @Autowired
     private TableMarkService tableMarkService;
 
     /**
      *
-     * 作者:sanri <br/>
-     * 时间:2017-4-21上午11:23:04<br/>
-     * 功能:查询所有的连接 <br/>
-     * 入参: <br/>
+     * 查询所有的连接
      */
     @GetMapping("/connections")
     public List<String> connections(){
-        return connectService.names(JdbcService.module);
+        return connectService.names(JdbcService.MODULE);
     }
 
     /**
@@ -56,11 +53,9 @@ public class MetadataController {
     }
 
     /**
-     *
-     * 作者:sanri <br/>
-     * 时间:2017-4-21上午11:23:33<br/>
-     * 功能: 首次查询连接所有的表,如果已经存在将会在缓存中获取<br/>
-     * @return
+     * 首次查询连接所有的表,如果已经存在将会在缓存中获取
+     * @param catalog  数据库 catalog
+     * @param connName 连接名称
      */
     @GetMapping("/tables")
     public Collection<TableMetaData> tables(@NotNull String connName, String catalog) throws SQLException, IOException {
@@ -70,9 +65,9 @@ public class MetadataController {
 
     /**
      * 刷新 catalog 或者刷新 schema
-     * @param connName
-     * @param catalog
-     * @param schema
+     * @param connName 连接名称
+     * @param catalog 数据库 catalog
+     * @param schema 数据库 scheam
      * @return
      * @throws IOException
      * @throws SQLException
@@ -82,6 +77,16 @@ public class MetadataController {
         return jdbcService.refreshCatalogOrSchema(connName,catalog,schema);
     }
 
+    /**
+     * 刷新 table 元数据
+     * @param connName 连接名
+     * @param catalog 数据库 catalog
+     * @param schema 数据库 schema
+     * @param tableName 表名
+     * @return
+     * @throws IOException
+     * @throws SQLException
+     */
     @GetMapping("/refreshTable")
     public TableMetaData refreshTable(@NotNull String connName, String catalog, String schema, @NotNull String tableName) throws IOException, SQLException {
         ActualTableName actualTableName = new ActualTableName(catalog,schema,tableName);
@@ -92,10 +97,10 @@ public class MetadataController {
      * 搜索表 , keyword 可以写成表达式的形式, 目前支持
      * table: column: tag:
      * 后面可以继续扩展操作符 , 像 everything 一样
-     * @param connName
-     * @param catalog
-     * @param schemas
-     * @param keyword
+     * @param connName 连接名称
+     * @param catalog 数据库 catalog
+     * @param schemas 数据库 schema 列表
+     * @param keyword 关键字
      * @return
      * @throws IOException
      * @throws SQLException

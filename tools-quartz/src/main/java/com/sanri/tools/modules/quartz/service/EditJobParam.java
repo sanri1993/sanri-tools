@@ -8,17 +8,38 @@ import javax.validation.constraints.NotNull;
 @Data
 public class EditJobParam {
 //    private JobKey jobKey;
+    /**
+     * 任务名
+     */
     @NotNull
     private String name;
+    /**
+     * 任务分组
+     */
     @NotNull
     private String group;
 
+    /**
+     * 描述
+     */
     private String description;
+    /**
+     * 类名
+     */
     @NotNull
     private String className;
+    /**
+     * 类加载器名称
+     */
     private String classloaderName;
+    /**
+     * 任务方法名称
+     */
     @NotNull
     private String jobMethodName;
+    /**
+     * cron 表达式
+     */
     @NotNull
     private String cron;
 
