@@ -141,3 +141,7 @@ Authorization: {{Authorization}}
 Content-Type: application/x-www-form-urlencoded
 
 roleName=operator&groups=operator/,redis/,soap/
+
+### 安全 - 获取菜单列表
+GET {{baseUrl}}/profile/query/menus
+Authorization: {{Authorization}}

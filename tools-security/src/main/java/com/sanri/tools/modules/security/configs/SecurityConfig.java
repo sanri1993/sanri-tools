@@ -9,6 +9,7 @@ import com.sanri.tools.modules.security.configs.jwt.JwtAuthenticationProvider;
 import com.sanri.tools.modules.security.configs.jwt.JwtTokenValidationConfigurer;
 import com.sanri.tools.modules.security.configs.jwt.LogoutTokenClean;
 import com.sanri.tools.modules.security.configs.jwt.TokenService;
+import com.sanri.tools.modules.security.configs.whitespace.WhiteSpaceFilter;
 import com.sanri.tools.modules.security.service.UrlSecurityPermsLoad;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +29,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.header.Header;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -68,6 +70,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new UnanimousBased(decisionVoters);
     }
 
+
+    @Bean
+    public WhiteSpaceFilter whiteSpaceFilter(){
+        return new WhiteSpaceFilter(urlPermsLoad,tokenService);
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // 路径权限配置
@@ -94,6 +102,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         // jwt token 验证配置
         http.apply(jwtTokenValidationConfigurer);
+
+        // 白名单配置
+        http.addFilterBefore(whiteSpaceFilter(), AnonymousAuthenticationFilter.class);
 
         // 验证失败和授权失败提示消息
         http.exceptionHandling()

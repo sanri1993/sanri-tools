@@ -68,8 +68,7 @@ public class ResponseHandler  {
 	 * @throws IOException
 	 */
 	public void writeAuthenticationFail(AuthenticationException authenticationException,HttpServletResponse response) throws IOException {
-		log.warn(authenticationException.getClass().getSimpleName());
-		log.warn(authenticationException.getCause()+"");
+		log.warn("异常信息:" + authenticationException.getClass().getSimpleName(),authenticationException.getCause());
 		writeMessage(SystemMessage.NOT_LOGIN.result(),response);
 	}
 

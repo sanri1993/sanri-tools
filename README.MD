@@ -81,6 +81,7 @@ User(name,$Roles,$Groups)
 * 示例: 
 connect:connect:Menu:
 connectlist:connect/all:Menu:connect:/core
+* 所有的一级菜单定义在 `tools-console` 模块的 `resources.conf` 中,二级和三级菜单由各模块自定义, 一级菜单的资源名由 menu_level_1 开头
 
 #### 数据权限设计
 * tools-core 中添加 UserService 接口,由 tools-security 实现

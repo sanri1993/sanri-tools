@@ -1,10 +1,9 @@
 package com.sanri.tools.modules.security.controller;
 
-import com.sanri.tools.modules.core.security.UserService;
+import com.sanri.tools.modules.core.dtos.TreeResponseDto;
 import com.sanri.tools.modules.core.security.dtos.FatUser;
 import com.sanri.tools.modules.core.security.dtos.GroupTree;
 import com.sanri.tools.modules.core.security.dtos.ResourceInfo;
-import com.sanri.tools.modules.core.security.entitys.ToolRole;
 import com.sanri.tools.modules.core.security.entitys.ToolUser;
 import com.sanri.tools.modules.security.service.*;
 import com.sanri.tools.modules.security.service.dtos.SecurityUser;
@@ -87,6 +86,16 @@ public class ProfileController {
     public List<ResourceInfo> queryResources(){
         final List<String> resources = profileService.queryAccessResources();
         return resourcePermLoad.loadResourcesFromNames(resources);
+    }
+
+    /**
+     * 加载出所有有权限访问的菜单列表
+     * @return
+     */
+    @GetMapping("/query/menus")
+    public List<String> queryMenuNames(){
+        final List<String> resources = profileService.queryAccessResources();
+        return resourcePermLoad.loadMenusFromNames(resources);
     }
 
     // 安全信息添加

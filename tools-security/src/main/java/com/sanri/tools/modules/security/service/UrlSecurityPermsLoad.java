@@ -1,5 +1,6 @@
 package com.sanri.tools.modules.security.service;
 
+import com.sanri.tools.modules.core.security.dtos.ResourceInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +38,13 @@ public class UrlSecurityPermsLoad implements InitializingBean {
             try(final InputStream inputStream = urlResource.getInputStream();){
                 final List<String> lines = IOUtils.readLines(inputStream, StandardCharsets.UTF_8);
                 for (String line : lines) {
+                    if (StringUtils.isBlank(line) || line.startsWith("#")){
+                        // 忽略注释和空行
+                        continue;
+                    }
+                    // 去两端空格
+                    line = StringUtils.trim(line);
+
                     final String[] splitLine = StringUtils.splitPreserveAllTokens(line, "=", 2);
                     if (splitLine.length != 2) {
                        log.warn("错误的权限配置:{}",line);
@@ -73,5 +81,19 @@ public class UrlSecurityPermsLoad implements InitializingBean {
      */
     public void addUrlPerm(String pattern,String expression){
         urlPerms.put(pattern,expression);
+    }
+
+    /**
+     * @return 可以免登录地址列表
+     */
+    public List<String> findAnonUrls() {
+        List<String> antMatchPatterns = new ArrayList<>();
+        for (Map.Entry<String, String> urlPermEntry : urlPerms.entrySet()) {
+            final String value = urlPermEntry.getValue();
+            if (StringUtils.isNotBlank(value) && value.contains("anon")){
+                antMatchPatterns.add(urlPermEntry.getKey());
+            }
+        }
+        return antMatchPatterns;
     }
 }

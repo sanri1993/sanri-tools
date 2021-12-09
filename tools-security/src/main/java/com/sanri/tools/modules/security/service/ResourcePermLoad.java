@@ -1,28 +1,33 @@
 package com.sanri.tools.modules.security.service;
 
-import com.sanri.tools.modules.core.security.dtos.ResourceInfo;
-import com.sanri.tools.modules.core.security.dtos.RoleInfo;
-import com.sanri.tools.modules.core.security.entitys.ToolResource;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.UrlResource;
-import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.UrlResource;
+import org.springframework.stereotype.Component;
+
+import com.sanri.tools.modules.core.security.dtos.ResourceInfo;
+import com.sanri.tools.modules.core.security.entitys.ToolResource;
+
+import lombok.extern.slf4j.Slf4j;
+
 @Component
 @Slf4j
 public class ResourcePermLoad implements InitializingBean {
+
     private static final Map<String,ResourceInfo> resourceInfos = new HashMap<>();
+
+    /**
+     * 菜单列表  资源名 => 路由
+     */
+    private static final Map<String,String> menus = new HashMap<>();
 
     @Autowired
     private GroupService groupService;
@@ -37,8 +42,15 @@ public class ResourcePermLoad implements InitializingBean {
             try(final InputStream inputStream = urlResource.getInputStream();){
                 final List<String> lines = IOUtils.readLines(inputStream, StandardCharsets.UTF_8);
                 for (String line : lines) {
-                    final String[] splitLine = StringUtils.splitPreserveAllTokens(line, ":", 5);
-                    if (splitLine.length != 5) {
+                    if (StringUtils.isBlank(line) || line.startsWith("#")){
+                        // 忽略注释和空行
+                        continue;
+                    }
+                    // 去两端空格
+                    line = StringUtils.trim(line);
+
+                    final String[] splitLine = StringUtils.splitPreserveAllTokens(line, ":");
+                    if (splitLine.length < 5) {
                         log.warn("错误的资源权限配置:{}",line);
                         continue;
                     }
@@ -47,8 +59,22 @@ public class ResourcePermLoad implements InitializingBean {
                         final String[] groupArray = StringUtils.split(splitLine[4], ',');
                         resource.setGroups(Arrays.asList(groupArray));
                     }
+
+                    if (splitLine.length > 5){
+                        // 第 6 个配置是菜单映射配置
+                        final String routeName = splitLine[5];
+                        resource.getToolResource().setRouteName(routeName);
+                    }
                     resourceInfos.put(splitLine[0],resource);
                 }
+            }
+        }
+
+        // 把菜单列表过滤出来
+        for (ResourceInfo value : resourceInfos.values()) {
+            final ToolResource toolResource = value.getToolResource();
+            if ("Menu".equals(toolResource.getType()) || "SubMenu".equals(toolResource.getType())){
+                menus.put(toolResource.getResourceName(),toolResource.getRouteName());
             }
         }
 
@@ -77,7 +103,15 @@ public class ResourcePermLoad implements InitializingBean {
     }
 
     public List<ResourceInfo> loadResourcesFromNames(Collection<String> resources) {
-        return resources.stream().map(name -> resourceInfos.get(name)).collect(Collectors.toList());
+        return resources.stream().map(name -> resourceInfos.get(name)).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    /**
+     * 单独加载菜单信息
+     * @return
+     */
+    public List<String> loadMenusFromNames(Collection<String> resources){
+        return resources.stream().map(name -> menus.get(name)).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     /**

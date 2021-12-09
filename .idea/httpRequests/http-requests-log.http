@@ -1,3 +1,73 @@
+GET http://localhost:8084/profile/query/menus
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InNhbnJpIiwiZXhwIjoxNjM5MDMxMjI1LCJuYmYiOjE2Mzg4NTg0MjUsImlhdCI6MTYzOTAzMTIxOH0.opgwXLCGl2mBBEbNroXx53zbBYMmgPUIWk6uC53faKQ
+
+<> 2021-12-09T113808.200.json
+
+###
+
+GET http://localhost:8084/profile/query/menus
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InNhbnJpIiwiZXhwIjoxNjM5MDMxMjI1LCJuYmYiOjE2Mzg4NTg0MjUsImlhdCI6MTYzOTAzMTIxOH0.opgwXLCGl2mBBEbNroXx53zbBYMmgPUIWk6uC53faKQ
+
+<> 2021-12-09T113535.200.json
+
+###
+
+GET http://localhost:8084/profile/query/menus
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InNhbnJpIiwiZXhwIjoxNjM5MDMxMjI1LCJuYmYiOjE2Mzg4NTg0MjUsImlhdCI6MTYzOTAzMTIxOH0.opgwXLCGl2mBBEbNroXx53zbBYMmgPUIWk6uC53faKQ
+
+<> 2021-12-09T112933.200.json
+
+###
+
+GET http://localhost:8084/profile/query/menus
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InNhbnJpIiwiZXhwIjoxNjM5MDMxMjI1LCJuYmYiOjE2Mzg4NTg0MjUsImlhdCI6MTYzOTAzMTIxOH0.opgwXLCGl2mBBEbNroXx53zbBYMmgPUIWk6uC53faKQ
+
+<> 2021-12-09T111612.200.json
+
+###
+
+GET http://localhost:8084/security/addSecurity
+
+<> 2021-12-08T111843.200.json
+
+###
+
+GET http://localhost:8084/security/addSecurity
+
+<> 2021-12-08T111642.200.json
+
+###
+
+GET http://localhost:8084/security/addSecurity
+
+<> 2021-12-08T111544.200.json
+
+###
+
+GET http://localhost:8084/security/addSecurity
+
+<> 2021-12-08T111417.200.json
+
+###
+
+GET http://localhost:8084/security/addSecurity
+
+<> 2021-12-07T055326.200.json
+
+###
+
+GET http://localhost:8084/security/addSecurity
+
+<> 2021-12-07T055245.200.json
+
+###
+
+GET http://localhost:8084/security/addSecurity
+
+<> 2021-12-07T055010.200.json
+
+###
+
 GET http://localhost:8084/profile/query/resources
 Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InNhbnJpIiwiZXhwIjoxNjM5MDMxMjI1LCJuYmYiOjE2Mzg4NTg0MjUsImlhdCI6MTYzOTAzMTIxOH0.opgwXLCGl2mBBEbNroXx53zbBYMmgPUIWk6uC53faKQ
 
@@ -343,104 +413,6 @@ Content-Type: application/x-www-form-urlencoded
 username=sanri&groups=sanri/,operator/
 
 <> 2021-12-07T021042-9.200.json
-
-###
-
-POST http://localhost:8084/security/user/grantRoles
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InNhbnJpIiwiZXhwIjoxNjM5MDI4OTQzLCJuYmYiOjE2Mzg4NTYxNDMsImlhdCI6MTYzOTAyODkzNn0.eR-YJwPzASFYRlWAr5WRXDLzULCTtlwmgSxmxW7_sd8
-Content-Type: application/x-www-form-urlencoded
-
-username=sanri&roles=operator
-
-<> 2021-12-07T021042-8.200.json
-
-###
-
-POST http://localhost:8084/profile/group/delete
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InNhbnJpIiwiZXhwIjoxNjM5MDI4OTQzLCJuYmYiOjE2Mzg4NTYxNDMsImlhdCI6MTYzOTAyODkzNn0.eR-YJwPzASFYRlWAr5WRXDLzULCTtlwmgSxmxW7_sd8
-Content-Type: application/x-www-form-urlencoded
-
-relativePath=a/b/c/
-
-<> 2021-12-07T021042-7.200.json
-
-###
-
-POST http://localhost:8084/profile/role/delete
-Content-Type: application/x-www-form-urlencoded
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InNhbnJpIiwiZXhwIjoxNjM5MDI4OTQzLCJuYmYiOjE2Mzg4NTYxNDMsImlhdCI6MTYzOTAyODkzNn0.eR-YJwPzASFYRlWAr5WRXDLzULCTtlwmgSxmxW7_sd8
-
-role=operator
-
-<> 2021-12-07T021042-6.200.json
-
-###
-
-POST http://localhost:8084/profile/user/delete
-Content-Type: application/x-www-form-urlencoded
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InNhbnJpIiwiZXhwIjoxNjM5MDI4OTQzLCJuYmYiOjE2Mzg4NTYxNDMsImlhdCI6MTYzOTAyODkzNn0.eR-YJwPzASFYRlWAr5WRXDLzULCTtlwmgSxmxW7_sd8
-
-username=admin
-
-<> 2021-12-07T021042-5.200.json
-
-###
-
-POST http://localhost:8084/profile/group/add
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InNhbnJpIiwiZXhwIjoxNjM5MDI4OTQzLCJuYmYiOjE2Mzg4NTYxNDMsImlhdCI6MTYzOTAyODkzNn0.eR-YJwPzASFYRlWAr5WRXDLzULCTtlwmgSxmxW7_sd8
-Content-Type: application/x-www-form-urlencoded
-
-relativePath=operator
-
-<> 2021-12-07T021042-4.200.json
-
-###
-
-POST http://localhost:8084/profile/role/add
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InNhbnJpIiwiZXhwIjoxNjM5MDI4OTQzLCJuYmYiOjE2Mzg4NTYxNDMsImlhdCI6MTYzOTAyODkzNn0.eR-YJwPzASFYRlWAr5WRXDLzULCTtlwmgSxmxW7_sd8
-Content-Type: application/x-www-form-urlencoded
-
-roleName=operator
-
-<> 2021-12-07T021042-3.200.json
-
-###
-
-POST http://localhost:8084/profile/user/add
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InNhbnJpIiwiZXhwIjoxNjM5MDI4OTQzLCJuYmYiOjE2Mzg4NTYxNDMsImlhdCI6MTYzOTAyODkzNn0.eR-YJwPzASFYRlWAr5WRXDLzULCTtlwmgSxmxW7_sd8
-Content-Type: application/x-www-form-urlencoded
-
-username=sanri
-
-<> 2021-12-07T021042-2.200.json
-
-###
-
-GET http://localhost:8084/profile/query/resources
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InNhbnJpIiwiZXhwIjoxNjM5MDI4OTQzLCJuYmYiOjE2Mzg4NTYxNDMsImlhdCI6MTYzOTAyODkzNn0.eR-YJwPzASFYRlWAr5WRXDLzULCTtlwmgSxmxW7_sd8
-
-<> 2021-12-07T021042-1.200.json
-
-###
-
-GET http://localhost:8084/profile/query/groups
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InNhbnJpIiwiZXhwIjoxNjM5MDI4OTQzLCJuYmYiOjE2Mzg4NTYxNDMsImlhdCI6MTYzOTAyODkzNn0.eR-YJwPzASFYRlWAr5WRXDLzULCTtlwmgSxmxW7_sd8
-
-<> 2021-12-07T021042.200.json
-
-###
-
-GET http://localhost:8084/profile/query/roles
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InNhbnJpIiwiZXhwIjoxNjM5MDI4OTQzLCJuYmYiOjE2Mzg4NTYxNDMsImlhdCI6MTYzOTAyODkzNn0.eR-YJwPzASFYRlWAr5WRXDLzULCTtlwmgSxmxW7_sd8
-
-<> 2021-12-07T021041-8.200.json
-
-###
-
-GET http://localhost:8084/profile
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InNhbnJpIiwiZXhwIjoxNjM5MDI4OTQzLCJuYmYiOjE2Mzg4NTYxNDMsImlhdCI6MTYzOTAyODkzNn0.eR-YJwPzASFYRlWAr5WRXDLzULCTtlwmgSxmxW7_sd8
-
-<> 2021-12-07T021041-7.200.json
 
 ###
 

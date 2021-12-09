@@ -22,6 +22,11 @@ public class ToolResource {
      */
     private String parentResourceName;
 
+    /**
+     * 前端展示路由名, 必须由  / 开头
+     */
+    private String routeName;
+
     public ToolResource() {
     }
 
