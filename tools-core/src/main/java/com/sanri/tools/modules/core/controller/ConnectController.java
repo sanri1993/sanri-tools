@@ -16,6 +16,10 @@ import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * @resourceName 连接管理
+ * @parentMenu menu_level_1_basedata
+ */
 @RestController
 @RequestMapping("/connect")
 @Validated

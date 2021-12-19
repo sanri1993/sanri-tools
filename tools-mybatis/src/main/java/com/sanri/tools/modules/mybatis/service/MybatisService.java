@@ -1,16 +1,18 @@
 package com.sanri.tools.modules.mybatis.service;
 
-import com.alibaba.fastjson.JSONObject;
-import com.sanri.tools.modules.core.dtos.PluginDto;
-import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
-import com.sanri.tools.modules.core.service.file.FileManager;
-import com.sanri.tools.modules.core.service.plugin.PluginManager;
-import com.sanri.tools.modules.database.dtos.DynamicQueryDto;
-import com.sanri.tools.modules.database.service.JdbcService;
-import com.sanri.tools.modules.mybatis.dtos.BoundSqlParam;
-import com.sanri.tools.modules.mybatis.dtos.BoundSqlResponse;
-import com.sanri.tools.modules.mybatis.dtos.ProjectDto;
-import lombok.extern.slf4j.Slf4j;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -26,20 +28,20 @@ import org.apache.ibatis.session.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+import com.alibaba.fastjson.JSONObject;
+import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
+import com.sanri.tools.modules.core.service.file.FileManager;
+
+import com.sanri.tools.modules.database.dtos.DynamicQueryDto;
+import com.sanri.tools.modules.database.service.JdbcService;
+import com.sanri.tools.modules.mybatis.dtos.BoundSqlParam;
+import com.sanri.tools.modules.mybatis.dtos.BoundSqlResponse;
+import com.sanri.tools.modules.mybatis.dtos.ProjectDto;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -47,8 +49,7 @@ public class MybatisService {
     @Autowired
     private FileManager fileManager;
 
-    @Autowired
-    private PluginManager pluginManager;
+
 
     @Autowired
     private ClassloaderService classloaderService;
@@ -86,7 +87,9 @@ public class MybatisService {
      */
     public void newProjectFile(String project,String classloaderName, MultipartFile file) throws IOException {
         File projectDir = fileManager.mkTmpDir(MODULE + "/" + project);
-        file.transferTo(new File(projectDir,file.getOriginalFilename()));
+        final File destFile = new File(projectDir, file.getOriginalFilename());
+//        file.transferTo(new File(projectDir,file.getOriginalFilename()));
+        FileCopyUtils.copy(file.getInputStream(),new FileOutputStream(destFile));
 
         loadMapperFile(project,file.getOriginalFilename(),classloaderName);
     }
@@ -252,8 +255,8 @@ public class MybatisService {
         }
     }
 
-    @PostConstruct
-    public void register(){
-        pluginManager.register(PluginDto.builder().module("call").name("mybatis").author("9420").logo("mybatis.png").desc("mybatis 快速调用").build());
-    }
+//    @PostConstruct
+//    public void register(){
+//        pluginManager.register(PluginDto.builder().module("call").name("mybatis").author("9420").logo("mybatis.png").desc("mybatis 快速调用").build());
+//    }
 }

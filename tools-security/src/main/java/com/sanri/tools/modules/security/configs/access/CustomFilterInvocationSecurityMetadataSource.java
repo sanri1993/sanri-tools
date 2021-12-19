@@ -1,6 +1,6 @@
 package com.sanri.tools.modules.security.configs.access;
 
-import com.sanri.tools.modules.security.service.UrlSecurityPermsLoad;
+import com.sanri.tools.modules.security.configs.UrlSecurityPermsLoad;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.ConfigAttribute;

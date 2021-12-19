@@ -2,11 +2,14 @@ package com.sanri.tools.modules.core.security.dtos;
 
 import com.sanri.tools.modules.core.security.entitys.ToolResource;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 public class ResourceInfo {
     /**
      * 资源信息
@@ -23,5 +26,20 @@ public class ResourceInfo {
 
     public void addGroup(String groupPath){
         groups.add(groupPath);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ResourceInfo that = (ResourceInfo) o;
+
+       return that.getToolResource().getResourceId().equals(this.toolResource.getResourceId());
+    }
+
+    @Override
+    public int hashCode() {
+        return toolResource != null ? toolResource.getResourceId().hashCode() : 0;
     }
 }

@@ -4,12 +4,12 @@ import lombok.Data;
 
 @Data
 public class ToolRole {
-    private String roleName;
+    private String rolename;
 
     public ToolRole() {
     }
 
-    public ToolRole(String roleName) {
-        this.roleName = roleName;
+    public ToolRole(String rolename) {
+        this.rolename = rolename;
     }
 }

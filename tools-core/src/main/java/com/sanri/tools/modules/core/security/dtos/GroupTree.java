@@ -19,12 +19,15 @@ public class GroupTree {
      * 组织名称
      */
     private String name;
+    /**
+     * 上级组织
+     */
     @JsonIgnore
     private GroupTree parent;
     /**
      * 子组织
      */
-    private List<GroupTree> childes = new ArrayList<>();
+    private List<GroupTree> children = new ArrayList<>();
 
     public GroupTree() {
     }
@@ -34,7 +37,7 @@ public class GroupTree {
     }
 
     public void addChild(GroupTree groupTree){
-        childes.add(groupTree);
+        children.add(groupTree);
     }
 
 }

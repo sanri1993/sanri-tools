@@ -1,14 +1,17 @@
 package com.sanri.tools.modules.quartz.service;
 
-import com.alibaba.fastjson.JSON;
-import com.sanri.tools.modules.core.dtos.PluginDto;
-import com.sanri.tools.modules.core.exception.ToolException;
-import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
-import com.sanri.tools.modules.core.service.file.FileManager;
-import com.sanri.tools.modules.core.service.plugin.PluginManager;
-import com.sanri.tools.modules.database.service.JdbcService;
-import com.sanri.tools.modules.quartz.dtos.TriggerTask;
-import lombok.extern.slf4j.Slf4j;
+import static org.quartz.impl.StdSchedulerFactory.PROP_SCHED_CLASS_LOAD_HELPER_CLASS;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
+
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -18,24 +21,22 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.support.CronSequenceGenerator;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.sql.DataSource;
-import java.io.IOException;
-import java.io.StringReader;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import com.alibaba.fastjson.JSON;
+import com.sanri.tools.modules.core.exception.ToolException;
+import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
+import com.sanri.tools.modules.core.service.file.FileManager;
 
-import static org.quartz.impl.StdSchedulerFactory.PROP_SCHED_CLASS_LOAD_HELPER_CLASS;
+import com.sanri.tools.modules.database.service.JdbcService;
+import com.sanri.tools.modules.quartz.dtos.TriggerTask;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
 public class QuartzService {
     @Autowired
     private JdbcService jdbcService;
-    @Autowired
-    private PluginManager pluginManager;
+
     @Autowired
     private FileManager fileManager;
 
@@ -239,9 +240,9 @@ public class QuartzService {
 
     @PostConstruct
     public void register() throws IOException {
-        pluginManager.register(PluginDto.builder().module("monitor")
-                .name("quartz").author("9420")
-                .logo("null.png").desc("可视化任务调度").build());
+//        pluginManager.register(PluginDto.builder().module("monitor")
+//                .name("quartz").author("9420")
+//                .logo("null.png").desc("可视化任务调度").build());
 
         // 加载序列化的连接配置
         List<String> settings = fileManager.simpleConfigNames(MODULE, "settings");

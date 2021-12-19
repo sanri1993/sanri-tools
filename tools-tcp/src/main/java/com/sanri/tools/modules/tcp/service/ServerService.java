@@ -2,27 +2,24 @@ package com.sanri.tools.modules.tcp.service;
 
 import java.io.Serializable;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.net.SocketException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.alibaba.fastjson.JSON;
-import com.sanri.tools.modules.core.dtos.PluginDto;
-import com.sanri.tools.modules.core.service.plugin.PluginManager;
-import com.sanri.tools.modules.core.utils.NetUtil;
-import lombok.Data;
-import lombok.ToString;
+import javax.annotation.PreDestroy;
+
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.net.HostAndPort;
+
+import com.sanri.tools.modules.core.utils.NetUtil;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -33,10 +30,9 @@ import io.netty.handler.codec.bytes.ByteArrayDecoder;
 import io.netty.handler.codec.bytes.ByteArrayEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import lombok.Data;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 @Service
 @Slf4j
@@ -49,8 +45,7 @@ public class ServerService extends ChannelInboundHandlerAdapter  {
     private ServerConnectState connectState;
     private Environment environment;
 
-    @Autowired
-    private PluginManager pluginManager;
+
 
     public ServerService(Environment environment) {
         final String port = environment.getProperty("server.port");
@@ -281,9 +276,9 @@ public class ServerService extends ChannelInboundHandlerAdapter  {
         }catch (Exception e){}
     }
 
-    @PostConstruct
-    public void register(){
-        pluginManager.register(PluginDto.builder().module("tcp").name("tcpclient").author("sanri").logo("tcp.jpg").desc("客户端调试工具").envs("default").build());
-        pluginManager.register(PluginDto.builder().module("tcp").name("tcpserver").author("sanri").logo("tcp.jpg").desc("服务端调试工具").envs("default").build());
-    }
+//    @PostConstruct
+//    public void register(){
+//        pluginManager.register(PluginDto.builder().module("tcp").name("tcpclient").author("sanri").logo("tcp.jpg").desc("客户端调试工具").envs("default").build());
+//        pluginManager.register(PluginDto.builder().module("tcp").name("tcpserver").author("sanri").logo("tcp.jpg").desc("服务端调试工具").envs("default").build());
+//    }
 }

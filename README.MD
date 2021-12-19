@@ -55,18 +55,22 @@ User(name,$Roles,$Groups)
 #### 实现说明 
 不管代码中还是说明文档,对于安全模块, 组织和分组是一个意思
 
-资源访问属性: 用户属于哪些个组织, 可以访问这些个组织(包含)及以下组织下所有的资源及角色包含的资源
+* 权限访问属性: 用户可以访问哪些权限内容
+   * 组织属性: 用户可以访问自己所在组织和所有子组织
+   * 用户属性: 用户可以访问自己所在组织和子组织内的所有用户
+   * 角色属性: 用户可以访问的角色所在组织和子组织内的所有角色
+   * 资源属性: 用户可以访问的角色-> 找到角色所有资源 -> 找到资源的组织 -> 组织的顶层列表组织下的所有资源都可以访问
 
-资源分配属性: 用户拥有的资源可以分配给用户可以访问的用户
-  * 用户属性: 用户可以访问用户所在分组及其以下分组的用户
-  * 角色属性: 用户可以访问用户拥有的角色所在分组及其子分组所有的角色
-  * 资源属性: 用户可以访问用户拥有的角色拥有的资源所在分组及其子分组所有的资源
+* 权限分配属性: 用户拥有的权限可以分配给用户可访问的用户
 
-后台资源拦截: URL 匹配, 使用每个模块的拦截配置, 没有配置的 url 需要登录才能使用 authority.conf
+后台资源拦截: URL 匹配, 使用每个模块的拦截配置, 没有配置的 url 需要登录才能使用 `authority.conf`
 
-模块资源提供: 可访问的资源(插件,按扭)由每个模块给出,在 tools-security 模块动态配置, 可提供动态配置 resources.conf
+模块资源提供: 可访问的资源(Resource,SubResource)由每个模块给出,在 tools-security 模块动态配置, 可提供动态配置 `resources.conf`
 
-不管用户,角色还是资源,都是有多个分组的, 其中第一个分组为主分组; 每个用户都必须要有一个分组
+模块菜单提供: 可访问的菜单(Menu,SubMenu), 其实也是资源的一种,可提供动态配置 `menus.conf`
+
+不管用户,角色还是资源,都是有多个分组的, 其中第一个分组为主分组;
+
 #### 配置文件
 **authority.conf格式说明**
 
@@ -77,11 +81,15 @@ User(name,$Roles,$Groups)
 **resources.conf格式说明**
 
 * 每行一个资源配置
-* 资源名:访问路径:类型(Menu,Button):父级资源名称:分组
-* 示例: 
-connect:connect:Menu:
-connectlist:connect/all:Menu:connect:/core
-* 所有的一级菜单定义在 `tools-console` 模块的 `resources.conf` 中,二级和三级菜单由各模块自定义, 一级菜单的资源名由 menu_level_1 开头
+* 资源id:资源名称:访问路径:类型(Resource,SubResource):父级资源名称:组织
+* 示例: connectlist:连接列表:connect/all:Resource:connect:/core
+
+**menus.conf格式说明**
+
+* 每行一个菜单配置, 菜单id 最好以 menu 开头
+* 菜单id:菜单名称:访问路径:类型(Menu,SubMenu):父级菜单名称:组织:路由路径
+* 示例: menu_resource:资源管理:/security/resource:Menu:menu_level_1_security:/security/resource:/security/resource
+* 因为菜单也是资源的一种,所以前面部分和资源的配置是一致的,然后每个顶级资源需要挂载到对应菜单上
 
 #### 数据权限设计
 * tools-core 中添加 UserService 接口,由 tools-security 实现
@@ -287,7 +295,7 @@ sanritoolslib [下载地址](https://gitee.com/sanri/sanri-tools-maven/attach_fi
     <version>${project.version}</version>
 </dependency>
 ```
-2. 然后将模块使用插件管理注册进来
+2. 然后将模块使用插件管理注册进来, (在 2.4.0 之后废弃这种注册方式, 模块可以不依赖 tools-core)
 ```java
 @Autowired
 private PluginManager pluginManager;
@@ -298,6 +306,18 @@ public void register(){
 }
 ```
 module 在前端是做为一级菜单,然后 name 是二级菜单 , 同一个模块下可以注册多个功能项, 插件的开发和工作中开发 controller 没有区别 
+
+**重要**
+在 2.4.0 之后, 注册方式改为在 resources 目录下添加 `plugin.properties` 文件, 里面描述这个插件的详细信息;
+一个模块只能注册一个插件, 因为不再用插件信息来做菜单, 菜单是菜单, 插件是插件, 这两者不能混淆
+```
+name=插件标题
+author=sanri
+dependencies=
+desc=提供插件管理, 连接管理, 类加载器管理等功能
+help=classpath:README.MD
+```
+其中, 依赖项列表使用逗号分隔每个依赖模块; 帮助文档可以是一个url, 也可以是本地 md 文件, 你需要把它描述成资源格式
 
 3. 将开发的模块集成进工具
 在 tools-console/pom.xml 中添加 

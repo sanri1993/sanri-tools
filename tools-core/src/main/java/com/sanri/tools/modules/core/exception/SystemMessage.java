@@ -15,7 +15,7 @@ public enum  SystemMessage implements ExceptionCause<BusinessException> {
     SIGN_ERROR(4005,"签名错误,你的签名串为 [{0}]"),
     CHANNEL_NOT_SUPPORT(4006,"非法访问"),
     ACCESS_DENIED(4007,"禁止访问"),
-    ACCESS_DENIED_ARGS(4008,"禁止访问,{0}"),
+    ACCESS_DENIED_ARGS(4007,"禁止访问,{0}"),
     LOGIN_FAIL(4009,"登录失败 {0}"),
 
     SERVICE_CALL_FAIL(5000,"后台服务异常"),

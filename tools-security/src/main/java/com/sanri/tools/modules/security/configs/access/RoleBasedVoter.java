@@ -1,8 +1,7 @@
 package com.sanri.tools.modules.security.configs.access;
 
-import com.sanri.tools.modules.core.security.entitys.ToolRole;
-import com.sanri.tools.modules.security.service.RoleService;
-import com.sanri.tools.modules.security.service.UrlSecurityPermsLoad;
+import com.sanri.tools.modules.security.configs.UrlSecurityPermsLoad;
+import com.sanri.tools.modules.security.service.repository.RoleRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,7 @@ public class RoleBasedVoter implements AccessDecisionVoter<Object> {
     @Autowired
     private UrlSecurityPermsLoad urlPermsLoad;
     @Autowired
-    private RoleService roleService;
+    private RoleRepository roleService;
 
     @Override
     public boolean supports(ConfigAttribute attribute) {
@@ -94,7 +93,7 @@ public class RoleBasedVoter implements AccessDecisionVoter<Object> {
         }
 
         // 用户没有的权限替换为 flase
-        final List<String> allRoles = roleService.roleList().stream().collect(Collectors.toList());
+        final List<String> allRoles = roleService.findRoles().stream().collect(Collectors.toList());
         for (String role : allRoles) {
             matchRoles = matchRoles.replaceAll(role,"false");
         }

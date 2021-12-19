@@ -1,16 +1,15 @@
 package com.sanri.tools.modules.zookeeper.service;
 
-import com.sanri.tools.modules.core.dtos.UpdateConnectEvent;
-import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
-import com.sanri.tools.modules.core.dtos.PluginDto;
-import com.sanri.tools.modules.core.service.plugin.PluginManager;
-import com.sanri.tools.modules.core.dtos.param.ConnectParam;
-import com.sanri.tools.modules.core.dtos.param.SimpleConnectParam;
-import com.sanri.tools.modules.zookeeper.dtos.ZooNodeACL;
-import com.sanri.tools.modules.serializer.SerializerConstants;
-import com.sanri.tools.modules.serializer.service.Serializer;
-import com.sanri.tools.modules.serializer.service.SerializerChoseService;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.annotation.PreDestroy;
+
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.serialize.BytesPushThroughSerializer;
 import org.I0Itec.zkclient.serialize.ZkSerializer;
@@ -23,12 +22,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import com.sanri.tools.modules.core.dtos.UpdateConnectEvent;
+import com.sanri.tools.modules.core.dtos.param.ConnectParam;
+import com.sanri.tools.modules.core.dtos.param.SimpleConnectParam;
+import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
+
+import com.sanri.tools.modules.serializer.SerializerConstants;
+import com.sanri.tools.modules.serializer.service.Serializer;
+import com.sanri.tools.modules.serializer.service.SerializerChoseService;
+import com.sanri.tools.modules.zookeeper.dtos.ZooNodeACL;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -40,8 +44,7 @@ public class ZookeeperService implements ApplicationListener<UpdateConnectEvent>
     private ConnectServiceFileBase connectService;
     @Autowired
     private SerializerChoseService serializerChoseService;
-    @Autowired
-    private PluginManager pluginManager;
+
 
     public static final String module = "zookeeper";
 
@@ -204,10 +207,10 @@ public class ZookeeperService implements ApplicationListener<UpdateConnectEvent>
         return cleanPath;
     }
 
-    @PostConstruct
-    public void register(){
-        pluginManager.register(PluginDto.builder().module("monitor").name(module).author("sanri").logo("zookeeper.jpg").desc("做为 kafka dubbo 的支撑模块").build());
-    }
+//    @PostConstruct
+//    public void register(){
+//        pluginManager.register(PluginDto.builder().module("monitor").name(module).author("sanri").logo("zookeeper.jpg").desc("做为 kafka dubbo 的支撑模块").build());
+//    }
 
     @PreDestroy
     public void destory(){

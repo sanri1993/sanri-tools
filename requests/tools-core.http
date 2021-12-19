@@ -93,17 +93,16 @@ Content-Type: application/json
   }
 }
 
-### 插件 - 获取所有插件名称
-GET {{baseUrl}}/plugin/names
-
 ### 插件 - 插件列表,经过排序的
 GET {{baseUrl}}/plugin/list
+Authorization: {{Authorization}}
 
 ### 插件 - 获取插件详情
-GET {{baseUrl}}/plugin/detail?key=database:metadata
+GET {{baseUrl}}/plugin/detail?pluginId=tools-core
+Authorization: {{Authorization}}
 
 ### 插件 - 访问插件
-GET {{baseUrl}}/plugin/visited?key=kafka:main
+GET {{baseUrl}}/plugin/visited?pluginId=tools-core
 
 ### 插件 - 序列化数据到文件
 GET {{baseUrl}}/plugin/serializer
@@ -219,4 +218,4 @@ GET {{baseUrl}}/security/connect/loadContent?module=database&baseName=192.168.1.
 Authorization: {{Authorization}}
 
 ### 判断系统是否添加了权限
-GET {{baseUrl}}/security/addSecurity
+GET {{baseUrl}}/security/needSecurity

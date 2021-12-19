@@ -1,12 +1,15 @@
 package com.sanri.tools.modules.security.controller;
 
-import com.sanri.tools.modules.core.dtos.TreeResponseDto;
-import com.sanri.tools.modules.core.security.dtos.FatUser;
+import com.sanri.tools.modules.core.security.UserService;
 import com.sanri.tools.modules.core.security.dtos.GroupTree;
-import com.sanri.tools.modules.core.security.dtos.ResourceInfo;
-import com.sanri.tools.modules.core.security.entitys.ToolUser;
+import com.sanri.tools.modules.core.security.dtos.RoleInfo;
+import com.sanri.tools.modules.core.security.dtos.ThinUser;
+import com.sanri.tools.modules.core.security.entitys.UserProfile;
 import com.sanri.tools.modules.security.service.*;
-import com.sanri.tools.modules.security.service.dtos.SecurityUser;
+import com.sanri.tools.modules.security.service.dtos.ResourceTree;
+import com.sanri.tools.modules.security.service.repository.ResourceRepository;
+import com.sanri.tools.modules.security.service.repository.RoleRepository;
+import com.sanri.tools.modules.security.service.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,125 +17,107 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.constraints.NotBlank;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * 当前用户信息,个人用户可以调用
+ * 当前用户信息
  */
 @RestController
 @RequestMapping("/profile")
+@Validated
 public class ProfileController {
-    @Autowired
-    private ProfileServiceImpl profileService;
-    @Autowired
-    private GroupService groupService;
-    @Autowired
-    private ResourcePermLoad resourcePermLoad;
-    @Autowired
-    private UserManagerService userService;
-    @Autowired
-    private RoleService roleService;
 
-    @GetMapping("/username")
-    public String username(){
-        return profileService.currentUser().getUsername();
-    }
-
-    @GetMapping("/user")
-    public SecurityUser user(){
-        return profileService.currentUser();
-    }
+    @Autowired
+    private ProfileService profileService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private RoleRepository roleRepository;
+    @Autowired
+    private ResourceRepository resourceRepository;
+    @Autowired
+    private ResourceService resourceService;
 
     @GetMapping
-    public FatUser profile() throws IOException {
+    public UserProfile profile() throws IOException {
         return profileService.profile();
     }
 
     /**
-     * 查询当前用户可以看到哪些分组信息
-     * @return
+     * 当前登录人用户名
      */
-    @GetMapping("/query/groups")
-    public List<GroupTree> queryGroups(){
-        final List<String> queryGroups = profileService.groups();
-        return groupService.convertPathsToGroupTree(queryGroups);
+    @GetMapping("/username")
+    public String username(){
+        return profileService.username();
     }
 
     /**
-     * 查询当前用户可以授权哪些用户
-     * @return
+     * 当前登录人
      */
-    @GetMapping("/query/users")
-    public List<String> queryUsers(){
-        return profileService.queryAccessUsers();
+    @GetMapping("/user")
+    public ThinUser user(){
+        return profileService.user();
     }
 
     /**
-     * 可授权角色信息查询
-     * @return
+     * 修改密码
+     * @param oldPassword 旧密码
+     * @param password 新密码
      */
-    @GetMapping("/query/roles")
-    public List<String> queryRoles(){
-        return profileService.queryAccessRoles();
+    @PostMapping("/changePassword")
+    public void changePassword(String oldPassword,String password){
+        profileService.changePassword(oldPassword,password);
     }
 
     /**
-     * 可授权资源信息查询
+     * 可访问组织列表
      * @return
      */
-    @GetMapping("/query/resources")
-    public List<ResourceInfo> queryResources(){
-        final List<String> resources = profileService.queryAccessResources();
-        return resourcePermLoad.loadResourcesFromNames(resources);
+    @GetMapping("/accessGroups")
+    public GroupTree accessGroups(){
+        final List<String> accessGroups = profileService.queryAccessGroups();
+        final List<Path> collect = accessGroups.stream().map(Paths::get).collect(Collectors.toList());
+        final GroupTree groupTree = GroupService.convertPathsToGroupTree(collect);
+        return groupTree;
     }
 
     /**
-     * 加载出所有有权限访问的菜单列表
-     * @return
+     * 可访问用户列表
      */
-    @GetMapping("/query/menus")
-    public List<String> queryMenuNames(){
-        final List<String> resources = profileService.queryAccessResources();
-        return resourcePermLoad.loadMenusFromNames(resources);
-    }
-
-    // 安全信息添加
-    @PostMapping("/user/add")
-    public void addUser(@NotBlank String username){
-        profileService.addUser(new ToolUser(username,""));
-    }
-
-    @PostMapping("/role/add")
-    public void addRole(@Validated String roleName){
-        profileService.addRole(roleName);
+    @GetMapping("/accessUsers")
+    public List<? extends ThinUser> accessUsers(){
+        final List<String> accessUsers = profileService.queryAccessUsers();
+        return userRepository.getUsers(accessUsers);
     }
 
     /**
-     * 添加分组
-     * @param parentGroup 父级组织
-     * @param relativePath 相对路径
+     * 可访问角色列表
      */
-    @PostMapping("/group/add")
-    public void addGroup(@NotBlank String relativePath){
-        final SecurityUser securityUser = profileService.currentUser();
-        final String mainGroup = securityUser.getMainGroup();
-        groupService.addGroup(mainGroup + relativePath);
+    @GetMapping("/accessRoles")
+    public List<RoleInfo> accessRoles(){
+        final List<String> accessRoles = profileService.queryAccessRoles();
+        return roleRepository.getRoles(accessRoles);
     }
 
-    // 安全信息删除
-    @PostMapping("/user/delete")
-    public void deleteUser(@NotBlank String username) throws IOException {userService.deleteUser(username);}
-
-    @PostMapping("/role/delete")
-    public void deleteRole(@NotBlank String role){
-        roleService.deleteRole(role);
+    /**
+     * 可访问资源列表
+     * @return
+     */
+    @GetMapping("/accessResources")
+    public List<ResourceTree> accessResources(){
+        final List<String> accessResources = profileService.queryAccessResources();
+        return resourceService.completionToTree(accessResources);
     }
 
-    @PostMapping("/group/delete")
-    public void deleteGroup(@NotBlank String relativePath){
-        final String mainGroup = profileService.currentUser().getMainGroup();
-        groupService.deleteGroup(mainGroup + relativePath);
+    /**
+     * 可访问菜单查询
+     */
+    @GetMapping("/accessMenus")
+    public List<ResourceService.Menu> accessMenus(){
+        return profileService.queryAccessMenus();
     }
 }

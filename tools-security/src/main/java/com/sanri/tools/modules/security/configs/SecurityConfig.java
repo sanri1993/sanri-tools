@@ -5,12 +5,13 @@ import java.util.List;
 
 import com.sanri.tools.modules.security.configs.access.RoleBasedVoter;
 import com.sanri.tools.modules.security.configs.jsonlogin.JsonLoginConfiguration;
+import com.sanri.tools.modules.security.configs.jsonlogin.ResponseHandler;
 import com.sanri.tools.modules.security.configs.jwt.JwtAuthenticationProvider;
 import com.sanri.tools.modules.security.configs.jwt.JwtTokenValidationConfigurer;
 import com.sanri.tools.modules.security.configs.jwt.LogoutTokenClean;
 import com.sanri.tools.modules.security.configs.jwt.TokenService;
 import com.sanri.tools.modules.security.configs.whitespace.WhiteSpaceFilter;
-import com.sanri.tools.modules.security.service.UrlSecurityPermsLoad;
+import com.sanri.tools.modules.security.service.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.access.AccessDecisionManager;
@@ -30,13 +31,12 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
-import org.springframework.security.web.header.Header;
-import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.sanri.tools.modules.security.service.FileUserDetailServiceImpl;
+import org.springframework.web.filter.CorsFilter;
 
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -59,6 +59,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UrlSecurityPermsLoad urlPermsLoad;
     @Autowired
     private RoleBasedVoter roleBasedVoter;
+    @Autowired
+    private ResponseHandler responseHandler;
 
     @Bean
     public AccessDecisionManager accessDecisionManager(){
@@ -80,7 +82,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         // 路径权限配置
         http.authorizeRequests()
-                .antMatchers("/version/**","/cron/nextExecutionTime").permitAll()
+                .antMatchers("/version/**","/cron/nextExecutionTime","/plugin/visited").permitAll()
                 .anyRequest().authenticated()
                 .accessDecisionManager(accessDecisionManager());
 //                .and().anonymous().disable();
@@ -92,10 +94,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable();
 
         // 跨域配置
-        http.cors().configurationSource(corsConfigurationSource())
-                .and().headers().addHeaderWriter(new StaticHeadersWriter(Arrays.asList(
-                new Header("Access-control-Allow-Origin","*"),
-                new Header("Access-Control-Expose-Headers","Authorization"))));
+        http.cors().configurationSource(corsConfigurationSource());
+//                .and().headers().addHeaderWriter(new StaticHeadersWriter(Arrays.asList(
+//                new Header("Access-control-Allow-Origin","*"),
+//                new Header("Access-Control-Expose-Headers","Authorization"))));
+
+        //拦截OPTIONS请求，直接返回header
+        http.addFilterAfter(new OptionsRequestFilter(), CorsFilter.class);
 
         // json 登录配置
         http.apply(jsonLoginConfiguration);
@@ -112,12 +117,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(authenticationEntryPoint)
                 // 用来解决用户访问无权限资源时的异常
                 .accessDeniedHandler(accessDeniedHandler);
+
+        // 登出配置,不然默认会重定向
+        final CustomLogoutHandler logoutHandler = new CustomLogoutHandler(responseHandler);
+        http.logout()
+                .addLogoutHandler(logoutHandler)
+                .logoutSuccessHandler(logoutHandler);
+
     }
 
     protected CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET","POST","HEAD", "OPTION"));
+        configuration.setAllowedMethods(Arrays.asList("GET","POST","HEAD", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.addExposedHeader("Authorization");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -134,9 +146,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public PasswordEncoder passwordEncoder(){
         return NoOpPasswordEncoder.getInstance();
     }
+
+    @Autowired
+    private UserRepository userRepository;
+
     @Override
     @Bean
-    public UserDetailsService userDetailsService(){return new FileUserDetailServiceImpl();}
+    public UserDetailsService userDetailsService(){return new FileUserDetailServiceImpl(userRepository);}
 
     @Bean
     public AuthenticationProvider daoAuthenticationProvider(){

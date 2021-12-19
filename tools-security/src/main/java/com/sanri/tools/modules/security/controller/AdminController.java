@@ -1,23 +1,25 @@
 package com.sanri.tools.modules.security.controller;
 
-import com.sanri.tools.modules.core.security.dtos.GroupTree;
-import com.sanri.tools.modules.core.security.dtos.ResourceInfo;
-import com.sanri.tools.modules.core.security.entitys.ToolResource;
-import com.sanri.tools.modules.core.security.entitys.ToolRole;
-import com.sanri.tools.modules.core.security.entitys.ToolUser;
-import com.sanri.tools.modules.security.service.GroupService;
-import com.sanri.tools.modules.security.service.ResourcePermLoad;
-import com.sanri.tools.modules.security.service.RoleService;
-import com.sanri.tools.modules.security.service.UserManagerService;
-import com.sanri.tools.modules.security.service.dtos.SecurityUser;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import com.sanri.tools.modules.security.service.repository.GroupRepository;
+import com.sanri.tools.modules.security.service.repository.ResourceRepository;
+import com.sanri.tools.modules.security.service.repository.RoleRepository;
+import com.sanri.tools.modules.security.service.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import com.sanri.tools.modules.core.security.dtos.GroupTree;
+import com.sanri.tools.modules.core.security.dtos.ResourceInfo;
+import com.sanri.tools.modules.core.security.entitys.ToolResource;
+import com.sanri.tools.modules.core.security.entitys.ToolUser;
+import com.sanri.tools.modules.security.service.GroupService;
+import com.sanri.tools.modules.security.service.dtos.SecurityUser;
 
 /**
  * 这个类里的方法, 只允许管理员调用
@@ -26,11 +28,13 @@ import java.util.stream.Collectors;
 @RequestMapping("/security/admin")
 public class AdminController {
     @Autowired
-    private UserManagerService userService;
+    private UserRepository userRepository;
     @Autowired
-    private RoleService roleService;
+    private RoleRepository roleRepository;
     @Autowired
-    private GroupService groupService;
+    private GroupRepository groupRepository;
+    @Autowired
+    private ResourceRepository resourceRepository;
 
     /**
      * 所有用户信息
@@ -38,7 +42,7 @@ public class AdminController {
      */
     @GetMapping("/users")
     public List<ToolUser> users(){
-        return userService.users().stream().map(SecurityUser::getToolUser).collect(Collectors.toList());
+        return userRepository.findUsers().stream().map(SecurityUser::getToolUser).collect(Collectors.toList());
     }
 
     /**
@@ -46,22 +50,24 @@ public class AdminController {
      * @return
      */
     @GetMapping("/roles")
-    public Set<String> roles(){return roleService.roleList();}
+    public Set<String> roles(){return roleRepository.findRoles();}
 
     /**
      * 所有分组信息
      * @return
      */
     @GetMapping("/group/tree")
-    public List<GroupTree> groupTrees(){return groupService.convertPathsToGroupTree(groupService.getGroups());}
-
+    public GroupTree groupTrees() {
+        final List<Path> groups = groupRepository.findGroups();
+        return GroupService.convertPathsToGroupTree(groups);
+    }
     /**
      * 所有资源信息
      * @return
      */
     @GetMapping("/resources")
     public List<ToolResource> toolsResources(){
-        return ResourcePermLoad.getResourceInfos().stream().map(ResourceInfo::getToolResource).collect(Collectors.toList());
+        return resourceRepository.findResources().stream().map(ResourceInfo::getToolResource).collect(Collectors.toList());
     }
 
 }

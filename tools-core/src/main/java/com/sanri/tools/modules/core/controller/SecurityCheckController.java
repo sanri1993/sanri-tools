@@ -16,7 +16,7 @@ public class SecurityCheckController {
      * 判断当前系统是否添加了权限
      * @return
      */
-    @GetMapping("/hasSecurity")
+    @GetMapping("/needSecurity")
     public boolean hasSecurity(){
         return userService != null;
     }

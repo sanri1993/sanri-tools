@@ -1,16 +1,16 @@
 package com.sanri.tools.modules.database.service;
 
-import com.sanri.tools.modules.core.dtos.PluginDto;
-import com.sanri.tools.modules.core.service.file.FileManager;
-import com.sanri.tools.modules.core.service.plugin.PluginManager;
-import com.sanri.tools.modules.database.dtos.*;
-import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
-import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
-import com.sanri.tools.modules.database.service.rename.JavaBeanInfo;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import lombok.extern.slf4j.Slf4j;
+import java.beans.PropertyDescriptor;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.sql.SQLException;
+import java.util.*;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -27,19 +27,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 
-import javax.annotation.PostConstruct;
-import java.beans.PropertyDescriptor;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.sql.SQLException;
-import java.util.*;
+import com.sanri.tools.modules.core.service.file.FileManager;
 
-import static com.sanri.tools.modules.database.service.JdbcService.MODULE;
+import com.sanri.tools.modules.database.dtos.*;
+import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
+import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
+import com.sanri.tools.modules.database.service.rename.JavaBeanInfo;
+
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -332,16 +330,15 @@ public class CodeGeneratorService {
         }
     }
 
-    @Autowired
-    private PluginManager pluginManager;
 
-    @PostConstruct
-    public void register(){
-        pluginManager.register(PluginDto.builder()
-                .module(MODULE).name("codeGenerate").author("sanri").envs("default")
-                .logo("mysql.jpg")
-                .desc("代码生成功能")
-                .help("代码生成.md")
-                .build());
-    }
+
+//    @PostConstruct
+//    public void register(){
+//        pluginManager.register(PluginDto.builder()
+//                .module(MODULE).name("codeGenerate").author("sanri").envs("default")
+//                .logo("mysql.jpg")
+//                .desc("代码生成功能")
+//                .help("代码生成.md")
+//                .build());
+//    }
 }

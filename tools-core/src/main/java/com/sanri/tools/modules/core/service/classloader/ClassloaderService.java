@@ -1,12 +1,21 @@
 package com.sanri.tools.modules.core.service.classloader;
 
-import com.sanri.tools.modules.core.dtos.ClassStruct;
-import com.sanri.tools.modules.core.dtos.PluginDto;
-import com.sanri.tools.modules.core.service.file.FileManager;
-import com.sanri.tools.modules.core.service.plugin.PluginManager;
-import com.sanri.tools.modules.core.utils.MybatisXNode;
-import com.sanri.tools.modules.core.utils.MybatisXPathParser;
-import lombok.extern.slf4j.Slf4j;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -25,20 +34,13 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.sanri.tools.modules.core.dtos.ClassStruct;
+import com.sanri.tools.modules.core.service.file.FileManager;
+
+import com.sanri.tools.modules.core.utils.MybatisXNode;
+import com.sanri.tools.modules.core.utils.MybatisXPathParser;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -50,8 +52,7 @@ public class ClassloaderService  {
     private CompileService compileService;
     @Autowired
     private FileManager fileManager;
-    @Autowired
-    private PluginManager pluginManager;
+
     @Autowired
     private Environment environment;
 
@@ -87,7 +88,7 @@ public class ClassloaderService  {
      * @param targetClassFile
      * @param title
      */
-    public void loadSingleClass(File targetClassFile,String classloaderName) throws MalformedURLException {
+    public void loadSingleClass(File targetClassFile,String classloaderName) throws IOException {
         // 使用 asm 工具读取文件包路径
         FileInputStream fileInputStream = null;
         File classFileNoSuffix = null;
@@ -100,8 +101,6 @@ public class ClassloaderService  {
             // 创建包路径
             classFileNoSuffix = new File(targetClassFile.getParentFile(), classNode.name);
             classFileNoSuffix.getParentFile().mkdirs();
-        } catch (IOException e) {
-            log.error("读取字节码失败[{}]",e);
         }finally {
             // 关流
             IOUtils.closeQuietly(fileInputStream);
@@ -236,7 +235,7 @@ public class ClassloaderService  {
         }
 
         // 注册基础服务
-        pluginManager.register(PluginDto.builder().module("core").name("classloader").author("9420").desc("类加载器,支撑模块").build());
+//        pluginManager.register(PluginDto.builder().name("core").author("9420").desc("类加载器,支撑模块").build());
     }
 
     /**

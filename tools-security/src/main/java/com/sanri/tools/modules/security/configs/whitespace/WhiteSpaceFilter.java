@@ -2,8 +2,7 @@ package com.sanri.tools.modules.security.configs.whitespace;
 
 import com.sanri.tools.modules.security.configs.jwt.JwtAuthenticationToken;
 import com.sanri.tools.modules.security.configs.jwt.TokenService;
-import com.sanri.tools.modules.security.service.ResourcePermLoad;
-import com.sanri.tools.modules.security.service.UrlSecurityPermsLoad;
+import com.sanri.tools.modules.security.configs.UrlSecurityPermsLoad;
 import io.jsonwebtoken.Claims;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

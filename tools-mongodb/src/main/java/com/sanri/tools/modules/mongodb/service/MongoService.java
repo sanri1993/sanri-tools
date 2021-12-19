@@ -1,26 +1,33 @@
 package com.sanri.tools.modules.mongodb.service;
 
-import com.mongodb.*;
-import com.mongodb.MongoClient;
-import com.mongodb.client.*;
-import com.sanri.tools.modules.core.dtos.PageResponseDto;
-import com.sanri.tools.modules.core.dtos.PluginDto;
-import com.sanri.tools.modules.core.dtos.param.*;
-import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
-import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
-import com.sanri.tools.modules.core.service.plugin.PluginManager;
-import com.sanri.tools.modules.mongodb.dtos.CollectionDto;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.annotation.PreDestroy;
+
 import org.apache.commons.collections.IteratorUtils;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import com.mongodb.*;
+import com.mongodb.MongoClient;
+import com.mongodb.client.*;
+import com.sanri.tools.modules.core.dtos.PageResponseDto;
+import com.sanri.tools.modules.core.dtos.param.ConnectParam;
+import com.sanri.tools.modules.core.dtos.param.MongoAuthParam;
+import com.sanri.tools.modules.core.dtos.param.MongoConnectParam;
+import com.sanri.tools.modules.core.dtos.param.PageParam;
+import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
+import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
+
+import com.sanri.tools.modules.mongodb.dtos.CollectionDto;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -31,8 +38,7 @@ public class MongoService {
 
     @Autowired
     private ConnectServiceFileBase connectService;
-    @Autowired
-    private PluginManager pluginManager;
+
 
     @Autowired
     private ClassloaderService classloaderService;
@@ -112,10 +118,10 @@ public class MongoService {
     }
 
 
-    @PostConstruct
-    public void register(){
-        pluginManager.register(PluginDto.builder().module("monitor").author("9420").logo("mongo.jpg").desc("mongodb 监控管理").name(MODULE).build());
-    }
+//    @PostConstruct
+//    public void register(){
+//        pluginManager.register(PluginDto.builder().module("monitor").author("9420").logo("mongo.jpg").desc("mongodb 监控管理").name(MODULE).build());
+//    }
 
     /**
      * 获取一个 mongo 客户端

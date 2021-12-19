@@ -5,9 +5,11 @@ import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
 import com.sanri.tools.modules.core.service.data.RandomDataService;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.core.utils.ZipUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,9 +27,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * @resourceName 类加载器
+ * @parentMenu menu_level_1_basedata
+ */
 @RestController
 @RequestMapping("/classloader")
 @Validated
+@Slf4j
 public class ClassloaderController {
     @Autowired
     private ClassloaderService classloaderService;
@@ -67,8 +74,16 @@ public class ClassloaderController {
     public void uploadSingleClass(MultipartFile file,@NotNull String classloaderName) throws IOException {
         File dir = fileManager.mkTmpDir("classloader/"+classloaderName);
         File classFile = new File(dir, file.getOriginalFilename());
-        file.transferTo(classFile);
-        classloaderService.loadSingleClass(classFile,classloaderName);
+        // bug detail at https://blog.csdn.net/luhongzheng/article/details/104744913
+//        file.transferTo(classFile);
+        FileCopyUtils.copy(file.getInputStream(),new FileOutputStream(classFile));
+        try {
+            classloaderService.loadSingleClass(classFile, classloaderName);
+        }catch (Exception e){
+            log.error("单个 class 文件上传失败, 将删除原文件:{}",classFile.getPath());
+            FileUtils.deleteQuietly(classFile);
+            throw e;
+        }
     }
 
     /**
@@ -80,7 +95,8 @@ public class ClassloaderController {
     public void uploadSingleJavaFile(MultipartFile file,@NotNull String classloaderName) throws IOException {
         File dir = fileManager.mkTmpDir("classloader/"+classloaderName);
         File javaFile = new File(dir, file.getOriginalFilename());
-        file.transferTo(javaFile);
+//        file.transferTo(javaFile);
+        FileCopyUtils.copy(file.getInputStream(),new FileOutputStream(javaFile));
         classloaderService.loadSingleJavaFile(javaFile,classloaderName);
     }
 
@@ -208,11 +224,7 @@ public class ClassloaderController {
         File dir = fileManager.mkTmpDir("classloader");
         File zipFile = new File(dir, file.getOriginalFilename());
 //        file.transferTo(zipFile);
-        InputStream inputStream = file.getInputStream();
-        FileOutputStream fileOutputStream = new FileOutputStream(zipFile);
-        IOUtils.copy(inputStream,fileOutputStream);
-        inputStream.close();
-        fileOutputStream.close();
+        FileCopyUtils.copy(file.getInputStream(),new FileOutputStream(zipFile));
 
         File uncompressDir = new File(dir, classloaderName);uncompressDir.mkdir();
         ZipUtil.unzip(zipFile,uncompressDir.getAbsolutePath());

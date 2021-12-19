@@ -1,7 +1,6 @@
 package com.sanri.tools.modules.security.configs.access;
 
-import com.sanri.tools.modules.core.security.entitys.ToolRole;
-import com.sanri.tools.modules.security.service.RoleService;
+import com.sanri.tools.modules.security.service.repository.RoleRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDecisionManager;
@@ -18,8 +17,6 @@ import javax.script.ScriptException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Component
@@ -29,7 +26,7 @@ public class RoleExpressionAccessDecisionManager implements AccessDecisionManage
     private ScriptEngine engine = manager.getEngineByName("js");
 
     @Autowired
-    private RoleService roleService;
+    private RoleRepository roleService;
 
     /**
      * 暂时使用替换然后用 js 引擎解析来解决逻辑问题, 其实是有漏洞的, 如果某个角色是另一个的前缀
@@ -63,7 +60,7 @@ public class RoleExpressionAccessDecisionManager implements AccessDecisionManage
             attribute = attribute.replaceAll(userHasRole,"true");
         }
 
-        final List<String> allRoles = roleService.roleList().stream().collect(Collectors.toList());
+        final List<String> allRoles = roleService.findRoles().stream().collect(Collectors.toList());
         for (String role : allRoles) {
             attribute = attribute.replaceAll(role,"false");
         }
@@ -91,12 +88,12 @@ public class RoleExpressionAccessDecisionManager implements AccessDecisionManage
         return false;
     }
 
-    public static void main(String[] args) throws ScriptException {
-        ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByName("js");
-//        engine.put("true",true);
-//        engine.put("false",false);
-        String a = "true && (false || true)";
-        System.out.println(engine.eval(a));
-    }
+//    public static void main(String[] args) throws ScriptException {
+//        ScriptEngineManager manager = new ScriptEngineManager();
+//        ScriptEngine engine = manager.getEngineByName("js");
+////        engine.put("true",true);
+////        engine.put("false",false);
+//        String a = "true && (false || true)";
+//        System.out.println(engine.eval(a));
+//    }
 }

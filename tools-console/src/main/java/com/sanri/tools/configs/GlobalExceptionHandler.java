@@ -76,9 +76,9 @@ public class GlobalExceptionHandler {
                     showMessage.append(className + "(" + lineNumber + ")\n");
                 }
             }
-            log.error("业务异常:" + e.getMessage() + "\n" + showMessage);
+            log.error("业务异常:{}\n{}" , e.getMessage() ,showMessage);
         } else {
-            log.error("业务异常,没有调用栈 " + e.getMessage());
+            log.error("业务异常,没有调用栈:{}" , e.getMessage());
         }
     }
 

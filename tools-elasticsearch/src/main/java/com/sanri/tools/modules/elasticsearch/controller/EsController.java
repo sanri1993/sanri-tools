@@ -1,18 +1,17 @@
 package com.sanri.tools.modules.elasticsearch.controller;
 
-import com.alibaba.fastjson.JSONObject;
-import com.sanri.tools.modules.core.dtos.PluginDto;
-import com.sanri.tools.modules.core.dtos.param.SimpleConnectParam;
-import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
-import com.sanri.tools.modules.core.service.plugin.PluginManager;
-import com.sanri.tools.modules.elasticsearch.remote.apis.ClusterApis;
+import java.io.IOException;
+
+import javax.validation.constraints.NotNull;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
-import javax.validation.constraints.NotNull;
+import com.alibaba.fastjson.JSONObject;
+import com.sanri.tools.modules.core.dtos.param.SimpleConnectParam;
+import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
 
-import java.io.IOException;
+import com.sanri.tools.modules.elasticsearch.remote.apis.ClusterApis;
 
 @RestController
 @RequestMapping("/elasticsearch")
@@ -20,8 +19,7 @@ public class EsController {
 
     @Autowired
     private ConnectServiceFileBase connectService;
-    @Autowired
-    private PluginManager pluginManager;
+
 
     @Autowired
     private ClusterApis clusterApis;
@@ -100,8 +98,8 @@ public class EsController {
         return simpleConnectParam.getConnectParam().httpConnectString();
     }
 
-    @PostConstruct
-    private void register(){
-        pluginManager.register(PluginDto.builder().module("monitor").name("elasticsearch").author("9420").build());
-    }
+//    @PostConstruct
+//    private void register(){
+//        pluginManager.register(PluginDto.builder().module("monitor").name("elasticsearch").author("9420").build());
+//    }
 }

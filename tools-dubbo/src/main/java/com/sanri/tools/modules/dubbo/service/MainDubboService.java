@@ -1,28 +1,5 @@
 package com.sanri.tools.modules.dubbo.service;
 
-import com.alibaba.dubbo.common.Constants;
-import com.alibaba.dubbo.common.URL;
-import com.alibaba.dubbo.common.utils.StringUtils;
-import com.alibaba.dubbo.remoting.RemotingException;
-import com.alibaba.dubbo.remoting.exchange.Request;
-import com.alibaba.dubbo.rpc.RpcInvocation;
-import com.alibaba.dubbo.rpc.RpcResult;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.sanri.tools.modules.core.dtos.PluginDto;
-import com.sanri.tools.modules.core.exception.ToolException;
-import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
-import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
-import com.sanri.tools.modules.core.service.plugin.PluginManager;
-import com.sanri.tools.modules.dubbo.DubboProviderDto;
-import com.sanri.tools.modules.dubbo.dtos.DubboInvokeParam;
-import com.sanri.tools.modules.zookeeper.service.ZookeeperService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
@@ -33,6 +10,29 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.alibaba.dubbo.common.Constants;
+import com.alibaba.dubbo.common.URL;
+import com.alibaba.dubbo.common.utils.StringUtils;
+import com.alibaba.dubbo.remoting.RemotingException;
+import com.alibaba.dubbo.remoting.exchange.Request;
+import com.alibaba.dubbo.rpc.RpcInvocation;
+import com.alibaba.dubbo.rpc.RpcResult;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.sanri.tools.modules.core.exception.ToolException;
+import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
+import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
+
+import com.sanri.tools.modules.dubbo.DubboProviderDto;
+import com.sanri.tools.modules.dubbo.dtos.DubboInvokeParam;
+import com.sanri.tools.modules.zookeeper.service.ZookeeperService;
+
+import lombok.extern.slf4j.Slf4j;
+
 @Service
 @Slf4j
 public class MainDubboService {
@@ -41,8 +41,7 @@ public class MainDubboService {
     private ZookeeperService zookeeperService;
     @Autowired
     private ClassloaderService classloaderService;
-    @Autowired
-    private PluginManager pluginManager;
+
     @Autowired
     private ConnectServiceFileBase connectService;
 
@@ -181,10 +180,10 @@ public class MainDubboService {
         return map;
     }
 
-    @PostConstruct
-    public void register(){
-        pluginManager.register(PluginDto.builder().module("call").name("dubbo").author("9420").desc("依赖 zookeeper ,在线调用 dubbo 方法").logo("dubbo.jpg").build());
-    }
+//    @PostConstruct
+//    public void register(){
+//        pluginManager.register(PluginDto.builder().module("call").name("dubbo").author("9420").desc("依赖 zookeeper ,在线调用 dubbo 方法").logo("dubbo.jpg").build());
+//    }
 
     public List<String> connects() {
         List<String> names = connectService.names(ZookeeperService.module);

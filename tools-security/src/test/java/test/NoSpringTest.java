@@ -87,7 +87,7 @@ public class NoSpringTest {
             return ;
         }
         final String pathName = path.getName(deep).toString();
-        final List<GroupTree> childs = root.getChildes();
+        final List<GroupTree> childs = root.getChildren();
         for (GroupTree child : childs) {
             final String childName = child.getName();
             if (pathName.equals(childName)){
@@ -112,7 +112,7 @@ public class NoSpringTest {
             return ;
         }
         final String pathName = path.getName(deep).toString();
-        for (GroupTree groupTree : parent.getChildes()) {
+        for (GroupTree groupTree : parent.getChildren()) {
             final String name = groupTree.getName();
             if (name.equals(pathName)){
                 appendPath(path,++deep,groupTree);

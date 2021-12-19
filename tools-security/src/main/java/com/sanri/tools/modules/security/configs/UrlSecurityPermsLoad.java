@@ -1,6 +1,5 @@
-package com.sanri.tools.modules.security.service;
+package com.sanri.tools.modules.security.configs;
 
-import com.sanri.tools.modules.core.security.dtos.ResourceInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;

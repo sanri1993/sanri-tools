@@ -2,7 +2,7 @@ spring:
   application:
     name: sanri-tools
   profiles:
-    active: company
+    active: company,tomcat
   main:
     banner-mode: "off"
   freemarker:
@@ -35,3 +35,5 @@ logging:
   level:
     root: info
     com.sanri.tools.modules: debug
+
+

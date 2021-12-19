@@ -1,34 +1,5 @@
 package com.sanri.tools.modules.kafka.service;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
-import com.sanri.tools.modules.core.dtos.PluginDto;
-import com.sanri.tools.modules.core.service.plugin.PluginManager;
-import com.sanri.tools.modules.kafka.dtos.*;
-import com.sanri.tools.modules.kafka.dtos.MBeanMonitorInfo;
-import com.sanri.tools.modules.core.exception.ToolException;
-import com.sanri.tools.modules.core.dtos.param.KafkaConnectParam;
-import com.sanri.tools.modules.zookeeper.service.ZookeeperService;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.kafka.clients.admin.*;
-import org.apache.kafka.clients.consumer.*;
-import org.apache.kafka.common.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
-import org.springframework.core.Constants;
-import org.springframework.stereotype.Service;
-import org.springframework.util.ReflectionUtils;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.management.*;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -40,6 +11,35 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.annotation.PreDestroy;
+import javax.management.*;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.kafka.clients.admin.*;
+import org.apache.kafka.clients.consumer.*;
+import org.apache.kafka.common.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
+import org.springframework.core.Constants;
+import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.sanri.tools.modules.core.dtos.param.KafkaConnectParam;
+import com.sanri.tools.modules.core.exception.ToolException;
+import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
+
+import com.sanri.tools.modules.kafka.dtos.*;
+import com.sanri.tools.modules.zookeeper.service.ZookeeperService;
+
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * kafka 主题和消费组管理
  */
@@ -50,8 +50,7 @@ public class KafkaService {
     private ConnectServiceFileBase connectService;
     @Autowired
     private ZookeeperService zookeeperService;
-    @Autowired
-    private PluginManager pluginManager;
+
 
     public static final String MODULE = "kafka";
 
@@ -608,11 +607,11 @@ public class KafkaService {
         return mMbeans;
     }
 
-    @PostConstruct
-    public void register(){
-        pluginManager.register(PluginDto.builder().module("monitor").name("kafkaGroup").author("sanri").logo("kafka.jpg").desc("消费组管理").envs("default").build());
-        pluginManager.register(PluginDto.builder().module("monitor").name("kafkaTopic").author("sanri").logo("kafka.jpg").desc("消费主题管理").envs("default").build());
-    }
+//    @PostConstruct
+//    public void register(){
+//        pluginManager.register(PluginDto.builder().module("monitor").name("kafkaGroup").author("sanri").logo("kafka.jpg").desc("消费组管理").envs("default").build());
+//        pluginManager.register(PluginDto.builder().module("monitor").name("kafkaTopic").author("sanri").logo("kafka.jpg").desc("消费主题管理").envs("default").build());
+//    }
 
     @PreDestroy
     public void destory(){

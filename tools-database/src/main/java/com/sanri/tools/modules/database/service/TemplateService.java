@@ -16,9 +16,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -82,7 +84,8 @@ public class TemplateService {
         String fileName = trueFileName(name);
 
         File templateFile = new File(dir, fileName);
-        file.transferTo(templateFile);
+//        file.transferTo(templateFile);
+        FileCopyUtils.copy(file.getInputStream(),new FileOutputStream(templateFile));
     }
 
     private String trueFileName(String name) {

@@ -1,18 +1,18 @@
 package com.sanri.tools.modules.swaggerdoc.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.sanri.tools.modules.core.dtos.PluginDto;
-import com.sanri.tools.modules.core.service.plugin.PluginManager;
-import io.swagger.models.Info;
+import java.io.IOException;
+import java.util.*;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.util.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+
+import io.swagger.models.Info;
 
 @Service
 public class SwaggerJsonParser {
@@ -20,8 +20,7 @@ public class SwaggerJsonParser {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Autowired
-    private PluginManager pluginManager;
+
 
     /**
      * 获取当前文档的接口信息
@@ -472,8 +471,8 @@ public class SwaggerJsonParser {
         return sb.toString();
     }
 
-    @PostConstruct
-    public void register(){
-        pluginManager.register(PluginDto.builder().module("docs").name("swagger").author("9420").logo("swagger.jpg").desc("将 swagger 文档换一个 ui ,并提供下载").build());
-    }
+//    @PostConstruct
+//    public void register(){
+//        pluginManager.register(PluginDto.builder().module("docs").name("swagger").author("9420").logo("swagger.jpg").desc("将 swagger 文档换一个 ui ,并提供下载").build());
+//    }
 }

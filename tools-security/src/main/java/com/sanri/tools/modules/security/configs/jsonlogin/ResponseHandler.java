@@ -29,7 +29,7 @@ public class ResponseHandler  {
 	 */
 	public void writeTokenAndAuthenticationSuccess(String token, HttpServletResponse response) throws IOException {
 		response.setHeader("Authorization", token);
-		writeSuccess(response);
+		writeMessage(ResponseDto.ok().data(token),response);
 	}
 
 	/**

@@ -1,189 +1,137 @@
 package com.sanri.tools.modules.security.service;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.sanri.tools.modules.core.aspect.SerializerToFile;
-import com.sanri.tools.modules.core.exception.SystemMessage;
 import com.sanri.tools.modules.core.exception.ToolException;
+import com.sanri.tools.modules.core.security.UserService;
+import com.sanri.tools.modules.core.security.dtos.ResourceInfo;
 import com.sanri.tools.modules.core.security.dtos.RoleInfo;
-import com.sanri.tools.modules.core.security.entitys.ToolGroup;
-import com.sanri.tools.modules.core.security.entitys.ToolResource;
 import com.sanri.tools.modules.core.security.entitys.ToolRole;
-import com.sanri.tools.modules.core.service.file.FileManager;
+import com.sanri.tools.modules.security.service.repository.GroupRepository;
+import com.sanri.tools.modules.security.service.repository.ResourceRepository;
+import com.sanri.tools.modules.security.service.repository.RoleRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
-import java.io.IOException;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class RoleService implements InitializingBean {
+public class RoleService {
     @Autowired
-    private FileManager fileManager;
+    private RoleRepository roleRepository;
     @Autowired
-    private ProfileServiceImpl profileService;
-
-    private static final Map<String,RoleInfo> roleInfoMap = new HashMap<>();
-
-
-    @SerializerToFile
-    public void addRole(String rolename,String mainGroup){
-        if (roleInfoMap.containsKey(rolename)){
-            throw new ToolException("已经存在角色:"+rolename);
-        }
-        final RoleInfo roleInfo = new RoleInfo(new ToolRole(rolename));
-        roleInfo.addGroup(mainGroup);
-        roleInfoMap.put(rolename, roleInfo);
-    }
-
-    @SerializerToFile
-    public void deleteRole(String role){
-        checkAccess(role);
-        roleInfoMap.remove(role);
-    }
-
-    public void checkAccess(String role) {
-        // 检查当前用户是否有权限删除这个角色信息
-        final List<String> roles = profileService.queryAccessRoles();
-        if (!role.contains(role)){
-            throw SystemMessage.ACCESS_DENIED.exception();
-        }
-    }
-
-    public RoleInfo getRole(String role){
-        return roleInfoMap.get(role);
-    }
-
-    @SerializerToFile
-    public void resetGroup(String role, String... groups){
-        checkAccess(role);
-        final List<String> accessGroups = profileService.groups();
-        A: for (String group : groups) {
-            for (String accessGroup : accessGroups) {
-                if (group.startsWith(accessGroup)){
-                    continue A;
-                }
-            }
-            throw SystemMessage.ACCESS_DENIED_ARGS.exception("不可授权分组:"+group);
-        }
-
-        final RoleInfo roleInfo = roleInfoMap.get(role);
-        if (roleInfo != null) {
-            roleInfo.getGroups().clear();
-            for (String group : groups) {
-                roleInfo.addGroup(group);
-            }
-        }
-    }
-
-    @SerializerToFile
-    public void resetResource(String role, String... resources){
-        checkAccess(role);
-        final List<String> canAccessResources = profileService.queryAccessResources();
-        for (String resource : resources) {
-            if (!canAccessResources.contains(resource)){
-                throw SystemMessage.ACCESS_DENIED_ARGS.exception("不可授权资源:"+resource);
-            }
-        }
-
-        final RoleInfo roleInfo = roleInfoMap.get(role);
-        if (roleInfo != null){
-            roleInfo.getResources().clear();
-            for (String resource : resources) {
-                roleInfo.addResource(resource);
-            }
-        }
-    }
-
-    public Set<String> roleList(){
-        return roleInfoMap.keySet();
-    }
-
-    public void serializer() throws IOException {
-        List<String> roleSerializer = new ArrayList<>();
-        for (RoleInfo value : roleInfoMap.values()) {
-            final ToolRole toolRole = value.getToolRole();
-            final List<String> groups = value.getGroups();
-            final List<String> resources = value.getResources();
-            roleSerializer.add(toolRole.getRoleName()+":"+StringUtils.join(groups,",")+":"+StringUtils.join(resources,","));
-        }
-        fileManager.writeConfig("security","roles",StringUtils.join(roleSerializer,'\n'));
-    }
+    private UserService userService;
+    @Autowired
+    private GroupService groupService;
+    @Autowired
+    private ResourceRepository resourceRepository;
+    @Autowired
+    private ResourceService resourceService;
 
     /**
-     * $configDir[Root]
-     *   security[Dir]
-     *     roles[File]:     role1:group1,group2:resource1,resource2
-     *                      role2:group1,group2:resource1,resource2
+     * 添加角色
+     * @param roleInfo
      */
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        final String readConfig = fileManager.readConfig("security", "roles");
-        if (StringUtils.isNotBlank(readConfig)) {
-            final String[] roles = StringUtils.split(readConfig, '\n');
-            for (String role : roles) {
-                final String[] splitPreserveAllTokens = StringUtils.splitPreserveAllTokens(role, ":");
-                if (splitPreserveAllTokens.length != 3){
-                    log.warn("角色配置错误:{}",role);
-                    continue;
-                }
-                final ToolRole toolRole = new ToolRole(splitPreserveAllTokens[0]);
-
-                final RoleInfo roleInfo = new RoleInfo(toolRole);
-
-                // 角色组织关联
-                final String[] groups = StringUtils.split(splitPreserveAllTokens[1],',');
-                for (String groupPath : groups) {
-                    roleInfo.addGroup(groupPath);
-                }
-
-                // 角色资源关联
-                final String[] resources = StringUtils.split(splitPreserveAllTokens[2],',');
-                for (String resourceName : resources) {
-                    roleInfo.addResource(resourceName);
-                }
-
-                roleInfoMap.put(toolRole.getRoleName(),roleInfo);
-            }
+    public void addRole(RoleInfo roleInfo){
+        final ToolRole toolRole = roleInfo.getToolRole();
+        // 检查角色是否已经存在
+        if (roleRepository.existRole(toolRole.getRolename())){
+            throw new ToolException("角色名已经存在:"+toolRole.getRolename());
         }
+        userService.checkGroupAccess(roleInfo.getGroups().toArray(new String[]{}));
+        userService.checkResourceAccess(roleInfo.getResources().toArray(new String[]{}));
+
+        roleRepository.addRole(roleInfo);
     }
 
     /**
-     * 查询分组可以授权的角色列表
-     * @param group
+     * 获取角色信息
+     * @param rolename 角色名称
      * @return
      */
-    public Set<String> findCanGrantRoles(String group){
-        Set<String> rolenames = new HashSet<>();
+    public RoleInfo getRole(String rolename){
+        userService.checkRoleAccess(rolename);
 
-        final Iterator<RoleInfo> iterator = roleInfoMap.values().iterator();
-        A:while (iterator.hasNext()){
-            final RoleInfo next = iterator.next();
-            final List<String> groups = next.getGroups();
-            for (String s : groups) {
-                if (s.startsWith(group)){
-                    rolenames.add(next.getToolRole().getRoleName());
-                    continue A;
-                }
-            }
-        }
-
-        return rolenames;
+        return roleRepository.getRole(rolename);
     }
 
-    @SerializerToFile
-    void initAdmin(){
-        log.info("初始化 admin 角色 admin, 分组 /, 拥有资源 admin ");
-        final RoleInfo roleInfo = new RoleInfo(new ToolRole("admin"));
-        roleInfo.addGroup("/");
-        roleInfo.addResource("admin");
-        roleInfoMap.put("admin", roleInfo);
+    /**
+     * 删除一个角色
+     * @param rolename 角色名称
+     */
+    public void delRole(String rolename) {
+        userService.checkRoleAccess(rolename);
+
+        roleRepository.deleteRole(rolename);
+    }
+
+    /**
+     * 角色可见资源列表
+     * @param rolename
+     * @return
+     */
+    public Set<String> queryAccessResources(String rolename){
+        userService.checkRoleAccess(rolename);
+
+        final RoleInfo role = roleRepository.getRole(rolename);
+        final List<String> resources = role.getResources();
+
+        // 找到资源的顶层组织列表
+        final List<ResourceInfo> resourceInfos = resourceRepository.getResources(resources);
+        Set<String> groups = new HashSet<>();
+        for (ResourceInfo resourceInfo : resourceInfos) {
+            groups.addAll(resourceInfo.getGroups());
+        }
+        final Set<Path> topGroups = groupService.filterTopGroups(groups);
+
+        // 查询可授权资源列表
+        Set<String> canGrantResources = new HashSet<>();
+        for (Path topGroup : topGroups) {
+            final Set<String> canGrantResourcesPart = groupService.findGroupResources(topGroup,true);
+            canGrantResources.addAll(canGrantResourcesPart);
+        }
+
+        // 查询所有子级资源(查询菜单那里并不需要查子级资源, 这里应该优化)
+        List<String> childResources = resourceService.loadChildResources(canGrantResources);
+        canGrantResources.addAll(childResources);
+
+        return canGrantResources;
+    }
+
+    /**
+     * 角色授权组织
+     * @param rolename 角色名称
+     * @param groups    组织列表
+     */
+    public void grantGroups(String rolename,String... groups){
+        userService.checkRoleAccess(rolename);
+        userService.checkGroupAccess(groups);
+
+        final Set<String> collect = Arrays.stream(groups).collect(Collectors.toSet());
+        final Set<Path> paths = groupService.filterTopGroups(collect);
+        final List<String> filterGroups = paths.stream().map(GroupRepository::convertPathToString).collect(Collectors.toList());
+
+        roleRepository.changeGroups(rolename,filterGroups);
+    }
+
+    /**
+     * 角色授权资源
+     * @param rolename   角色名称
+     * @param resources  资源列表
+     */
+    public void grantResources(String rolename,String...resources){
+        userService.checkRoleAccess(rolename);
+        userService.checkResourceAccess(resources);
+
+        // 过滤出顶层资源
+        final List<ResourceInfo> resourceInfos = Arrays.stream(resources).map(resourceRepository::getResource).collect(Collectors.toList());
+        final List<ResourceInfo> topResources = resourceService.filterTopResources(resourceInfos);
+        final List<String> collect = topResources.stream().map(resourceInfo -> resourceInfo.getToolResource().getResourceId()).collect(Collectors.toList());
+
+        roleRepository.changeResources(rolename,collect);
     }
 }

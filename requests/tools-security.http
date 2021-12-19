@@ -3,7 +3,7 @@ POST {{baseUrl}}/login
 Content-Type: application/json
 
 {
-  "username": "sanri",
+  "username": "admin",
   "password": "0"
 }
 
@@ -59,89 +59,132 @@ GET {{baseUrl}}/profile
 Authorization: {{Authorization}}
 
 ### 安全 - 当前用户 - 可授权角色信息查询
-GET {{baseUrl}}/profile/query/roles
+GET {{baseUrl}}/profile/accessRoles
 Authorization: {{Authorization}}
 
 ### 安全 - 当前用户 - 可授权分组信息查询
-GET {{baseUrl}}/profile/query/groups
+GET {{baseUrl}}/profile/accessGroups
 Authorization: {{Authorization}}
 
 ### 安全 - 当前用户 - 可授权资源信息查询
-GET {{baseUrl}}/profile/query/resources
+GET {{baseUrl}}/profile/accessResources
 Authorization: {{Authorization}}
 
-########################当前用户操作#################################
-### 安全 - 添加用户
-POST {{baseUrl}}/profile/user/add
+### 安全 - 当前用户 - 可授权用户信息查询
+GET {{baseUrl}}/profile/accessUsers
 Authorization: {{Authorization}}
-Content-Type: application/x-www-form-urlencoded
 
-username=sanri
-
-### 安全 - 添加角色
-POST {{baseUrl}}/profile/role/add
+### 安全 - 当前用户 - 可见菜单查询
+GET {{baseUrl}}/profile/accessMenus
 Authorization: {{Authorization}}
-Content-Type: application/x-www-form-urlencoded
 
-roleName=operator
-
-### 安全 - 添加组织
-POST {{baseUrl}}/profile/group/add
+############### 管理操作 ###############################
+### 添加组织
+POST {{baseUrl}}/security/group/add
 Authorization: {{Authorization}}
 Content-Type: application/x-www-form-urlencoded
 
-relativePath=operator
+parentGroup=/&childGroup=operator
+
+### 添加角色
+POST {{baseUrl}}/security/role/add
+Authorization: {{Authorization}}
+Content-Type: application/json
+
+{
+  "toolRole": {
+    "rolename": "op"
+  },
+  "groups": [
+    "/operator"
+  ],
+  "resources": ["menu_git"]
+}
+
+### 添加用户
+POST {{baseUrl}}/security/user/add
+Authorization: {{Authorization}}
+Content-Type: application/json
+
+{
+  "toolUser": {
+    "username": "sanri"
+  },
+  "roles": [
+    "operator"
+  ],
+  "groups": ["/operator"]
+}
 
 ### 安全 - 删除用户
-POST {{baseUrl}}/profile/user/delete
+POST {{baseUrl}}/security/user/del
 Content-Type: application/x-www-form-urlencoded
 Authorization: {{Authorization}}
 
 username=sanri
 
 ### 安全 - 删除角色
-POST {{baseUrl}}/profile/role/delete
+POST {{baseUrl}}/security/role/del
 Content-Type: application/x-www-form-urlencoded
 Authorization: {{Authorization}}
 
-role=operator
+rolename=operator
 
 ### 安全 - 删除分组
-POST {{baseUrl}}/profile/group/delete
+POST {{baseUrl}}/security/group/del
 Authorization: {{Authorization}}
 Content-Type: application/x-www-form-urlencoded
 
-relativePath=a/b/c/
-###################安全管理############################
+groupPath=a/b/c/
 
-### 安全 - 用户授权 - 角色
-POST {{baseUrl}}/security/user/grantRoles
+### 安全 - 用户 - 授权角色
+POST {{baseUrl}}/security/user/sanri/grantRoles
 Authorization: {{Authorization}}
 Content-Type: application/x-www-form-urlencoded
 
-username=sanri&roles=operator
+roles=operator,op
 
-### 安全 - 用户授权 - 分组
-POST {{baseUrl}}/security/user/grantGroups
+### 安全 - 用户 - 授权分组
+POST {{baseUrl}}/security/user/sanri/grantGroups
 Authorization: {{Authorization}}
 Content-Type: application/x-www-form-urlencoded
 
-username=sanri&groups=sanri/,operator/
 
-### 安全 - 角色授权 - 资源
-POST {{baseUrl}}/security/role/resource/reset
+groups=/core
+### 安全 - 角色 - 授权资源
+POST {{baseUrl}}/security/role/op/grantGroups
 Authorization: {{Authorization}}
 Content-Type: application/x-www-form-urlencoded
 
-roleName=operator&resources=redis_redis
-
-### 安全 - 角色授权 - 分组
-POST {{baseUrl}}/security/role/group/reset
+groups=/core
+### 安全 - 角色 - 授权分组
+POST {{baseUrl}}/security/role/op/grantResources
 Authorization: {{Authorization}}
 Content-Type: application/x-www-form-urlencoded
 
-roleName=operator&groups=operator/,redis/,soap/
+resources=menu_level_1_basedata,menu_git
 
-### 安全 - 获取菜单列表
-GET {{baseUrl}}/profile/query/menus
+### 安全 - 用户 - 查看用户可访问用户
+GET {{baseUrl}}/security/user/sanri/accessUsers
 Authorization: {{Authorization}}
+Content-Type: application/x-www-form-urlencoded
+
+### 安全 - 用户 - 查看用户可访问的组织
+GET {{baseUrl}}/security/user/sanri/accessGroups
+Authorization: {{Authorization}}
+Content-Type: application/x-www-form-urlencoded
+
+### 安全 - 用户 - 查看用户可访问的角色
+GET {{baseUrl}}/security/user/sanri/accessRoles
+Authorization: {{Authorization}}
+Content-Type: application/x-www-form-urlencoded
+
+### 安全 - 用户 - 查看用户可以访问的资源
+GET {{baseUrl}}/security/user/sanri/accessResources
+Authorization: {{Authorization}}
+Content-Type: application/x-www-form-urlencoded
+
+### 安全 - 角色 - 查看角色可以访问的资源
+GET {{baseUrl}}/security/role/operator/accessResources
+Authorization: {{Authorization}}
+Content-Type: application/x-www-form-urlencoded

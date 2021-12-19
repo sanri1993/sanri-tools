@@ -110,7 +110,7 @@ public class FileBaseConnectService extends ConnectService implements Initializi
     public List<ConnectOutput> connectsInternal() {
         List<ConnectOutput> outputs = new ArrayList<>();
 
-        final List<String> groups = userService != null ? userService.groups() : new ArrayList<>();
+        final List<String> groups = userService != null ? userService.user().getGroups() : new ArrayList<>();
 
         for (Map<String, ConnectOutput> next : connectInfoMap.values()) {
             final Collection<ConnectOutput> values = next.values();
@@ -159,7 +159,7 @@ public class FileBaseConnectService extends ConnectService implements Initializi
                     // 检查数据权限
                     final ConnectInput connectInput = connectOutput.getConnectInput();
                     final String group = connectInput.getGroup();
-                    final List<String> groups = userService.groups();
+                    final List<String> groups = userService.user().getGroups();
                     boolean hasSecurity = false;
                     for (String userGroup : groups) {
                         if (group.startsWith(userGroup)){

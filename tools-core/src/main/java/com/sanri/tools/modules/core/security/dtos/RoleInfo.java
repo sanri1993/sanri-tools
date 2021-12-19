@@ -4,11 +4,13 @@ import com.sanri.tools.modules.core.security.entitys.ToolGroup;
 import com.sanri.tools.modules.core.security.entitys.ToolResource;
 import com.sanri.tools.modules.core.security.entitys.ToolRole;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 public class RoleInfo {
     private ToolRole toolRole;
     private List<String> resources = new ArrayList<>();

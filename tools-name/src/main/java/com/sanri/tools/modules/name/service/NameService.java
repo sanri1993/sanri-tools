@@ -1,17 +1,17 @@
 package com.sanri.tools.modules.name.service;
 
-import com.sanri.tools.modules.core.dtos.PluginDto;
-import com.sanri.tools.modules.core.service.plugin.PluginManager;
-import com.sanri.tools.modules.core.exception.ToolException;
-import lombok.extern.slf4j.Slf4j;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.sanri.tools.modules.core.exception.ToolException;
+
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -34,8 +34,7 @@ public class NameService {
     @Autowired
     private BizTranslate bizTranslate;
 
-    @Autowired
-    private PluginManager pluginManager;
+
 
     public NameService() {
     }
@@ -156,10 +155,10 @@ public class NameService {
         findTokenizerTool.doTokenizer(translateCharSequence);
     }
 
-    @PostConstruct
-    public void register(){
-        pluginManager.register(PluginDto.builder().module("call").name(BizTranslate.MODULE).author("9420").logo("translate.gif").desc("快速对方法或变量取名").build());
-    }
+//    @PostConstruct
+//    public void register(){
+//        pluginManager.register(PluginDto.builder().module("call").name(BizTranslate.MODULE).author("9420").logo("translate.gif").desc("快速对方法或变量取名").build());
+//    }
 
     /**
      * 获取所有的分词器

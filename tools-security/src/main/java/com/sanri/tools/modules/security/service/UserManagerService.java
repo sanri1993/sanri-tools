@@ -1,177 +1,213 @@
 package com.sanri.tools.modules.security.service;
 
-import com.sanri.tools.modules.core.aspect.SerializerToFile;
-import com.sanri.tools.modules.core.exception.SystemMessage;
 import com.sanri.tools.modules.core.exception.ToolException;
+import com.sanri.tools.modules.core.security.UserService;
+import com.sanri.tools.modules.core.security.dtos.RoleInfo;
+import com.sanri.tools.modules.core.security.dtos.ThinUser;
 import com.sanri.tools.modules.core.security.entitys.ToolUser;
-import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.security.service.dtos.SecurityUser;
+import com.sanri.tools.modules.security.service.repository.GroupRepository;
+import com.sanri.tools.modules.security.service.repository.ResourceRepository;
+import com.sanri.tools.modules.security.service.repository.RoleRepository;
+import com.sanri.tools.modules.security.service.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class UserManagerService implements InitializingBean {
+public class UserManagerService {
     @Autowired
-    private FileManager fileManager;
+    private UserService userService;
     @Autowired
-    private ProfileServiceImpl profileService;
-
-    // 所有的用户信息
-    static final Map<String, SecurityUser> USERS = new ConcurrentHashMap<>();
-
-    @SerializerToFile
-    public void addUser(String username,String password,String mainGroup){
-        if (existUser(username)){
-            log.error("已经存在用户:{}",username);
-            throw new ToolException("已经存在用户;"+username);
-        }
-        final ToolUser toolUser = new ToolUser(username, password);
-        final SecurityUser thinUser = new SecurityUser(toolUser);
-        thinUser.addGroup(mainGroup);
-        USERS.put(username,thinUser);
-    }
-
-    public void deleteUser(String username) throws IOException {
-        checkAccess(username);
-
-        USERS.remove(username);
-
-        // 删除用户文件夹
-        final File usersDir = fileManager.mkConfigDir("security/users");
-        FileUtils.deleteDirectory(new File(usersDir,username));
-    }
-
-    public void checkAccess(String username) {
-        // 需要验证当前用户是否可以访问这个用户
-        final List<String> accessUsers = profileService.queryAccessUsers();
-        if (!accessUsers.contains(username)){
-            throw SystemMessage.ACCESS_DENIED.exception();
-        }
-    }
-
-    public boolean existUser(String username){
-        return USERS.containsKey(username);
-    }
-
-    @SerializerToFile
-    public void changePassword(String username,String password){
-        final SecurityUser thinUser = USERS.get(username);
-        thinUser.getToolUser().setPassword(password);
-    }
-
-    public void serializer() throws IOException {
-        final File usersDir = fileManager.mkConfigDir("security/users");
-        for (SecurityUser value : USERS.values()) {
-            final String username = value.getUsername();
-            final File baseFile = new File(usersDir, username+"/base");
-
-            final String password = value.getPassword();
-            final List<String> roles = value.getRoles();
-            final List<String> groups = value.getGroups();
-
-            String userBaseInfo = username + ":" + password +
-                    ":" +
-                    groups.stream().collect(Collectors.joining(",")) +
-                    ":" +
-                    roles.stream().collect(Collectors.joining(","));
-            FileUtils.writeStringToFile(baseFile, userBaseInfo,StandardCharsets.UTF_8);
-        }
-    }
+    private UserRepository userRepository;
+    @Autowired
+    private GroupService groupService;
+    @Autowired
+    private ResourceService resourceService;
+    @Autowired
+    private RoleRepository roleRepository;
+    @Autowired
+    private ResourceRepository resourceRepository;
+    @Autowired
+    private RoleService roleService;
 
     /**
-     * $configDir[Root]
-     *   security[Dir]
-     *    users[Dir]          所有用户的目录
-     *     user1[Dir]        用户名
-     *       base[File]      基础信息 用户名:密码:分组路径列表:角色列表 例 user1:123:sanri/dev,hd/dev,hd/test:role1,admin
-     *       profile[File]    自定义信息,暂无
-     *       ...
-     *     user2[Dir]
-     *       base[File]
-     *       profile[File]
-     *
-     * 一个用户可以有多个分组, 多个角色
+     * 添加一个用户
+     * @param thinUser 用户数据
      */
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        // 读取所有用户信息
-        final File usersDir = fileManager.mkConfigDir("security/users");
-
-        final File[] files = usersDir.listFiles();
-        for (File userDir : files) {
-            final String username = userDir.getName();
-            // 初始化只加载 base 信息
-            final File base = new File(userDir, "base");
-            final String[] userFields = StringUtils.splitPreserveAllTokens(FileUtils.readFileToString(base, StandardCharsets.UTF_8), ":", 4);
-            final ToolUser toolUser = new ToolUser(userFields[0], userFields[1]);
-            final SecurityUser securityUser = new SecurityUser(toolUser);
-
-            // 用户分组信息添加
-            if (StringUtils.isNotBlank(userFields[2])){
-                final String[] groups = StringUtils.splitPreserveAllTokens(userFields[2], ",");
-                for (String groupPath : groups) {
-                    securityUser.addGroup(groupPath);
-                }
-            }
-
-            // 用户角色信息添加
-            if (StringUtils.isNotBlank(userFields[3])){
-                final String[] roles = StringUtils.splitPreserveAllTokens(userFields[3], ",");
-                for (String role : roles) {
-                    securityUser.addRole(role);
-                }
-            }
-
-            USERS.put(username,securityUser);
+    public void addUser(ThinUser thinUser){
+        // 检查用户是否存在
+        final ToolUser toolUser = thinUser.getToolUser();
+        if (userRepository.existUser(toolUser.getUsername())){
+            throw new ToolException("用户已经存在:"+toolUser.getUsername());
         }
-    }
 
-    public List<SecurityUser> users() {
-        return new ArrayList<>(USERS.values());
+        // 检查当前用户是否可以访问指定分组, 角色
+        userService.checkGroupAccess(thinUser.getGroups().toArray(new String[]{}));
+        userService.checkRoleAccess(thinUser.getRoles().toArray(new String[]{}));
+
+        // 初始化密码为 0
+        toolUser.setPassword("0");
+
+        // 添加用户
+        userRepository.addUser(thinUser);
     }
 
     /**
-     * 查询当前分组可授权的用户列表
-     * @param group 分组名
+     * 删除一个用户
+     * @param username 用户名
+     */
+    public void delUser(String username) throws IOException {
+        userService.checkUserAccess(username);
+
+        userRepository.deleteUser(username);
+    }
+
+    /**
+     * 重置密码, 默认重置为 0
+     * @param username 用户名
+     */
+    public void resetPassword(String username){
+        userService.checkUserAccess(username);
+
+        final SecurityUser user = userRepository.getUser(username);
+        user.getToolUser().setPassword("0");
+    }
+
+    /**
+     * 查询用户
+     * @param username 用户名
      * @return
      */
-    public Set<String> findCanGrantUsers(String group){
-        Set<String> usernames = new HashSet<>();
+    public ThinUser getUser(String username){
+        userService.checkUserAccess(username);
 
-        final Iterator<SecurityUser> iterator = USERS.values().iterator();
-        A:while (iterator.hasNext()){
-            final SecurityUser securityUser = iterator.next();
-            final List<String> groups = securityUser.getGroups();
-            for (String s : groups) {
-                if (s.startsWith(group)){
-                    usernames.add(securityUser.getUsername());
-                    continue A;
-                }
-            }
-        }
-
-        return usernames;
+        return userRepository.getUser(username);
     }
 
-    @SerializerToFile
-    void initAdmin(){
-        log.info("初始化 admin 用户, 密码 0, 角色 admin, 分组 / ");
-        final ToolUser toolUser = new ToolUser("admin", "0");
-        final SecurityUser thinUser = new SecurityUser(toolUser);
-        thinUser.addGroup("/");
-        thinUser.addRole("admin");
-        USERS.put("admin",thinUser);
+    /**
+     * 用户授权角色
+     * @param username 用户名
+     * @param roles
+     */
+    public void grantRoles(String username,String...roles){
+        userService.checkUserAccess(username);
+        userService.checkRoleAccess(roles);
+
+        userRepository.changeRoles(username,roles);
+    }
+
+    /**
+     * 用户授权组织
+     * @param username 用户名
+     * @param groups 组织列表
+     */
+    public void grantGroups(String username,String...groups){
+        userService.checkUserAccess(username);
+        userService.checkGroupAccess(groups);
+
+        final Set<String> collect = Arrays.stream(groups).collect(Collectors.toSet());
+        final Set<Path> paths = groupService.filterTopGroups(collect);
+        final List<String> filterGroups = paths.stream().map(GroupRepository::convertPathToString).collect(Collectors.toList());
+
+        userRepository.changeGroups(username,filterGroups);
+    }
+
+    /**
+     * 查询可访问组织列表
+     * @param username 用户名
+     * @return
+     */
+    public List<String> queryAccessGroups(String username){
+        final SecurityUser user = userRepository.getUser(username);
+        final List<String> groups = user.getGroups();
+
+        Set<String> canGrantGroups = new HashSet<>();
+        for (String group : groups) {
+            final Set<String> childGroups = groupService.childGroups(group);
+            canGrantGroups.addAll(childGroups);
+        }
+        return new ArrayList<>(canGrantGroups);
+    }
+
+    /**
+     * 查询可访问用户列表
+     * @param username 用户名
+     * @return
+     */
+    public List<String> queryAccessUsers(String username){
+        final SecurityUser user = userRepository.getUser(username);
+        final List<String> groups = user.getGroups();
+        Set<String> usernames = new HashSet<>();
+        for (String group : groups) {
+            final Set<String> canGrantUsers = groupService.findGroupUsers(Paths.get(group),true);
+            usernames.addAll(canGrantUsers);
+        }
+        return new ArrayList<>(usernames);
+    }
+
+    /**
+     * 查询可授权资源列表
+     * @param username 用户名
+     *
+     * 逻辑如下:
+     * 当前用户拥有的角色
+     * 角色拥有的资源列表
+     * 查到资源的分组
+     * 找到顶层分组列表
+     * 查询可授权资源列表
+     * 查询可授权资源的所有子资源
+     */
+    public List<String> queryAccessResources(String username){
+        final SecurityUser user = userRepository.getUser(username);
+        final List<String> roles = user.getRoles();
+
+        Set<String> canGrantResources = new HashSet<>();
+
+        for (String role : roles) {
+            final Set<String> roleCanViewResources = roleService.queryAccessResources(role);
+            canGrantResources.addAll(roleCanViewResources);
+        }
+
+        return new ArrayList<>(canGrantResources);
+    }
+
+    /**
+     * 查询用户可访问角色列表
+     * @param username
+     * @return
+     */
+    public List<String> queryAccessRoles(String username){
+        final SecurityUser user = userRepository.getUser(username);
+        final List<String> roles = user.getRoles();
+
+        Set<String> allRoles = new HashSet<>(roles);
+
+        // 角色所在组织及其以下的组织中的角色
+        Set<String> groupsInRoles = new HashSet<>();
+        for (String role : roles) {
+            final RoleInfo roleInfo = roleRepository.getRole(role);
+            if (roleInfo == null){
+                log.info("角色信息不存在[{}]",role);
+                continue;
+            }
+            final List<String> groups = roleInfo.getGroups();
+            groupsInRoles.addAll(groups);
+        }
+
+        final Set<Path> topGroups = groupService.filterTopGroups(groupsInRoles);
+        for (Path topGroup : topGroups) {
+            final Set<String> canGrantRoles = groupService.findGroupRoles(topGroup,true);
+            allRoles.addAll(canGrantRoles);
+        }
+
+        return new ArrayList<>(allRoles);
     }
 }

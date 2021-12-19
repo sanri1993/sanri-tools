@@ -31,7 +31,7 @@ public class JdkSerializer implements Serializer {
     @Override
     public Object deserialize(byte[] bytes,ClassLoader classLoader) throws IOException, ClassNotFoundException {
         if(bytes == null) {
-            return  null;
+            return null;
         }
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
         CustomObjectInputStream objectInputStream = new CustomObjectInputStream(byteArrayInputStream,classLoader);

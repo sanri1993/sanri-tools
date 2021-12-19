@@ -6,11 +6,13 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.util.IdGenerator;
 import org.springframework.util.SimpleIdGenerator;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -37,7 +39,8 @@ public class FileStorageService {
         String extension = FilenameUtils.getExtension(originalFilename);
         File targetFile = new File(chatDir, sequence + "." + extension);
         targetFile.getParentFile().mkdirs();
-        multipartFile.transferTo(targetFile);
+//        multipartFile.transferTo(targetFile);
+        FileCopyUtils.copy(multipartFile.getInputStream(),new FileOutputStream(targetFile));
         return fileManager.relativePath(targetFile.toPath());
     }
 

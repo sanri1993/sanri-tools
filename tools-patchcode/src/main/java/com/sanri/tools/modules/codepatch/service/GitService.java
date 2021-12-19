@@ -14,8 +14,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -46,13 +44,12 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jcraft.jsch.Session;
 import com.sanri.tools.modules.codepatch.service.dtos.*;
-import com.sanri.tools.modules.core.dtos.PluginDto;
 import com.sanri.tools.modules.core.dtos.param.AuthParam;
 import com.sanri.tools.modules.core.dtos.param.GitParam;
 import com.sanri.tools.modules.core.exception.ToolException;
 import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
 import com.sanri.tools.modules.core.service.file.FileManager;
-import com.sanri.tools.modules.core.service.plugin.PluginManager;
+
 import com.sanri.tools.modules.core.utils.NetUtil;
 import com.sanri.tools.modules.core.utils.URLUtil;
 import com.sanri.tools.modules.core.utils.ZipUtil;
@@ -65,8 +62,7 @@ public class GitService {
 
     @Autowired
     private FileManager fileManager;
-    @Autowired
-    private PluginManager pluginManager;
+
 
     @Autowired
     private ConnectServiceFileBase connectService;
@@ -788,8 +784,8 @@ public class GitService {
         return false;
     }
 
-    @PostConstruct
-    public void register(){
-        pluginManager.register(PluginDto.builder().module("docs").name("git").author("sanri").logo("git.jpg").desc("git代码管理").envs("default").build());
-    }
+//    @PostConstruct
+//    public void register(){
+//        pluginManager.register(PluginDto.builder().module("docs").name("git").author("sanri").logo("git.jpg").desc("git代码管理").envs("default").build());
+//    }
 }

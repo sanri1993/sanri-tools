@@ -1,8 +1,13 @@
 package com.sanri.tools.modules.core.security;
 
+import com.sanri.tools.modules.core.exception.SystemMessage;
 import com.sanri.tools.modules.core.security.dtos.FatUser;
+import com.sanri.tools.modules.core.security.dtos.ThinUser;
+import com.sanri.tools.modules.core.security.entitys.UserProfile;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -16,19 +21,21 @@ public interface UserService {
     String username();
 
     /**
-     * 用户详细信息
+     * 当前登录人
+     * @return
      */
-    FatUser profile() throws IOException;
+    ThinUser user();
 
     /**
-     * 当前登录人, 分组列表
+     * 修改密码
+     * @param oldPassword
      */
-    List<String> groups();
+    void changePassword(String oldPassword,String password);
 
     /**
-     * 当前登录人角色列表
+     * 登录人个人信息
      */
-    List<String> roles();
+    UserProfile profile() throws IOException;
 
     /**
      * 查询可授权角色列表
@@ -50,4 +57,59 @@ public interface UserService {
      * @return
      */
     List<String> queryAccessGroups();
+
+    /**
+     * 检查用户是否有权限访问给定用户
+     * @param username
+     */
+    public default void checkUserAccess(String username){
+        final List<String> accessUsers = this.queryAccessUsers();
+        if (!accessUsers.contains(username)){
+            throw SystemMessage.ACCESS_DENIED_ARGS.exception("你无权限操作此数据:"+username);
+        }
+    }
+
+    /**
+     * 检查是否有所有组织的访问权限
+     * @param groups 组织列表
+     */
+    public default void checkGroupAccess(String...groups){
+        final List<String> accessGroups = this.queryAccessGroups();
+        A:for (String group : groups) {
+            final Path checkGroupPath = Paths.get(group);
+            for (String accessGroup : accessGroups) {
+                final Path accessGroupPath = Paths.get(accessGroup);
+                if (checkGroupPath.startsWith(accessGroup)){
+                    continue A;
+                }
+            }
+            throw SystemMessage.ACCESS_DENIED_ARGS.exception("你无权限操作此数据:"+group);
+        }
+    }
+
+    /**
+     * 检查用户是否有权限访问指定角色
+     * @param roles
+     */
+    public default void checkRoleAccess(String...roles){
+        final List<String> accessRoles = this.queryAccessRoles();
+        for (String role : roles) {
+            if (!accessRoles.contains(role)){
+                throw SystemMessage.ACCESS_DENIED_ARGS.exception("你无权限操作此数据:"+role);
+            }
+        }
+    }
+
+    /**
+     * 检查用户是否有权限访问指定资源
+     * @param resources
+     */
+    public default void checkResourceAccess(String...resources){
+        final List<String> accessResources = this.queryAccessResources();
+        for (String resource : resources) {
+            if (!accessResources.contains(resource)){
+                throw SystemMessage.ACCESS_DENIED_ARGS.exception("你无权限操作此数据:"+resource);
+            }
+        }
+    }
 }

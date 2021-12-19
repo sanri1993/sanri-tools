@@ -1,18 +1,12 @@
 package com.sanri.tools.modules.redis.service;
 
-import com.sanri.tools.modules.core.dtos.PluginDto;
-import com.sanri.tools.modules.core.dtos.UpdateConnectEvent;
-import com.sanri.tools.modules.core.dtos.param.RedisConnectParam;
-import com.sanri.tools.modules.core.exception.ToolException;
-import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
-import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
-import com.sanri.tools.modules.core.service.plugin.PluginManager;
-import com.sanri.tools.modules.redis.dtos.*;
-import com.sanri.tools.modules.redis.dtos.in.*;
-import com.sanri.tools.modules.redis.service.dtos.*;
-import com.sanri.tools.modules.serializer.service.Serializer;
-import com.sanri.tools.modules.serializer.service.SerializerChoseService;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.net.SocketTimeoutException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.annotation.PreDestroy;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,16 +14,29 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
-import redis.clients.jedis.*;
+
+import com.sanri.tools.modules.core.dtos.UpdateConnectEvent;
+import com.sanri.tools.modules.core.dtos.param.RedisConnectParam;
+import com.sanri.tools.modules.core.exception.ToolException;
+import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
+import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
+
+import com.sanri.tools.modules.redis.dtos.*;
+import com.sanri.tools.modules.redis.dtos.in.*;
+import com.sanri.tools.modules.redis.service.dtos.RedisConnection;
+import com.sanri.tools.modules.redis.service.dtos.RedisNode;
+import com.sanri.tools.modules.redis.service.dtos.RedisRunMode;
+import com.sanri.tools.modules.redis.service.dtos.RedisType;
+import com.sanri.tools.modules.serializer.service.Serializer;
+import com.sanri.tools.modules.serializer.service.SerializerChoseService;
+
+import lombok.extern.slf4j.Slf4j;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.ScanParams;
+import redis.clients.jedis.ScanResult;
+import redis.clients.jedis.Tuple;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.util.JedisClusterCRC16;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import java.io.IOException;
-import java.net.SocketTimeoutException;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Slf4j
@@ -38,8 +45,7 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
     private Map<String, RedisConnection> clientMap = new ConcurrentHashMap<>();
     @Autowired
     private ConnectServiceFileBase connectService;
-    @Autowired
-    private PluginManager pluginManager;
+
 
     public static final String MODULE = "redis";
 
@@ -451,11 +457,11 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
         return 0;
     }
 
-    @PostConstruct
-    public void register(){
-        pluginManager.register(PluginDto.builder().module("monitor").name(MODULE).logo("redis.jpg").desc("Redis 数据查看(不再维护,请使用分模块的 Redis 工具),集群信息管理").help("Redis.md").author("sanri").envs("default").build());
-        pluginManager.register(PluginDto.builder().module("monitor").name(MODULE +"2").logo("redis.jpg").desc("Redis 数据查看,集群信息管理,分模块的 Redis 工具").help("Redis.md").author("sanri").envs("default").build());
-    }
+//    @PostConstruct
+//    public void register(){
+//        pluginManager.register(PluginDto.builder().module("monitor").name(MODULE).logo("redis.jpg").desc("Redis 数据查看(不再维护,请使用分模块的 Redis 工具),集群信息管理").help("Redis.md").author("sanri").envs("default").build());
+//        pluginManager.register(PluginDto.builder().module("monitor").name(MODULE +"2").logo("redis.jpg").desc("Redis 数据查看,集群信息管理,分模块的 Redis 工具").help("Redis.md").author("sanri").envs("default").build());
+//    }
 
     @PreDestroy
     public void destory(){

@@ -1,26 +1,25 @@
 package com.sanri.tools.modules.database.service;
 
-import com.sanri.tools.modules.core.dtos.PluginDto;
-import com.sanri.tools.modules.core.service.plugin.PluginManager;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
+
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.ColumnListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
+
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
 public class ConfigDataService {
     @Autowired
     private JdbcService jdbcService;
-    @Autowired
-    private PluginManager pluginManager;
+
 
     /**
      * 查询分组信息
@@ -69,12 +68,12 @@ public class ConfigDataService {
         return executeQuery;
     }
 
-    @PostConstruct
-    public void init(){
-        pluginManager.register(PluginDto.builder().module(JdbcService.MODULE)
-                .name("configData").author("9420")
-                .logo("nacos.jpg")
-                .help("配置数据.md")
-                .desc("配置数据查询").build());
-    }
+//    @PostConstruct
+//    public void init(){
+//        pluginManager.register(PluginDto.builder().module(JdbcService.MODULE)
+//                .name("configData").author("9420")
+//                .logo("nacos.jpg")
+//                .help("配置数据.md")
+//                .desc("配置数据查询").build());
+//    }
 }

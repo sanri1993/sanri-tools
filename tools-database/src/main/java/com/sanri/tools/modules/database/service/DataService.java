@@ -1,22 +1,20 @@
 package com.sanri.tools.modules.database.service;
 
-import com.sanri.tools.modules.core.dtos.PluginDto;
-import com.sanri.tools.modules.core.service.NamedThreadFactory;
-import com.sanri.tools.modules.core.service.file.FileManager;
-import com.sanri.tools.modules.core.service.plugin.PluginManager;
-import com.sanri.tools.modules.database.dtos.*;
-import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
-import lombok.extern.slf4j.Slf4j;
-import net.sf.jsqlparser.JSQLParserException;
-import net.sf.jsqlparser.expression.Alias;
-import net.sf.jsqlparser.expression.Expression;
-import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
-import net.sf.jsqlparser.parser.CCJSqlParserManager;
-import net.sf.jsqlparser.schema.Column;
-import net.sf.jsqlparser.schema.Table;
-import net.sf.jsqlparser.statement.select.*;
-import net.sf.jsqlparser.util.SelectUtils;
-import net.sf.jsqlparser.util.TablesNamesFinder;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.StringReader;
+import java.nio.file.Path;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
@@ -31,18 +29,26 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.io.*;
-import java.nio.file.Path;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.*;
+import com.sanri.tools.modules.core.service.NamedThreadFactory;
+import com.sanri.tools.modules.core.service.file.FileManager;
 
-import static com.sanri.tools.modules.database.service.JdbcService.MODULE;
+import com.sanri.tools.modules.database.dtos.*;
+import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
+
+import lombok.extern.slf4j.Slf4j;
+import net.sf.jsqlparser.JSQLParserException;
+import net.sf.jsqlparser.expression.Alias;
+import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
+import net.sf.jsqlparser.parser.CCJSqlParserManager;
+import net.sf.jsqlparser.schema.Column;
+import net.sf.jsqlparser.schema.Table;
+import net.sf.jsqlparser.statement.select.Limit;
+import net.sf.jsqlparser.statement.select.PlainSelect;
+import net.sf.jsqlparser.statement.select.Select;
+import net.sf.jsqlparser.statement.select.SelectBody;
+import net.sf.jsqlparser.util.SelectUtils;
+import net.sf.jsqlparser.util.TablesNamesFinder;
 
 @Service
 @Slf4j
@@ -59,8 +65,6 @@ public class DataService {
     @Autowired
     private TableRelationService tableRelationService;
 
-    @Autowired
-    private PluginManager pluginManager;
 
     /**
      * sql 关联数据查询,返回需要查询的所有 sql 语句
@@ -339,12 +343,12 @@ public class DataService {
 //        }
     }
 
-    @PostConstruct
-    public void register(){
-        pluginManager.register(PluginDto.builder()
-                .module(MODULE).name("dataExport").author("sanri").envs("default")
-                .logo("mysql.jpg")
-                .desc("数据导出功能")
-                .build());
-    }
+//    @PostConstruct
+//    public void register(){
+//        pluginManager.register(PluginDto.builder()
+//                .module(MODULE).name("dataExport").author("sanri").envs("default")
+//                .logo("mysql.jpg")
+//                .desc("数据导出功能")
+//                .build());
+//    }
 }

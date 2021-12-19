@@ -1,148 +1,121 @@
 package com.sanri.tools.modules.security.service;
 
-import java.io.IOException;
-import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import com.sanri.tools.modules.core.exception.SystemMessage;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.InitializingBean;
+import com.sanri.tools.modules.core.exception.ToolException;
+import com.sanri.tools.modules.core.security.dtos.GroupTree;
+import com.sanri.tools.modules.security.service.repository.GroupRepository;
+import com.sanri.tools.modules.security.service.repository.ResourceRepository;
+import com.sanri.tools.modules.security.service.repository.RoleRepository;
+import com.sanri.tools.modules.security.service.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sanri.tools.modules.core.aspect.SerializerToFile;
-import com.sanri.tools.modules.core.exception.ToolException;
-import com.sanri.tools.modules.core.security.dtos.GroupTree;
-import com.sanri.tools.modules.core.service.file.FileManager;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
-
-/**
- * 分组管理
- */
 @Service
-@Slf4j
-public class GroupService implements InitializingBean {
-    private final FileManager fileManager;
-
-    // 存储还是线性结构, 获取的时候再转化
-    private List<String> groups = new ArrayList<>();
+public class GroupService {
 
     @Autowired
-    private ProfileServiceImpl profileService;
+    private GroupRepository groupRepository;
 
-//    // 根路径 /
-//    private static final URI ROOT = URI.create("/");
-//    // 上级路径
-//    private static final URI PARENT = URI.create("..");
-//    // 空路径
-//    private static final URI EMPTY = URI.create("");
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private RoleRepository roleRepository;
+    @Autowired
+    private ResourceRepository resourceRepository;
 
-    public GroupService(FileManager fileManager) {
-        this.fileManager = fileManager;
+    /**
+     * 添加一个组织
+     * @param parentGroup 父级组织
+     * @param childGroup 子组织
+     */
+    public void addGroup(String parentGroup, String childGroup){
+        if (childGroup.startsWith("/")){
+            throw new ToolException("子组织不能以 / 开头");
+        }
+        if (Paths.get(parentGroup).equals(Paths.get("/"))){
+            groupRepository.addGroup(Paths.get(childGroup));
+            return ;
+        }
+        groupRepository.addGroup(Paths.get(parentGroup,childGroup));
     }
 
     /**
-     * 判断当前分组是否已经存在
-     * @param group 分组路径
+     * 删除组织
+     * @param path 组织全路径
+     */
+    public void delGroup(String path){
+        groupRepository.deleteGroup(Paths.get(path));
+    }
+
+    /**
+     * 查找组织挂载的用户
+     * @param group 组织路径
+     * @param includeChild 是否包含子级
+     */
+    public Set<String> findGroupUsers(Path group, boolean includeChild) {
+        return userRepository.findUsersByGroup(group,includeChild);
+    }
+
+    /**
+     * 查询组织挂载的角色
+     * @param group         组织路径
+     * @param includeChild  是否包含子级
      * @return
      */
-    public boolean existsGroup(String group){
-        if (!group.endsWith("/")){group += "/";}
-
-        for (String curGroup : groups) {
-            if (curGroup.startsWith(group)){
-                return true;
-            }
-        }
-        return false;
+    public Set<String> findGroupRoles(Path group, boolean includeChild){
+        return roleRepository.findRolesByGroup(group,includeChild);
     }
 
     /**
-     * 用户添加分组
-     * @param prefix
+     * 查询组织挂载的资源信息
      * @param group
+     * @param includeChild
+     * @return
      */
-    @SerializerToFile
-    public void addGroup(String group){
-        if (!group.endsWith("/")){group += "/";}
-
-        if (existsGroup(group)){
-           log.warn("已经存在分组:{}",group);
-           return ;
-        }
-        groups.add(group);
-    }
-
-    @SerializerToFile
-    public void deleteGroup(String group){
-        if (!group.endsWith("/")){group += "/";}
-        // 鉴定当前用户是否有访问这个分组的权限
-        final List<String> groups = profileService.groups();
-        boolean find = false;
-        for (String userGroup : groups) {
-            if (group.startsWith(userGroup)){
-                find = true;
-                break;
-            }
-        }
-        if (!find){
-            throw SystemMessage.ACCESS_DENIED.exception();
-        }
-
-        final String deleteGroup = group;
-        final boolean removeIf = this.groups.removeIf(next -> next.startsWith(deleteGroup));
-        if (removeIf) {
-            this.groups.add(group);
-        }
+    public Set<String> findGroupResources(Path group, boolean includeChild){
+        return resourceRepository.findResourcesByGroup(group,includeChild);
     }
 
     /**
-     * 分组信息序列化到文件
+     * 查询组织的所有子组织
+     * @param group 组织路径
+     * @return
      */
-    public void serializer() throws IOException {
-        fileManager.writeConfig("security","groups",StringUtils.join(groups,'\n'));
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        // 读取分组信息
-        final String readConfig = fileManager.readConfig("security", "groups");
-        if (StringUtils.isNotBlank(readConfig)) {
-            final String[] lines = StringUtils.split(readConfig, '\n');
-            this.groups = new ArrayList<>(Arrays.asList(lines));
-        }
-    }
-
-    public List<String> getGroups() {
-        return groups;
+    public Set<String> childGroups(String group){
+        final List<Path> paths = groupRepository.childGroups(Paths.get(group));
+        return paths.stream().map(GroupRepository::convertPathToString).collect(Collectors.toSet());
     }
 
     /**
      * 过滤出顶层 group 列表
-     * @param groups
-     * @return
+     * @param groups 给定的组织列表
      */
-    public Set<String> filterTopGroups(Set<String> groups){
-        Set<String> topGroups = new HashSet<>();
+    public Set<Path> filterTopGroups(Set<String> groups){
+        Set<Path> topGroups = new HashSet<>();
 
         A: for (String group : groups) {
-            final Iterator<String> iterator = topGroups.iterator();
+            final Path filterOne = Paths.get(group);
+
+            final Iterator<Path> iterator = topGroups.iterator();
             while (iterator.hasNext()){
-                final String next = iterator.next();
-                if (next.startsWith(group)){
+                final Path next = iterator.next();
+                if (next.startsWith(filterOne)){
                     iterator.remove();
-                    topGroups.add(group);
+                    topGroups.add(filterOne);
                     continue A;
                 }
-                if (group.startsWith(next)){
+                if (filterOne.startsWith(next)){
                     continue A;
                 }
             }
-            topGroups.add(group);
+            topGroups.add(filterOne);
         }
 
         return topGroups;
@@ -153,23 +126,52 @@ public class GroupService implements InitializingBean {
      * @param groups 分组列表
      * @return
      */
-    public List<GroupTree> convertPathsToGroupTree(List<String> groups){
-        final List<Path> groupPaths = groups.stream().map(Paths::get).collect(Collectors.toList());
+    public static GroupTree convertPathsToGroupTree(List<Path> groups){
+        final List<Path> groupPaths = groups.stream().collect(Collectors.toList());
 
-        GroupTree groupTree = new GroupTree("顶层");
+        GroupTree top = new GroupTree("顶层");
         for (Path groupPath : groupPaths) {
-            convertToGroupTree(groupPath, groupTree, 0);
+            convertToGroupTree(groupPath, top, 0);
         }
-        return groupTree.getChildes();
+        final List<GroupTree> children = top.getChildren();
+
+        // 找出 children 共同的父级组织, 从路径的前面往后找,找到相同起始的路径当做父级,如果没有,则父级为根
+        Set<Path> paths = children.stream().map(GroupTree::getPath).map(Paths::get).collect(Collectors.toSet());
+        // 找到最短路径
+        final Integer minPath = paths.stream().map(Path::getNameCount).min((a, b) -> a - b).get();
+        Path topPath = Paths.get("/");
+        for (int i = 0; i < minPath; i++) {
+            Set<String> partPaths = new HashSet<>();
+            for (Path path : paths) {
+                final String part = path.getName(i).toString();
+                partPaths.add(part);
+            }
+            if (partPaths.size() == 1){
+                topPath.resolve(partPaths.iterator().next());
+                continue;
+            }
+            break;
+        }
+
+        // 设置顶层
+        if (topPath.equals(Paths.get("/"))){
+            top.setPath("/");
+            top.setName("/");
+        }else{
+            top.setPath(GroupRepository.convertPathToString(topPath));
+            top.setName(topPath.getName(topPath.getNameCount() - 1).toString() + "_"+ topPath.getNameCount());
+        }
+
+        return top;
     }
 
-    private void convertToGroupTree(Path path, GroupTree root, int deep){
+    private static void convertToGroupTree(Path path, GroupTree root, int deep){
         final int nameCount = path.getNameCount();
         if (deep >= nameCount){
             return ;
         }
-        final String pathName = path.getName(deep).toString();
-        final List<GroupTree> children = root.getChildes();
+        final String pathName = path.getName(deep).toString() + "_"+deep;
+        final List<GroupTree> children = root.getChildren();
         for (GroupTree child : children) {
             final String childName = child.getName();
             if (pathName.equals(childName)){
@@ -179,15 +181,9 @@ public class GroupService implements InitializingBean {
         }
 
         final GroupTree groupTree = new GroupTree(pathName);
-        groupTree.setPath(path.subpath(0, deep + 1).toString());
+        groupTree.setPath(GroupRepository.convertPathToString(path.subpath(0, deep + 1)));
         root.addChild(groupTree);
         groupTree.setParent(root);
         convertToGroupTree(path,groupTree,++deep);
-    }
-
-    @SerializerToFile
-    void initAdmin(){
-        log.info("初始化 amdin 组织 / ");
-        addGroup("/");
     }
 }

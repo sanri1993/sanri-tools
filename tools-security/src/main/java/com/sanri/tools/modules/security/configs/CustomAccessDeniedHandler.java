@@ -20,7 +20,8 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        log.error("CustomAccessDeniedHandler");
+        final String requestURI = request.getRequestURI();
+        log.error("CustomAccessDeniedHandler:{}",requestURI);
         responseHandler.writeAuthorizationFail(accessDeniedException,response);
     }
 }

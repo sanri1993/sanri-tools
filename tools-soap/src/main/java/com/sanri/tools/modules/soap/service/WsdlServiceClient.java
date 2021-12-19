@@ -1,26 +1,25 @@
 package com.sanri.tools.modules.soap.service;
 
-import com.sanri.tools.modules.core.dtos.PluginDto;
-import com.sanri.tools.modules.core.service.plugin.PluginManager;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+
+
+import lombok.extern.slf4j.Slf4j;
+
 @Service
 @Slf4j
 public class WsdlServiceClient {
     private Map<String,WsdlService> wsdlServiceMap = new ConcurrentHashMap<>();
 
-    @Autowired
-    private PluginManager pluginManager;
+
 
     public Set<String> services(){
         return wsdlServiceMap.keySet();
@@ -69,8 +68,8 @@ public class WsdlServiceClient {
         return null;
     }
 
-    @PostConstruct
-    public void register(){
-        pluginManager.register(PluginDto.builder().module("call").name("soap").author("9420").logo("soap.jpg").desc("快速调用soap 接口").build());
-    }
+//    @PostConstruct
+//    public void register(){
+//        pluginManager.register(PluginDto.builder().module("call").name("soap").author("9420").logo("soap.jpg").desc("快速调用soap 接口").build());
+//    }
 }

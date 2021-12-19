@@ -1,17 +1,13 @@
 package com.sanri.tools.modules.database.service;
 
-import com.sanri.tools.modules.core.dtos.PluginDto;
-import com.sanri.tools.modules.core.dtos.UpdateConnectEvent;
-import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
-import com.sanri.tools.modules.core.service.plugin.PluginManager;
-import com.sanri.tools.modules.database.dtos.ConnectionMetaData;
-import com.sanri.tools.modules.database.dtos.DynamicQueryDto;
-import com.sanri.tools.modules.database.dtos.meta.*;
-import com.sanri.tools.modules.core.dtos.param.AuthParam;
-import com.sanri.tools.modules.core.dtos.param.ConnectParam;
-import com.sanri.tools.modules.core.dtos.param.DatabaseConnectParam;
-import lombok.extern.slf4j.Slf4j;
-import oracle.jdbc.pool.OracleDataSource;
+import java.io.IOException;
+import java.sql.*;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
+import javax.sql.DataSource;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
@@ -23,13 +19,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.sql.DataSource;
-import java.io.IOException;
-import java.sql.*;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+import com.sanri.tools.modules.core.dtos.UpdateConnectEvent;
+import com.sanri.tools.modules.core.dtos.param.AuthParam;
+import com.sanri.tools.modules.core.dtos.param.ConnectParam;
+import com.sanri.tools.modules.core.dtos.param.DatabaseConnectParam;
+import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
+
+import com.sanri.tools.modules.database.dtos.ConnectionMetaData;
+import com.sanri.tools.modules.database.dtos.DynamicQueryDto;
+import com.sanri.tools.modules.database.dtos.meta.*;
+
+import lombok.extern.slf4j.Slf4j;
+import oracle.jdbc.pool.OracleDataSource;
 
 
 @Service
@@ -37,8 +38,7 @@ import java.util.stream.Collectors;
 public class JdbcService implements ApplicationListener<UpdateConnectEvent> {
     @Autowired
     private ConnectServiceFileBase connectService;
-    @Autowired
-    private PluginManager pluginManager;
+
 
     public static final String MODULE = "database";
 
@@ -819,13 +819,13 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> {
         return dataSource;
     }
 
-    @PostConstruct
-    public void register(){
-        pluginManager.register(PluginDto.builder()
-                .module(MODULE).name("metadata").author("sanri").envs("default")
-                .logo("mysql.jpg")
-                .desc("数据库元数据,支持mysql,postgresql,oracle 和支持元数据据的数据库,可扩展功能数据库文档,代码生成")
-                .help("数据表处理工具.md")
-                .build());
-    }
+//    @PostConstruct
+//    public void register(){
+//        pluginManager.register(PluginDto.builder()
+//                .module(MODULE).name("metadata").author("sanri").envs("default")
+//                .logo("mysql.jpg")
+//                .desc("数据库元数据,支持mysql,postgresql,oracle 和支持元数据据的数据库,可扩展功能数据库文档,代码生成")
+//                .help("数据表处理工具.md")
+//                .build());
+//    }
 }

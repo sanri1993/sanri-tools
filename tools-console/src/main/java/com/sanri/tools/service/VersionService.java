@@ -19,7 +19,7 @@ public class VersionService {
     @PostConstruct
     public void printVersion(){
         try {
-            ClassPathResource version = new ClassPathResource("/version");
+            ClassPathResource version = new ClassPathResource("/version.txt");
             String fileToString = FileUtils.readFileToString(version.getFile(), StandardCharsets.UTF_8);
             this.version = fileToString;
             log.info("当前工具版本:{}",fileToString);
