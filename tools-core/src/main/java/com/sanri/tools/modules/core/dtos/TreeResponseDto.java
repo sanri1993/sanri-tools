@@ -31,5 +31,5 @@ public interface TreeResponseDto<T> {
      */
     T getOrigin();
 
-    List<? extends TreeResponseDto> getChildrens();
+    List<? extends TreeResponseDto> getChildren();
 }

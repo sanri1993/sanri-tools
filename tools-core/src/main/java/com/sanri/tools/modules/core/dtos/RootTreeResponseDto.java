@@ -12,7 +12,7 @@ public abstract class RootTreeResponseDto<T> implements TreeResponseDto<T> {
 	}
 
 	@Override
-	public List<TreeResponseDto> getChildrens() {
+	public List<TreeResponseDto> getChildren() {
 		return childrens;
 	}
 }

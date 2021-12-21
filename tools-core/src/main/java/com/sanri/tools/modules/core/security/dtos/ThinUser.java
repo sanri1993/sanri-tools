@@ -11,8 +11,11 @@ import com.sanri.tools.modules.core.security.entitys.ToolUser;
 
 import lombok.Data;
 
+import javax.validation.Valid;
+
 @Data
 public class ThinUser {
+    @Valid
     protected ToolUser toolUser;
     protected List<String> roles = new ArrayList<>();
     protected List<String> groups = new ArrayList<>();

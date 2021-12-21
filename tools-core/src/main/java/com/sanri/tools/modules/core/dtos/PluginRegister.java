@@ -22,4 +22,8 @@ public class PluginRegister {
     public PluginRegister(String id) {
         this.id = id;
     }
+
+    public String getVersionString(){
+        return version.toString();
+    }
 }

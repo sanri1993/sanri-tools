@@ -315,7 +315,7 @@ name=插件标题
 author=sanri
 dependencies=
 desc=提供插件管理, 连接管理, 类加载器管理等功能
-help=classpath:README.MD
+help=README.MD
 ```
 其中, 依赖项列表使用逗号分隔每个依赖模块; 帮助文档可以是一个url, 也可以是本地 md 文件, 你需要把它描述成资源格式
 

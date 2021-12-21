@@ -6,12 +6,14 @@ import com.sanri.tools.modules.core.security.entitys.ToolRole;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 public class RoleInfo {
+    @Valid
     private ToolRole toolRole;
     private List<String> resources = new ArrayList<>();
     private List<String> groups = new ArrayList<>();

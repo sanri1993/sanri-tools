@@ -1,10 +1,20 @@
 package com.sanri.tools.modules.security.controller;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
+import com.sanri.tools.modules.core.security.dtos.GroupTree;
+import com.sanri.tools.modules.core.security.dtos.RoleInfo;
+import com.sanri.tools.modules.security.service.GroupService;
+import com.sanri.tools.modules.security.service.ResourceService;
+import com.sanri.tools.modules.security.service.dtos.ResourceTree;
+import com.sanri.tools.modules.security.service.repository.RoleRepository;
+import com.sanri.tools.modules.security.service.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +35,12 @@ public class UserController {
     private UserManagerService userManagerService;
     @Autowired
     private ProfileService profileService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private RoleRepository roleRepository;
+    @Autowired
+    private ResourceService resourceService;
 
     /**
      * 获取用户信息
@@ -49,7 +65,7 @@ public class UserController {
      * @param user
      */
     @PostMapping("/add")
-    public void addUser(@RequestBody ThinUser user){
+    public void addUser(@RequestBody @Validated ThinUser user){
         userManagerService.addUser(user);
     }
 
@@ -67,9 +83,11 @@ public class UserController {
      * @param username 用户名
      */
     @GetMapping("/{username}/accessGroups")
-    public List<String> queryAccessGroups(@NotBlank @PathVariable("username") String username){
+    public GroupTree queryAccessGroups(@NotBlank @PathVariable("username") String username){
         profileService.checkUserAccess(username);
-        return userManagerService.queryAccessGroups(username);
+        final List<String> accessGroups = userManagerService.queryAccessGroups(username);
+        final List<Path> collect = accessGroups.stream().map(Paths::get).collect(Collectors.toList());
+        return GroupService.convertPathsToGroupTree(collect);
     }
 
     /**
@@ -78,9 +96,10 @@ public class UserController {
      * @return
      */
     @GetMapping("/{username}/accessUsers")
-    public List<String> queryAccessUsers(@NotBlank @PathVariable("username") String username){
+    public List<? extends ThinUser> queryAccessUsers(@NotBlank @PathVariable("username") String username){
         profileService.checkUserAccess(username);
-        return userManagerService.queryAccessUsers(username);
+        final List<String> accessUsers = userManagerService.queryAccessUsers(username);
+        return userRepository.getUsers(accessUsers);
     }
 
     /**
@@ -89,9 +108,10 @@ public class UserController {
      * @return
      */
     @GetMapping("/{username}/accessRoles")
-    public List<String> queryAccessRoles(@NotBlank @PathVariable("username") String username){
+    public List<RoleInfo> queryAccessRoles(@NotBlank @PathVariable("username") String username){
         profileService.checkUserAccess(username);
-        return userManagerService.queryAccessRoles(username);
+        final List<String> accessRoles = userManagerService.queryAccessRoles(username);
+        return roleRepository.getRoles(accessRoles);
     }
 
     /**
@@ -100,9 +120,10 @@ public class UserController {
      * @return
      */
     @GetMapping("/{username}/accessResources")
-    public List<String> queryAccessResources(@NotBlank @PathVariable("username") String username){
+    public List<ResourceTree> queryAccessResources(@NotBlank @PathVariable("username") String username){
         profileService.checkUserAccess(username);
-        return userManagerService.queryAccessResources(username);
+        final List<String> accessResources = userManagerService.queryAccessResources(username);
+        return resourceService.completionToTree(accessResources);
     }
 
     /**

@@ -35,7 +35,7 @@ public class ResourceTree implements TreeResponseDto<ResourceInfo> {
     }
 
     @Override
-    public List<ResourceTree> getChildrens() {
+    public List<ResourceTree> getChildren() {
         return children;
     }
 }

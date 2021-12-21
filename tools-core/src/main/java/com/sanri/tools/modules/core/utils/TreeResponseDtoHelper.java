@@ -109,7 +109,7 @@ public class TreeResponseDtoHelper {
         forest.addAll(treeModels);
         forest.add(virtualRoot);
         List<? extends TreeResponseDto> treeResponseDtos = fastConvertTree(forest, rootParentId);
-        return treeResponseDtos.get(0).getChildrens();
+        return treeResponseDtos.get(0).getChildren();
     }
 
     /**
@@ -122,7 +122,7 @@ public class TreeResponseDtoHelper {
         treeModels.stream().forEach(treeModel ->{
             TreeResponseDto parentTreeResponseDto = treeIdMap.get(((TreeResponseDto) treeModel).getParentId());
             if(parentTreeResponseDto != null){
-                parentTreeResponseDto.getChildrens().add(treeModel);
+                parentTreeResponseDto.getChildren().add(treeModel);
             }
         });
 

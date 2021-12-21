@@ -148,7 +148,7 @@ public class ResourceService {
      * @param accessResources
      * @return
      */
-    public List<ResourceTree> completionToTree(List<String> accessResources) {
+    public List<ResourceTree> completionToTree(Collection<String> accessResources) {
         // 补充资源完整信息
         final List<ResourceInfo> resourceInfos = resourceRepository.getResources(accessResources);
 
@@ -177,7 +177,7 @@ public class ResourceService {
             }
             final ResourceTree parentTree = resourceTreeMap.get(resourceTree.getParentId());
             if (parentTree != null){
-                parentTree.getChildrens().add(resourceTree);
+                parentTree.getChildren().add(resourceTree);
             }else{
                 log.warn("父级节点数据丢失:{}",resourceTree.getParentId());
             }

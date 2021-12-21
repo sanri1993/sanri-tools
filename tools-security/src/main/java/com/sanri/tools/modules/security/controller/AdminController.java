@@ -10,6 +10,7 @@ import com.sanri.tools.modules.security.service.repository.ResourceRepository;
 import com.sanri.tools.modules.security.service.repository.RoleRepository;
 import com.sanri.tools.modules.security.service.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +27,7 @@ import com.sanri.tools.modules.security.service.dtos.SecurityUser;
  */
 @RestController
 @RequestMapping("/security/admin")
+@Validated
 public class AdminController {
     @Autowired
     private UserRepository userRepository;

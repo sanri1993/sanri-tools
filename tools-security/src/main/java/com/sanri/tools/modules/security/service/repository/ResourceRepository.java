@@ -85,7 +85,7 @@ public class ResourceRepository implements InitializingBean {
      * @param resourceIds 资源名称列表
      * @return
      */
-    public List<ResourceInfo> getResources(List<String> resourceIds){
+    public List<ResourceInfo> getResources(Collection<String> resourceIds){
         return resourceIds.stream().map(resourceInfos::get).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
