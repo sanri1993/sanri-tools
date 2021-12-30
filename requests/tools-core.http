@@ -8,69 +8,20 @@ GET {{baseUrl}}/classloader/listLoadedClasses?classloaderName=job
 ### 类加载器 - 查看某个类的所有方法信息
 GET {{baseUrl}}/classloader/user/com.mmc.dubbo.api.user.UserFact/methodNames
 
-### 类加载器- 查看类结构
-GET {{baseUrl}}/classloader/user/com.mmc.dubbo.api.user.UserFact/classStruct
+### 类加载器 - 上传单个文件
+POST {{baseUrl}}/classloader/111/upload/single
+Content-Type: multipart/form-data; boundary=uploadSingle
+Authorization: {{Authorization}}
 
-### 类加载器 - 构建方法参数
-GET {{baseUrl}}/classloader/user/com.mmc.dubbo.api.user.UserService/insert/buildParams
+--uploadSingle
+Content-Disposition: form-data; name="classloaderName"
 
-### 类加载器 - 上传 zip 包, 需要类有严格的目录结构
-POST {{baseUrl}}/classloader/uploadClassesZip
-Content-Type: multipart/form-data; boundary=uploadClassesZip
-
---uploadClassesZip
-Content-Disposition: form-data; name="file"; filename="messagecenterdao.zip"
+111
+--uploadSingle
+Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
 Content-Type: application/octet-stream
 
-< d:/test/messagecenterdao.zip
---uploadClassesZip
-Content-Disposition: form-data; name="classloaderName"
-Content-Type: application/x-www-form-urlencoded
-
-messagecenterdao
-
-### 类加载器 - 上传 zip 包, 不需要严格的目录结构
-POST {{baseUrl}}/classloader/uploadClassesZipSimple
-Content-Type: multipart/form-data; boundary=uploadClassesZip
-
---uploadClassesZip
-Content-Disposition: form-data; name="file"; filename="job.zip"
-Content-Type: application/octet-stream
-
-< d:/test/job.zip
---uploadClassesZip
-Content-Disposition: form-data; name="classloaderName"
-Content-Type: application/x-www-form-urlencoded
-
-job
-### 类加载器 - 上传单个 class 文件
-POST {{baseUrl}}/classloader/uploadSingleClass
-Content-Type: multipart/form-data; boundary=uploadSingleClass
-
---uploadSingleClass
-Content-Disposition: form-data; name="file"; filename="ParkingLotBean.class"
-Content-Type: application/octet-stream
-
-< d:/test/ParkingLotBean.class
---uploadSingleClass
-Content-Disposition: form-data; name="classloaderName"
-Content-Type: application/x-www-form-urlencoded
-
-park
-### 类加载器 - 上传单个 java 文件,将自动编译
-POST {{baseUrl}}/classloader/uploadSingleJavaFile
-Content-Type: multipart/form-data; boundary=uploadSingleJavaFile
-
---uploadSingleJavaFile
-Content-Disposition: form-data; name="file"; filename="ParkMessageDto.java"
-Content-Type: application/octet-stream
-
-< d:/test/ParkMessageDto.java
---uploadSingleJavaFile
-Content-Disposition: form-data; name="classloaderName"
-Content-Type: application/x-www-form-urlencoded
-
-park
+< C:\Users\Administrator\Downloads/EamImageUploadService.class
 
 ### 数据 - 类加载器随机数据生成
 GET {{baseUrl}}/data/random?className=com.sanri.tools.modules.core.dtos.param.DatabaseConnectParam&classloaderName=

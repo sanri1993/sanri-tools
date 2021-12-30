@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PreDestroy;
 
+import com.sanri.tools.modules.core.service.connect.ConnectService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -19,7 +20,7 @@ import com.sanri.tools.modules.core.dtos.UpdateConnectEvent;
 import com.sanri.tools.modules.core.dtos.param.RedisConnectParam;
 import com.sanri.tools.modules.core.exception.ToolException;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
-import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
+import com.sanri.tools.modules.core.service.file.ConnectServiceOldFileBase;
 
 import com.sanri.tools.modules.redis.dtos.*;
 import com.sanri.tools.modules.redis.dtos.in.*;
@@ -44,8 +45,7 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
     // 保存的 redis 连接信息
     private Map<String, RedisConnection> clientMap = new ConcurrentHashMap<>();
     @Autowired
-    private ConnectServiceFileBase connectService;
-
+    private ConnectService connectService;
 
     public static final String MODULE = "redis";
 

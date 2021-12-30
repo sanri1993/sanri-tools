@@ -1,0 +1,6 @@
+maven:
+  config:
+    repositories:
+      - id: huawei
+        type: default
+        url: https://mirrors.huaweicloud.com/repository/maven/

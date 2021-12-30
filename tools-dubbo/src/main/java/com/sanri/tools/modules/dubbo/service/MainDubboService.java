@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import com.sanri.tools.modules.core.service.connect.ConnectService;
+import com.sanri.tools.modules.core.service.connect.dtos.ConnectOutput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +27,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sanri.tools.modules.core.exception.ToolException;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
-import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
+import com.sanri.tools.modules.core.service.file.ConnectServiceOldFileBase;
 
 import com.sanri.tools.modules.dubbo.DubboProviderDto;
 import com.sanri.tools.modules.dubbo.dtos.DubboInvokeParam;
@@ -43,7 +45,7 @@ public class MainDubboService {
     private ClassloaderService classloaderService;
 
     @Autowired
-    private ConnectServiceFileBase connectService;
+    private ConnectService connectService;
 
     /**
      * 检查是否存在 dubbo 服务
@@ -186,9 +188,11 @@ public class MainDubboService {
 //    }
 
     public List<String> connects() {
-        List<String> names = connectService.names(ZookeeperService.module);
+        final List<ConnectOutput> connectOutputs = connectService.moduleConnects(ZookeeperService.module);
+//        List<String> names = connectService.names(ZookeeperService.module);
         List<String> connects = new ArrayList<>();
-        for (String name : names) {
+        for (ConnectOutput connectOutput : connectOutputs) {
+            final String name = connectOutput.getConnectInput().getBaseName();
             try {
                 boolean isDubbo = checkIsDubbo(name);
                 if (isDubbo){

@@ -3,7 +3,8 @@ package com.sanri.tools.modules.kafka.service;
 import com.alibaba.fastjson.JSON;
 import com.sanri.tools.modules.core.dtos.param.KafkaConnectParam;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
-import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
+import com.sanri.tools.modules.core.service.connect.ConnectService;
+import com.sanri.tools.modules.core.service.file.ConnectServiceOldFileBase;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.core.utils.NetUtil;
 import com.sanri.tools.modules.kafka.dtos.*;
@@ -54,7 +55,7 @@ public class KafkaDataService {
     @Autowired
     private ClassloaderService classloaderService;
     @Autowired
-    private ConnectServiceFileBase connectService;
+    private ConnectService connectService;
     @Autowired
     private FileManager fileManager;
 

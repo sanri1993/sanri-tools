@@ -132,7 +132,7 @@ public class UserController {
      * @param roles 角色名列表
      */
     @PostMapping("/{username}/grantRoles")
-    public void grantUserRoles(@Validated @PathVariable("username") String username,String...roles){
+    public void grantUserRoles(@Validated @PathVariable("username") String username,String[] roles){
         userManagerService.grantRoles(username,roles);
     }
 
@@ -142,7 +142,7 @@ public class UserController {
      * @param groups 分组信息
      */
     @PostMapping("/{username}/grantGroups")
-    public void grantUserGroups(@Validated @PathVariable("username") String username,String...groups){
+    public void grantUserGroups(@Validated @PathVariable("username") String username,String[] groups){
         userManagerService.grantGroups(username,groups);
     }
 }

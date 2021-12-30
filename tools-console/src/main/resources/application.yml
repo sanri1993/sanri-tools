@@ -2,7 +2,7 @@ spring:
   application:
     name: sanri-tools
   profiles:
-    active: company,tomcat
+    active: company,tomcat,repository
   main:
     banner-mode: "off"
   freemarker:

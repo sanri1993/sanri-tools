@@ -76,7 +76,7 @@ public class RoleController {
      * @param groups 组织信息
      */
     @PostMapping("/{rolename}/grantGroups")
-    public void grantRoleGroups(@NotBlank @PathVariable("rolename") String rolename,String... groups){
+    public void grantRoleGroups(@NotBlank @PathVariable("rolename") String rolename,String[] groups){
         roleService.grantGroups(rolename,groups);
     }
 
@@ -86,7 +86,7 @@ public class RoleController {
      * @param resources 资源信息
      */
     @PostMapping("/{rolename}/grantResources")
-    public void grantRoleResources(@NotBlank @PathVariable("rolename") String rolename,String... resources){
+    public void grantRoleResources(@NotBlank @PathVariable("rolename") String rolename,String[] resources){
         roleService.grantResources(rolename,resources);
     }
 }

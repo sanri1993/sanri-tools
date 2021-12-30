@@ -1,7 +1,11 @@
 package com.sanri.tools.modules.core.controller;
 
+import com.sanri.tools.modules.core.controller.dtos.ListFileInfo;
 import com.sanri.tools.modules.core.exception.ToolException;
 import com.sanri.tools.modules.core.service.file.FileManager;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -12,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
@@ -19,7 +24,9 @@ import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/file/manager")
@@ -27,6 +34,64 @@ import java.util.Date;
 public class FileManagerController {
     @Autowired
     private FileManager fileManager;
+
+    /**
+     * 子目录列表
+     * @param relativePath 相对路径
+     * @return
+     */
+    @GetMapping("/childNames")
+    @ResponseBody
+    public List<ListFileInfo> childNames(String relativePath){
+        final File tmpBase = fileManager.getTmpBase();
+        final File dir = new File(tmpBase, relativePath);
+        if (!dir.exists()){
+            throw new ToolException("指定路径不存在:"+relativePath);
+        }
+        if (dir.isFile()){
+            throw new ToolException("没有子目录了:"+relativePath);
+        }
+        final File[] files = dir.listFiles();
+        List<ListFileInfo> listFileInfos = new ArrayList<>(files.length);
+        for (File file : files) {
+            final ListFileInfo listFileInfo = new ListFileInfo(file.getName(), file.length(), file.isDirectory(), file.lastModified());
+            final Path relativize = tmpBase.toPath().relativize(file.toPath());
+            List<String> paths = new ArrayList<>();
+            for (int i = 0; i < relativize.getNameCount(); i++) {
+                paths.add(relativize.getName(i).toString());
+            }
+            listFileInfo.setPath(StringUtils.join(paths,"/"));
+
+            // 如果目录, 计算大小
+            if (listFileInfo.isDirectory()){
+                final Collection<File> listFiles = FileUtils.listFiles(file, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
+                final Long realFileSize = listFiles.stream().map(File::length).reduce(0L, (a, b) -> a + b);
+                listFileInfo.setSize(realFileSize);
+            }
+            listFileInfos.add(listFileInfo);
+        }
+        return listFileInfos;
+    }
+
+    /**
+     * 计算文件夹大小
+     * @param relativePath
+     * @return
+     */
+    @GetMapping("/calcDirectorySize")
+    @ResponseBody
+    public Long calcDirectorySize(String relativePath){
+        final File tmpBase = fileManager.getTmpBase();
+        final File dir = new File(tmpBase, relativePath);
+        if (!dir.exists()){
+            throw new ToolException("路径不存在:"+relativePath);
+        }
+        if (dir.isFile()){
+            return dir.length();
+        }
+        final Collection<File> files = FileUtils.listFiles(dir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
+        return files.stream().map(File::length).reduce(0L,(a,b) -> a+b);
+    }
 
     /**
      * 给定的 baseName 相对于临时目录如果是文件直接下载

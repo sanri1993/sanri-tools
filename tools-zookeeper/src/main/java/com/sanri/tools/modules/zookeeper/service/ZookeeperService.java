@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PreDestroy;
 
+import com.sanri.tools.modules.core.service.connect.ConnectService;
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.serialize.BytesPushThroughSerializer;
 import org.I0Itec.zkclient.serialize.ZkSerializer;
@@ -25,7 +26,7 @@ import org.springframework.stereotype.Service;
 import com.sanri.tools.modules.core.dtos.UpdateConnectEvent;
 import com.sanri.tools.modules.core.dtos.param.ConnectParam;
 import com.sanri.tools.modules.core.dtos.param.SimpleConnectParam;
-import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
+import com.sanri.tools.modules.core.service.file.ConnectServiceOldFileBase;
 
 import com.sanri.tools.modules.serializer.SerializerConstants;
 import com.sanri.tools.modules.serializer.service.Serializer;
@@ -41,7 +42,7 @@ public class ZookeeperService implements ApplicationListener<UpdateConnectEvent>
     Map<String, ZkClient> zkClientMap = new ConcurrentHashMap<String, ZkClient>();
 
     @Autowired
-    private ConnectServiceFileBase connectService;
+    private ConnectService connectService;
     @Autowired
     private SerializerChoseService serializerChoseService;
 

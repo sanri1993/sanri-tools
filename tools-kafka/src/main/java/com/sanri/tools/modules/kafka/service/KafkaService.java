@@ -17,6 +17,7 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
+import com.sanri.tools.modules.core.service.connect.ConnectService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.kafka.clients.admin.*;
@@ -33,7 +34,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sanri.tools.modules.core.dtos.param.KafkaConnectParam;
 import com.sanri.tools.modules.core.exception.ToolException;
-import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
+import com.sanri.tools.modules.core.service.file.ConnectServiceOldFileBase;
 
 import com.sanri.tools.modules.kafka.dtos.*;
 import com.sanri.tools.modules.zookeeper.service.ZookeeperService;
@@ -47,7 +48,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class KafkaService {
     @Autowired
-    private ConnectServiceFileBase connectService;
+    private ConnectService connectService;
     @Autowired
     private ZookeeperService zookeeperService;
 
@@ -661,7 +662,7 @@ public class KafkaService {
         consumer.setEnableAutoCommit(true);
 
         // 然后调用 连接服务,将配置序列化
-        connectService.createConnect(MODULE, JSON.toJSONString(kafkaConnectParam));
+//        connectService.createConnect(MODULE, JSON.toJSONString(kafkaConnectParam));
     }
 
 }

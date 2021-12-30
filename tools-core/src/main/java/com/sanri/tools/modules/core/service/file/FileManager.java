@@ -282,4 +282,8 @@ public class FileManager {
         Path relativize = tmpBase.toPath().relativize(path);
         return relativize;
     }
+
+    public File getTmpBase() {
+        return tmpBase;
+    }
 }

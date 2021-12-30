@@ -1,3 +1,319 @@
+POST http://localhost:8084/classloader/111/upload/single
+Content-Type: multipart/form-data; boundary=uploadSingle
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwNjY2MTE4LCJuYmYiOjE2NDA0OTMzMTgsImlhdCI6MTY0MDY2NjExMX0.m-ZMW3XB9VSLTQ_gTUnjMFEl6ed9IykvbsR1LwVMNCg
+
+--uploadSingle
+Content-Disposition: form-data; name="classloaderName"
+
+111
+--uploadSingle
+Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
+Content-Type: application/octet-stream
+
+< C:\Users\Administrator\Downloads\EamImageUploadService.class
+--uploadSingle--
+
+<> 2021-12-26T024233.200.json
+
+###
+
+POST http://localhost:8084/classloader/111/upload/single
+Content-Type: multipart/form-data; boundary=uploadSingle
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwNjY2MTE4LCJuYmYiOjE2NDA0OTMzMTgsImlhdCI6MTY0MDY2NjExMX0.m-ZMW3XB9VSLTQ_gTUnjMFEl6ed9IykvbsR1LwVMNCg
+
+--uploadSingle
+Content-Disposition: form-data; name="classloaderName"
+
+111
+--uploadSingle
+Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
+Content-Type: application/octet-stream
+
+< C:\Users\Administrator\Downloads\EamImageUploadService.class
+--uploadSingle--
+
+<> 2021-12-26T022409.200.json
+
+###
+
+POST http://localhost:8084/classloader/111/upload/single
+Content-Type: multipart/form-data; boundary=uploadSingle
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwNjY2MTE4LCJuYmYiOjE2NDA0OTMzMTgsImlhdCI6MTY0MDY2NjExMX0.m-ZMW3XB9VSLTQ_gTUnjMFEl6ed9IykvbsR1LwVMNCg
+
+--uploadSingle
+Content-Disposition: form-data; name="classloaderName"
+
+111
+--uploadSingle
+Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
+Content-Type: application/octet-stream
+
+< C:\Users\Administrator\Downloads\EamImageUploadService.class
+--uploadSingle--
+
+<> 2021-12-26T010158.200.json
+
+###
+
+POST http://localhost:8084/classloader/111/upload/single
+Content-Type: multipart/form-data; boundary=uploadSingle
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwNjY2MTE4LCJuYmYiOjE2NDA0OTMzMTgsImlhdCI6MTY0MDY2NjExMX0.m-ZMW3XB9VSLTQ_gTUnjMFEl6ed9IykvbsR1LwVMNCg
+
+--uploadSingle
+Content-Disposition: form-data; name="classloaderName"
+
+111
+--uploadSingle
+Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
+Content-Type: application/octet-stream
+
+< C:\Users\Administrator\Downloads\EamImageUploadService.class
+--uploadSingle--
+
+<> 2021-12-26T125941.200.json
+
+###
+
+POST http://localhost:8084/classloader/111/upload/single
+Content-Type: multipart/form-data; boundary=uploadSingle
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwNjY2MTE4LCJuYmYiOjE2NDA0OTMzMTgsImlhdCI6MTY0MDY2NjExMX0.m-ZMW3XB9VSLTQ_gTUnjMFEl6ed9IykvbsR1LwVMNCg
+
+--uploadSingle
+Content-Disposition: form-data; name="classloaderName"
+
+111
+--uploadSingle
+Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
+Content-Type: application/octet-stream
+
+< C:\Users\Administrator\Downloads\EamImageUploadService.class
+--uploadSingle--
+
+<> 2021-12-26T125849.200.json
+
+###
+
+POST http://localhost:8084/classloader/111/upload/single
+Content-Type: multipart/form-data; boundary=uploadSingle
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwNjY2MTE4LCJuYmYiOjE2NDA0OTMzMTgsImlhdCI6MTY0MDY2NjExMX0.m-ZMW3XB9VSLTQ_gTUnjMFEl6ed9IykvbsR1LwVMNCg
+
+--uploadSingle
+Content-Disposition: form-data; name="classloaderName"
+
+111
+--uploadSingle
+Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
+Content-Type: application/octet-stream
+
+< C:\Users\Administrator\Downloads\EamImageUploadService.class
+--uploadSingle--
+
+<> 2021-12-26T125751.200.json
+
+###
+
+POST http://localhost:8084/classloader/111/upload/single
+Content-Type: multipart/form-data; boundary=uploadSingle
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwNjY2MTE4LCJuYmYiOjE2NDA0OTMzMTgsImlhdCI6MTY0MDY2NjExMX0.m-ZMW3XB9VSLTQ_gTUnjMFEl6ed9IykvbsR1LwVMNCg
+
+--uploadSingle
+Content-Disposition: form-data; name="classloaderName"
+
+111
+--uploadSingle
+Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
+Content-Type: application/octet-stream
+
+< C:\Users\Administrator\Downloads\EamImageUploadService.class
+--uploadSingle--
+
+<> 2021-12-26T125643.200.json
+
+###
+
+POST http://localhost:8084/classloader/111/upload/single
+Content-Type: multipart/form-data; boundary=uploadSingle
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwNjY2MTE4LCJuYmYiOjE2NDA0OTMzMTgsImlhdCI6MTY0MDY2NjExMX0.m-ZMW3XB9VSLTQ_gTUnjMFEl6ed9IykvbsR1LwVMNCg
+
+--uploadSingle
+Content-Disposition: form-data; name="classloaderName"
+
+111
+--uploadSingle
+Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
+Content-Type: application/octet-stream
+
+< C:\Users\Administrator\Downloads\EamImageUploadService.class
+--uploadSingle--
+
+<> 2021-12-26T125505.200.json
+
+###
+
+POST http://localhost:8084/classloader/111/upload/single
+Content-Type: multipart/form-data; boundary=uploadSingle
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwNjY2MTE4LCJuYmYiOjE2NDA0OTMzMTgsImlhdCI6MTY0MDY2NjExMX0.m-ZMW3XB9VSLTQ_gTUnjMFEl6ed9IykvbsR1LwVMNCg
+
+--uploadSingle
+Content-Disposition: form-data; name="classloaderName"
+
+111
+--uploadSingle
+Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
+Content-Type: application/octet-stream
+
+< C:\Users\Administrator\Downloads\EamImageUploadService.class
+--uploadSingle--
+
+###
+
+POST http://localhost:8084/classloader/111/upload/single
+Content-Type: multipart/form-data; boundary=uploadSingle
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwNjY2MTE4LCJuYmYiOjE2NDA0OTMzMTgsImlhdCI6MTY0MDY2NjExMX0.m-ZMW3XB9VSLTQ_gTUnjMFEl6ed9IykvbsR1LwVMNCg
+
+--uploadSingle
+Content-Disposition: form-data; name="classloaderName"
+
+111
+--uploadSingle
+Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
+Content-Type: application/octet-stream
+
+< C:\Users\Administrator\Downloads\EamImageUploadService.class
+--uploadSingle--
+
+<> 2021-12-26T124248.200.json
+
+###
+
+POST http://localhost:8084/classloader/111/upload/single
+Content-Type: multipart/form-data; boundary=uploadSingle
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwNjY2MTE4LCJuYmYiOjE2NDA0OTMzMTgsImlhdCI6MTY0MDY2NjExMX0.m-ZMW3XB9VSLTQ_gTUnjMFEl6ed9IykvbsR1LwVMNCg
+
+--uploadSingle
+Content-Disposition: form-data; name="classloaderName"
+
+111
+--uploadSingle
+Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
+Content-Type: application/octet-stream
+
+< C:\Users\Administrator\Downloads\EamImageUploadService.class
+--uploadSingle--
+
+<> 2021-12-26T123848.200.json
+
+###
+
+POST http://localhost:8084/classloader/111/upload/single
+Content-Type: multipart/form-data; boundary=uploadSingle
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwNjY2MTE4LCJuYmYiOjE2NDA0OTMzMTgsImlhdCI6MTY0MDY2NjExMX0.m-ZMW3XB9VSLTQ_gTUnjMFEl6ed9IykvbsR1LwVMNCg
+
+--uploadSingle
+Content-Disposition: form-data; name="classloaderName"
+
+111
+--uploadSingle
+Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
+Content-Type: application/octet-stream
+
+< C:\Users\Administrator\Downloads\EamImageUploadService.class
+--uploadSingle--
+
+<> 2021-12-26T123749.200.json
+
+###
+
+POST http://localhost:8084/classloader/111/upload/single
+Content-Type: multipart/form-data; boundary=uploadSingle
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwNjY2MTE4LCJuYmYiOjE2NDA0OTMzMTgsImlhdCI6MTY0MDY2NjExMX0.m-ZMW3XB9VSLTQ_gTUnjMFEl6ed9IykvbsR1LwVMNCg
+
+--uploadSingle
+Content-Disposition: form-data; name="classloaderName"
+
+111
+--uploadSingle
+Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
+Content-Type: application/octet-stream
+
+< C:\Users\Administrator\Downloads\EamImageUploadService.class
+--uploadSingle--
+
+<> 2021-12-26T123554.200.json
+
+###
+
+POST http://localhost:8084/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "0"
+}
+
+<> 2021-12-26T123519.200.json
+
+###
+
+POST http://localhost:8084/classloader/111/upload/single
+Content-Type: multipart/form-data; boundary=uploadSingle
+
+--uploadSingle
+Content-Disposition: form-data; name="classloaderName"
+
+111
+--uploadSingle
+Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
+Content-Type: application/octet-stream
+
+< C:\Users\Administrator\Downloads\EamImageUploadService.class
+--uploadSingle--
+
+<> 2021-12-26T123508.200.json
+
+###
+
+GET http://localhost:8084/profile/accessMenus
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMjMxMjM0LCJuYmYiOjE2NDAwNTg0MzQsImlhdCI6MTY0MDIzMTIyN30.lQU1URKA0-tQWrpMFIqX-n5kw_rfg4jG4qTIBJ_tRxk
+
+<> 2021-12-21T115240.200.json
+
+###
+
+POST http://localhost:8084/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "0"
+}
+
+<> 2021-12-21T114714.200.json
+
+###
+
+GET http://localhost:8084/profile/accessResources
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMTc3MzMxLCJuYmYiOjE2NDAwMDQ1MzEsImlhdCI6MTY0MDE3NzMyNH0.T-PS6MvwWzv48UgyO4bPLX5JDTSHwshF8vR5fgY1N_k
+
+<> 2021-12-21T100848.200.json
+
+###
+
+GET http://localhost:8084/profile/accessResources
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMTc3MzMxLCJuYmYiOjE2NDAwMDQ1MzEsImlhdCI6MTY0MDE3NzMyNH0.T-PS6MvwWzv48UgyO4bPLX5JDTSHwshF8vR5fgY1N_k
+
+<> 2021-12-21T100740.200.json
+
+###
+
+GET http://localhost:8084/security/user/sanri/accessResources
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMTc3MzMxLCJuYmYiOjE2NDAwMDQ1MzEsImlhdCI6MTY0MDE3NzMyNH0.T-PS6MvwWzv48UgyO4bPLX5JDTSHwshF8vR5fgY1N_k
+Content-Type: application/x-www-form-urlencoded
+
+<> 2021-12-21T100725.200.json
+
+###
+
 GET http://localhost:8084/security/role/operator/accessResources
 Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMTc3MzMxLCJuYmYiOjE2NDAwMDQ1MzEsImlhdCI6MTY0MDE3NzMyNH0.T-PS6MvwWzv48UgyO4bPLX5JDTSHwshF8vR5fgY1N_k
 Content-Type: application/x-www-form-urlencoded
@@ -357,146 +673,6 @@ GET http://localhost:8084/profile/accessMenus
 Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
 
 <> 2021-12-19T103022.200.json
-
-###
-
-GET http://localhost:8084/profile/accessResources
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
-
-<> 2021-12-19T102929.200.json
-
-###
-
-GET http://localhost:8084/profile/accessResources
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
-
-<> 2021-12-19T100730.200.json
-
-###
-
-GET http://localhost:8084/profile/accessResources
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
-
-<> 2021-12-19T100337.200.json
-
-###
-
-GET http://localhost:8084/profile/accessResources
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
-
-<> 2021-12-19T100217.200.json
-
-###
-
-GET http://localhost:8084/profile/accessResources
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
-
-<> 2021-12-19T095833.200.json
-
-###
-
-GET http://localhost:8084/profile/accessGroups
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
-
-<> 2021-12-19T095821.200.json
-
-###
-
-GET http://localhost:8084/profile/accessRoles
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
-
-<> 2021-12-19T095813.200.json
-
-###
-
-GET http://localhost:8084/profile/accessUsers
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
-
-<> 2021-12-19T094548.200.json
-
-###
-
-GET http://localhost:8084/profile/accessResources
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
-
-<> 2021-12-19T094543.200.json
-
-###
-
-GET http://localhost:8084/profile/accessResources
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
-
-<> 2021-12-19T094535.200.json
-
-###
-
-GET http://localhost:8084/profile/accessGroups
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
-
-<> 2021-12-19T094523.200.json
-
-###
-
-GET http://localhost:8084/profile/accessRoles
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
-
-<> 2021-12-19T094448.200.json
-
-###
-
-GET http://localhost:8084/profile
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
-
-<> 2021-12-19T094423.200.json
-
-###
-
-GET http://localhost:8084/profile
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
-
-<> 2021-12-19T094350.200.json
-
-###
-
-GET http://localhost:8084/profile
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
-
-<> 2021-12-19T094244.404.json
-
-###
-
-GET http://localhost:8084/profile/user
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
-
-<> 2021-12-19T094233.200.json
-
-###
-
-GET http://localhost:8084/profile/username
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
-
-<> 2021-12-19T094230.200.json
-
-###
-
-GET http://localhost:8084/security/admin/resources
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
-
-<> 2021-12-19T094152.200.json
-
-###
-
-GET http://localhost:8084/security/admin/group/tree
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
-
-<> 2021-12-19T094134.200.json
-
-###
-
-GET http://localhost:8084/security/admin/roles
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
-
-<> 2021-12-19T094129.200.json
 
 ###
 

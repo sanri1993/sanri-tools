@@ -1,8 +1,12 @@
 package com.sanri.tools.modules.core.service.classloader;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
+import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Vector;
@@ -24,23 +28,21 @@ public class ExtendClassloader extends URLClassLoader {
         this.name = name;
     }
 
+
     /**
      * 获取当前类加载器加载的类
      * @return
      */
     public Vector<Class<?>> getLoadClasses(){
-        try {
-            Field classes = ClassLoader.class.getDeclaredField("classes");
-            classes.setAccessible(true);
-            Vector<Class<?>> vector = (Vector<Class<?>>) classes.get(this);
-            return vector;
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            log.error("getLoadClasses() error : {}",e.getMessage(),e);
-        }
-        return null;
+       return (Vector<Class<?>>)ReflectionUtils.getField(classesField,this);
     }
 
     public String getName() {
         return name;
+    }
+
+    private static final Field classesField;
+    static {
+        classesField = FieldUtils.getField(ClassLoader.class, "classes", true);
     }
 }

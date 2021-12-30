@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
+import com.sanri.tools.modules.core.service.connect.ConnectService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
@@ -23,7 +24,7 @@ import com.sanri.tools.modules.core.dtos.UpdateConnectEvent;
 import com.sanri.tools.modules.core.dtos.param.AuthParam;
 import com.sanri.tools.modules.core.dtos.param.ConnectParam;
 import com.sanri.tools.modules.core.dtos.param.DatabaseConnectParam;
-import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
+import com.sanri.tools.modules.core.service.file.ConnectServiceOldFileBase;
 
 import com.sanri.tools.modules.database.dtos.ConnectionMetaData;
 import com.sanri.tools.modules.database.dtos.DynamicQueryDto;
@@ -37,8 +38,7 @@ import oracle.jdbc.pool.OracleDataSource;
 @Slf4j
 public class JdbcService implements ApplicationListener<UpdateConnectEvent> {
     @Autowired
-    private ConnectServiceFileBase connectService;
-
+    private ConnectService connectService;
 
     public static final String MODULE = "database";
 

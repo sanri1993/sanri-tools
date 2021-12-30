@@ -1,0 +1,13 @@
+{
+  "connectIdParam": {
+    "module": "git",
+    "connName": "sanri"
+  },
+  "authParam": {
+    "username": "root",
+    "password": "h123"
+  },
+  "sshKey":null,
+  "mavenHome": "d:/test",
+  "mavenConfigFilePath":"d:/test/conf/settings.xml"
+}

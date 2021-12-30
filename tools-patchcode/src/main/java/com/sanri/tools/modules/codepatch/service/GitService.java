@@ -14,6 +14,9 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.sanri.tools.modules.core.service.connect.ConnectService;
+import com.sanri.tools.modules.core.service.connect.dtos.ConnectInput;
+import com.sanri.tools.modules.core.service.connect.dtos.ConnectOutput;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -47,7 +50,7 @@ import com.sanri.tools.modules.codepatch.service.dtos.*;
 import com.sanri.tools.modules.core.dtos.param.AuthParam;
 import com.sanri.tools.modules.core.dtos.param.GitParam;
 import com.sanri.tools.modules.core.exception.ToolException;
-import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
+import com.sanri.tools.modules.core.service.file.ConnectServiceOldFileBase;
 import com.sanri.tools.modules.core.service.file.FileManager;
 
 import com.sanri.tools.modules.core.utils.NetUtil;
@@ -63,9 +66,8 @@ public class GitService {
     @Autowired
     private FileManager fileManager;
 
-
     @Autowired
-    private ConnectServiceFileBase connectService;
+    private ConnectService connectService;
 
     private String baseDirName = "gitrepositorys";
 
@@ -109,7 +111,9 @@ public class GitService {
     public List<String> groups(){
 //        final File baseDir = fileManager.mkTmpDir(baseDirName);
 //        return baseDir.list();
-        return connectService.names(MODULE);
+//        return connectService.names(MODULE);
+        final List<ConnectOutput> connectOutputs = connectService.moduleConnects(MODULE);
+        return connectOutputs.stream().map(ConnectOutput::getConnectInput).map(ConnectInput::getBaseName).collect(Collectors.toList());
     }
 
     public String[] repositorys(String group){

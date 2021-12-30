@@ -1,6 +1,9 @@
 package com.sanri.tools.modules.database.controller;
 
-import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
+import com.sanri.tools.modules.core.service.connect.ConnectService;
+import com.sanri.tools.modules.core.service.connect.dtos.ConnectInput;
+import com.sanri.tools.modules.core.service.connect.dtos.ConnectOutput;
+import com.sanri.tools.modules.core.service.file.ConnectServiceOldFileBase;
 import com.sanri.tools.modules.database.dtos.ExtendTableMetaData;
 import com.sanri.tools.modules.database.dtos.TableMark;
 import com.sanri.tools.modules.database.dtos.meta.*;
@@ -27,7 +30,7 @@ public class MetadataController {
     @Autowired
     private JdbcService jdbcService;
     @Autowired
-    private ConnectServiceFileBase connectService;
+    private ConnectService connectService;
     @Autowired
     private TableMarkService tableMarkService;
 
@@ -37,7 +40,8 @@ public class MetadataController {
      */
     @GetMapping("/connections")
     public List<String> connections(){
-        return connectService.names(JdbcService.MODULE);
+        final List<ConnectOutput> connectOutputs = connectService.moduleConnects(JdbcService.MODULE);
+        return connectOutputs.stream().map(ConnectOutput::getConnectInput).map(ConnectInput::getBaseName).collect(Collectors.toList());
     }
 
     /**

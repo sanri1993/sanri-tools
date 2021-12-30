@@ -1,7 +1,13 @@
 package com.sanri.tools.modules.core.service.connect;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sanri.tools.modules.core.dtos.param.*;
+import com.sanri.tools.modules.core.exception.ToolException;
 import com.sanri.tools.modules.core.service.connect.dtos.ConnectInput;
 import com.sanri.tools.modules.core.service.connect.dtos.ConnectOutput;
+import com.sanri.tools.modules.core.service.connect.dtos.ConnectTemplate;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -9,9 +15,34 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 public abstract class ConnectService {
     /**
-     * 创建一个连接
+     * @return 模块列表
+     */
+    public abstract List<String> modules();
+
+    /**
+     * 创建一个模块
+     * @param name 模块名
+     */
+    public abstract void createModule(String name);
+    /**
+     * 删除模块
+     * @param module 模块名
+     */
+    public abstract void deleteModule(String module);
+
+    /**
+     * 连接模板
+     * @param module 模块名
+     * @return
+     */
+    public abstract ConnectTemplate connectTemplate(String module);
+
+
+    /**
+     * 创建/更新一个连接
      * @param connectInput 连接信息
      */
     public abstract void updateConnect(ConnectInput connectInput) throws IOException;
@@ -28,8 +59,12 @@ public abstract class ConnectService {
      * 当权限模块加入时, 这个连接列表会按照权限过滤
      * @return 所有连接列表
      */
-    public abstract List<ConnectOutput> connectsInternal();
+    protected abstract List<ConnectOutput> connectsInternal();
 
+    /**
+     * 连接列表
+     * @return
+     */
     public List<ConnectOutput> connects(){
         final List<ConnectOutput> connectOutputs = connectsInternal();
         sortConnects(connectOutputs);
@@ -69,17 +104,6 @@ public abstract class ConnectService {
     }
 
     /**
-     * @return 模块列表
-     */
-    public abstract List<String> modules();
-
-    /**
-     * 创建一个模块
-     * @param name 模块名
-     */
-    public abstract void createModule(String name);
-
-    /**
      * 加载连接信息
      * @return 连接信息的文本内容
      */
@@ -91,4 +115,51 @@ public abstract class ConnectService {
      * @param baseName 配置名
      */
     public abstract void deleteConnect(String module,String baseName);
+
+    /**
+     * 兼容以前的连接管理
+     * @param module
+     * @return
+     */
+    private Class<?> moduleParamFactory(String module) {
+        switch (module){
+            case "database":
+                return DatabaseConnectParam.class;
+            case "kafka":
+                return KafkaConnectParam.class;
+            case "redis":
+                return RedisConnectParam.class;
+            case "zookeeper":
+            case "elasticsearch":
+                return SimpleConnectParam.class;
+            case "mongo":
+                return MongoConnectParam.class;
+            case "git":
+                return GitParam.class;
+            default:
+        }
+        throw new ToolException("不支持的连接类");
+    }
+    ObjectMapper objectMapper = new ObjectMapper();
+
+    // 使用 fastjson 在反序列化 kafka 的时候有问题, 这里换成 jackson
+    public AbstractConnectParam readConnParams(String module, String connName) throws IOException {
+        checkAccess(module,connName);
+
+        final String content = loadContent(module, connName);
+        Class<?> paramClass = moduleParamFactory(module);
+        if (content == null){
+            log.error("当前模块[{}],没有连接[{}]",module,connName);
+            throw new ToolException("当前模块" + module + " 没有连接" + connName);
+        }
+        Object readValue = objectMapper.readValue(content, paramClass);
+        return (AbstractConnectParam) readValue;
+    }
+
+    /**
+     * 检查当前用户是否有连接信息的访问权限
+     * @param module
+     * @param connName
+     */
+    protected abstract void checkAccess(String module,String connName);
 }

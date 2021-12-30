@@ -3,6 +3,7 @@ package com.sanri.tools.modules.core.controller.security;
 import com.sanri.tools.modules.core.service.connect.ConnectService;
 import com.sanri.tools.modules.core.service.connect.dtos.ConnectInput;
 import com.sanri.tools.modules.core.service.connect.dtos.ConnectOutput;
+import com.sanri.tools.modules.core.service.connect.dtos.ConnectTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/security/connect")
@@ -30,11 +32,14 @@ public class SecurityConnectController {
     }
 
     /**
-     * 创建一个模块
-     * @param name 模块名
+     * 加载模块连接模板
+     * @param module 模块名
+     * @return
      */
-    @PostMapping("/createModule")
-    public void createModule(@NotBlank String name){connectService.createModule(name);}
+    @GetMapping("/{module}/template")
+    public ConnectTemplate connectTemplate(@NotBlank @PathVariable("module") String module){
+        return connectService.connectTemplate(module);
+    }
 
     /**
      * 所有可以访问的连接列表
@@ -48,9 +53,15 @@ public class SecurityConnectController {
      * 模块可访问连接列表
      * @param module 模块名
      */
-    @GetMapping("/moduleConnects")
+	@GetMapping("/{module}/connects")
     public List<ConnectOutput> moduleConnects(@NotBlank String module){
         return connectService.moduleConnects(module);
+    }
+    
+    @GetMapping("/{module}/connectNames")
+    public List<String> moduleConnectNames(@NotBlank String module){
+        final List<ConnectOutput> connectOutputs = connectService.moduleConnects(module);
+        return connectOutputs.stream().map(ConnectOutput::getConnectInput).map(ConnectInput::getBaseName).collect(Collectors.toList());
     }
 
     /**
@@ -70,6 +81,16 @@ public class SecurityConnectController {
     @PostMapping("/writeConfig")
     public void writeConfig(@RequestBody @Validated ConnectInput connectInput) throws IOException {
         connectService.updateConnect(connectInput);
+    }
+
+    /**
+     * 删除连接
+     * @param module 模块名
+     * @param baseName 基础名
+     */
+    @PostMapping("/delConnect")
+    public void delConnect(@NotBlank String module,@NotBlank String baseName){
+        connectService.deleteConnect(module,baseName);
     }
 
 }

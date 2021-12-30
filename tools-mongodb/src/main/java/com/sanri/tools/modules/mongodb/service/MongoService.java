@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PreDestroy;
 
+import com.sanri.tools.modules.core.service.connect.ConnectService;
 import org.apache.commons.collections.IteratorUtils;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ import com.sanri.tools.modules.core.dtos.param.MongoAuthParam;
 import com.sanri.tools.modules.core.dtos.param.MongoConnectParam;
 import com.sanri.tools.modules.core.dtos.param.PageParam;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
-import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
+import com.sanri.tools.modules.core.service.file.ConnectServiceOldFileBase;
 
 import com.sanri.tools.modules.mongodb.dtos.CollectionDto;
 
@@ -37,8 +38,7 @@ public class MongoService {
     private static final String MODULE = "mongo";
 
     @Autowired
-    private ConnectServiceFileBase connectService;
-
+    private ConnectService connectService;
 
     @Autowired
     private ClassloaderService classloaderService;

@@ -6,3 +6,5 @@ data:
     data: /tmp/sanritools/data
 logging:
   path: /tmp/sanritools/logs
+maven:
+  remoteRepositorys: https://mirrors.huaweicloud.com/repository/maven/

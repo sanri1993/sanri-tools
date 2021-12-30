@@ -1,4 +1,4 @@
-package com.sanri.tools.modules.core.service.connect;
+package com.sanri.tools.modules.core.service.connect.events;
 
 import org.springframework.context.ApplicationEvent;
 

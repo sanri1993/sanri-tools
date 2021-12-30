@@ -2,7 +2,8 @@ package com.sanri.tools.modules.database.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
+import com.sanri.tools.modules.core.service.connect.ConnectService;
+import com.sanri.tools.modules.core.service.file.ConnectServiceOldFileBase;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
 import com.sanri.tools.modules.database.dtos.TableMark;
@@ -28,7 +29,7 @@ public class TableMarkService {
     @Autowired
     private FileManager fileManager;
     @Autowired
-    private ConnectServiceFileBase connectService;
+    private ConnectService connectService;
 
     /**
      * 配置表标签,直接覆盖的方式

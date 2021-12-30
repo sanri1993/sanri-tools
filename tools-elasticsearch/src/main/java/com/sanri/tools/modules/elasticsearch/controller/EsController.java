@@ -4,12 +4,13 @@ import java.io.IOException;
 
 import javax.validation.constraints.NotNull;
 
+import com.sanri.tools.modules.core.service.connect.ConnectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.alibaba.fastjson.JSONObject;
 import com.sanri.tools.modules.core.dtos.param.SimpleConnectParam;
-import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
+import com.sanri.tools.modules.core.service.file.ConnectServiceOldFileBase;
 
 import com.sanri.tools.modules.elasticsearch.remote.apis.ClusterApis;
 
@@ -18,8 +19,7 @@ import com.sanri.tools.modules.elasticsearch.remote.apis.ClusterApis;
 public class EsController {
 
     @Autowired
-    private ConnectServiceFileBase connectService;
-
+    private ConnectService connectService;
 
     @Autowired
     private ClusterApis clusterApis;

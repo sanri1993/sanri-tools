@@ -3,8 +3,7 @@ package com.sanri.tools.modules.core.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.sanri.tools.modules.core.dtos.ConnectDto;
 import com.sanri.tools.modules.core.dtos.param.*;
-import com.sanri.tools.modules.core.security.UserService;
-import com.sanri.tools.modules.core.service.file.ConnectServiceFileBase;
+import com.sanri.tools.modules.core.service.file.ConnectServiceOldFileBase;
 import com.sanri.tools.modules.core.validation.custom.EnumStringValue;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ import java.util.List;
 @Validated
 public class ConnectController {
     @Autowired
-    private ConnectServiceFileBase connectService;
+    private ConnectServiceOldFileBase connectService;
 
     /**
      * 模块列表
