@@ -2,11 +2,16 @@ package com.sanri.tools.modules.zookeeper.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.sanri.tools.modules.core.service.connect.dtos.ConnectOutput;
+import com.sanri.tools.modules.core.service.connect.events.DeleteSecurityConnectEvent;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.zookeeper.dtos.PathFavorite;
 import com.sanri.tools.modules.zookeeper.dtos.PathFavoriteParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -18,9 +23,9 @@ import java.util.*;
  */
 @Service
 @Slf4j
-public class ZookeeperExtendService {
+public class ZookeeperExtendService implements ApplicationListener<DeleteSecurityConnectEvent> {
     // 路径收藏  connName ==> PathFavorite
-    private Map<String, Set<PathFavorite>> pathFavorites = new HashMap<>();
+    private static final Map<String, Set<PathFavorite>> pathFavorites = new HashMap<>();
 
     @Autowired
     private FileManager fileManager;
@@ -74,9 +79,22 @@ public class ZookeeperExtendService {
         try {
             String favorites = fileManager.readConfig(ZookeeperService.module, "favorites");
             TypeReference<Map<String,Set<PathFavorite>>> typeReference =  new TypeReference<Map<String,Set<PathFavorite>>>(){};
-            this.pathFavorites = JSON.parseObject(favorites,typeReference);
+            final Map<String, Set<PathFavorite>> stringSetMap = JSON.parseObject(favorites, typeReference);
+            if (stringSetMap != null) {
+                this.pathFavorites.putAll(stringSetMap);
+            }
         } catch (IOException e) {
             log.error("zookeeper load path favorites error : {}",e.getMessage(),e);
+        }
+    }
+
+    @Override
+    public void onApplicationEvent(DeleteSecurityConnectEvent event) {
+        final ConnectOutput connectOutput = (ConnectOutput) event.getSource();
+        if (ZookeeperService.module.equals(connectOutput.getConnectInput().getModule())){
+            final String baseName = connectOutput.getConnectInput().getBaseName();
+            log.info("zookeeper 删除连接收藏夹[{}]",baseName);
+            pathFavorites.remove(baseName);
         }
     }
 }

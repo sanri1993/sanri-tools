@@ -3,6 +3,7 @@ package com.sanri.tools.modules.core.dtos;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
+import java.util.HashMap;
 import java.util.Map;
 
 @Data
@@ -20,5 +21,5 @@ public class SpiderDataParam {
     /**
      * 其它参数
      */
-    private Map<String,String> params;
+    private Map<String,String> params = new HashMap<>();
 }

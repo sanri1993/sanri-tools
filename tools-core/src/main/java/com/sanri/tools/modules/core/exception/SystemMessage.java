@@ -17,6 +17,7 @@ public enum  SystemMessage implements ExceptionCause<BusinessException> {
     ACCESS_DENIED(4007,"禁止访问"),
     ACCESS_DENIED_ARGS(4007,"禁止访问,{0}"),
     LOGIN_FAIL(4009,"登录失败 {0}"),
+    DELETE_TOKEN(4010,"本次访问无权限,请重新登录"),
 
     SERVICE_CALL_FAIL(5000,"后台服务异常"),
     NETWORK_ERROR(5001,"网络错误"),

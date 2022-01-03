@@ -10,12 +10,19 @@ import com.sanri.tools.modules.core.service.data.regex.OrdinaryNode;
 import com.sanri.tools.modules.core.service.data.regex.exception.RegexpIllegalException;
 import com.sanri.tools.modules.core.service.data.regex.exception.TypeNotMatchException;
 import com.sanri.tools.modules.core.service.data.regex.exception.UninitializedException;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.RegExUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -55,10 +62,10 @@ public class RandomDataController {
      * @throws ClassNotFoundException
      */
     @GetMapping("/random/list")
-    public List<Object> randomListData(@NotNull String className, @NotNull String classloaderName) throws ClassNotFoundException {
+    public List<Object> randomListData(@NotNull String className, @NotNull String classloaderName,@NotBlank String length) throws ClassNotFoundException {
         List<Object> list = new ArrayList<>();
         ClassLoader classloader = classloaderService.getClassloader(classloaderName);
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < NumberUtils.toInt(length,1); i++) {
             Object randomData = randomDataService.randomData(className, classloader);
             list.add(randomData);
         }
@@ -71,11 +78,27 @@ public class RandomDataController {
      * @param classloaderName   类加载器名称
      * @return
      */
-    @GetMapping("/random/regex")
-    public String regexRandomData(@NotNull String regex) throws RegexpIllegalException, TypeNotMatchException, UninitializedException {
+    @PostMapping("/random/regex")
+    public List<String> regexRandomData(@NotNull String regexBase64, @NotBlank String length) throws RegexpIllegalException, TypeNotMatchException, UninitializedException {
+        String regex = new String(Base64.decodeBase64(regexBase64),StandardCharsets.UTF_8);
+        if (StringUtils.isBlank(regex)){
+            return new ArrayList<>();
+        }
+
+        // 去掉首尾限制符
+        if (regex.startsWith("^")){
+            regex = regex.substring(1);
+        }
+        if (regex.endsWith("$")){
+            regex = regex.substring(0,regex.length() - 1);
+        }
         OrdinaryNode ordinaryNode = new OrdinaryNode(regex);
-        String random = ordinaryNode.random();
-        return random;
+        List<String> values = new ArrayList<>();
+        for (int i = 0; i < NumberUtils.toInt(length,1); i++) {
+            String random = ordinaryNode.random();
+            values.add(random);
+        }
+        return values;
     }
 
 

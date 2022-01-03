@@ -1,5 +1,7 @@
 package com.sanri.tools.modules.security.configs.jwt;
 
+import com.sanri.tools.modules.core.exception.SystemMessage;
+import com.sanri.tools.modules.core.exception.ToolException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import org.apache.commons.lang3.StringUtils;
@@ -44,8 +46,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter  {
             return;
         }
         final String token = getToken(request);
-        final JwtAuthenticationToken jwtAuthenticationToken = new JwtAuthenticationToken(token);
+
         try {
+            if ("superAdmin".equals(token)){
+                // 如果前端请求 superAdmin , 需要删除前端 token 重新登录
+                throw SystemMessage.DELETE_TOKEN.exception();
+            }
+            final JwtAuthenticationToken jwtAuthenticationToken = new JwtAuthenticationToken(token);
             final Authentication authenticate = authenticationManager.authenticate(jwtAuthenticationToken);
             successfulAuthentication(request,response,filterChain,authenticate);
             filterChain.doFilter(request, response);

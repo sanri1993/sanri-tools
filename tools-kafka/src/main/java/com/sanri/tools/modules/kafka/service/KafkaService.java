@@ -3,6 +3,7 @@ package com.sanri.tools.modules.kafka.service;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,7 +26,14 @@ import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
+import org.springframework.boot.context.properties.bind.BindResult;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.core.Constants;
+import org.springframework.core.env.PropertySource;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
@@ -52,6 +60,7 @@ public class KafkaService {
     @Autowired
     private ZookeeperService zookeeperService;
 
+    private YamlPropertySourceLoader yamlPropertySourceLoader = new YamlPropertySourceLoader();
 
     public static final String MODULE = "kafka";
 
@@ -64,10 +73,28 @@ public class KafkaService {
      * @throws IOException
      */
     public List<BrokerInfo> brokers(String clusterName) throws IOException {
-        KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(MODULE, clusterName);
+//        KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(MODULE, clusterName);
+        KafkaConnectParam kafkaConnectParam = convertToKafkaConnectParam(clusterName);
         String chroot = kafkaConnectParam.getChroot();
         List<BrokerInfo> brokerInfos = readZookeeperBrokers(clusterName, chroot);
         return brokerInfos;
+    }
+
+    /**
+     * 加载连接信息, 并转换成 KafkaConnectParam
+     * @param clusterName
+     * @return
+     * @throws IOException
+     */
+    KafkaConnectParam convertToKafkaConnectParam(String clusterName) throws IOException {
+        final String loadContent = connectService.loadContent(MODULE, clusterName);
+        ByteArrayResource byteArrayResource = new ByteArrayResource(loadContent.getBytes(StandardCharsets.UTF_8));
+        final List<PropertySource<?>> load = yamlPropertySourceLoader.load("a", byteArrayResource);
+        Iterable<ConfigurationPropertySource> from = ConfigurationPropertySources.from(load);
+        Binder binder = new Binder(from);
+        BindResult<KafkaConnectParam> bind = binder.bind("", KafkaConnectParam.class);
+        KafkaConnectParam kafkaConnectParam = bind.get();
+        return kafkaConnectParam;
     }
 
     /**
@@ -398,7 +425,8 @@ public class KafkaService {
 
         try {
             // 这个方法巨慢,直接去 zk 上拿分区数据算了
-            KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(MODULE, clusterName);
+//            KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(MODULE, clusterName);
+            KafkaConnectParam kafkaConnectParam = convertToKafkaConnectParam(clusterName);
             int partitions = 0;
 //            try {
 //                partitions = zookeeperService.countChildren(clusterName, kafkaConnectParam.getChroot() + "/brokers/topics/" + topic + "/partitions");
@@ -476,7 +504,8 @@ public class KafkaService {
      * @throws IOException
      */
     public KafkaConsumer<byte[], byte[]> loadConsumerClient(String clusterName) throws IOException {
-        KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(MODULE, clusterName);
+//        KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(MODULE, clusterName);
+        final KafkaConnectParam kafkaConnectParam = convertToKafkaConnectParam(clusterName);
         Map<String, Object> properties = kafkaConnectParam.getKafka().buildConsumerProperties();
         // 设置为 byte[] 序列化
         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,"org.apache.kafka.common.serialization.ByteArrayDeserializer");
@@ -493,9 +522,11 @@ public class KafkaService {
     public AdminClient loadAdminClient(String clusterName) throws IOException {
         AdminClient adminClient = adminClientMap.get(clusterName);
         if(adminClient == null){
-            KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(MODULE, clusterName);
+//            KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(MODULE, clusterName);
+            final KafkaConnectParam kafkaConnectParam = convertToKafkaConnectParam(clusterName);
             KafkaProperties kafka = kafkaConnectParam.getKafka();
             Map<String, Object> kafkaProperties = kafka.buildAdminProperties();
+            log.info("kafka connect properties:\n {}",kafkaProperties);
             adminClient = AdminClient.create(kafkaProperties);
             adminClientMap.put(clusterName,adminClient);
         }
@@ -537,7 +568,8 @@ public class KafkaService {
      */
     private static final String JMX = "service:jmx:rmi:///jndi/rmi://%s/jmxrmi";
     public Collection<MBeanMonitorInfo> monitor(String clusterName, Class clazz, String topic) throws IOException, MalformedObjectNameException, AttributeNotFoundException, MBeanException, ReflectionException, InstanceNotFoundException {
-        KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(MODULE, clusterName);
+//        KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(MODULE, clusterName);
+        final KafkaConnectParam kafkaConnectParam = convertToKafkaConnectParam(clusterName);
         List<BrokerInfo> brokers = readZookeeperBrokers(kafkaConnectParam.getConnectIdParam().getConnName(),kafkaConnectParam.getChroot());
 
         List<MBeanMonitorInfo> mBeanInfos = new ArrayList<>();

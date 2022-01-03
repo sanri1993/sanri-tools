@@ -399,7 +399,8 @@ public class KafkaDataService {
     public void sendJsonData(SendJsonDataParam sendJsonDataParam) throws IOException, ExecutionException, InterruptedException {
         String clusterName = sendJsonDataParam.getClusterName();
 
-        KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(KafkaService.MODULE,clusterName);
+//        KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(KafkaService.MODULE,clusterName);
+        final KafkaConnectParam kafkaConnectParam = kafkaService.convertToKafkaConnectParam(clusterName);
         Map<String, Object> properties = kafkaConnectParam.getKafka().buildProducerProperties();
         properties.put("key.serializer","org.apache.kafka.common.serialization.StringSerializer");
         properties.put("value.serializer","org.apache.kafka.common.serialization.StringSerializer");
@@ -424,7 +425,8 @@ public class KafkaDataService {
 
         String clusterName = sendObjectDataParam.getClusterName();
 
-        KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(KafkaService.MODULE,clusterName);
+        final KafkaConnectParam kafkaConnectParam = kafkaService.convertToKafkaConnectParam(clusterName);
+//        KafkaConnectParam kafkaConnectParam = (KafkaConnectParam) connectService.readConnParams(KafkaService.MODULE,clusterName);
         Map<String, Object> properties = kafkaConnectParam.getKafka().buildProducerProperties();
         properties.put("key.serializer","org.apache.kafka.common.serialization.StringSerializer");
         properties.put("value.serializer","org.apache.kafka.common.serialization.ByteArraySerializer");

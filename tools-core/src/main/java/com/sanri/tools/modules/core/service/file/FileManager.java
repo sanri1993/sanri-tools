@@ -21,14 +21,27 @@ import java.util.*;
 @Service
 @Slf4j
 public class FileManager {
+    private File base;
     private File configBase;
     private File tmpBase;
     private File dataBase;
 
     public FileManager(FileManagerProperties fileManagerProperties){
+        base = fileManagerProperties.getBase();
+
         configBase = fileManagerProperties.getConfigs();
         tmpBase = fileManagerProperties.getTmp();
         dataBase = fileManagerProperties.getData();
+
+        if (configBase == null && base != null){
+            configBase = new File(base,"configs");
+        }
+        if (tmpBase == null && base != null){
+            tmpBase = new File(base,"tmp");
+        }
+        if (dataBase == null && base != null){
+            dataBase = new File(base,"data");
+        }
     }
 
     @PostConstruct

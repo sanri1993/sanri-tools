@@ -11,6 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PreDestroy;
 
 import com.sanri.tools.modules.core.service.connect.ConnectService;
+import com.sanri.tools.modules.core.service.connect.dtos.ConnectOutput;
+import com.sanri.tools.modules.core.service.connect.events.DeleteSecurityConnectEvent;
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.serialize.BytesPushThroughSerializer;
 import org.I0Itec.zkclient.serialize.ZkSerializer;
@@ -20,6 +22,7 @@ import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Id;
 import org.apache.zookeeper.data.Stat;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class ZookeeperService implements ApplicationListener<UpdateConnectEvent> {
+public class ZookeeperService implements ApplicationListener {
     // connName ==> ZkClient
     Map<String, ZkClient> zkClientMap = new ConcurrentHashMap<String, ZkClient>();
 
@@ -226,12 +229,22 @@ public class ZookeeperService implements ApplicationListener<UpdateConnectEvent>
     }
 
     @Override
-    public void onApplicationEvent(UpdateConnectEvent updateConnectEvent) {
-        UpdateConnectEvent.ConnectInfo connectInfo = (UpdateConnectEvent.ConnectInfo) updateConnectEvent.getSource();
-        if (connectInfo.getClazz() == SimpleConnectParam.class && module.equals(connectInfo.getModule())) {
-            String connName = connectInfo.getConnName();
-            zkClientMap.remove(connName);
-            log.info("[{}]模块[{}]配置变更,将移除存储的元数据信息",module,connName);
+    public void onApplicationEvent(ApplicationEvent event) {
+        if (event instanceof UpdateConnectEvent){
+            UpdateConnectEvent.ConnectInfo connectInfo = (UpdateConnectEvent.ConnectInfo) event.getSource();
+            if (connectInfo.getClazz() == SimpleConnectParam.class && module.equals(connectInfo.getModule())) {
+                String connName = connectInfo.getConnName();
+                zkClientMap.remove(connName);
+                log.info("[{}]模块[{}]配置变更,将移除存储的元数据信息",module,connName);
+            }
+        }else if (event instanceof DeleteSecurityConnectEvent){
+            final ConnectOutput connectOutput = (ConnectOutput) event.getSource();
+            if (ZookeeperService.module.equals(connectOutput.getConnectInput().getModule())){
+                final String baseName = connectOutput.getConnectInput().getBaseName();
+                log.info("zookeeper 删除连接[{}]",baseName);
+                zkClientMap.remove(baseName);
+            }
         }
+
     }
 }

@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.ResourceUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -19,6 +20,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -45,31 +47,24 @@ public class RandomUtil {
     static Random random = new Random();
 	static{
 		InputStreamReader reader = null;
-		Charset charset = Charset.forName("utf-8");
-		try {
-			URI resource = RandomUtil.class.getResource("/").toURI();
-			URI addressURI = resource.resolve(new URI("data/address.string"));
-			URI citylistURI = resource.resolve(new URI("data/city.min.json"));
-			URI idcodeURI = resource.resolve(new URI("data/idcodearea.json"));
-			URI jobURI = resource.resolve(new URI("data/job.string"));
-
-			ADDRESS_LIST = StringUtils.split(IOUtils.toString(addressURI,charset),',');
-			CITY_LIST = JSONObject.parseObject(IOUtils.toString(citylistURI,charset));
-			AREANO_MAP = JSONObject.parseObject(IOUtils.toString(idcodeURI,charset));
-			JOBS = StringUtils.split(IOUtils.toString(jobURI,charset),',');
-
-			// 解析身份证前 6 位码
-			Iterator<String> iterator = AREANO_MAP.keySet().iterator();
-			while (iterator.hasNext()){
-				String next = iterator.next();
-				if(next.length() == 6){
-					AREA_CITY_MAP.add(next);
-				}
+		Charset charset = StandardCharsets.UTF_8;
+		final ClassLoader classLoader = RandomUtil.class.getClassLoader();
+		try (
+				// 必须是 getClassLoader().getResource("data/") 一个字符都不能差,不然取不到,真是坑
+				// 而且只能用流来读 , 不能用 URI 的 resolve
+				final InputStream addressStream = classLoader.getResourceAsStream("data/address.string");
+				final InputStream cityStream = classLoader.getResourceAsStream("data/city.min.json");
+				final InputStream idcodeStream = classLoader.getResourceAsStream("data/idcodearea.json");
+				final InputStream jobStream = classLoader.getResourceAsStream("data/job.string");
+		) {
+			if (addressStream != null && cityStream != null && idcodeStream != null && jobStream != null) {
+				ADDRESS_LIST = StringUtils.split(IOUtils.toString(addressStream, charset), ',');
+				CITY_LIST = JSONObject.parseObject(IOUtils.toString(cityStream, charset));
+				AREANO_MAP = JSONObject.parseObject(IOUtils.toString(idcodeStream, charset));
+				JOBS = StringUtils.split(IOUtils.toString(jobStream, charset), ',');
 			}
-		} catch (IOException | URISyntaxException e) {
-			log.error("random data init load error : {}",e.getMessage(),e);
-		}finally{
-			IOUtils.closeQuietly(reader);
+		} catch (IOException e) {
+			log.error(e.getMessage(),e);
 		}
 	}
 

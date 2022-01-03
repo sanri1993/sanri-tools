@@ -20,6 +20,7 @@ public class ExMysqlDataSource extends MysqlDataSource {
         properties.setProperty("serverTimezone","Asia/Shanghai");
         properties.setProperty("useAffectedRows","true");
         properties.setProperty("useSSL","false");
+        properties.setProperty("allowPublicKeyRetrieval","true");
         Connection connection = super.getConnection(properties);
         return connection;
     }
