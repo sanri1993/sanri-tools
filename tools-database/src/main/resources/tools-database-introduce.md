@@ -90,3 +90,10 @@ mybatis 的代码生成，可以配置插件，例如 tk.mybatis 代码生成
 通过 sql 语句从数据库导出数据，支持海量数据(使用多线程导出)，目前客户端工具虽然都有导出支持，但是都不太友好，并且大量数据导出时可能会卡死
 
 ![数据导出](../../../../images/数据导出.png)
+
+### 数据库的文档生成
+
+数据库文档生成，每个公司要求的模板都不一样，可以自己扩展，使用 jdbcService 可以拿到你想要的元数据，然后想怎么生成，全靠你自己， 我这里提供了三个示例
+* 生成 markdown 的 ，使用 database-doc.md.ftl 模板
+* 生成 html 的，使用 database-doc.html.ftl 模板
+* 生成 excel 的，实现类在 MetadataControllerShow.generate() 方法中
