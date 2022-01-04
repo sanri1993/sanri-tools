@@ -29,117 +29,9 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
 * 2021.11.09 增加 Redis 树形 Key
 * 2021.11.01 增加 git 增量工具
 
-
-### 权限设计
-
-#### 存储设计
-```
-grouptop          --admin(User) 
-  group1
-    group11       --user1(User) --role1(Role) --resource1(Resource)
-      group111
-        group111  --resource3(Resource)
-    group12
-  group2          --user1(User) --resource1(Resource)
-    group21
- 
-role1 --resource1(Resource),resource2(Resource)
-
-user1 --role1,role2 group111,group112
-
-Group(name,path)
-Role(name,$Groups,$Resource)
-Resource(name,$Groups)
-User(name,$Roles,$Groups)
-```
-#### 实现说明 
-不管代码中还是说明文档,对于安全模块, 组织和分组是一个意思
-
-* 权限访问属性: 用户可以访问哪些权限内容
-   * 组织属性: 用户可以访问自己所在组织和所有子组织
-   * 用户属性: 用户可以访问自己所在组织和子组织内的所有用户
-   * 角色属性: 用户可以访问的角色所在组织和子组织内的所有角色
-   * 资源属性: 用户可以访问的角色-> 找到角色所有资源 -> 找到资源的组织 -> 组织的顶层列表组织下的所有资源都可以访问
-
-* 权限分配属性: 用户拥有的权限可以分配给用户可访问的用户
-
-后台资源拦截: URL 匹配, 使用每个模块的拦截配置, 没有配置的 url 需要登录才能使用 `authority.conf`
-
-模块资源提供: 可访问的资源(Resource,SubResource)由每个模块给出,在 tools-security 模块动态配置, 可提供动态配置 `resources.conf`
-
-模块菜单提供: 可访问的菜单(Menu,SubMenu), 其实也是资源的一种,可提供动态配置 `menus.conf`
-
-不管用户,角色还是资源,都是有多个分组的, 其中第一个分组为主分组;
-
-#### 配置文件
-**authority.conf格式说明**
-
-* 每行一个权限配置
-* antMatch=角色配置表达式(JS)
-* 示例: /security/users/**=admin && data 表示需要 admin 和 data 角色同时存在时才能访问 /security/users 里面的接口
-
-**resources.conf格式说明**
-
-* 每行一个资源配置
-* 资源id:资源名称:访问路径:类型(Resource,SubResource):父级资源名称:组织
-* 示例: connectlist:连接列表:connect/all:Resource:connect:/core
-
-**menus.conf格式说明**
-
-* 每行一个菜单配置, 菜单id 最好以 menu 开头
-* 菜单id:菜单名称:访问路径:类型(Menu,SubMenu):父级菜单名称:组织:路由路径
-* 示例: menu_resource:资源管理:/security/resource:Menu:menu_level_1_security:/security/resource:/security/resource
-* 因为菜单也是资源的一种,所以前面部分和资源的配置是一致的,然后每个顶级资源需要挂载到对应菜单上
-
-#### 数据权限设计
-* tools-core 中添加 UserService 接口,由 tools-security 实现
-* 每个模块如需要控制数据权限需要自行注入 UserService , 非强依赖方式 `@Autowired(required = false)`
-* 当 UserService 不空时, 可以调用里面的方式获取用户属性来控制数据
-
 ## 已经有的工具,分模块展示
-1. tools-core
-   * 类加载管理 上传类 zip , class, java 文件到类加载器
-   * 连接管理 创建 zookeeper, redis, database, kafka 等连接
-   * 文件管理 系统的临时文件和配置文件的管理,提供临时文件下载功能 
-   * 插件管理 插件注册,提供给前端可访问的插件,做了一个监控指标,根据插件点击次数和最后访问时间来排序插件
-   * 数据管理 可以给 class 随机生成数据,使用正则表达式生成数据,和爬网站数据功能
 2. tools-serializable
    * 提供序列化,反序列化等基础功能 
-3. tools-zookeeper
-   * zookeeper 连接的子节点,acl权限,节点数据,节点元数据,删除节点,写入数据
-   * 路径收藏功能,方便下次直接查找
-4. tools-redis
-   * 支持集群,主从和单机,展示节点主机,端口,角色,父节点; 集群可以展示槽位分配 
-   * key 列表查询,可以查询集群所有节点,hashKey 列表查询,key 的长度,ttl , type 展示
-   * 批量删除 key , 根据前缀删除 key(这个在树状 KEY 标签页提供支持)
-   * 查询某个 key 的数据,可以根据序列化和类加载器展示成友好的方式,支持(string,hash,list,set,zset)
-   * 在线求 set 类型的数据交集,并集,差集
-   * 监控每一个节点使用的内存信息
-   * 监控每一个节点的连接数,主机占用连接数信息,杀掉某个连接
-   * 监控每一个节点的慢查询
-   * 树状结构展示 Key 列表, 这个对于用习惯了 RDM 的人可能是个必须项,目前我的工具也提供了支持; 但其实这种展示结构只能处理当 key 数量比较少的时候, RDM 也只是 scan 了前 10000 条数据来展示树,对于生产环境还会卡死
-   * 注: 快速搜索(现改名单KEY)功能不一定快速, 做这个功能的目的是和精确数量来比较的,如果要精确数量,
-   那我每次 scan 的 limit 参数必须较正, 一次搜索的数量就少了, 但如果不需要精确数量的话 , 我可以一次 limit 10000 条,可以加快搜索速度 , 
-   这个适用于用户知道了很精确的 key ,对于一个有 100 万 key 的集群来说搜索会快很多
-5. tools-kafka
-   * 消费组列表,删除消费组,消费组消费的主题列表,消费组消费主题某分区消费数据情况,消费组消费主题某分区附近的数据
-   * 主题列表,主题尾部数据,创建主题,删除主题,模拟数据发送
-   * 主题数据实时监控,brokers 列表
-   * 所有的数据消费或监控都可以使用序列化配合类加载器来展示数据明文
-   * JMX 监控,详情见类 BrokerTopicMetrics 
-6. tools-database
-   * 数据库元数据 catalog,schema,表,列,索引,主键 查询和搜索
-   * 扩展元数据 表类型(字典表,配置表,业务表),表关联关系设置,展示和搜索
-   * 数据库文档生成和下载
-   * 使用模板生成代码,组合模板成方案生成代码
-   * 使用 sql 预览数据库数据和 excel 导出,导入 excel 数据 ,表随机数据生成 
-   * nacos,diamond 等依赖于数据库的配置数据可以直接展示 
-   * 强大的搜索功能,可以使用表名,列名,注释,表标记,schema 来搜索表
-   * 随机数据插入,在压力测试时可以用 , 可以用 spring 表达式,正则,关联另一张表来随机生成表数据
-7. tools-mybatis
-   * 上传 mapper 文件,配合类加载器,可以找到所有的 mapper 文件中的所有 statementId
-   * 根据 statementId 可以知道当前 statementId 所必传的参数
-   * 传入必传参数,和数据库连接,可以直接调用 statementId, 得到 sql 语句 ,这里的数据库连接引用数据库模块的连接名
 8. tools-swagger-doc
    * 将 swagger 的文档生成更美观的文档并提供下载文档
    * 注意: 这个工具尚不完善,输入框填入网络请求中 json 数据那个链接
@@ -166,12 +58,7 @@ User(name,$Roles,$Groups)
     * tcp-client 用于设备调试时,给服务端发送数据
     * tcp-server 用于设备调试时,模拟服务端
 17. tools-patchcode
-    * 需要发代码增量包时, 可以进行编译,拉取最新包,并打增量包 
-    * 依赖于本地 maven 编译
-    * 重要说明: 
-       * 当前只支持 git 仓库, 例: (gitlab,github,gitee), 
-       * 编译的实时展示将消耗大量浏览器占用内存, 编译大型项目时需要将编译实时窗口关闭在后台控制台看输出结果 
-       * 当 下载仓库或者 pull 出现冲突之类的问题时, 需要手动操作, 目录在 $tmp/gitrepositorys/$group/$repository
+
 
 ### 计划中的模块 
 **目前已经经过公司实践并且功能强大的模块有**
@@ -284,8 +171,6 @@ sanritoolslib [下载地址](https://gitee.com/sanri/sanri-tools-maven/attach_fi
 后端端口: 8084
 ```
 
-
-
 ## 如何扩展自己的工具
 1. 新增一个模块,如 tools-xxx ,然后依赖于 tools-core 
 ```xml
@@ -325,7 +210,7 @@ help=README.MD
 <dependency>
     <groupId>${project.groupId}</groupId>
     <artifactId>tools-xxx</artifactId>
-    <version>${project.version}</version>
+    <version>${project.version}< /version>
 </dependency>
 ```
 
@@ -344,66 +229,12 @@ help=README.MD
 
 如果对这个前端不满意,可以使用接口进行自定义开发, 本项目只是提供数据服务
 
-#### 界面美图
-
-![](images/home.png)
-
-![](images/连接管理.png)
-
-![](images/数据库元数据.png)
-
-![](images/代码生成-1.png)
-
-![](images/Redis.png)
-
-![](images/kafka消费组.png)
-
-![](images/redis分模块.png)
-
-![](images/git.png)
-
-
 ### 数据库的文档生成
 
 数据库文档生成，每个公司要求的模板都不一样，可以自己扩展，使用 jdbcService 可以拿到你想要的元数据，然后想怎么生成，全靠你自己， 我这里提供了三个示例
 * 生成 markdown 的 ，使用 database-doc.md.ftl 模板
 * 生成 html 的，使用 database-doc.html.ftl 模板
 * 生成 excel 的，实现类在 MetadataControllerShow.generate() 方法中
-
-### 代码生成的元数据结构
-做为一个sanri工具最早提供的功能，这个功能在网上有很多类似的实现，基本可以分为两类，一类是直接帮你生成固定的模式，只适应于它的项目模板，一类是提供使用模板生成的方式
-这两种方式各有利弊，为了省事，一般使用直接生成可用的代码，如果需要二次开发最好是使用模板生成，这里我两种都有提供
-
-尽管我已经提供了相当多的模板，但还是有需要自定义模板代码生成的用户，不可能全部穷尽，这里我把可以给到模板中的元数据结构，模板目前只支持 freemarker 
-
-1. 通用数据,不管是 javaBean、模板代码、还是项目构建都会有这个数据 
-```
-author      : 当前作者，取计算机名 
-date        : 当前日期 yyyy-MM-dd 
-time        : 当前时间 HH:mm:ss
-```
-
-2. javaBean 构建时数据 
-```
-bean        : 当前表对应的 java 实体类信息 ,引用类 JavaBeanInfo
-beanConfig  : bean 的配置信息,引用类 JavaBeanBuildConfig
-table       : 表元数据信息,引用类 TableMetaData
-```
-
-3. 模板代码生成(每一个模板都是针对单张表的生成)
-```
-bean        : 当前表对应的 java 实体类信息 ,引用类 JavaBeanInfo
-table       : 表元数据信息,引用类 TableMetaData
-codeConfig  : 如果是模板代码生成 ,引用 CodeGeneratorParam
-```
-
-4. 项目构建数据
-```
-tables      : 表元数据信息,引用类 TableMetaData:List
-beans       : 当前表对应的 java 实体类信息 ,引用类 JavaBeanInfo:List
-config      : 如果是项目构建,引用 CodeGeneratorConfig
-dataSource  : 数据源,引用类 ConnectionMetaData
-```
 
 ## 如何交流、反馈、参与贡献？
 

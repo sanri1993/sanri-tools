@@ -14,10 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
@@ -91,6 +88,21 @@ public class FileManagerController {
         }
         final Collection<File> files = FileUtils.listFiles(dir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
         return files.stream().map(File::length).reduce(0L,(a,b) -> a+b);
+    }
+
+    /**
+     * 删除文件列表, 可删除目录
+     * @param relativePath 相对路径
+     */
+    @PostMapping("/deleteFiles")
+    @ResponseBody
+    public void deleteFiles(String relativePath) throws IOException {
+        final File tmpBase = fileManager.getTmpBase();
+        final File dir = new File(tmpBase, relativePath);
+        if (!dir.exists()){
+            throw new ToolException("路径不存在:"+relativePath);
+        }
+        FileUtils.forceDelete(dir);
     }
 
     /**

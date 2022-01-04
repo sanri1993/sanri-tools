@@ -440,6 +440,7 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> {
                 dynamicQueryDtos.add(dynamicQueryDto);
             } catch (SQLException e) {
                 log.error("当前 sql [{}],在 connName [{}] 执行失败，原因为 [{}]",sql,connName,e.getMessage(),e);
+                throw e;
             }
         }
         return dynamicQueryDtos;
