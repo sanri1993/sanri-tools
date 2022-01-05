@@ -28,6 +28,8 @@
 
 Redis 模块有一个 json 的配置模板， 所以这里展示出来是 Redis 的 json 配置，需要填写的信息为基础名，组织，和配置信息； 组织是为了权限区分时用的（必填）， 当没有权限时， 组织默认为 `/`
 
+这里的模板文件在 [tools-redis/src/main/resources/connect.redis.template.json](tools-redis/src/main/resources/connect.redis.template.json), 取名规则 为 `connect.模块名.template.配置格式`
+
 ### 类加载器管理
 
 类加载器用于加载系统外的类， 用于将获取到的数据进行序列化和反序列化操作，这也是本程序主要卖点之一，将数据明文友好的展示
