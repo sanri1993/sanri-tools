@@ -25,7 +25,7 @@
         <file>${logging.path}/sanritools${server.port}.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!--日志文件输出的文件名 -->
-            <fileNamePattern>${logging.path}/.%d{yyyyMMdd}%i.log</fileNamePattern>
+            <fileNamePattern>${logging.path}/sanritools${server.port}.%d{yyyyMMdd}%i.log</fileNamePattern>
             <!-- 归档文件最大数量 -->
             <maxHistory>15</maxHistory>
             <!--文件最大为多少 -->

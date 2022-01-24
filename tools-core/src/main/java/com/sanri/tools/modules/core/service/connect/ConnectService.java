@@ -103,6 +103,8 @@ public abstract class ConnectService {
         return filterConnects;
     }
 
+    public abstract void visitConnect(String module,String baseName);
+
     /**
      * 加载连接信息
      * @return 连接信息的文本内容

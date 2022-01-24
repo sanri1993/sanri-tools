@@ -24,6 +24,7 @@
         <module>tools-tcp</module>
         <module>tools-patchcode</module>
         <module>tools-security</module>
+        <module>tools-jvm</module>
     </modules>
 
     <parent>
@@ -41,6 +42,9 @@
     <properties>
         <springboot.version>2.1.10.RELEASE</springboot.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- change it to point to your tools.jar from your JDK -->
+        <toolsjar>${java.home}/../lib/tools.jar</toolsjar>
+        <java.version>1.8</java.version>
     </properties>
 
     <dependencies>
@@ -87,6 +91,28 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun</groupId>
+            <artifactId>tools</artifactId>
+            <version>${java.version}</version>
+            <scope>system</scope>
+            <systemPath>${toolsjar}</systemPath>
+        </dependency>
+
+        <!-- ssh 私钥对管理 -->
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>0.1.54</version>
+        </dependency>
+
+        <!-- 重试框架 -->
+        <dependency>
+            <groupId>com.github.rholder</groupId>
+            <artifactId>guava-retrying</artifactId>
+            <version>2.0.0</version>
         </dependency>
     </dependencies>
 

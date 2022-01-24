@@ -1,678 +1,447 @@
-POST http://localhost:8084/classloader/111/upload/single
-Content-Type: multipart/form-data; boundary=uploadSingle
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwNjY2MTE4LCJuYmYiOjE2NDA0OTMzMTgsImlhdCI6MTY0MDY2NjExMX0.m-ZMW3XB9VSLTQ_gTUnjMFEl6ed9IykvbsR1LwVMNCg
+GET http://localhost:8084/jvm/diagnostic/flagsSetted?connName=192.168.61.71
 
---uploadSingle
-Content-Disposition: form-data; name="classloaderName"
-
-111
---uploadSingle
-Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
-Content-Type: application/octet-stream
-
-< C:\Users\Administrator\Downloads\EamImageUploadService.class
---uploadSingle--
-
-<> 2021-12-26T024233.200.json
+<> 2022-01-23T064326.200.json
 
 ###
 
-POST http://localhost:8084/classloader/111/upload/single
-Content-Type: multipart/form-data; boundary=uploadSingle
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwNjY2MTE4LCJuYmYiOjE2NDA0OTMzMTgsImlhdCI6MTY0MDY2NjExMX0.m-ZMW3XB9VSLTQ_gTUnjMFEl6ed9IykvbsR1LwVMNCg
+GET http://localhost:8084/jvm/diagnostic/flagsSetted?connName=192.168.61.71
 
---uploadSingle
-Content-Disposition: form-data; name="classloaderName"
-
-111
---uploadSingle
-Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
-Content-Type: application/octet-stream
-
-< C:\Users\Administrator\Downloads\EamImageUploadService.class
---uploadSingle--
-
-<> 2021-12-26T022409.200.json
+<> 2022-01-23T064051.200.json
 
 ###
 
-POST http://localhost:8084/classloader/111/upload/single
-Content-Type: multipart/form-data; boundary=uploadSingle
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwNjY2MTE4LCJuYmYiOjE2NDA0OTMzMTgsImlhdCI6MTY0MDY2NjExMX0.m-ZMW3XB9VSLTQ_gTUnjMFEl6ed9IykvbsR1LwVMNCg
+GET http://localhost:8084/jvm/diagnostic/flagsSetted?connName=192.168.61.71
 
---uploadSingle
-Content-Disposition: form-data; name="classloaderName"
-
-111
---uploadSingle
-Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
-Content-Type: application/octet-stream
-
-< C:\Users\Administrator\Downloads\EamImageUploadService.class
---uploadSingle--
-
-<> 2021-12-26T010158.200.json
+<> 2022-01-23T064013.200.json
 
 ###
 
-POST http://localhost:8084/classloader/111/upload/single
-Content-Type: multipart/form-data; boundary=uploadSingle
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwNjY2MTE4LCJuYmYiOjE2NDA0OTMzMTgsImlhdCI6MTY0MDY2NjExMX0.m-ZMW3XB9VSLTQ_gTUnjMFEl6ed9IykvbsR1LwVMNCg
+GET http://localhost:8084/jvm/diagnostic/flagsSetted?connName=192.168.61.71
 
---uploadSingle
-Content-Disposition: form-data; name="classloaderName"
-
-111
---uploadSingle
-Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
-Content-Type: application/octet-stream
-
-< C:\Users\Administrator\Downloads\EamImageUploadService.class
---uploadSingle--
-
-<> 2021-12-26T125941.200.json
+<> 2022-01-23T063609.200.json
 
 ###
 
-POST http://localhost:8084/classloader/111/upload/single
-Content-Type: multipart/form-data; boundary=uploadSingle
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwNjY2MTE4LCJuYmYiOjE2NDA0OTMzMTgsImlhdCI6MTY0MDY2NjExMX0.m-ZMW3XB9VSLTQ_gTUnjMFEl6ed9IykvbsR1LwVMNCg
+GET http://localhost:8084/jvm/diagnostic/flagsSetted?connName=192.168.61.71
 
---uploadSingle
-Content-Disposition: form-data; name="classloaderName"
-
-111
---uploadSingle
-Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
-Content-Type: application/octet-stream
-
-< C:\Users\Administrator\Downloads\EamImageUploadService.class
---uploadSingle--
-
-<> 2021-12-26T125849.200.json
+<> 2022-01-23T063552.200.json
 
 ###
 
-POST http://localhost:8084/classloader/111/upload/single
-Content-Type: multipart/form-data; boundary=uploadSingle
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwNjY2MTE4LCJuYmYiOjE2NDA0OTMzMTgsImlhdCI6MTY0MDY2NjExMX0.m-ZMW3XB9VSLTQ_gTUnjMFEl6ed9IykvbsR1LwVMNCg
+GET http://localhost:8084/jvm/diagnostic/flagsSetted?connName=192.168.61.71
 
---uploadSingle
-Content-Disposition: form-data; name="classloaderName"
-
-111
---uploadSingle
-Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
-Content-Type: application/octet-stream
-
-< C:\Users\Administrator\Downloads\EamImageUploadService.class
---uploadSingle--
-
-<> 2021-12-26T125751.200.json
+<> 2022-01-23T063453.200.json
 
 ###
 
-POST http://localhost:8084/classloader/111/upload/single
-Content-Type: multipart/form-data; boundary=uploadSingle
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwNjY2MTE4LCJuYmYiOjE2NDA0OTMzMTgsImlhdCI6MTY0MDY2NjExMX0.m-ZMW3XB9VSLTQ_gTUnjMFEl6ed9IykvbsR1LwVMNCg
+GET http://localhost:8084/jvm/diagnostic/flagsSetted?connName=192.168.61.71
 
---uploadSingle
-Content-Disposition: form-data; name="classloaderName"
-
-111
---uploadSingle
-Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
-Content-Type: application/octet-stream
-
-< C:\Users\Administrator\Downloads\EamImageUploadService.class
---uploadSingle--
-
-<> 2021-12-26T125643.200.json
+<> 2022-01-23T063426.200.json
 
 ###
 
-POST http://localhost:8084/classloader/111/upload/single
-Content-Type: multipart/form-data; boundary=uploadSingle
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwNjY2MTE4LCJuYmYiOjE2NDA0OTMzMTgsImlhdCI6MTY0MDY2NjExMX0.m-ZMW3XB9VSLTQ_gTUnjMFEl6ed9IykvbsR1LwVMNCg
+GET http://localhost:8084/jvm/diagnostic/flagsSetted?connName=192.168.61.71
 
---uploadSingle
-Content-Disposition: form-data; name="classloaderName"
-
-111
---uploadSingle
-Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
-Content-Type: application/octet-stream
-
-< C:\Users\Administrator\Downloads\EamImageUploadService.class
---uploadSingle--
-
-<> 2021-12-26T125505.200.json
+<> 2022-01-23T063351.200.json
 
 ###
 
-POST http://localhost:8084/classloader/111/upload/single
-Content-Type: multipart/form-data; boundary=uploadSingle
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwNjY2MTE4LCJuYmYiOjE2NDA0OTMzMTgsImlhdCI6MTY0MDY2NjExMX0.m-ZMW3XB9VSLTQ_gTUnjMFEl6ed9IykvbsR1LwVMNCg
+GET http://localhost:8084/jvm/diagnostic/flagsSetted
 
---uploadSingle
-Content-Disposition: form-data; name="classloaderName"
-
-111
---uploadSingle
-Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
-Content-Type: application/octet-stream
-
-< C:\Users\Administrator\Downloads\EamImageUploadService.class
---uploadSingle--
+<> 2022-01-23T063313.200.json
 
 ###
 
-POST http://localhost:8084/classloader/111/upload/single
-Content-Type: multipart/form-data; boundary=uploadSingle
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwNjY2MTE4LCJuYmYiOjE2NDA0OTMzMTgsImlhdCI6MTY0MDY2NjExMX0.m-ZMW3XB9VSLTQ_gTUnjMFEl6ed9IykvbsR1LwVMNCg
+POST http://localhost:8084/jvm/mbean/invoke
+Content-Type: application/json
 
---uploadSingle
-Content-Disposition: form-data; name="classloaderName"
+{"beanName":"java.lang:type=Threading","connName":"192.168.61.71","operation":"getThreadCpuTime","params":[785],"signature":["long"]}
 
-111
---uploadSingle
-Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
-Content-Type: application/octet-stream
-
-< C:\Users\Administrator\Downloads\EamImageUploadService.class
---uploadSingle--
-
-<> 2021-12-26T124248.200.json
+<> 2022-01-21T101932.200.json
 
 ###
 
-POST http://localhost:8084/classloader/111/upload/single
-Content-Type: multipart/form-data; boundary=uploadSingle
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwNjY2MTE4LCJuYmYiOjE2NDA0OTMzMTgsImlhdCI6MTY0MDY2NjExMX0.m-ZMW3XB9VSLTQ_gTUnjMFEl6ed9IykvbsR1LwVMNCg
+POST http://localhost:8084/jvm/mbean/invoke
+Content-Type: application/json
 
---uploadSingle
-Content-Disposition: form-data; name="classloaderName"
+{"beanName":"java.lang:type=Threading","connName":"192.168.61.71","operation":"getThreadCpuTime","params":[785],"signature":["long"]}
 
-111
---uploadSingle
-Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
-Content-Type: application/octet-stream
-
-< C:\Users\Administrator\Downloads\EamImageUploadService.class
---uploadSingle--
-
-<> 2021-12-26T123848.200.json
+<> 2022-01-21T101700.200.json
 
 ###
 
-POST http://localhost:8084/classloader/111/upload/single
-Content-Type: multipart/form-data; boundary=uploadSingle
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwNjY2MTE4LCJuYmYiOjE2NDA0OTMzMTgsImlhdCI6MTY0MDY2NjExMX0.m-ZMW3XB9VSLTQ_gTUnjMFEl6ed9IykvbsR1LwVMNCg
+POST http://localhost:8084/jvm/mbean/invoke
+Content-Type: application/json
 
---uploadSingle
-Content-Disposition: form-data; name="classloaderName"
+{"beanName":"java.lang:type=Threading","connName":"192.168.61.71","operation":"getThreadCpuTime","params":[785],"signature":["long"]}
 
-111
---uploadSingle
-Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
-Content-Type: application/octet-stream
-
-< C:\Users\Administrator\Downloads\EamImageUploadService.class
---uploadSingle--
-
-<> 2021-12-26T123749.200.json
+<> 2022-01-21T100756.200.json
 
 ###
 
-POST http://localhost:8084/classloader/111/upload/single
-Content-Type: multipart/form-data; boundary=uploadSingle
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwNjY2MTE4LCJuYmYiOjE2NDA0OTMzMTgsImlhdCI6MTY0MDY2NjExMX0.m-ZMW3XB9VSLTQ_gTUnjMFEl6ed9IykvbsR1LwVMNCg
+POST http://localhost:8084/jvm/mbean/invoke
+Content-Type: application/json
 
---uploadSingle
-Content-Disposition: form-data; name="classloaderName"
+{"beanName":"java.lang:type=Threading","connName":"192.168.61.71","operation":"getThreadCpuTime","params":[["785"]],"signature":["long"]}
 
-111
---uploadSingle
-Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
-Content-Type: application/octet-stream
-
-< C:\Users\Administrator\Downloads\EamImageUploadService.class
---uploadSingle--
-
-<> 2021-12-26T123554.200.json
+<> 2022-01-21T100734.200.json
 
 ###
 
-POST http://localhost:8084/login
+POST http://localhost:8084/jvm/mbean/invoke
+Content-Type: application/json
+
+{"beanName":"java.lang:type=Threading","connName":"192.168.61.71","operation":"getThreadCpuTime","params":[["785"]],"signature":["long"]}
+
+<> 2022-01-21T100710.200.json
+
+###
+
+POST http://localhost:8084/jvm/mbean/invoke
+Content-Type: application/json
+
+{"beanName":"java.lang:type=Threading","connName":"192.168.61.71","operation":"getThreadCpuTime","params":["785"],"signature":["long"]}
+
+<> 2022-01-21T100630.200.json
+
+###
+
+POST http://localhost:8084/jvm/mbean/invoke
+Content-Type: application/json
+
+{"beanName":"java.lang:type=Threading","connName":"192.168.61.71","operation":"getThreadCpuTime","params":["785"],"signature":["long"]}
+
+<> 2022-01-21T100502.200.json
+
+###
+
+GET http://localhost:8084/jvm/diagnostic/gcClassHistogram?connName=192.168.61.71
+
+<> 2022-01-19T054717.200.json
+
+###
+
+GET http://localhost:8084/jvm/mbean//proxyMXBeans?connName=192.168.61.71&interfaceName=com.sun.management.GarbageCollectorMXBean
+
+<> 2022-01-19T042833.200.json
+
+###
+
+GET http://localhost:8084/jvm/mbean//proxyMXBeans?connName=192.168.61.71&interfaceName=com.sun.management.GarbageCollectorMXBean
+
+<> 2022-01-19T042805.404.json
+
+###
+
+GET http://localhost:8084/jvm/thread/list/threadPools?connName=192.168.61.71
+
+<> 2022-01-18T111239.200.json
+
+###
+
+GET http://localhost:8084/jvm/thread/list?connName=192.168.61.71
+
+<> 2022-01-17T085102.200.json
+
+###
+
+GET http://localhost:8084/jvm/thread/list
+
+<> 2022-01-17T085031.200.json
+
+###
+
+GET http://localhost:8084/jvm/thread/list
+
+<> 2022-01-17T084749.200.json
+
+###
+
+GET http://localhost:8084/jvm/thread/list
+
+<> 2022-01-17T084746.200.json
+
+###
+
+GET http://localhost:8084/jvm/mbean/proxyMBean?connName=192.168.61.71&mBeanName=java.lang:type=OperatingSystem&className=com.sun.management.OperatingSystemMXBean
+
+<> 2022-01-17T050720.200.json
+
+###
+
+GET http://localhost:8084/jvm/mbean/proxyMBean?connName=192.168.61.71&mBeanName=java.lang:type=OperatingSystem&className=com.sun.managment.OperatingSystemMXBean
+
+<> 2022-01-17T050657.200.json
+
+###
+
+GET http://localhost:8084/jvm/mbean/detail?connName=192.168.61.71&mBeanName=java.lang:type=OperatingSystem&className=com.sun.managment.OperatingSystemMXBean
+
+<> 2022-01-17T050558.200.json
+
+###
+
+GET http://localhost:8084/jvm/mbean/detail?connName=192.168.61.71&mBeanName=java.lang:type=OperatingSystem
+
+<> 2022-01-17T045952.200.json
+
+###
+
+GET http://localhost:8084/jvm/mbean/detail?jmxHostAndPort=192.168.61.71:10086&mBeanName=java.lang:type=OperatingSystem
+
+<> 2022-01-17T045903.200.json
+
+###
+
+GET http://localhost:8084/version
+
+<> 2022-01-17T103048.200.json
+
+###
+
+GET http://localhost:8084/monitor/heap/memory?jmxHostAndPort=127.0.0.1:10086
+
+<> 2022-01-13T015019.200.json
+
+###
+
+GET http://localhost:8084/monitor/heap/memory?jmxHostAndPort=127.0.0.1:10086&all=true
+
+<> 2022-01-13T014901.200.json
+
+###
+
+GET http://localhost:8084/monitor/mbean/attrValue?jmxHostAndPort=127.0.0.1:10086&mBeanName=java.lang:type=OperatingSystem&attrNames=AvailableProcessors,TotalSwapSpaceSize
+
+<> 2022-01-13T112041.200.json
+
+###
+
+GET http://localhost:8084/monitor/mbean/detail?jmxHostAndPort=127.0.0.1:10086&mBeanName=com.sun.management:type=HotSpotDiagnostic
+
+<> 2022-01-13T112031.200.json
+
+###
+
+GET http://localhost:8084/monitor/mbean/names?jmxHostAndPort=127.0.0.1:10086
+
+<> 2022-01-13T112027.200.json
+
+###
+
+GET http://localhost:8084/monitor/mbean/attrValue?jmxHostAndPort=127.0.0.1:10086&mBeanName=java.lang:type=OperatingSystem&attrNames=AvailableProcessors,TotalSwapSpaceSize
+
+<> 2022-01-12T085230.200.json
+
+###
+
+POST http://localhost:8084/monitor/mbean/invoke
 Content-Type: application/json
 
 {
-  "username": "admin",
-  "password": "0"
+  "jmxHostAndPort": "127.0.0.1:10086",
+  "beanName": "com.sun.management:type=DiagnosticCommand",
+  "operation": "gcClassHistogram",
+  "params": [["-all"]],
+  "signature": ["[Ljava.lang.String;"]
 }
 
-<> 2021-12-26T123519.200.json
+<> 2022-01-12T050833.200.json
 
 ###
 
-POST http://localhost:8084/classloader/111/upload/single
-Content-Type: multipart/form-data; boundary=uploadSingle
-
---uploadSingle
-Content-Disposition: form-data; name="classloaderName"
-
-111
---uploadSingle
-Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
-Content-Type: application/octet-stream
-
-< C:\Users\Administrator\Downloads\EamImageUploadService.class
---uploadSingle--
-
-<> 2021-12-26T123508.200.json
-
-###
-
-GET http://localhost:8084/profile/accessMenus
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMjMxMjM0LCJuYmYiOjE2NDAwNTg0MzQsImlhdCI6MTY0MDIzMTIyN30.lQU1URKA0-tQWrpMFIqX-n5kw_rfg4jG4qTIBJ_tRxk
-
-<> 2021-12-21T115240.200.json
-
-###
-
-POST http://localhost:8084/login
+POST http://localhost:8084/monitor/mbean/invoke
 Content-Type: application/json
 
 {
-  "username": "admin",
-  "password": "0"
+  "jmxHostAndPort": "127.0.0.1:10086",
+  "beanName": "com.sun.management:type=DiagnosticCommand",
+  "operation": "gcClassHistogram",
+  "params": [["-all"]],
+  "signature": ["[Ljava.lang.String;"]
 }
 
-<> 2021-12-21T114714.200.json
+<> 2022-01-12T050808.200.json
 
 ###
 
-GET http://localhost:8084/profile/accessResources
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMTc3MzMxLCJuYmYiOjE2NDAwMDQ1MzEsImlhdCI6MTY0MDE3NzMyNH0.T-PS6MvwWzv48UgyO4bPLX5JDTSHwshF8vR5fgY1N_k
-
-<> 2021-12-21T100848.200.json
-
-###
-
-GET http://localhost:8084/profile/accessResources
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMTc3MzMxLCJuYmYiOjE2NDAwMDQ1MzEsImlhdCI6MTY0MDE3NzMyNH0.T-PS6MvwWzv48UgyO4bPLX5JDTSHwshF8vR5fgY1N_k
-
-<> 2021-12-21T100740.200.json
-
-###
-
-GET http://localhost:8084/security/user/sanri/accessResources
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMTc3MzMxLCJuYmYiOjE2NDAwMDQ1MzEsImlhdCI6MTY0MDE3NzMyNH0.T-PS6MvwWzv48UgyO4bPLX5JDTSHwshF8vR5fgY1N_k
-Content-Type: application/x-www-form-urlencoded
-
-<> 2021-12-21T100725.200.json
-
-###
-
-GET http://localhost:8084/security/role/operator/accessResources
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMTc3MzMxLCJuYmYiOjE2NDAwMDQ1MzEsImlhdCI6MTY0MDE3NzMyNH0.T-PS6MvwWzv48UgyO4bPLX5JDTSHwshF8vR5fgY1N_k
-Content-Type: application/x-www-form-urlencoded
-
-<> 2021-12-20T085737.200.json
-
-###
-
-GET http://localhost:8084/security/role/operator/accessResources
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMTc3MzMxLCJuYmYiOjE2NDAwMDQ1MzEsImlhdCI6MTY0MDE3NzMyNH0.T-PS6MvwWzv48UgyO4bPLX5JDTSHwshF8vR5fgY1N_k
-Content-Type: application/x-www-form-urlencoded
-
-<> 2021-12-20T085643.404.json
-
-###
-
-GET http://localhost:8084/security/user/sanri/accessResources
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMTc3MzMxLCJuYmYiOjE2NDAwMDQ1MzEsImlhdCI6MTY0MDE3NzMyNH0.T-PS6MvwWzv48UgyO4bPLX5JDTSHwshF8vR5fgY1N_k
-Content-Type: application/x-www-form-urlencoded
-
-<> 2021-12-20T085603.200.json
-
-###
-
-GET http://localhost:8084/security/user/sanri/accessRoles
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMTc3MzMxLCJuYmYiOjE2NDAwMDQ1MzEsImlhdCI6MTY0MDE3NzMyNH0.T-PS6MvwWzv48UgyO4bPLX5JDTSHwshF8vR5fgY1N_k
-Content-Type: application/x-www-form-urlencoded
-
-<> 2021-12-20T085531.200.json
-
-###
-
-GET http://localhost:8084/security/user/sanri/accessGroups
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMTc3MzMxLCJuYmYiOjE2NDAwMDQ1MzEsImlhdCI6MTY0MDE3NzMyNH0.T-PS6MvwWzv48UgyO4bPLX5JDTSHwshF8vR5fgY1N_k
-Content-Type: application/x-www-form-urlencoded
-
-<> 2021-12-20T085443.200.json
-
-###
-
-GET http://localhost:8084/security/user/sanri/accessUsers
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMTc3MzMxLCJuYmYiOjE2NDAwMDQ1MzEsImlhdCI6MTY0MDE3NzMyNH0.T-PS6MvwWzv48UgyO4bPLX5JDTSHwshF8vR5fgY1N_k
-Content-Type: application/x-www-form-urlencoded
-
-<> 2021-12-20T085359.200.json
-
-###
-
-GET http://localhost:8084/profile/accessResources
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMTc3MzMxLCJuYmYiOjE2NDAwMDQ1MzEsImlhdCI6MTY0MDE3NzMyNH0.T-PS6MvwWzv48UgyO4bPLX5JDTSHwshF8vR5fgY1N_k
-
-<> 2021-12-20T084859.200.json
-
-###
-
-POST http://localhost:8084/login
+POST http://localhost:8084/monitor/mbean/invoke
 Content-Type: application/json
 
 {
-  "username": "admin",
-  "password": "0"
+  "jmxHostAndPort": "127.0.0.1:10086",
+  "beanName": "com.sun.management:type=DiagnosticCommand",
+  "operation": "gcClassHistogram",
+  "params": [["-all"]],
+  "signature": ["[Ljava.lang.String"]
 }
 
-<> 2021-12-20T084851.200.json
+<> 2022-01-12T050651.200.json
 
 ###
 
-POST http://localhost:8084/security/role/op/grantResources
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMTM1MzAwLCJuYmYiOjE2Mzk5NjI1MDAsImlhdCI6MTY0MDEzNTI5M30.q8aCSkuxFY5uBmdlzRRw4jrb2wmQEDRAgkjF82Bi8QE
-Content-Type: application/x-www-form-urlencoded
-
-resources=menu_level_1_basedata,menu_git
-
-<> 2021-12-20T093445.200.json
-
-###
-
-POST http://localhost:8084/security/role/op/grantResources
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMTM1MzAwLCJuYmYiOjE2Mzk5NjI1MDAsImlhdCI6MTY0MDEzNTI5M30.q8aCSkuxFY5uBmdlzRRw4jrb2wmQEDRAgkjF82Bi8QE
-Content-Type: application/x-www-form-urlencoded
-
-resources=/core
-
-<> 2021-12-20T092651.200.json
-
-###
-
-POST http://localhost:8084/security/role/op/grantGroups
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMTM1MzAwLCJuYmYiOjE2Mzk5NjI1MDAsImlhdCI6MTY0MDEzNTI5M30.q8aCSkuxFY5uBmdlzRRw4jrb2wmQEDRAgkjF82Bi8QE
-Content-Type: application/x-www-form-urlencoded
-
-groups=/core
-
-<> 2021-12-20T091644.200.json
-
-###
-
-POST http://localhost:8084/security/user/sanri/grantGroups
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMTM1MzAwLCJuYmYiOjE2Mzk5NjI1MDAsImlhdCI6MTY0MDEzNTI5M30.q8aCSkuxFY5uBmdlzRRw4jrb2wmQEDRAgkjF82Bi8QE
-Content-Type: application/x-www-form-urlencoded
-
-groups=/core
-
-<> 2021-12-20T091543.200.json
-
-###
-
-POST http://localhost:8084/security/user/sanri/grantGroups
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMTM1MzAwLCJuYmYiOjE2Mzk5NjI1MDAsImlhdCI6MTY0MDEzNTI5M30.q8aCSkuxFY5uBmdlzRRw4jrb2wmQEDRAgkjF82Bi8QE
-Content-Type: application/x-www-form-urlencoded
-
-groups=op
-
-<> 2021-12-20T091526.200.json
-
-###
-
-POST http://localhost:8084/security/user/sanri/grantRoles
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMTM1MzAwLCJuYmYiOjE2Mzk5NjI1MDAsImlhdCI6MTY0MDEzNTI5M30.q8aCSkuxFY5uBmdlzRRw4jrb2wmQEDRAgkjF82Bi8QE
-Content-Type: application/x-www-form-urlencoded
-
-username=sanri&roles=operator,op
-
-<> 2021-12-20T090925.200.json
-
-###
-
-POST http://localhost:8084/security/role/add
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMTM1MzAwLCJuYmYiOjE2Mzk5NjI1MDAsImlhdCI6MTY0MDEzNTI5M30.q8aCSkuxFY5uBmdlzRRw4jrb2wmQEDRAgkjF82Bi8QE
+POST http://localhost:8084/monitor/mbean/invoke
 Content-Type: application/json
 
 {
-  "toolRole": {
-    "rolename": "op"
-  },
-  "groups": [
-    "/operator"
-  ],
-  "resources": ["menu_git"]
+  "jmxHostAndPort": "127.0.0.1:10086",
+  "beanName": "com.sun.management:type=DiagnosticCommand",
+  "operation": "gcClassHistogram",
+  "params": [["-all"]],
+  "signature": ["[Ljava.lang.String"]
 }
 
-<> 2021-12-20T090918.200.json
+<> 2022-01-12T050626.200.json
 
 ###
 
-POST http://localhost:8084/security/user/sanri/grantRoles
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMTM1MzAwLCJuYmYiOjE2Mzk5NjI1MDAsImlhdCI6MTY0MDEzNTI5M30.q8aCSkuxFY5uBmdlzRRw4jrb2wmQEDRAgkjF82Bi8QE
-Content-Type: application/x-www-form-urlencoded
-
-username=sanri&roles=operator,op
-
-<> 2021-12-20T090826.200.json
-
-###
-
-POST http://localhost:8084/login
+POST http://localhost:8084/monitor/mbean/invoke
 Content-Type: application/json
 
 {
-  "username": "admin",
-  "password": "0"
+  "jmxHostAndPort": "127.0.0.1:10086",
+  "beanName": "com.sun.management:type=DiagnosticCommand",
+  "operation": "gcClassHistogram",
+  "params": [["-all"]],
+  "signature": ["[Ljava.lang.String"]
 }
 
-<> 2021-12-20T090821.200.json
+<> 2022-01-12T050601.200.json
 
 ###
 
-POST http://localhost:8084/security/role/add
-Authorization: {{Authorization}}
+POST http://localhost:8084/monitor/mbean/invoke
 Content-Type: application/json
 
 {
-  "toolRole": {
-    "rolename": "op"
-  },
-  "groups": [
-    "/operator"
-  ],
-  "resources": ["menu_git"]
+  "jmxHostAndPort": "127.0.0.1:10086",
+  "beanName": "com.sun.management:type=DiagnosticCommand",
+  "operation": "gcClassHistogram",
+  "params": [["-all"]],
+  "signature": ["[Ljava.lang.String"]
 }
 
-<> 2021-12-20T090815.200.json
+<> 2022-01-12T050003.200.json
 
 ###
 
-POST http://{{baseUrl}}/security/role/add
-Authorization: {{Authorization}}
+POST http://localhost:8084/monitor/mbean/invoke
 Content-Type: application/json
 
 {
-  "toolRole": {
-    "rolename": "op"
-  },
-  "groups": [
-    "/operator"
-  ],
-  "resources": ["menu_git"]
+  "jmxHostAndPort": "127.0.0.1:10086",
+  "beanName": "com.sun.management:type=DiagnosticCommand",
+  "operation": "gcClassHistogram",
+  "params": [["-all"]],
+  "signature": ["[Ljava.lang.String"]
 }
+
+<> 2022-01-12T045844.200.json
 
 ###
 
-POST http://localhost:8084/security/role/add
-Authorization: {{Authorization}}
+POST http://localhost:8084/monitor/mbean/invoke
 Content-Type: application/json
 
 {
-  "toolRole": {
-    "rolename": "op"
-  },
-  "groups": [
-    "/operator"
-  ],
-  "resources": ["menu_git"]
+  "jmxHostAndPort": "127.0.0.1:10086",
+  "beanName": "com.sun.management:type=DiagnosticCommand",
+  "operation": "gcClassHistogram",
+  "params": [["-all"]],
+  "signature": ["[Ljava.lang.String"]
 }
+
+<> 2022-01-12T045200.200.json
 
 ###
 
-POST http://localhost:8084/security/user/add
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
+POST http://localhost:8084/monitor/mbean/invoke
 Content-Type: application/json
 
 {
-  "toolUser": {
-    "username": "sanri"
-  },
-  "roles": [
-    "operator"
-  ],
-  "groups": ["/operator"]
+  "jmxHostAndPort": "127.0.0.1:10086",
+  "beanName": "com.sun.management:type=DiagnosticCommand",
+  "operation": "gcClassHistogram",
+  "params": [["-all"]],
+  "signature": ["[Ljava.lang.String"]
 }
 
-<> 2021-12-19T105427.200.json
+<> 2022-01-12T045044.200.json
 
 ###
 
-POST http://localhost:8084/security/user/add
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
+POST http://localhost:8084/monitor/mbean/invoke
 Content-Type: application/json
 
 {
-  "toolUser": {
-    "username": "sanri"
-  },
-  "roles": [
-    "operator"
-  ],
-  "groups": ["/operator"]
+  "jmxHostAndPort": "127.0.0.1:10086",
+  "beanName": "com.sun.management:type=DiagnosticCommand",
+  "operation": "gcClassHistogram",
+  "params": [["-all"]],
+  "signature": ["[Ljava.lang.String"]
 }
 
-<> 2021-12-19T105331.200.json
+<> 2022-01-12T044949.200.json
 
 ###
 
-POST http://localhost:8084/security/user/add
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
+POST http://localhost:8084/monitor/mbean/invoke
 Content-Type: application/json
 
 {
-  "toolUser": {
-    "username": "sanri"
-  },
-  "roles": [
-    "operator"
-  ],
-  "groups": ["/operator"]
+  "jmxHostAndPort": "127.0.0.1:10086",
+  "beanName": "com.sun.management:type=DiagnosticCommand",
+  "operation": "gcClassHistogram",
+  "params": [["-all"]],
+  "signature": ["[Ljava.lang.String"]
 }
 
-<> 2021-12-19T104555.200.json
+<> 2022-01-12T025620.200.json
 
 ###
 
-POST http://localhost:8084/security/user/add
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
+POST http://localhost:8084/monitor/mbean/invoke
 Content-Type: application/json
 
 {
-  "toolUser": {
-    "username": "sanri"
-  },
-  "roles": [
-    "operator"
-  ],
-  "groups": ["/operator"]
+  "jmxHostAndPort": "127.0.0.1:10086",
+  "beanName": "com.sun.management:type=DiagnosticCommand",
+  "operation": "gcClassHistogram",
+  "params": [["-all"]],
+  "signature": ["[Ljava.lang.String"]
 }
 
-<> 2021-12-19T104439.200.json
+<> 2022-01-12T025450.200.json
 
 ###
 
-POST http://localhost:8084/security/role/add
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
+POST http://localhost:8084/monitor/mbean/invoke
 Content-Type: application/json
 
 {
-  "toolRole": {
-    "rolename": "operator"
-  },
-  "groups": [
-    "/operator"
-  ],
-  "resources": ["menu_git"]
+  "jmxHostAndPort": "127.0.0.1:10086",
+  "beanName": "com.sun.management:type=DiagnosticCommand",
+  "operation": "gcClassHistogram",
+  "params": [["-all"]],
+  "signature": [["[Ljava.lang.String"]]
 }
 
-<> 2021-12-19T104402.200.json
+<> 2022-01-12T025353.200.json
 
 ###
 
-POST http://localhost:8084/security/role/add
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
+POST http://localhost:8084/monitor/mbean/invoke
 Content-Type: application/json
 
 {
-  "toolRole": {
-    "rolename": "operator"
-  },
-  "groups": [
-    "/operator"
-  ],
-  "resources": ["menu_git"]
+  "jmxHostAndPort": "127.0.0.1:10086",
+  "beanName": "com.sun.management:type=DiagnosticCommand",
+  "operation": "gcClassHistogram",
+  "params": [["-all"]],
+  "signature": [["[Ljava.lang.String"]]
 }
 
-<> 2021-12-19T104232.200.json
-
-###
-
-POST http://localhost:8084/security/group/add
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
-Content-Type: application/x-www-form-urlencoded
-
-parentGroup=/&childGroup=operator
-
-<> 2021-12-19T104140.200.json
-
-###
-
-POST http://localhost:8084/security/group/add
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
-Content-Type: application/x-www-form-urlencoded
-
-parentGroup=/&childGroup=operator
-
-<> 2021-12-19T103911.200.json
-
-###
-
-POST http://localhost:8084/security/group/add
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
-Content-Type: application/x-www-form-urlencoded
-
-parentGroup=/&childGroup=operator
-
-<> 2021-12-19T103525.200.json
-
-###
-
-GET http://localhost:8084/profile/accessMenus
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQwMDk0MDc2LCJuYmYiOjE2Mzk5MjEyNzYsImlhdCI6MTY0MDA5NDA2OX0.qmY19JcbohFbd3IU2vpa9aN3wmpmhtZCklWE_BE5OcA
-
-<> 2021-12-19T103022.200.json
+<> 2022-01-12T024722.200.json
 
 ###
 

@@ -201,6 +201,17 @@ public class FileBaseConnectService extends ConnectService implements Initializi
     }
 
     @Override
+    public void visitConnect(String module, String baseName) {
+        final Map<String, ConnectOutput> connectOutputMap = connectInfoMap.get(module);
+        if (connectOutputMap != null){
+            final ConnectOutput connectOutput = connectOutputMap.get(baseName);
+            if (connectOutput != null){
+                connectOutput.setLastAccessTime(new Date());
+            }
+        }
+    }
+
+    @Override
     public String loadContent(String module, String baseName) throws IOException {
         final Map<String, ConnectOutput> connectOutputMap = connectInfoMap.get(module);
         if (connectOutputMap != null){

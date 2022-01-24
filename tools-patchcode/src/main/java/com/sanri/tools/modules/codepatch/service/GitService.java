@@ -14,6 +14,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
 import com.sanri.tools.modules.core.service.connect.ConnectService;
 import com.sanri.tools.modules.core.service.connect.dtos.ConnectInput;
 import com.sanri.tools.modules.core.service.connect.dtos.ConnectOutput;
@@ -37,6 +39,7 @@ import org.eclipse.jgit.transport.http.HttpConnection;
 import org.eclipse.jgit.transport.http.HttpConnectionFactory;
 import org.eclipse.jgit.transport.http.JDKHttpConnectionFactory;
 import org.eclipse.jgit.treewalk.TreeWalk;
+import org.eclipse.jgit.util.FS;
 import org.eclipse.jgit.util.HttpSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,6 +62,20 @@ import com.sanri.tools.modules.core.utils.ZipUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * git 模块数据目录结构
+ * $dataDir[Dir]
+ *   gitrepositorys[Dir]
+ *     group1
+ *       repository1[Dir]
+ *     group2
+ *       repository2[Dir]
+ *     group_repository1_info[File]
+ *     group_repository1_lock[File]
+ *     group_repository2_info[File]
+ *     group_repository2_lock[File]
+ *
+ */
 @Service
 @Slf4j
 public class GitService {
@@ -69,8 +86,14 @@ public class GitService {
     @Autowired
     private ConnectService connectService;
 
+    /**
+     * 仓库基础路径  $dataDir/gitrepositorys
+     */
     private String baseDirName = "gitrepositorys";
 
+    /**
+     * 模块 : git
+     */
     private static final String MODULE = "git";
 
     @Autowired
@@ -83,12 +106,11 @@ public class GitService {
      * @throws GitAPIException
      */
     public void cloneRepository(String group,String url) throws URISyntaxException, GitAPIException, IOException {
-        final URL repositoryURL = new URL(url);
-
-        final File baseDir = fileManager.mkTmpDir(baseDirName);
+        final File baseDir = fileManager.mkDataDir(baseDirName);
 
         // 获取当前要创建的目录名,并检测是否存在
-        final String repositoryName = FilenameUtils.getBaseName(URLUtil.pathLast(url));
+        final int lastIndexOf = url.lastIndexOf('/');
+        final String repositoryName = url.substring(lastIndexOf + 1, url.length() - 3);
         final File repositoryDir = new File(baseDir, group+"/"+repositoryName);
         boolean onlyGitHideDir = repositoryDir.exists() && repositoryDir.list().length == 1 && ".git".equals(repositoryDir.list()[0]);
         if (onlyGitHideDir){
@@ -109,15 +131,12 @@ public class GitService {
     }
 
     public List<String> groups(){
-//        final File baseDir = fileManager.mkTmpDir(baseDirName);
-//        return baseDir.list();
-//        return connectService.names(MODULE);
         final List<ConnectOutput> connectOutputs = connectService.moduleConnects(MODULE);
         return connectOutputs.stream().map(ConnectOutput::getConnectInput).map(ConnectInput::getBaseName).collect(Collectors.toList());
     }
 
     public String[] repositorys(String group){
-        final File baseDir = fileManager.mkTmpDir(baseDirName);
+        final File baseDir = fileManager.mkDataDir(baseDirName);
         final File file = new File(baseDir, group);
         return file.list();
     }
@@ -147,7 +166,7 @@ public class GitService {
      * @return
      */
     public long newCompileTime(String group,String repository) throws IOException {
-        final File baseDir = fileManager.mkTmpDir(baseDirName);
+        final File baseDir = fileManager.mkDataDir(baseDirName);
         final File infoFile = new File(baseDir,group + repository + "info");
         if (!infoFile.exists()){
             return -1;
@@ -166,6 +185,29 @@ public class GitService {
             }
         }
         return maxTime;
+    }
+
+    /**
+     * 从 commitIds 列表加载
+     * @param commitIds 提交记录列表
+     * @return
+     */
+    public Map<String,Commit> loadCommitInfos(String group,String repositoryName,List<String> commitIds) throws IOException {
+        final Git git = openGit(group, repositoryName);
+
+        final Repository repository = git.getRepository();
+
+        Map<String,Commit> commitMap = new LinkedHashMap<>();
+
+        try(TreeWalk treeWalk = new TreeWalk(repository);) {
+            for (String commitId : commitIds) {
+                final RevCommit revCommit = repository.parseCommit(repository.resolve(commitId));
+
+                final Commit commit = new Commit(revCommit.getShortMessage(), revCommit.getAuthorIdent().getName(), new String(revCommit.getId().name()), new Date(((long)revCommit.getCommitTime()) * 1000));
+                commitMap.put(commitId,commit);
+            }
+        }
+        return commitMap;
     }
 
     /**
@@ -303,7 +345,7 @@ public class GitService {
      * @throws IOException
      */
     public Object configRepositoryProperty(String group, String repository, String key, Object value) throws IOException {
-        final File baseDir = fileManager.mkTmpDir(baseDirName);
+        final File baseDir = fileManager.mkDataDir(baseDirName);
         final File infoFile = new File(baseDir,group + repository + "info");
         JSONObject jsonObject = null;
         if (!infoFile.exists()){
@@ -373,6 +415,9 @@ public class GitService {
     }
 
     public List<Commit> listCommits(String group,String repositoryName,int maxCount) throws IOException, GitAPIException {
+        // 每访问一次提交记录, 添加一次访问
+        connectService.visitConnect(MODULE,group);
+
         final Git git = openGit(group, repositoryName);
         List<Commit> commits = new ArrayList<>();
 
@@ -583,12 +628,23 @@ public class GitService {
         final List<FileInfo> deleteFileInfos = changeFiles.getDeleteFileInfos();
 
         // 创建压缩包
-        final File patch = fileManager.mkTmpDir("gitpatch/" + System.currentTimeMillis());
+        final File patch = fileManager.mkDataDir("gitpatch/" + System.currentTimeMillis());
         patch.mkdirs();
 
         // 写入总计信息
         final File allChange = new File(patch, "allchange.txt");
         List<String> allChangeText = new ArrayList<>();
+
+        // 添加当前分支, 选中的提交记录列表
+        allChangeText.add("增量分支:"+currentBranch(group,repositoryName));
+        allChangeText.add("提交记录列表");
+        final Map<String, Commit> commitMap = loadCommitInfos(group, repositoryName, changeFiles.getCommitIds());
+        for (Commit value : commitMap.values()) {
+            allChangeText.add(value.toInfo());
+        }
+
+        // 添加文件变更记录
+        allChangeText.add("变更文件记录");
         for (FileInfo fileInfo : modifyFileInfos) {
             allChangeText.add(fileInfo.getDiffEntry().toString());
         }
@@ -677,7 +733,7 @@ public class GitService {
     }
 
     private File repositoryDir(String group, String repositoryName) {
-        final File baseDir = fileManager.mkTmpDir(baseDirName);
+        final File baseDir = fileManager.mkDataDir(baseDirName);
         final File repositoryDir = new File(baseDir, group + "/" + repositoryName);
         return repositoryDir;
     }
@@ -693,14 +749,12 @@ public class GitService {
             urIish = allRemoteConfigs.get(0).getURIs().get(0);
         }
         final GitParam gitParam = (GitParam) connectService.readConnParams(MODULE, group);
-        if ("git".equals(urIish.getScheme())){
-            transportCommand.setTransportConfigCallback(new TransportConfigCallback() {
-                @Override
-                public void configure(Transport transport) {
-                    SshTransport sshTransport = (SshTransport)transport;
-                    sshTransport.setSshSessionFactory(sshSessionFactory);
-                }
-            });
+        if (urIish.toString().startsWith("git")){
+            // 直接使用服务器的私钥, 让用户把服务器的公钥放到他仓库的 sshkey 里面去
+            File sshKeyFile = new File(System.getProperty("user.home")+"/.ssh/id_rsa");
+            final CustomSshSessionFactory customSshSessionFactory = new CustomSshSessionFactory(sshKeyFile);
+            final SshTransportConfigCallback sshTransportConfigCallback = new SshTransportConfigCallback(customSshSessionFactory);
+            transportCommand.setTransportConfigCallback(sshTransportConfigCallback);
         }else {
             final AuthParam authParam = gitParam.getAuthParam();
             if (authParam != null) {
@@ -719,7 +773,7 @@ public class GitService {
     }
 
     public void lock(String remoteAddr,String group, String repository) throws IOException {
-        final File baseDir = fileManager.mkTmpDir(baseDirName);
+        final File baseDir = fileManager.mkDataDir(baseDirName);
         final File lockFile = new File(baseDir,group + repository + "lock");
 //        final String remoteAddr = NetUtil.remoteAddr();
         if (lockFile.exists()){
@@ -736,7 +790,7 @@ public class GitService {
     }
 
     public void unLock(String group, String repository,boolean force) throws IOException {
-        final File baseDir = fileManager.mkTmpDir(baseDirName);
+        final File baseDir = fileManager.mkDataDir(baseDirName);
         final File lockFile = new File(baseDir,group + repository + "lock");
         if (!lockFile.exists()){
             // 无需解锁
@@ -767,16 +821,7 @@ public class GitService {
         }
     }
 
-    SshSessionFactory sshSessionFactory = new JschConfigSessionFactory() {
-		@Override
-		protected void configure(OpenSshConfig.Host host, Session session) {
-			/*
-			 * 解除HostKey检查，也就意味着可以接受未知的远程主机的文件，这是不安全的，这种模式只是用于测试为目的的。
-			 * 利用ssh-keyscan -t rsa hostname，收集主机数据。
-			 */
-			session.setConfig("StrictHostKeyChecking", "no");
-		}
-	};
+
 
     private boolean branchNameExist(Git git, String branchName) throws GitAPIException {
         List<Ref> refs = git.branchList().call();
@@ -788,8 +833,4 @@ public class GitService {
         return false;
     }
 
-//    @PostConstruct
-//    public void register(){
-//        pluginManager.register(PluginDto.builder().module("docs").name("git").author("sanri").logo("git.jpg").desc("git代码管理").envs("default").build());
-//    }
 }

@@ -140,7 +140,9 @@ public final class Version implements Serializable {
     }
 
     private String getStringValue() {
-        if (originalStringValue != null) return originalStringValue;
+        if (originalStringValue != null) {
+            return originalStringValue;
+        }
 
         String calculatedStringValue = this.calculatedStringValue;
         if (calculatedStringValue == null) {
@@ -148,7 +150,9 @@ public final class Version implements Serializable {
                 calculatedStringValue = this.calculatedStringValue;
                 if (calculatedStringValue == null) {
                     calculatedStringValue = major + "." + minor + "." + micro;
-                    if (extraInfo != null) calculatedStringValue += "-" + extraInfo;
+                    if (extraInfo != null) {
+                        calculatedStringValue += "-" + extraInfo;
+                    }
                     this.calculatedStringValue = calculatedStringValue;
                 }
             }
@@ -219,7 +223,9 @@ public final class Version implements Serializable {
     @Override
     public int hashCode() {
         int r = hashCode;
-        if (r != 0) return r;
+        if (r != 0) {
+            return r;
+        }
         synchronized (this) {
             if (hashCode == 0) {
                 final int prime = 31;
@@ -228,7 +234,9 @@ public final class Version implements Serializable {
                 result = prime * result + (extraInfo == null ? 0 : extraInfo.hashCode());
                 result = prime * result + (gaeCompliant == null ? 0 : gaeCompliant.hashCode());
                 result = prime * result + intValue;
-                if (result == 0) result = -1;  // 0 is reserved for "not set"
+                if (result == 0) {
+                    result = -1;  // 0 is reserved for "not set"
+                }
                 hashCode = result;
             }
             return hashCode;
@@ -237,30 +245,46 @@ public final class Version implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
 
         Version other = (Version) obj;
 
-        if (intValue != other.intValue) return false;
+        if (intValue != other.intValue) {
+            return false;
+        }
 
-        if (other.hashCode() != hashCode()) return false;
+        if (other.hashCode() != hashCode()) {
+            return false;
+        }
 
         if (buildDate == null) {
-            if (other.buildDate != null) return false;
+            if (other.buildDate != null) {
+                return false;
+            }
         } else if (!buildDate.equals(other.buildDate)) {
             return false;
         }
 
         if (extraInfo == null) {
-            if (other.extraInfo != null) return false;
+            if (other.extraInfo != null) {
+                return false;
+            }
         } else if (!extraInfo.equals(other.extraInfo)) {
             return false;
         }
 
         if (gaeCompliant == null) {
-            if (other.gaeCompliant != null) return false;
+            if (other.gaeCompliant != null) {
+                return false;
+            }
         } else if (!gaeCompliant.equals(other.gaeCompliant)) {
             return false;
         }

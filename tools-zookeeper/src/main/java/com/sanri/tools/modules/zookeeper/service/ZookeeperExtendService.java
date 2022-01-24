@@ -35,13 +35,13 @@ public class ZookeeperExtendService implements ApplicationListener<DeleteSecurit
      * @param pathFavoriteParam
      */
     public void addFavorite(String connName, PathFavorite pathFavorite){
-        Set<PathFavorite> pathFavorites = this.pathFavorites.computeIfAbsent(connName, k -> new LinkedHashSet<>());
+        Set<PathFavorite> pathFavorites = ZookeeperExtendService.pathFavorites.computeIfAbsent(connName, k -> new LinkedHashSet<>());
         pathFavorites.add(pathFavorite);
         serializer();
     }
 
     public void removeFavorite(String connName,String name){
-        Set<PathFavorite> pathFavorites = this.pathFavorites.computeIfAbsent(connName, k -> new LinkedHashSet<>());
+        Set<PathFavorite> pathFavorites = ZookeeperExtendService.pathFavorites.computeIfAbsent(connName, k -> new LinkedHashSet<>());
         Iterator<PathFavorite> iterator = pathFavorites.iterator();
         while (iterator.hasNext()){
             PathFavorite next = iterator.next();
@@ -59,7 +59,7 @@ public class ZookeeperExtendService implements ApplicationListener<DeleteSecurit
      * @return
      */
     public Set<PathFavorite> favorites(String connName){
-        Set<PathFavorite> pathFavorites = this.pathFavorites.computeIfAbsent(connName, k -> new LinkedHashSet<PathFavorite>());
+        Set<PathFavorite> pathFavorites = ZookeeperExtendService.pathFavorites.computeIfAbsent(connName, k -> new LinkedHashSet<PathFavorite>());
         return pathFavorites;
     }
 
@@ -81,7 +81,7 @@ public class ZookeeperExtendService implements ApplicationListener<DeleteSecurit
             TypeReference<Map<String,Set<PathFavorite>>> typeReference =  new TypeReference<Map<String,Set<PathFavorite>>>(){};
             final Map<String, Set<PathFavorite>> stringSetMap = JSON.parseObject(favorites, typeReference);
             if (stringSetMap != null) {
-                this.pathFavorites.putAll(stringSetMap);
+                pathFavorites.putAll(stringSetMap);
             }
         } catch (IOException e) {
             log.error("zookeeper load path favorites error : {}",e.getMessage(),e);

@@ -142,7 +142,9 @@ public class PluginManager implements InitializingBean {
                     for (Resource res : resources) {
                         if (res.getURI().getPath().contains(pluginId)){
                             log.info("找到插件[{}]的资源:{}",pluginId,res);
-                            final String content = IOUtils.toString(res.getInputStream(), StandardCharsets.UTF_8);
+                            String content = IOUtils.toString(res.getInputStream(), StandardCharsets.UTF_8);
+                            // 本地的图片路径需要替换相对路径为相对根路径的路径
+                            content = content.replaceAll("../../../../images","/images");
                             pluginWithHelpContent.setHelpContent(content);
                             break;
                         }

@@ -26,7 +26,7 @@ Redis 模块提供 redis 的 key列表，key 数据查询，慢查询监控
 
 ### 界面
 
-![](images/redis分模块.png)
+![redis分模块](../../../../images/redis分模块.png)
 
 ![Redis](../../../../images/Redis.png)
 

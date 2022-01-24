@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>sanri-tools-springboot</artifactId>
+        <groupId>com.sanri.tools</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <properties>
+        <sajdijar>${java.home}/../lib/sa-jdi.jar</sajdijar>
+    </properties>
+
+    <artifactId>tools-jvm</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.sun</groupId>
+            <artifactId>sa-jdi</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${sajdijar}</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>tools-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+            <version>3.6</version>
+        </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>net.bytebuddy</groupId>-->
+<!--            <artifactId>byte-buddy</artifactId>-->
+<!--            <version>1.11.6</version>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>net.bytebuddy</groupId>-->
+<!--            <artifactId>byte-buddy-agent</artifactId>-->
+<!--            <version>1.11.6</version>-->
+<!--        </dependency>-->
+
+    </dependencies>
+
+</project>

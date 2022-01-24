@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PreDestroy;
 
+import com.sanri.tools.modules.core.dtos.param.ConnectParam;
 import com.sanri.tools.modules.core.service.connect.ConnectService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -334,8 +335,8 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
             default:
         }
 
-        log.info("暂时还不运行当前类型的数据获取:{}",key);
-        throw new ToolException("暂时还不运行当前类型的数据获取:"+key);
+        log.info("暂时还不支持当前类型的数据获取或者序列化方式错误:{}",key);
+        throw new ToolException("暂时还不支持当前类型的数据获取或者序列化方式错误:"+key);
     }
 
 
@@ -587,5 +588,33 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
         }
 
         return redisConnection.hdel(key,fields);
+    }
+
+    public void flushdb(ConnParam connParam) throws IOException {
+        final RedisConnection redisConnection = redisConnection(connParam);
+        final RedisRunMode runMode = redisConnection.getRunMode();
+        if (runMode == RedisRunMode.cluster){
+            throw new ToolException("不支持集群模式的 flushdb");
+        }
+        final Jedis jedis = redisConnection.getMasterNode().browerJedis();
+        try{
+            jedis.flushDB();
+        }finally {
+            jedis.close();
+        }
+    }
+
+    public void flushall(ConnParam connParam) throws IOException {
+        final RedisConnection redisConnection = redisConnection(connParam);
+        final RedisRunMode runMode = redisConnection.getRunMode();
+        if (runMode == RedisRunMode.cluster){
+            throw new ToolException("不支持集群模式的 flushdb");
+        }
+        final Jedis jedis = redisConnection.getMasterNode().browerJedis();
+        try{
+            jedis.flushAll();
+        }finally {
+            jedis.close();
+        }
     }
 }

@@ -26,7 +26,7 @@
 ### 算法详细说明
 
 1. 先生成一颗这样的树, 创建一个顶部虚拟节点
-```shell script
+```
 virtual
   I
     is am 
@@ -39,3 +39,11 @@ virtual
       china 
 ```
 2. 遍历所有可能的路径(使用指针回溯)
+```
+IIsChina
+IAmChina
+myIsChina
+myAmChina
+meIsChina
+meAmChina
+```

@@ -1,0 +1,44 @@
+### 通用接口- 获取 mbeans 名称树
+GET {{baseUrl}}/jvm/mbean/names?jmxHostAndPort=127.0.0.1:10086
+
+### 通用接口- 获取 mbean 信息
+GET {{baseUrl}}/jvm/mbean/detail?jmxHostAndPort=127.0.0.1:10086&mBeanName=com.sun.management:type=HotSpotDiagnostic
+
+### 通用接口- 获取属性值信息
+GET {{baseUrl}}/jvm/mbean/attrValue?jmxHostAndPort=127.0.0.1:10086&mBeanName=java.lang:type=OperatingSystem&attrNames=AvailableProcessors,TotalSwapSpaceSize
+
+### 通用接口- 获取内存图信息(可以使用专用方法获取有结构信息内存图信息, 这个是通用方法)
+POST {{baseUrl}}/jvm/mbean/invoke
+Content-Type: application/json
+
+{
+  "jmxHostAndPort": "127.0.0.1:10086",
+  "beanName": "com.sun.management:type=DiagnosticCommand",
+  "operation": "gcClassHistogram",
+  "params": [["-all"]],
+  "signature": ["[Ljava.lang.String;"]
+}
+
+### 通用接口 - 获取线程 cpu 时间
+POST {{baseUrl}}/jvm/mbean/invoke
+Content-Type: application/json
+
+{"beanName":"java.lang:type=Threading","connName":"192.168.61.71","operation":"getThreadCpuTime","params":[785],"signature":["long"]}
+
+### 通用接口- 获取系统信息
+GET {{baseUrl}}/jvm/mbean/proxyMBean?connName=192.168.61.71&mBeanName=java.lang:type=OperatingSystem&className=com.sun.management.OperatingSystemMXBean
+
+### 通用接口 - 获取代理类列表, 例: 获取 gc 信息
+GET {{baseUrl}}/jvm/mbean//proxyMXBeans?connName=192.168.61.71&interfaceName=com.sun.management.GarbageCollectorMXBean
+
+### 专用接口 - 获取内存直方图
+GET {{baseUrl}}/jvm/diagnostic/gcClassHistogram?connName=192.168.61.71
+
+### 专用接口 - 获取已经设置的 vm 参数
+GET {{baseUrl}}/jvm/diagnostic/flagsSetted?connName=192.168.61.71
+
+### 专用接口 - 线程列表
+GET {{baseUrl}}/jvm/thread/list?connName=192.168.61.71
+
+### 专用接口 - 线程列表分组, 展示树状结构
+GET {{baseUrl}}/jvm/thread/list/threadPools?connName=192.168.61.71

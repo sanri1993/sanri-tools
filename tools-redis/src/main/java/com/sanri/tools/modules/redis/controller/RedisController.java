@@ -23,6 +23,24 @@ public class RedisController {
     private RedisTreeKeyService redisTreeKeyService;
 
     /**
+     * 清空当前库
+     * @param connParam
+     */
+    @PostMapping("/flushdb")
+    public void flushdb(@Validated ConnParam connParam) throws IOException {
+        redisService.flushdb(connParam);
+    }
+
+    /**
+     * 清空所有库
+     * @param connParam
+     */
+    @PostMapping("/flushall")
+    public void flushall(@Validated ConnParam connParam) throws IOException {
+        redisService.flushall(connParam);
+    }
+
+    /**
      * Redis 树状 key 节点
      * @param connParam 连接参数
      * @return

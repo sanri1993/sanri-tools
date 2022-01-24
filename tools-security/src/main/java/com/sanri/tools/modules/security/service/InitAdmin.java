@@ -1,5 +1,14 @@
 package com.sanri.tools.modules.security.service;
 
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.sanri.tools.modules.core.security.dtos.RoleInfo;
 import com.sanri.tools.modules.core.security.dtos.ThinUser;
 import com.sanri.tools.modules.core.security.entitys.ToolMenu;
@@ -10,17 +19,8 @@ import com.sanri.tools.modules.security.service.repository.GroupRepository;
 import com.sanri.tools.modules.security.service.repository.ResourceRepository;
 import com.sanri.tools.modules.security.service.repository.RoleRepository;
 import com.sanri.tools.modules.security.service.repository.UserRepository;
-import lombok.extern.slf4j.Slf4j;
-import netscape.security.UserTarget;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
