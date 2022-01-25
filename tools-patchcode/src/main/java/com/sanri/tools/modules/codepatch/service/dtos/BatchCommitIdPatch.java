@@ -12,4 +12,5 @@ public class BatchCommitIdPatch {
     private String commitBeforeId;
     private String commitAfterId;
     private List<String> commitIds = new ArrayList<>();
+    private String title;
 }

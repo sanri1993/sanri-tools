@@ -5,7 +5,6 @@ import com.sanri.tools.modules.codepatch.service.GitService;
 import com.sanri.tools.modules.codepatch.service.dtos.*;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.diff.DiffEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -115,7 +114,7 @@ public class GitController {
         final String group = commitIdPatch.getGroup();
         final String repository = commitIdPatch.getRepository();
         final ChangeFiles changeFiles = gitService.createPatch(group, repository, commitIdPatch.getCommitBeforeId(), commitIdPatch.getCommitAfterId());
-        final File compileFile = gitService.findCompileFiles(group, repository, changeFiles);
+        final File compileFile = gitService.findCompileFiles(group, repository, changeFiles,commitIdPatch.getTitle());
         final Path path = fileManager.relativePath(compileFile.toPath());
 
         return path.toString();
@@ -126,10 +125,23 @@ public class GitController {
         final String group = batchCommitIdPatch.getGroup();
         final String repository = batchCommitIdPatch.getRepository();
         final ChangeFiles changeFiles = gitService.createPatch(group, repository, batchCommitIdPatch.getCommitIds());
-        final File compileFile = gitService.findCompileFiles(group, repository, changeFiles);
+        final File compileFile = gitService.findCompileFiles(group, repository, changeFiles, batchCommitIdPatch.getTitle());
         final Path path = fileManager.relativePath(compileFile.toPath());
 
         return path.toString();
+    }
+
+    /**
+     * 猜测编译模块
+     * @param batchCommitIdPatch
+     * @return
+     */
+    @PostMapping("/guessCompileModules")
+    public List<String> guessCompileModules(@RequestBody BatchCommitIdPatch batchCommitIdPatch) throws IOException, GitAPIException {
+        final String group = batchCommitIdPatch.getGroup();
+        final String repository = batchCommitIdPatch.getRepository();
+        final ChangeFiles changeFiles = gitService.createPatch(group, repository, batchCommitIdPatch.getCommitIds());
+        return gitService.guessCompileModules(group,repository,changeFiles);
     }
 
     @GetMapping("/lock")

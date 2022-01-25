@@ -42,3 +42,6 @@ GET {{baseUrl}}/git/createPatch?group=yuanian&repository=fssc_eam&commitBeforeId
 
 ### 查看模块信息
 GET {{baseUrl}}/git/modules?group=yuanian&repository=fssc_eam
+
+### 获取补丁列表
+GET {{baseUrl}}/patch/list

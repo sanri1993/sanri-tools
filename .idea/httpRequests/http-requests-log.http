@@ -1,3 +1,9 @@
+GET http://localhost:8084/patch/list
+
+<> 2022-01-24T090522.200.json
+
+###
+
 GET http://localhost:8084/jvm/diagnostic/flagsSetted?connName=192.168.61.71
 
 <> 2022-01-23T064326.200.json
@@ -427,21 +433,6 @@ Content-Type: application/json
 }
 
 <> 2022-01-12T025353.200.json
-
-###
-
-POST http://localhost:8084/monitor/mbean/invoke
-Content-Type: application/json
-
-{
-  "jmxHostAndPort": "127.0.0.1:10086",
-  "beanName": "com.sun.management:type=DiagnosticCommand",
-  "operation": "gcClassHistogram",
-  "params": [["-all"]],
-  "signature": [["[Ljava.lang.String"]]
-}
-
-<> 2022-01-12T024722.200.json
 
 ###
 

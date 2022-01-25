@@ -31,7 +31,7 @@ public class MvcConfiguration implements WebMvcConfigurer {
                 MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = (MappingJackson2HttpMessageConverter) converter;
                 final ObjectMapper objectMapper = mappingJackson2HttpMessageConverter.getObjectMapper();
                 objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-                objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+//                objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
             }
         }
     }

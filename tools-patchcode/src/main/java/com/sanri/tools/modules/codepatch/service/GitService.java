@@ -14,8 +14,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
+import com.sanri.tools.modules.core.security.UserService;
 import com.sanri.tools.modules.core.service.connect.ConnectService;
 import com.sanri.tools.modules.core.service.connect.dtos.ConnectInput;
 import com.sanri.tools.modules.core.service.connect.dtos.ConnectOutput;
@@ -39,7 +38,6 @@ import org.eclipse.jgit.transport.http.HttpConnection;
 import org.eclipse.jgit.transport.http.HttpConnectionFactory;
 import org.eclipse.jgit.transport.http.JDKHttpConnectionFactory;
 import org.eclipse.jgit.treewalk.TreeWalk;
-import org.eclipse.jgit.util.FS;
 import org.eclipse.jgit.util.HttpSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,16 +46,13 @@ import org.springframework.util.ReflectionUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.jcraft.jsch.Session;
 import com.sanri.tools.modules.codepatch.service.dtos.*;
 import com.sanri.tools.modules.core.dtos.param.AuthParam;
 import com.sanri.tools.modules.core.dtos.param.GitParam;
 import com.sanri.tools.modules.core.exception.ToolException;
-import com.sanri.tools.modules.core.service.file.ConnectServiceOldFileBase;
 import com.sanri.tools.modules.core.service.file.FileManager;
 
 import com.sanri.tools.modules.core.utils.NetUtil;
-import com.sanri.tools.modules.core.utils.URLUtil;
 import com.sanri.tools.modules.core.utils.ZipUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -98,6 +93,12 @@ public class GitService {
 
     @Autowired
     private WebSocketCompileService webSocketService;
+
+    @Autowired
+    private PatchManagerService patchManagerService;
+
+    @Autowired(required = false)
+    private UserService userService;
 
     /**
      * @param group 表示连接管理中的连接名
@@ -617,18 +618,19 @@ public class GitService {
 
     /**
      * 从变更记录中找到所有编译后的文件
+     * @param diffEntries
      * @param group
      * @param repositoryName
-     * @param diffEntries
+     * @param title
      * @return
      * @throws IOException
      */
-    public File findCompileFiles(String group, String repositoryName, ChangeFiles changeFiles) throws IOException {
+    public File findCompileFiles(String group, String repositoryName, ChangeFiles changeFiles, String title) throws IOException {
         final List<FileInfo> modifyFileInfos = changeFiles.getModifyFileInfos();
         final List<FileInfo> deleteFileInfos = changeFiles.getDeleteFileInfos();
 
         // 创建压缩包
-        final File patch = fileManager.mkDataDir("gitpatch/" + System.currentTimeMillis());
+        final File patch = fileManager.mkTmpDir("gitpatch/" + System.currentTimeMillis());
         patch.mkdirs();
 
         // 写入总计信息
@@ -636,7 +638,9 @@ public class GitService {
         List<String> allChangeText = new ArrayList<>();
 
         // 添加当前分支, 选中的提交记录列表
-        allChangeText.add("增量分支:"+currentBranch(group,repositoryName));
+        final String currentBranch = currentBranch(group, repositoryName);
+        allChangeText.add("项目:"+repositoryName);
+        allChangeText.add("增量分支:"+currentBranch);
         allChangeText.add("提交记录列表");
         final Map<String, Commit> commitMap = loadCommitInfos(group, repositoryName, changeFiles.getCommitIds());
         for (Commit value : commitMap.values()) {
@@ -685,6 +689,9 @@ public class GitService {
             }
         }
 
+        /**
+         * 删除的文件列表
+         */
         if (CollectionUtils.isNotEmpty(deleteFileInfos)){
             final File file = new File(patch, "delete.txt");
 
@@ -695,9 +702,19 @@ public class GitService {
             FileUtils.writeLines(file,deleteText);
         }
 
+        // 创建压缩包
         final File zip = ZipUtil.zip(patch);
 
+        // 删除临时目录
         FileUtils.deleteDirectory(patch);
+
+        // 添加到增量管理
+        String username = userService != null ? userService.username() : null;
+        final Path path = fileManager.relativePath(zip.toPath());
+        if (StringUtils.isBlank(title)){
+            title = FilenameUtils.getBaseName(patch.getName());
+        }
+        patchManagerService.addPatch(new PatchEntity(title,group,repositoryName,currentBranch,System.currentTimeMillis(),username,path.toString(),true));
         return zip;
     }
 
@@ -805,6 +822,20 @@ public class GitService {
         if (!delete){
             throw new ToolException("解锁失败, 联系管理者");
         }
+    }
+
+    /**
+     * 编译模块猜测
+     * @param group
+     * @param repository
+     * @param changeFiles
+     * @return
+     */
+    public List<String> guessCompileModules(String group, String repository, ChangeFiles changeFiles) {
+        final File dir = repositoryDir(group, repository);
+        final List<FileInfo> modifyFileInfos = changeFiles.getModifyFileInfos();
+        final Set<File> modules = modifyFileInfos.stream().map(FileInfo::getModulePath).map(module -> new File(module,"pom.xml")).collect(Collectors.toSet());
+        return modules.stream().map(File::toPath).map(Path::toString).collect(Collectors.toList());
     }
 
     static class InsecureHttpConnectionFactory implements HttpConnectionFactory {
