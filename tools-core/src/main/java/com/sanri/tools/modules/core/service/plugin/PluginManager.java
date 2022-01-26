@@ -2,6 +2,7 @@ package com.sanri.tools.modules.core.service.plugin;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
@@ -55,15 +56,16 @@ public class PluginManager implements InitializingBean {
         }
 
         // 读取插件信息
-        final ClassLoader classLoader = PluginManager.class.getClassLoader();
-        final Enumeration<URL> resources = classLoader.getResources("tool_plugin.properties");
-        while (resources.hasMoreElements()){
-            final URL url = resources.nextElement();
-            final UrlResource urlResource = new UrlResource(url);
+//        final ClassLoader classLoader = PluginManager.class.getClassLoader();
+//        final Enumeration<URL> resources = classLoader.getResources("tool_plugin.properties");
+        final Resource[] resources = applicationContext.getResources("classpath*:*.plugin.properties");
+        for (Resource urlResource : resources) {
+            final String filename = urlResource.getFilename();
+            final String[] filenameParts = StringUtils.split(filename, ".");
             final EncodedResource encodedResource = new EncodedResource(urlResource, StandardCharsets.UTF_8);
 
             final Properties properties = PropertiesLoaderUtils.loadProperties(encodedResource);
-            final String pluginId = Paths.get(urlResource.getURI().resolve("../../")).getFileName().toString();
+            final String pluginId = filenameParts[0];
             final PluginRegister pluginRegister = new PluginRegister(pluginId);
             pluginRegister.setAuthor(properties.getProperty("author"));
             pluginRegister.setName(properties.getProperty("name"));

@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
     <modules>
         <module>tools-core</module>
+        <module>tools-serializable</module>
         <module>tools-console</module>
         <module>tools-zookeeper</module>
         <module>tools-redis</module>
         <module>tools-kafka</module>
         <module>tools-websocket</module>
-        <module>tools-serializable</module>
         <module>tools-database</module>
         <module>tools-soap</module>
         <module>tools-swagger-doc</module>

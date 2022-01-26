@@ -19,7 +19,53 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>tools-database</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>tools-dubbo</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>tools-elasticsearch</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>tools-jvm</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>tools-kafka</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>tools-mongodb</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>tools-mybatis</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>tools-name</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>tools-patchcode</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>tools-quartz</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -29,9 +75,15 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>tools-database</artifactId>
+            <artifactId>tools-security</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>tools-serializable</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>tools-soap</artifactId>
@@ -42,36 +94,7 @@
             <artifactId>tools-swagger-doc</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>tools-name</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>tools-dubbo</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>tools-mybatis</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>tools-mongodb</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>tools-quartz</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>tools-elasticsearch</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>tools-tcp</artifactId>
@@ -79,17 +102,13 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>tools-patchcode</artifactId>
+            <artifactId>tools-websocket</artifactId>
             <version>${project.version}</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>${project.groupId}</groupId>-->
-<!--            <artifactId>tools-security</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
+
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>tools-jvm</artifactId>
+            <artifactId>tools-zookeeper</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -122,68 +141,84 @@
                     <layout>ZIP</layout>
                     <includes>
                         <include>
-                            <groupId>com.sanri.tools</groupId>
+                            <groupId>${project.groupId}</groupId>
                             <artifactId>tools-core</artifactId>
                         </include>
                         <include>
-                            <groupId>com.sanri.tools</groupId>
-                            <artifactId>tools-kafka</artifactId>
-                        </include>
-                        <include>
-                            <groupId>com.sanri.tools</groupId>
-                            <artifactId>tools-redis</artifactId>
-                        </include>
-                        <include>
-                            <groupId>com.sanri.tools</groupId>
+                            <groupId>${project.groupId}</groupId>
                             <artifactId>tools-database</artifactId>
                         </include>
                         <include>
-                            <groupId>com.sanri.tools</groupId>
-                            <artifactId>tools-soap</artifactId>
-                        </include>
-                        <include>
-                            <groupId>com.sanri.tools</groupId>
-                            <artifactId>tools-swagger-doc</artifactId>
-                        </include>
-                        <include>
-                            <groupId>com.sanri.tools</groupId>
-                            <artifactId>tools-name</artifactId>
-                        </include>
-                        <include>
-                            <groupId>com.sanri.tools</groupId>
+                            <groupId>${project.groupId}</groupId>
                             <artifactId>tools-dubbo</artifactId>
                         </include>
                         <include>
-                            <groupId>com.sanri.tools</groupId>
-                            <artifactId>tools-mybatis</artifactId>
-                        </include>
-                        <include>
-                            <groupId>com.sanri.tools</groupId>
-                            <artifactId>tools-mongodb</artifactId>
-                        </include>
-                        <include>
-                            <groupId>com.sanri.tools</groupId>
-                            <artifactId>tools-quartz</artifactId>
-                        </include>
-                        <include>
-                            <groupId>com.sanri.tools</groupId>
+                            <groupId>${project.groupId}</groupId>
                             <artifactId>tools-elasticsearch</artifactId>
                         </include>
                         <include>
-                            <groupId>com.sanri.tools</groupId>
-                            <artifactId>tools-tcp</artifactId>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>tools-jvm</artifactId>
+                        </include>
+
+                        <include>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>tools-kafka</artifactId>
                         </include>
                         <include>
-                            <groupId>com.sanri.tools</groupId>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>tools-mongodb</artifactId>
+                        </include>
+                        <include>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>tools-mybatis</artifactId>
+                        </include>
+                        <include>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>tools-name</artifactId>
+                        </include>
+                        <include>
+                            <groupId>${project.groupId}</groupId>
                             <artifactId>tools-patchcode</artifactId>
                         </include>
                         <include>
-                            <groupId>com.sanri.tools</groupId>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>tools-quartz</artifactId>
+                        </include>
+                        <include>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>tools-redis</artifactId>
+                        </include>
+                        <include>
+                            <groupId>${project.groupId}</groupId>
                             <artifactId>tools-security</artifactId>
                         </include>
                         <include>
-                            <groupId>com.sanri.tools</groupId>
-                            <artifactId>tools-jvm</artifactId>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>tools-serializable</artifactId>
+                        </include>
+
+                        <include>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>tools-soap</artifactId>
+                        </include>
+                        <include>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>tools-swagger-doc</artifactId>
+                        </include>
+
+                        <include>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>tools-tcp</artifactId>
+                        </include>
+                        <include>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>tools-websocket</artifactId>
+                        </include>
+
+                        <include>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>tools-zookeeper</artifactId>
                         </include>
                     </includes>
                     <includeSystemScope>true</includeSystemScope>

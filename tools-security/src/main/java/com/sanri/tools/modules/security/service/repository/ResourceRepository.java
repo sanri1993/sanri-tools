@@ -2,6 +2,7 @@ package com.sanri.tools.modules.security.service.repository;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -16,6 +17,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
 import com.sanri.tools.modules.core.security.dtos.ResourceInfo;
@@ -47,6 +50,9 @@ public class ResourceRepository implements InitializingBean {
 
     @Autowired
     private GroupRepository groupRepository;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     /**
      * 获取菜单列表
@@ -91,19 +97,21 @@ public class ResourceRepository implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        final ClassLoader classLoader = UrlSecurityPermsLoad.class.getClassLoader();
+//        final ClassLoader classLoader = UrlSecurityPermsLoad.class.getClassLoader();
 
         // 加载所有的资源信息
-        final Enumeration<URL> resources = classLoader.getResources("resources.conf");
-        while (resources.hasMoreElements()){
-            final URL url = resources.nextElement();
-            loadResource(url);
+//        final Enumeration<URL> resources = classLoader.getResources("resources.conf");
+        final Resource[] resources = applicationContext.getResources("classpath*:*.resources.conf");
+        for (Resource resource : resources) {
+            log.error("resourceName:{}",resource.getFilename());
+            loadResource(resource);
         }
         // 加载所有的菜单信息
-        final Enumeration<URL> menusConf = classLoader.getResources("menus.conf");
-        while (menusConf.hasMoreElements()){
-            final URL url = menusConf.nextElement();
-            loadResource(url);
+//        final Enumeration<URL> menusConf = classLoader.getResources("menus.conf");
+        final Resource[] menusResources = applicationContext.getResources("classpath*:*.menus.conf");
+        for (Resource menusResource : menusResources) {
+            log.error("resourceName:{}",menusResource.getFilename());
+            loadResource(menusResource);
         }
 
         // 把菜单列表过滤出来
@@ -121,10 +129,8 @@ public class ResourceRepository implements InitializingBean {
         }
     }
 
-    private void loadResource(URL url) throws IOException {
-        UrlResource urlResource = new UrlResource(url);
-
-        try(final InputStream inputStream = urlResource.getInputStream();){
+    private void loadResource(Resource resourceFile) throws IOException {
+        try(final InputStream inputStream = resourceFile.getInputStream();){
             final List<String> lines = IOUtils.readLines(inputStream, StandardCharsets.UTF_8);
             for (String line : lines) {
                 if (StringUtils.isBlank(line) || line.startsWith("#")){
@@ -147,7 +153,8 @@ public class ResourceRepository implements InitializingBean {
                 }
 
                 if (splitLine.length > 6){
-                    final String pluginName = Paths.get(urlResource.getURI().resolve("../../")).getFileName().toString();
+                    final String[] split = StringUtils.split(resourceFile.getFilename(), ".");
+                    final String pluginName = split[0];
                     final ToolMenu toolMenu = new ToolMenu(resource.getToolResource());
                     resource.setToolResource(toolMenu);
                     // 第 7 个配置是路由配置
