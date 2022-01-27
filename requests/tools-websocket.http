@@ -1,5 +1,3 @@
-### chat - 查看在线用户列表
-GET {{baseUrl}}/chat/onlineUsers
-
-### chat - 获取sessionId
-GET {{baseUrl}}/chat/sessionId
+### 测试 - 给前端发送消息
+GET {{baseUrl}}/test/websocket/send
+Authorization: {{Authorization}}

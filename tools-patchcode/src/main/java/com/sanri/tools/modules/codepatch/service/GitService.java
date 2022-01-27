@@ -91,8 +91,8 @@ public class GitService {
      */
     private static final String MODULE = "git";
 
-    @Autowired
-    private WebSocketCompileService webSocketService;
+//    @Autowired
+//    private WebSocketCompileService webSocketService;
 
     @Autowired
     private PatchManagerService patchManagerService;
@@ -217,9 +217,7 @@ public class GitService {
      * @param repository
      * @return
      */
-    public List<Module> modules(String group,String repository) throws IOException {
-        final List<PomFile> pomFiles = loadAllPomFile(group, repository);
-
+    public List<Module> modules(String group,String repository,List<PomFile> pomFiles) throws IOException {
         // 添加上次编译时间
         for (PomFile pomFile : pomFiles) {
             final String relativePath = pomFile.getRelativePath();
@@ -318,23 +316,22 @@ public class GitService {
         final String cmd = System.getProperty("os.name").contains("Linux") ? mavenHome+"/bin/mvn" : mavenHome+"/bin/mvn.cmd";
         final String [] cmdarray = new String[]{cmd,"-f",pomFile.getAbsolutePath(),"-s",mavenConfigFilePath,"-Dmaven.test.skip=true","clean","compile"};
         log.info("执行的命令为:{}", StringUtils.join(cmdarray," "));
-        webSocketService.sendMessage(websocketId,StringUtils.join(cmdarray," "));
-        final Process cleanCompile = Runtime.getRuntime().exec(cmdarray,null,new File(System.getProperty("user.home")));
-        final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(cleanCompile.getInputStream(), StandardCharsets.UTF_8));
-        String line = "";
-        while ((line = bufferedReader.readLine()) != null){
-//            System.out.println(line);
-            webSocketService.sendMessage(websocketId,line);
-        }
-        final int waitFor = cleanCompile.waitFor();
-        if (waitFor == 0){
-            // 记录上次编译成功时间
-            final String pathMd5 = DigestUtils.md5DigestAsHex(pomRelativePath.getBytes());
-            final String currentBranch = currentBranch(group, repository);
-            configRepositoryProperty(group,repository,"lastCompileSuccessTime_"+currentBranch+"_"+ pathMd5,System.currentTimeMillis());
-        }
-        webSocketService.sendMessage(websocketId,waitFor+"");
-        RuntimeUtil.destroy(cleanCompile);
+//        webSocketService.sendMessage(websocketId,StringUtils.join(cmdarray," "));
+//        final Process cleanCompile = Runtime.getRuntime().exec(cmdarray,null,new File(System.getProperty("user.home")));
+//        final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(cleanCompile.getInputStream(), StandardCharsets.UTF_8));
+//        String line = "";
+//        while ((line = bufferedReader.readLine()) != null){
+//            webSocketService.sendMessage(websocketId,line);
+//        }
+//        final int waitFor = cleanCompile.waitFor();
+//        if (waitFor == 0){
+//            // 记录上次编译成功时间
+//            final String pathMd5 = DigestUtils.md5DigestAsHex(pomRelativePath.getBytes());
+//            final String currentBranch = currentBranch(group, repository);
+//            configRepositoryProperty(group,repository,"lastCompileSuccessTime_"+currentBranch+"_"+ pathMd5,System.currentTimeMillis());
+//        }
+//        webSocketService.sendMessage(websocketId,waitFor+"");
+//        RuntimeUtil.destroy(cleanCompile);
     }
 
     /**
@@ -445,6 +442,62 @@ public class GitService {
     }
 
     /**
+     * 编译模块猜测
+     * @param changeFiles
+     * @param group
+     * @param repository
+     * @param commitIds
+     * @return
+     */
+    public List<Module> guessCompileModules(String group, String repository, List<String> commitIds) throws IOException {
+        final List<DiffEntry> diffEntries = loadCommitDiffEntrys(group, repository, commitIds);
+
+        // 获取修改的路径列表
+        List<String> changePaths = new ArrayList<>();
+        for (DiffEntry diffEntry : diffEntries) {
+            final DiffEntry.ChangeType changeType = diffEntry.getChangeType();
+            switch (changeType){
+                case DELETE:
+                    final String oldPath = diffEntry.getOldPath();
+                    changePaths.add(oldPath);
+                    break;
+                case MODIFY:
+                case ADD:
+                case COPY:
+                case RENAME:
+                    final String newPath = diffEntry.getNewPath();
+                    changePaths.add(newPath);
+                    break;
+                default:
+            }
+        }
+
+        // 根据路径得到修改了的模块列表, 先找到所有的 pom.xml 文件
+        Set<File> files = new HashSet<>();
+        final File repositoryDir = repositoryDir(group, repository);
+        for (String changePath : changePaths) {
+            final File file = new File(repositoryDir, changePath);
+            File parent = file;
+            while (!(parent = parent.getParentFile()).equals(repositoryDir)){
+                final boolean isModuleDir = ArrayUtils.contains(parent.list(), "pom.xml");
+                if (isModuleDir){
+                    break;
+                }
+            }
+            files.add(new File(parent,"pom.xml"));
+        }
+
+        List<PomFile> pomFiles = new ArrayList<>();
+        for (File file : files) {
+            final Path relativize = repositoryDir.toPath().relativize(file.toPath());
+            final String moduleName = file.getParentFile().getName();
+            pomFiles.add(new PomFile(repositoryDir,relativize.toString(),moduleName));
+        }
+
+        return modules(group, repository, pomFiles);
+    }
+
+    /**
      * 选中多个 commitId 时, 创建补丁包
      * 从后往前, 找相临 commit 做文件差异, 然后后面的差异覆盖前面的差异
      * @param repository
@@ -453,6 +506,16 @@ public class GitService {
      * @return
      */
     public ChangeFiles createPatch(String group, String repositoryName, List<String> commitIds) throws IOException, GitAPIException {
+        final List<DiffEntry> diffEntries = loadCommitDiffEntrys(group, repositoryName, commitIds);
+
+        final File repositoryDir = repositoryDir(group, repositoryName);
+
+        final ChangeFiles changeFiles = loadChangeFiles(repositoryDir,diffEntries);
+        changeFiles.setCommitIds(commitIds);
+        return changeFiles;
+    }
+
+    private List<DiffEntry> loadCommitDiffEntrys(String group, String repositoryName, List<String> commitIds) throws IOException {
         final Git git = openGit(group, repositoryName);
 
         final Repository repository = git.getRepository();
@@ -511,12 +574,7 @@ public class GitService {
         }
 
         final List<DiffEntry> diffEntries = new ArrayList<>(diffEntryMap.values());
-
-        final File repositoryDir = repositoryDir(group, repositoryName);
-
-        final ChangeFiles changeFiles = loadChangeFiles(repositoryDir,diffEntries);
-        changeFiles.setCommitIds(commitIds);
-        return changeFiles;
+        return diffEntries;
     }
 
     /**
@@ -527,6 +585,7 @@ public class GitService {
      * @param commitAfterId
      * @return
      */
+    @Deprecated
     public ChangeFiles createPatch(String group, String repositoryName, String commitBeforeId, String commitAfterId) throws IOException, GitAPIException {
         final Git git = openGit(group, repositoryName);
         final Repository repository = git.getRepository();
@@ -822,20 +881,6 @@ public class GitService {
         if (!delete){
             throw new ToolException("解锁失败, 联系管理者");
         }
-    }
-
-    /**
-     * 编译模块猜测
-     * @param group
-     * @param repository
-     * @param changeFiles
-     * @return
-     */
-    public List<String> guessCompileModules(String group, String repository, ChangeFiles changeFiles) {
-        final File dir = repositoryDir(group, repository);
-        final List<FileInfo> modifyFileInfos = changeFiles.getModifyFileInfos();
-        final Set<File> modules = modifyFileInfos.stream().map(FileInfo::getModulePath).map(module -> new File(module,"pom.xml")).collect(Collectors.toSet());
-        return modules.stream().map(File::toPath).map(Path::toString).collect(Collectors.toList());
     }
 
     static class InsecureHttpConnectionFactory implements HttpConnectionFactory {

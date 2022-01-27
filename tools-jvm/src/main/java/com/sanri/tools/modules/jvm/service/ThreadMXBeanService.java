@@ -116,7 +116,7 @@ public class ThreadMXBeanService {
 				}
 			}
 			ans = ans.substring(0, i);
-			if (ans.equals("")) {
+			if ("".equals(ans)) {
 				return "";
 			}
 		}

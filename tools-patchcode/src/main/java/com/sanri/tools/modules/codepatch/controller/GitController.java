@@ -42,7 +42,8 @@ public class GitController {
 
     @GetMapping("/modules")
     public List<Module> modules(String group, String repository) throws IOException {
-        return gitService.modules(group, repository);
+        final List<PomFile> pomFiles = gitService.loadAllPomFile(group, repository);
+        return gitService.modules(group, repository,pomFiles);
     }
 
 //    @GetMapping("/compile")
@@ -72,6 +73,14 @@ public class GitController {
         return groupRepositories;
     }
 
+    /**
+     * 分支列表
+     * @param group 分组名
+     * @param repository 仓库名
+     * @return
+     * @throws IOException
+     * @throws GitAPIException
+     */
     @GetMapping("/branchs")
     public Branchs branchs(String group,String repository) throws IOException, GitAPIException {
         final List<Branchs.Branch> branchs = gitService.branchs(group, repository);
@@ -79,21 +88,54 @@ public class GitController {
         return new Branchs(branchs, currentBranch);
     }
 
+    /**
+     * 切换分支
+     * @param group 分组名
+     * @param repository 仓库名
+     * @param branchName 分支名
+     * @return
+     * @throws IOException
+     * @throws GitAPIException
+     * @throws URISyntaxException
+     */
     @GetMapping("/switchBranch")
     public String switchBranch(String group, String repository, String branchName) throws IOException, GitAPIException, URISyntaxException {
         return gitService.switchBranch(group, repository, branchName);
     }
 
+    /**
+     * 更新提交记录
+     * @param group 分组名
+     * @param repository 仓库名
+     * @throws GitAPIException
+     * @throws IOException
+     * @throws URISyntaxException
+     */
     @GetMapping("/pull")
     public void pull(String group, String repository) throws GitAPIException, IOException, URISyntaxException {
         gitService.pull(group,repository);
     }
 
+    /**
+     * 提交记录列表
+     * @param group 分组名
+     * @param repository 仓库名
+     * @return
+     * @throws IOException
+     * @throws GitAPIException
+     */
     @GetMapping("/commits")
     public List<Commit> commits(String group, String repository) throws IOException, GitAPIException {
         return gitService.listCommits(group,repository,1000);
     }
 
+    /**
+     * 获取变更的文件列表
+     * @param batchCommitIdPatch 提交记录
+     * @return
+     * @throws IOException
+     * @throws GitAPIException
+     */
     @PostMapping("/v2/changeFiles")
     public ChangeFiles changeFilesV2(@RequestBody BatchCommitIdPatch batchCommitIdPatch) throws IOException, GitAPIException {
         final String group = batchCommitIdPatch.getGroup();
@@ -101,6 +143,14 @@ public class GitController {
         return gitService.createPatch(group,repository,batchCommitIdPatch.getCommitIds());
     }
 
+    /**
+     * 获取变更的文件列表 弃用  {@link GitController#changeFilesV2(com.sanri.tools.modules.codepatch.service.dtos.BatchCommitIdPatch)}
+     * @param commitIdPatch 提交记录
+     * @return
+     * @throws IOException
+     * @throws GitAPIException
+     */
+    @Deprecated
     @PostMapping("/changeFiles")
     public ChangeFiles changeFiles(@RequestBody BatchCommitIdPatch commitIdPatch) throws IOException, GitAPIException {
         final String group = commitIdPatch.getGroup();
@@ -109,6 +159,14 @@ public class GitController {
         return changeFiles;
     }
 
+    /**
+     * 下载补丁, 弃用 {@link GitController#createPatchV2(com.sanri.tools.modules.codepatch.service.dtos.BatchCommitIdPatch)}
+     * @param commitIdPatch
+     * @return
+     * @throws IOException
+     * @throws GitAPIException
+     */
+    @Deprecated
     @PostMapping("/createPatch")
     public String createPatch(@RequestBody BatchCommitIdPatch commitIdPatch) throws IOException, GitAPIException {
         final String group = commitIdPatch.getGroup();
@@ -120,6 +178,13 @@ public class GitController {
         return path.toString();
     }
 
+    /**
+     * 下载补丁
+     * @param batchCommitIdPatch
+     * @return
+     * @throws IOException
+     * @throws GitAPIException
+     */
     @PostMapping("/v2/createPatch")
     public String createPatchV2(@RequestBody BatchCommitIdPatch batchCommitIdPatch) throws IOException, GitAPIException {
         final String group = batchCommitIdPatch.getGroup();
@@ -133,27 +198,47 @@ public class GitController {
 
     /**
      * 猜测编译模块
-     * @param batchCommitIdPatch
+     * @param batchCommitIdPatch 提交记录信息
      * @return
      */
     @PostMapping("/guessCompileModules")
-    public List<String> guessCompileModules(@RequestBody BatchCommitIdPatch batchCommitIdPatch) throws IOException, GitAPIException {
+    public List<Module> guessCompileModules(@RequestBody BatchCommitIdPatch batchCommitIdPatch) throws IOException, GitAPIException {
         final String group = batchCommitIdPatch.getGroup();
         final String repository = batchCommitIdPatch.getRepository();
-        final ChangeFiles changeFiles = gitService.createPatch(group, repository, batchCommitIdPatch.getCommitIds());
-        return gitService.guessCompileModules(group,repository,changeFiles);
+        return gitService.guessCompileModules(group,repository,batchCommitIdPatch.getCommitIds());
     }
 
+    /**
+     * 仓库锁定
+     * @param request request
+     * @param group 分组
+     * @param repository 仓库名
+     * @throws IOException
+     */
     @GetMapping("/lock")
     public void lock(HttpServletRequest request,String group, String repository) throws IOException {
         gitService.lock(request.getRemoteAddr(),group,repository);
     }
 
+    /**
+     * 解锁仓库
+     * @param group 分组
+     * @param repository 仓库名
+     * @param force 是否强制解锁
+     * @throws IOException
+     */
     @GetMapping("/unLock")
     public void unLock(String group, String repository,String force) throws IOException {
         gitService.unLock(group,repository,Boolean.parseBoolean(force));
     }
 
+    /**
+     * 获取仓库最新的编译时间
+     * @param group 分组名
+     * @param repository 仓库名
+     * @return
+     * @throws IOException
+     */
     @GetMapping("/newCompileTime")
     public long newCompileTime(String group, String repository) throws IOException {
         return gitService.newCompileTime(group, repository);

@@ -94,38 +94,47 @@ public class HeapHistogramImpl extends HeapHistogram {
         }
     }
 
+    @Override
     public Date getTime() {
         return (Date) time.clone();
     }
 
+    @Override
     public List<ClassInfo> getHeapHistogram() {
         return classes;
     }
 
+    @Override
     public long getTotalInstances() {
         return totalInstances;
     }
 
+    @Override
     public long getTotalBytes() {
         return totalBytes;
     }
 
+    @Override
     public long getTotalHeapInstances() {
         return totalHeapInstances;
     }
 
+    @Override
     public long getTotalHeapBytes() {
         return totalHeapBytes;
     }
 
+    @Override
     public Set<ClassInfo> getPermGenHistogram() {
         return Collections.EMPTY_SET;
     }
 
+    @Override
     public long getTotalPerGenInstances() {
         return -1;
     }
 
+    @Override
     public long getTotalPermGenHeapBytes() {
         return -1;
     }
@@ -146,22 +155,27 @@ public class HeapHistogramImpl extends HeapHistogram {
             name = convertJVMName(jvmName);
         }
 
+        @Override
         public String getName() {
             return name;
         }
 
+        @Override
         public long getInstancesCount() {
             return instances;
         }
 
+        @Override
         public long getBytes() {
             return bytes;
         }
 
+        @Override
         public int hashCode() {
             return getName().hashCode();
         }
 
+        @Override
         public boolean equals(Object obj) {
             if (obj instanceof ClassInfoImpl) {
                 return getName().equals(((ClassInfoImpl)obj).getName());

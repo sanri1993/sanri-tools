@@ -83,6 +83,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // 路径权限配置
         http.authorizeRequests()
                 .antMatchers("/version/**","/cron/nextExecutionTime","/plugin/visited").permitAll()
+                .antMatchers("/ws/**").permitAll()
                 .anyRequest().authenticated()
                 .accessDecisionManager(accessDecisionManager());
 //                .and().anonymous().disable();

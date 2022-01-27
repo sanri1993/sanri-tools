@@ -54,10 +54,12 @@ public abstract class HeapHistogram {
         public abstract long getInstancesCount();
         public abstract long getBytes();
         
+        @Override
         public int hashCode() {
             return getName().hashCode();
         }
         
+        @Override
         public boolean equals(Object obj) {
             if (obj instanceof ClassInfo) {
                 return getName().equals(((ClassInfo)obj).getName());

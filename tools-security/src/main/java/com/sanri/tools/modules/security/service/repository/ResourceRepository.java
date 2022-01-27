@@ -103,14 +103,12 @@ public class ResourceRepository implements InitializingBean {
 //        final Enumeration<URL> resources = classLoader.getResources("resources.conf");
         final Resource[] resources = applicationContext.getResources("classpath*:*.resources.conf");
         for (Resource resource : resources) {
-            log.error("resourceName:{}",resource.getFilename());
             loadResource(resource);
         }
         // 加载所有的菜单信息
 //        final Enumeration<URL> menusConf = classLoader.getResources("menus.conf");
         final Resource[] menusResources = applicationContext.getResources("classpath*:*.menus.conf");
         for (Resource menusResource : menusResources) {
-            log.error("resourceName:{}",menusResource.getFilename());
             loadResource(menusResource);
         }
 
