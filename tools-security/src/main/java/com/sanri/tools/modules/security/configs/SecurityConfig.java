@@ -133,6 +133,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         configuration.setAllowedMethods(Arrays.asList("GET","POST","HEAD", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.addExposedHeader("Authorization");
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
@@ -143,7 +144,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers("/",
                 "index.html",
                 "/**/*.css","/**/*.js",
-                "/**/*.png","/**/*.jpg","/**/*.gif","/**/*.ico","/**/img/*",
+                "/**/*.png","/**/*.jpg","/**/*.gif","/**/*.ico","/**/img/*","/**/images/*","/**/images/**/*",
                 "/**/fonts/*"
         );
     }

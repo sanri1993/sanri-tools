@@ -134,6 +134,8 @@ public class UserManagerService {
             final Set<String> childGroups = groupService.childGroups(group);
             canGrantGroups.addAll(childGroups);
         }
+        // 用户可以把自己的分组授权出去  add 20220208
+        canGrantGroups.addAll(groups);
         return new ArrayList<>(canGrantGroups);
     }
 

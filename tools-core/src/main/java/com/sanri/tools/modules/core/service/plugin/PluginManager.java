@@ -142,7 +142,7 @@ public class PluginManager implements InitializingBean {
                     // 如果详细介绍不存在, 则从本地资源路径去找(找到最有可能是当前模块的介绍文档, 并取第一个)
                     final Resource[] resources = applicationContext.getResources("classpath*:" + help);
                     for (Resource res : resources) {
-                        if (res.getURI().getPath().contains(pluginId)){
+                        if (res.toString().contains(pluginId)){
                             log.info("找到插件[{}]的资源:{}",pluginId,res);
                             String content = IOUtils.toString(res.getInputStream(), StandardCharsets.UTF_8);
                             // 本地的图片路径需要替换相对路径为相对根路径的路径
@@ -158,7 +158,7 @@ public class PluginManager implements InitializingBean {
                 }
 
             }catch (Exception e){
-                log.error("加载插件[{}]帮助文件[{}]失败:{}",pluginId,help,e.getMessage());
+                log.error("加载插件[{}]帮助文件[{}]失败:{}",pluginId,help,e.getMessage(),e);
             }
         }
         return pluginWithHelpContent;

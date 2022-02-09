@@ -4,9 +4,6 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
 
 目前已经提供一些常用的工具,读者也可以开发自己的工具注册进来 ,欢迎 pr 或者提 issue 
 
-## Giteye chart
-[![Giteye chart](https://chart.giteye.net/gitee/sanri/sanri-tools-maven/RMY45L94.png)](https://giteye.net/chart/RMY45L94)
-
 ---
 
 ## 工具理念和定位
@@ -33,12 +30,15 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
   主运行包下载 [去下载](https://gitee.com/sanri/sanri-tools-maven/releases)
   
   每个模块依赖的 lib 包 [去下载](https://gitee.com/sanri/sanri-tools-maven/attach_files)
+
 2. 将每个模块依赖的 lib 包解压并合并到 sanritoolslib
   相同 jar 包覆盖即可
+
 3. 确定相关目录已经创建
   工具会使用的目录: 临时目录(data.path.tmp), 数据目录(data.pathdata), 配置目录(data.path.configs), 日志目录(logger.path)
   
   可以指定一个基础路径(data.path.base), 那么其它目录都会在这个基础路径下面(不包含日志路径), 默认基础路径使用 /tmp
+
 4. 启动 jar  
 ```
 java -Dloader.path=sanritoolslib --data.path.base=数据基础路径 -Xms256m -Xmx256m -jar sanritools.jar

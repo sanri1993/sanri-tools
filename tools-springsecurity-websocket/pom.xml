@@ -9,20 +9,25 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>tools-websocket</artifactId>
+    <artifactId>tools-springsecurity-websocket</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>tools-core</artifactId>
+            <artifactId>tools-security</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>tools-websocket</artifactId>
             <version>${project.version}</version>
         </dependency>
 
+        <!-- websocket security -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-websocket</artifactId>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-messaging</artifactId>
         </dependency>
-
     </dependencies>
 
 </project>

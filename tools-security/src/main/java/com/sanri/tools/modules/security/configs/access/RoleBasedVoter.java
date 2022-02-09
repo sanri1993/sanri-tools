@@ -17,6 +17,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -36,7 +37,7 @@ public class RoleBasedVoter implements AccessDecisionVoter<Object> {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return true;
+        return clazz.isAssignableFrom(FilterInvocation.class);
     }
 
     private ScriptEngineManager manager = new ScriptEngineManager();

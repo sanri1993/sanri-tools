@@ -40,6 +40,7 @@ import org.eclipse.jgit.transport.http.JDKHttpConnectionFactory;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.util.HttpSupport;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.ReflectionUtils;
@@ -297,6 +298,8 @@ public class GitService {
         return new ArrayList<>();
     }
 
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     /**
      * 编译文件
@@ -316,22 +319,27 @@ public class GitService {
         final String cmd = System.getProperty("os.name").contains("Linux") ? mavenHome+"/bin/mvn" : mavenHome+"/bin/mvn.cmd";
         final String [] cmdarray = new String[]{cmd,"-f",pomFile.getAbsolutePath(),"-s",mavenConfigFilePath,"-Dmaven.test.skip=true","clean","compile"};
         log.info("执行的命令为:{}", StringUtils.join(cmdarray," "));
+
 //        webSocketService.sendMessage(websocketId,StringUtils.join(cmdarray," "));
-//        final Process cleanCompile = Runtime.getRuntime().exec(cmdarray,null,new File(System.getProperty("user.home")));
-//        final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(cleanCompile.getInputStream(), StandardCharsets.UTF_8));
-//        String line = "";
-//        while ((line = bufferedReader.readLine()) != null){
+        String destination = "/topic/"+group+"/"+repository+"/"+websocketId;
+        simpMessagingTemplate.convertAndSend(destination,StringUtils.join(cmdarray," "));
+        final Process cleanCompile = Runtime.getRuntime().exec(cmdarray,null,new File(System.getProperty("user.home")));
+        final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(cleanCompile.getInputStream(), StandardCharsets.UTF_8));
+        String line = "";
+        while ((line = bufferedReader.readLine()) != null){
 //            webSocketService.sendMessage(websocketId,line);
-//        }
-//        final int waitFor = cleanCompile.waitFor();
-//        if (waitFor == 0){
-//            // 记录上次编译成功时间
-//            final String pathMd5 = DigestUtils.md5DigestAsHex(pomRelativePath.getBytes());
-//            final String currentBranch = currentBranch(group, repository);
-//            configRepositoryProperty(group,repository,"lastCompileSuccessTime_"+currentBranch+"_"+ pathMd5,System.currentTimeMillis());
-//        }
+            simpMessagingTemplate.convertAndSend(destination,line);
+        }
+        final int waitFor = cleanCompile.waitFor();
+        if (waitFor == 0){
+            // 记录上次编译成功时间
+            final String pathMd5 = DigestUtils.md5DigestAsHex(pomRelativePath.getBytes());
+            final String currentBranch = currentBranch(group, repository);
+            configRepositoryProperty(group,repository,"lastCompileSuccessTime_"+currentBranch+"_"+ pathMd5,System.currentTimeMillis());
+        }
 //        webSocketService.sendMessage(websocketId,waitFor+"");
-//        RuntimeUtil.destroy(cleanCompile);
+        simpMessagingTemplate.convertAndSend(destination,waitFor);
+        RuntimeUtil.destroy(cleanCompile);
     }
 
     /**

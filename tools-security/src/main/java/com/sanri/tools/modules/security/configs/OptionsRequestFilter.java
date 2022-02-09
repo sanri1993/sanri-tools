@@ -17,6 +17,7 @@ public class OptionsRequestFilter extends OncePerRequestFilter{
 		if("OPTIONS".equals(request.getMethod())) {
 			response.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS,HEAD");
 			response.setHeader("Access-Control-Allow-Headers", response.getHeader("Access-Control-Request-Headers"));
+			response.setHeader("Access-Control-Allow-Credentials","true");
 			return;
 		}
 		filterChain.doFilter(request, response);

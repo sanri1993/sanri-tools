@@ -105,7 +105,11 @@
             <artifactId>tools-websocket</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>tools-springsecurity-websocket</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>tools-zookeeper</artifactId>
@@ -220,6 +224,11 @@
                             <groupId>${project.groupId}</groupId>
                             <artifactId>tools-zookeeper</artifactId>
                         </include>
+
+                        <include>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>tools-springsecurity-websocket</artifactId>
+                        </include>
                     </includes>
                     <includeSystemScope>true</includeSystemScope>
                 </configuration>
@@ -276,6 +285,13 @@
             <resource>
                 <directory>src/main/webapp</directory>
                 <targetPath>META-INF/resources</targetPath>
+                <includes>
+                    <include>**/**</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${user.dir}/images</directory>
+                <targetPath>META-INF/resources/images</targetPath>
                 <includes>
                     <include>**/**</include>
                 </includes>

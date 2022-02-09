@@ -22,14 +22,24 @@ import java.util.List;
 @Service
 @Slf4j
 public class ParticipleIKTranslate implements TokenizerTool {
-    Analyzer ikAnalyzer = new IKAnalyzer(true); // true　用智能分词，false细粒度
-    Configuration cfg = DefaultConfig.getInstance();
-    {
-        Dictionary.initial(cfg);
-    }
+    private Analyzer ikAnalyzer = new IKAnalyzer(true); // true　用智能分词，false细粒度
+
+    /**
+     * cfg 使用时初始化, 因为太耗时了
+     */
+    private volatile Configuration cfg = null;
 
     @Override
     public void doTokenizer(TranslateCharSequence translateCharSequence) {
+        if (cfg == null){
+            synchronized (ParticipleIKTranslate.class){
+                if (cfg == null) {
+                    cfg = DefaultConfig.getInstance();
+                    Dictionary.initial(cfg);
+                }
+            }
+        }
+
         StringReader reader = new StringReader(translateCharSequence.getOriginSequence().toString());
         // 分词
         TokenStream tokenStream = null;
