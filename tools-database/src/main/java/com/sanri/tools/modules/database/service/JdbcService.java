@@ -1,6 +1,8 @@
 package com.sanri.tools.modules.database.service;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -8,14 +10,20 @@ import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.sanri.tools.modules.core.service.connect.ConnectService;
+import com.sanri.tools.modules.core.service.file.FileManager;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.ColumnListHandler;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.postgresql.ds.PGSimpleDataSource;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
@@ -36,11 +44,14 @@ import oracle.jdbc.pool.OracleDataSource;
 
 @Service
 @Slf4j
-public class JdbcService implements ApplicationListener<UpdateConnectEvent> {
+public class JdbcService implements ApplicationListener<UpdateConnectEvent> , InitializingBean {
     @Autowired
     private ConnectService connectService;
 
     public static final String MODULE = "database";
+
+    @Autowired
+    private FileManager fileManager;
 
     // connName ==> DataSource
     private Map<String, DataSource> dataSourceMap = new ConcurrentHashMap<>();
@@ -315,8 +326,8 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> {
     /**
      * 表搜索 , 可根据 schema 表名 , 表注释 , 字段名 , 字段注释进行搜索
      * 支持精确搜索和模糊搜索
-     *   table:xx
-     *   column:xxx
+     *   table:table1,table2
+     *   column:column1,column2
      * @param connName
      * @param catalog
      * @param schema
@@ -330,6 +341,8 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> {
         if(StringUtils.isBlank(keyword)){
             return firstFilterTables;
         }
+
+        final String[] keywordParts = StringUtils.split(keyword, ",");
 
         // oracle 的特殊处理
         DataSource dataSource = dataSourceMap.get(connName);
@@ -346,10 +359,12 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> {
                 Table table = tableMetaData.getTable();
                 String tableComments = table.getRemark();
                 if(StringUtils.isBlank(searchSchema) || "table".equalsIgnoreCase(searchSchema)) {
-                    if (tableName.contains(keyword) || (StringUtils.isNotBlank(tableComments) && tableComments.contains(keyword))) {
-                        findTables.add(tableMetaData);
-                        continue;
+                    for (String keywordPart : keywordParts) {
+                        if (tableName.contains(keywordPart) || (StringUtils.isNotBlank(tableComments) && tableComments.contains(keywordPart))) {
+                            findTables.add(tableMetaData);
+                        }
                     }
+                    continue;
                 }
 
                 //再看是否有列是匹配的
@@ -360,10 +375,12 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> {
                         String columnComments = column.getRemark();
 
                         if(StringUtils.isBlank(searchSchema) || "column".equalsIgnoreCase(searchSchema)) {
-                            if (columnName.contains(keyword) || (StringUtils.isNotBlank(columnComments) && columnComments.contains(keyword))) {
-                                findTables.add(tableMetaData);
-                                break;
+                            for (String keywordPart : keywordParts) {
+                                if (columnName.contains(keywordPart) || (StringUtils.isNotBlank(columnComments) && columnComments.contains(keywordPart))) {
+                                    findTables.add(tableMetaData);
+                                }
                             }
+                            break;
                         }
                     }
                 }
@@ -654,7 +671,8 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> {
 
                 boolean nullable = nullableInt == 1 ? true: false;
                 boolean isAutoIncrement = "YES".equals(autoIncrement) ? true : false;
-                Column column = new Column(actualTableName, columnName, dataType, typeName, columnSize, decimalDigits, nullable, remarks, isAutoIncrement);
+                final String columnDef = rs.getString("COLUMN_DEF");
+                Column column = new Column(actualTableName, columnName, dataType, typeName, columnSize, decimalDigits, nullable, remarks, isAutoIncrement,columnDef);
                 columns.add(column);
             }
             return columns;
@@ -820,13 +838,8 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> {
         return dataSource;
     }
 
-//    @PostConstruct
-//    public void register(){
-//        pluginManager.register(PluginDto.builder()
-//                .module(MODULE).name("metadata").author("sanri").envs("default")
-//                .logo("mysql.jpg")
-//                .desc("数据库元数据,支持mysql,postgresql,oracle 和支持元数据据的数据库,可扩展功能数据库文档,代码生成")
-//                .help("数据表处理工具.md")
-//                .build());
-//    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+    }
 }

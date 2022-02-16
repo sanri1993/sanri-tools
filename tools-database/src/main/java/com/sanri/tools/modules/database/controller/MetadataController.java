@@ -3,14 +3,10 @@ package com.sanri.tools.modules.database.controller;
 import com.sanri.tools.modules.core.service.connect.ConnectService;
 import com.sanri.tools.modules.core.service.connect.dtos.ConnectInput;
 import com.sanri.tools.modules.core.service.connect.dtos.ConnectOutput;
-import com.sanri.tools.modules.core.service.file.ConnectServiceOldFileBase;
 import com.sanri.tools.modules.database.dtos.ExtendTableMetaData;
-import com.sanri.tools.modules.database.dtos.TableMark;
 import com.sanri.tools.modules.database.dtos.meta.*;
 import com.sanri.tools.modules.database.service.JdbcService;
-import com.sanri.tools.modules.database.service.TableMarkService;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
+import com.sanri.tools.modules.database.service.search.TableSearchServiceCodeImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,9 +27,9 @@ public class MetadataController {
     private JdbcService jdbcService;
     @Autowired
     private ConnectService connectService;
-    @Autowired
-    private TableMarkService tableMarkService;
 
+    @Autowired
+    private TableSearchServiceCodeImpl tableSearchService;
     /**
      *
      * 查询所有的连接
@@ -110,39 +106,7 @@ public class MetadataController {
      * @throws SQLException
      */
     @GetMapping("/searchTables")
-    public List<ExtendTableMetaData> searchTables(@NotNull String connName, String catalog, String[] schemas, String keyword) throws IOException, SQLException {
-        // 根据关键字进行过滤
-        String searchSchema = "";
-        if(StringUtils.isNotBlank(keyword) && keyword.contains(":")){
-            String [] array = keyword.split(":",2);
-            searchSchema = array[0];
-            keyword = array[1];
-        }
-        Set<String> schemasSet = Arrays.stream(schemas).collect(Collectors.toSet());
-        if (StringUtils.isNotBlank(keyword) && keyword.contains(".")){
-            // 如果包含 . 的话, 前面是 schema , 后面是 keyword
-            String [] array = keyword.split("\\.",2);
-            String schema = array[0];
-            schemasSet.add(schema);
-            keyword = array[1];
-        }
-
-        List<TableMetaData> tableMetaDataList = null;
-        if (StringUtils.isNotBlank(searchSchema) && "tag".equals(searchSchema)){
-            tableMetaDataList = tableMarkService.searchTables(connName,catalog,schemasSet,keyword);
-        }else {
-            tableMetaDataList = jdbcService.searchTables(connName, catalog, schemasSet,searchSchema, keyword);
-        }
-
-        List<ExtendTableMetaData> extendTableMetaData = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(tableMetaDataList)){
-            for (TableMetaData tableMetaData : tableMetaDataList) {
-                ActualTableName actualTableName = tableMetaData.getActualTableName();
-                TableMark tableMark = tableMarkService.getTableMark(connName, actualTableName);
-                extendTableMetaData.add(new ExtendTableMetaData(tableMetaData,tableMark));
-            }
-        }
-
-        return extendTableMetaData;
+    public List<ExtendTableMetaData> searchTables(@NotNull String connName, String catalog, String[] schemas, String keyword) throws Exception {
+        return tableSearchService.searchTablesEx(connName, catalog, schemas, keyword);
     }
 }

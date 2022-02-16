@@ -192,8 +192,7 @@ public class TemplateService {
         public String process(Template template, Map<String,Object> context) throws IOException, TemplateException {
             StringBuilderWriter stringBuilderWriter = new StringBuilderWriter();
             template.process(context,stringBuilderWriter);
-            String text = stringBuilderWriter.toString();
-            return text;
+            return stringBuilderWriter.toString();
         }
     }
 }

@@ -14,6 +14,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.sanri.tools.modules.codepatch.controller.dtos.CompileMessage;
 import com.sanri.tools.modules.core.security.UserService;
 import com.sanri.tools.modules.core.service.connect.ConnectService;
 import com.sanri.tools.modules.core.service.connect.dtos.ConnectInput;
@@ -308,7 +309,13 @@ public class GitService {
      * @param pomRelativePath
      * @return 执行编译 mvn 退出码
      */
-    public void compile(String ip,String websocketId,String group, String repository, String pomRelativePath) throws IOException, InterruptedException {
+    public void execMavenCommand(String ip, CompileMessage compileMessage) throws IOException, InterruptedException {
+        final String websocketId = compileMessage.getWebsocketId();
+        final String group = compileMessage.getGroup();
+        final String repository = compileMessage.getRepository();
+        final String pomRelativePath = compileMessage.getRelativePath();
+        final String command = compileMessage.getMvnCommand();
+
         final File repositoryDir = repositoryDir(group, repository);
         final File pomFile = repositoryDir.toPath().resolve(pomRelativePath).toFile();
 
@@ -317,7 +324,8 @@ public class GitService {
         final String mavenConfigFilePath = gitParam.getMavenConfigFilePath();
 
         final String cmd = System.getProperty("os.name").contains("Linux") ? mavenHome+"/bin/mvn" : mavenHome+"/bin/mvn.cmd";
-        final String [] cmdarray = new String[]{cmd,"-f",pomFile.getAbsolutePath(),"-s",mavenConfigFilePath,"-Dmaven.test.skip=true","clean","compile"};
+        final String [] commandCommands = new String[]{cmd,"-f",pomFile.getAbsolutePath(),"-s",mavenConfigFilePath,"-Dmaven.test.skip=true"};
+        final String [] cmdarray = ArrayUtils.addAll(commandCommands,StringUtils.split(command));
         log.info("执行的命令为:{}", StringUtils.join(cmdarray," "));
 
 //        webSocketService.sendMessage(websocketId,StringUtils.join(cmdarray," "));

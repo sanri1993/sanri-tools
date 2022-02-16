@@ -323,3 +323,7 @@ POST {{baseUrl}}/db/metadata/generate?connName=lo&schemas=mct
 
 ### 添加注释
 GET {{baseUrl}}/comments
+
+### 生成数据库文档, 根据搜索到的数据表
+GET {{baseUrl}}/db/doc/export?connName=localhost&schemas=anta&keyword=eims
+Authorization: {{Authorization}}

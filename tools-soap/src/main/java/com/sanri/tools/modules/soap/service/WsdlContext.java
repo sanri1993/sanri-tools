@@ -14,6 +14,7 @@ import org.w3c.dom.Element;
 import javax.wsdl.Definition;
 import javax.wsdl.Types;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -46,14 +47,13 @@ public class WsdlContext {
 	
 	static{
 		//读取 wsdl 模板文件
-		try {
-			URI rootPath = WsdlContext.class.getResource("/").toURI();
-			URI soap11File = rootPath.resolve("soap/soap11.xml");
-			URI soap12File = rootPath.resolve("soap/soap12.xml");
+		final ClassLoader classLoader = WsdlContext.class.getClassLoader();
+		try(final InputStream soap11Stream = classLoader.getResourceAsStream("soap/soap11.xml");
+			final InputStream soap12Stream = classLoader.getResourceAsStream("soap/soap12.xml")){
 
-			BASE_SOAP11_DOCUMENT = IOUtils.toString(soap11File, StandardCharsets.UTF_8);
-			BASE_SOAP12_DOCUMENT = IOUtils.toString(soap12File, StandardCharsets.UTF_8);
-		} catch (URISyntaxException | IOException e) {
+			BASE_SOAP11_DOCUMENT = IOUtils.toString(soap11Stream, StandardCharsets.UTF_8);
+			BASE_SOAP12_DOCUMENT = IOUtils.toString(soap12Stream, StandardCharsets.UTF_8);
+		} catch (IOException e) {
 			log.info("init load soap xml error : {}",e.getMessage(),e);
 		}
 	}

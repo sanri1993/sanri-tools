@@ -12,6 +12,7 @@ import javax.annotation.PreDestroy;
 
 import com.sanri.tools.modules.core.utils.Version;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -49,10 +50,12 @@ public class PluginManager implements InitializingBean {
         final String readConfig = fileManager.readConfig("plugin", "visited");
         final String[] lines = StringUtils.split(readConfig, '\n');
         Map<String,PluginCallInfo> pluginCallInfoMap = new HashMap<>();
-        for (String line : lines) {
-            final String[] split = StringUtils.split(line, ',');
-            final PluginCallInfo pluginCallInfo = new PluginCallInfo(split[0], NumberUtils.toInt(split[1]), NumberUtils.toLong(split[2]));
-            pluginCallInfoMap.put(pluginCallInfo.getPluginId(),pluginCallInfo);
+        if (ArrayUtils.isNotEmpty(lines)) {
+            for (String line : lines) {
+                final String[] split = StringUtils.split(line, ',');
+                final PluginCallInfo pluginCallInfo = new PluginCallInfo(split[0], NumberUtils.toInt(split[1]), NumberUtils.toLong(split[2]));
+                pluginCallInfoMap.put(pluginCallInfo.getPluginId(), pluginCallInfo);
+            }
         }
 
         // 读取插件信息

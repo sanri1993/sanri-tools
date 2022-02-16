@@ -1,3 +1,70 @@
+GET http://localhost:8084/db/doc/export?connName=localhost&schemas=anta&keyword=eims
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ0NjY0NjI1LCJuYmYiOjE2NDQ0OTE4MjUsImlhdCI6MTY0NDY2NDYxOH0.83AOisDvsJjptrgCePP3IM37h7ZgeX_VdXXEawJHwhw
+
+<> 2022-02-10T082031.200.json
+
+###
+
+GET http://localhost:8084/db/doc/export?connName=localhost&schemas=anta&keyword=eims
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ0NjY0NjI1LCJuYmYiOjE2NDQ0OTE4MjUsImlhdCI6MTY0NDY2NDYxOH0.83AOisDvsJjptrgCePP3IM37h7ZgeX_VdXXEawJHwhw
+
+<> 2022-02-10T081452.200.json
+
+###
+
+GET http://localhost:8084/db/doc/export?connName=localhost&schemas=anta&keyword=eims
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ0NjY0NjI1LCJuYmYiOjE2NDQ0OTE4MjUsImlhdCI6MTY0NDY2NDYxOH0.83AOisDvsJjptrgCePP3IM37h7ZgeX_VdXXEawJHwhw
+
+<> 2022-02-10T081336.200.json
+
+###
+
+GET http://localhost:8084/db/doc/export?connName=localhost&schemas=anta&keyword=eims
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ0NjY0NjI1LCJuYmYiOjE2NDQ0OTE4MjUsImlhdCI6MTY0NDY2NDYxOH0.83AOisDvsJjptrgCePP3IM37h7ZgeX_VdXXEawJHwhw
+
+<> 2022-02-10T071845.200.json
+
+###
+
+GET http://localhost:8084/db/doc/export?connName=localhost&schemas=anta&keyword=eims
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ0NjY0NjI1LCJuYmYiOjE2NDQ0OTE4MjUsImlhdCI6MTY0NDY2NDYxOH0.83AOisDvsJjptrgCePP3IM37h7ZgeX_VdXXEawJHwhw
+
+<> 2022-02-10T071822.200.json
+
+###
+
+GET http://localhost:8084/db/doc/export?connName=localhost&schemas=anta&keyword=eims
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ0NjY0NjI1LCJuYmYiOjE2NDQ0OTE4MjUsImlhdCI6MTY0NDY2NDYxOH0.83AOisDvsJjptrgCePP3IM37h7ZgeX_VdXXEawJHwhw
+
+<> 2022-02-10T071754.200.json
+
+###
+
+GET http://localhost:8084/db/doc/export?connName=localhost&catalog=anta&keyword=eims
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ0NjY0NjI1LCJuYmYiOjE2NDQ0OTE4MjUsImlhdCI6MTY0NDY2NDYxOH0.83AOisDvsJjptrgCePP3IM37h7ZgeX_VdXXEawJHwhw
+
+<> 2022-02-10T071713.200.json
+
+###
+
+POST http://localhost:8084/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "0"
+}
+
+<> 2022-02-10T071705.200.json
+
+###
+
+GET http://localhost:8084/db/doc/export?connName=localhost&catalog=anta&keyword=eims
+
+<> 2022-02-10T071656.200.json
+
+###
+
 GET http://localhost:8084/test/websocket/send
 Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQzMzYzMzA0LCJuYmYiOjE2NDMxOTA1MDQsImlhdCI6MTY0MzM2MzI5N30.p8UlFGKxtlca-j6ecliRKUQu1N9V2LZHUCLloBKQIss
 
@@ -270,141 +337,6 @@ GET http://localhost:8084/monitor/mbean/names?jmxHostAndPort=127.0.0.1:10086
 GET http://localhost:8084/monitor/mbean/attrValue?jmxHostAndPort=127.0.0.1:10086&mBeanName=java.lang:type=OperatingSystem&attrNames=AvailableProcessors,TotalSwapSpaceSize
 
 <> 2022-01-12T085230.200.json
-
-###
-
-POST http://localhost:8084/monitor/mbean/invoke
-Content-Type: application/json
-
-{
-  "jmxHostAndPort": "127.0.0.1:10086",
-  "beanName": "com.sun.management:type=DiagnosticCommand",
-  "operation": "gcClassHistogram",
-  "params": [["-all"]],
-  "signature": ["[Ljava.lang.String;"]
-}
-
-<> 2022-01-12T050833.200.json
-
-###
-
-POST http://localhost:8084/monitor/mbean/invoke
-Content-Type: application/json
-
-{
-  "jmxHostAndPort": "127.0.0.1:10086",
-  "beanName": "com.sun.management:type=DiagnosticCommand",
-  "operation": "gcClassHistogram",
-  "params": [["-all"]],
-  "signature": ["[Ljava.lang.String;"]
-}
-
-<> 2022-01-12T050808.200.json
-
-###
-
-POST http://localhost:8084/monitor/mbean/invoke
-Content-Type: application/json
-
-{
-  "jmxHostAndPort": "127.0.0.1:10086",
-  "beanName": "com.sun.management:type=DiagnosticCommand",
-  "operation": "gcClassHistogram",
-  "params": [["-all"]],
-  "signature": ["[Ljava.lang.String"]
-}
-
-<> 2022-01-12T050651.200.json
-
-###
-
-POST http://localhost:8084/monitor/mbean/invoke
-Content-Type: application/json
-
-{
-  "jmxHostAndPort": "127.0.0.1:10086",
-  "beanName": "com.sun.management:type=DiagnosticCommand",
-  "operation": "gcClassHistogram",
-  "params": [["-all"]],
-  "signature": ["[Ljava.lang.String"]
-}
-
-<> 2022-01-12T050626.200.json
-
-###
-
-POST http://localhost:8084/monitor/mbean/invoke
-Content-Type: application/json
-
-{
-  "jmxHostAndPort": "127.0.0.1:10086",
-  "beanName": "com.sun.management:type=DiagnosticCommand",
-  "operation": "gcClassHistogram",
-  "params": [["-all"]],
-  "signature": ["[Ljava.lang.String"]
-}
-
-<> 2022-01-12T050601.200.json
-
-###
-
-POST http://localhost:8084/monitor/mbean/invoke
-Content-Type: application/json
-
-{
-  "jmxHostAndPort": "127.0.0.1:10086",
-  "beanName": "com.sun.management:type=DiagnosticCommand",
-  "operation": "gcClassHistogram",
-  "params": [["-all"]],
-  "signature": ["[Ljava.lang.String"]
-}
-
-<> 2022-01-12T050003.200.json
-
-###
-
-POST http://localhost:8084/monitor/mbean/invoke
-Content-Type: application/json
-
-{
-  "jmxHostAndPort": "127.0.0.1:10086",
-  "beanName": "com.sun.management:type=DiagnosticCommand",
-  "operation": "gcClassHistogram",
-  "params": [["-all"]],
-  "signature": ["[Ljava.lang.String"]
-}
-
-<> 2022-01-12T045844.200.json
-
-###
-
-POST http://localhost:8084/monitor/mbean/invoke
-Content-Type: application/json
-
-{
-  "jmxHostAndPort": "127.0.0.1:10086",
-  "beanName": "com.sun.management:type=DiagnosticCommand",
-  "operation": "gcClassHistogram",
-  "params": [["-all"]],
-  "signature": ["[Ljava.lang.String"]
-}
-
-<> 2022-01-12T045200.200.json
-
-###
-
-POST http://localhost:8084/monitor/mbean/invoke
-Content-Type: application/json
-
-{
-  "jmxHostAndPort": "127.0.0.1:10086",
-  "beanName": "com.sun.management:type=DiagnosticCommand",
-  "operation": "gcClassHistogram",
-  "params": [["-all"]],
-  "signature": ["[Ljava.lang.String"]
-}
-
-<> 2022-01-12T045044.200.json
 
 ###
 

@@ -16,11 +16,12 @@ public class Column {
     private boolean nullable;
     private String remark;
     private boolean autoIncrement;
+    private String defaultValue;
 
     public Column() {
     }
 
-    public Column(ActualTableName actualTableName, String columnName, int dataType, String typeName, int columnSize, int decimalDigits, boolean nullable, String remark, boolean autoIncrement) {
+    public Column(ActualTableName actualTableName, String columnName, int dataType, String typeName, int columnSize, int decimalDigits, boolean nullable, String remark, boolean autoIncrement,String defaultValue) {
         this.actualTableName = actualTableName;
         this.columnName = columnName;
         this.dataType = dataType;
@@ -30,5 +31,6 @@ public class Column {
         this.nullable = nullable;
         this.remark = remark;
         this.autoIncrement = autoIncrement;
+        this.defaultValue = defaultValue;
     }
 }
