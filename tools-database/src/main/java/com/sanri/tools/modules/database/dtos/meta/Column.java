@@ -2,8 +2,12 @@ package com.sanri.tools.modules.database.dtos.meta;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 @Data
+@EqualsAndHashCode(exclude = "actualTableName")
 public class Column {
     @JsonIgnore
     private ActualTableName actualTableName;

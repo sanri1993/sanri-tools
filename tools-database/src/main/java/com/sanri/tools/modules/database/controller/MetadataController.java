@@ -3,11 +3,16 @@ package com.sanri.tools.modules.database.controller;
 import com.sanri.tools.modules.core.service.connect.ConnectService;
 import com.sanri.tools.modules.core.service.connect.dtos.ConnectInput;
 import com.sanri.tools.modules.core.service.connect.dtos.ConnectOutput;
+import com.sanri.tools.modules.database.controller.dtos.TableModify;
 import com.sanri.tools.modules.database.dtos.ExtendTableMetaData;
 import com.sanri.tools.modules.database.dtos.meta.*;
 import com.sanri.tools.modules.database.service.JdbcService;
+import com.sanri.tools.modules.database.service.MetaCompareService;
 import com.sanri.tools.modules.database.service.search.TableSearchServiceCodeImpl;
+import freemarker.template.TemplateException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,9 +32,10 @@ public class MetadataController {
     private JdbcService jdbcService;
     @Autowired
     private ConnectService connectService;
-
     @Autowired
     private TableSearchServiceCodeImpl tableSearchService;
+    @Autowired
+    private MetaCompareService metaCompareService;
     /**
      *
      * 查询所有的连接
@@ -58,8 +64,8 @@ public class MetadataController {
      * @param connName 连接名称
      */
     @GetMapping("/tables")
-    public Collection<TableMetaData> tables(@NotNull String connName, String catalog) throws SQLException, IOException {
-        Collection<TableMetaData> tables = jdbcService.tables(connName, catalog);
+    public Collection<TableMetaData> tables(@NotNull String connName, String catalog,String schema) throws SQLException, IOException {
+        Collection<TableMetaData> tables = jdbcService.tables(connName, catalog, schema);
         return tables;
     }
 
@@ -108,5 +114,78 @@ public class MetadataController {
     @GetMapping("/searchTables")
     public List<ExtendTableMetaData> searchTables(@NotNull String connName, String catalog, String[] schemas, String keyword) throws Exception {
         return tableSearchService.searchTablesEx(connName, catalog, schemas, keyword);
+    }
+
+    /**
+     * 元数据对比, 变更 sql 记录
+     * @param baseConnName
+     * @param compareConnName
+     * @param baseCatalog
+     * @param compareCatalog
+     * @return
+     */
+    @GetMapping("/compare/changeSqls")
+    public List<String> metaCompareChangeSqls(@NotNull String baseConnName, @NotNull String compareConnName, @NotNull String baseCatalog, @NotNull String compareCatalog) throws SQLException, IOException, TemplateException {
+        return metaCompareService.changeSqls(baseConnName, compareConnName, baseCatalog, compareCatalog);
+    }
+
+    /**
+     * 元数据对比
+     * @return
+     */
+    @GetMapping("/compare")
+    public List<TableModify> metaCompare(@NotNull String baseConnName, @NotNull String compareConnName, @NotNull String baseCatalog, @NotNull String compareCatalog) throws IOException, SQLException {
+        List<TableModify> tableModifies = new ArrayList<>();
+
+        final MetaCompareService.ModifyInfo modifyInfo = metaCompareService.compare(baseConnName, compareConnName, baseCatalog, compareCatalog);
+
+        // 增删数据表
+        final List<MetaCompareService.ModifyTable> modifyTables = modifyInfo.getModifyTables();
+        for (MetaCompareService.ModifyTable modifyTable : modifyTables) {
+            tableModifies.add(new TableModify(modifyTable.getTableName(),modifyTable.getDiffType(),modifyTable.getTableMetaData()));
+        }
+
+        // 表变更 tableName => TableModify
+        Map<String,TableModify> tableModifyMap = new HashMap<>();
+
+        // 表变更列信息 tableName => List<ModifyColumn>
+        MultiValueMap<String, MetaCompareService.ModifyColumn> modifyColumnMultiValueMap = new LinkedMultiValueMap<>();
+        for (MetaCompareService.ModifyColumn modifyColumn : modifyInfo.getModifyColumns()) {
+            modifyColumnMultiValueMap.add(modifyColumn.getTableName(),modifyColumn);
+        }
+        final Iterator<Map.Entry<String, List<MetaCompareService.ModifyColumn>>> iterator = modifyColumnMultiValueMap.entrySet().iterator();
+        while (iterator.hasNext()){
+            final Map.Entry<String, List<MetaCompareService.ModifyColumn>> next = iterator.next();
+            final String tableName = next.getKey();
+            final List<MetaCompareService.ModifyColumn> modifyColumns = next.getValue();
+            final TableModify tableModify = new TableModify(tableName, MetaCompareService.DiffType.MODIFY);
+            tableModify.setModifyColumns(modifyColumns);
+            tableModifyMap.put(tableName,tableModify);
+
+        }
+
+        // 表变更索引信息 tableName => List<ModifyIndex>
+        MultiValueMap<String, MetaCompareService.ModifyIndex> modifyIndexLinkedMultiValueMap = new LinkedMultiValueMap<>();
+        for (MetaCompareService.ModifyIndex modifyIndex : modifyInfo.getModifyIndices()) {
+            modifyIndexLinkedMultiValueMap.add(modifyIndex.getTableName(),modifyIndex);
+        }
+        final Iterator<Map.Entry<String, List<MetaCompareService.ModifyIndex>>> entryIterator = modifyIndexLinkedMultiValueMap.entrySet().iterator();
+        while (entryIterator.hasNext()){
+            final Map.Entry<String, List<MetaCompareService.ModifyIndex>> next = entryIterator.next();
+            final String tableName = next.getKey();
+            final List<MetaCompareService.ModifyIndex> modifyIndices = next.getValue();
+            if (tableModifyMap.containsKey(tableName)){
+                final TableModify tableModify = tableModifyMap.get(tableName);
+                tableModify.setModifyIndices(modifyIndices);
+            }else{
+                final TableModify tableModify = new TableModify(tableName, MetaCompareService.DiffType.MODIFY);
+                tableModify.setModifyIndices(modifyIndices);
+                tableModifyMap.put(tableName,tableModify);
+            }
+        }
+
+        tableModifies.addAll(tableModifyMap.values());
+
+        return tableModifies;
     }
 }

@@ -1,3 +1,69 @@
+GET http://localhost:8084/db/metadata/compare?baseConnName=192.168.48.188&compareConnName=localhost&baseCatalog=eam&compareCatalog=anta
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ1MTg5NzM1LCJuYmYiOjE2NDUwMTY5MzUsImlhdCI6MTY0NTE4OTcyOH0.kJqBirIBxGKM80UQL6DHpxkYB7clcV-yYkx9z2yDaB0
+
+<> 2022-02-17T112158.200.json
+
+###
+
+GET http://localhost:8084/db/metadata/compare?baseConnName=192.168.48.188&compareConnName=localhost&baseCatalog=eam&compareCatalog=anta
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ1MTg5NzM1LCJuYmYiOjE2NDUwMTY5MzUsImlhdCI6MTY0NTE4OTcyOH0.kJqBirIBxGKM80UQL6DHpxkYB7clcV-yYkx9z2yDaB0
+
+###
+
+GET http://localhost:8084/db/metadata/compare?baseConnName=192.168.48.188&compareConnName=localhost&baseCatalog=eam&compareCatalog=anta
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ1MTg5NzM1LCJuYmYiOjE2NDUwMTY5MzUsImlhdCI6MTY0NTE4OTcyOH0.kJqBirIBxGKM80UQL6DHpxkYB7clcV-yYkx9z2yDaB0
+
+<> 2022-02-17T094704.200.json
+
+###
+
+GET http://localhost:8084/db/metadata/compare?baseConnName=192.168.48.188&compareConnName=localhost&baseCatalog=eam&compareCatalog=anta
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ1MTg5NzM1LCJuYmYiOjE2NDUwMTY5MzUsImlhdCI6MTY0NTE4OTcyOH0.kJqBirIBxGKM80UQL6DHpxkYB7clcV-yYkx9z2yDaB0
+
+<> 2022-02-17T091910.200.json
+
+###
+
+GET http://localhost:8084/db/metadata/compare?baseConnName=192.168.48.188&compareConnName=localhost&baseCatalog=eam&compareCatalog=anta
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ1MTg5NzM1LCJuYmYiOjE2NDUwMTY5MzUsImlhdCI6MTY0NTE4OTcyOH0.kJqBirIBxGKM80UQL6DHpxkYB7clcV-yYkx9z2yDaB0
+
+<> 2022-02-17T091620.200.json
+
+###
+
+GET http://localhost:8084/db/metadata/compare?baseConnName=192.168.48.188&compareConnName=localhost&baseCatalog=eam&compareCatalog=anta
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ1MTg5NzM1LCJuYmYiOjE2NDUwMTY5MzUsImlhdCI6MTY0NTE4OTcyOH0.kJqBirIBxGKM80UQL6DHpxkYB7clcV-yYkx9z2yDaB0
+
+<> 2022-02-16T091116.200.json
+
+###
+
+GET http://localhost:8084/db/metadata/compare?baseConnName=192.168.48.188&compareConnName=localhost&baseCatalog=eam&compareCatalog=anta
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ1MTg5NzM1LCJuYmYiOjE2NDUwMTY5MzUsImlhdCI6MTY0NTE4OTcyOH0.kJqBirIBxGKM80UQL6DHpxkYB7clcV-yYkx9z2yDaB0
+
+<> 2022-02-16T090903.200.json
+
+###
+
+POST http://localhost:8084/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "0"
+}
+
+<> 2022-02-16T090855.200.json
+
+###
+
+GET http://localhost:8084/db/metadata/compare?baseConnName=192.168.48.188&compareConnName=localhost&baseCatalog=eam&compareCatalog=anta
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ0NjY0NjI1LCJuYmYiOjE2NDQ0OTE4MjUsImlhdCI6MTY0NDY2NDYxOH0.83AOisDvsJjptrgCePP3IM37h7ZgeX_VdXXEawJHwhw
+
+<> 2022-02-16T090844.200.json
+
+###
+
 GET http://localhost:8084/db/doc/export?connName=localhost&schemas=anta&keyword=eims
 Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ0NjY0NjI1LCJuYmYiOjE2NDQ0OTE4MjUsImlhdCI6MTY0NDY2NDYxOH0.83AOisDvsJjptrgCePP3IM37h7ZgeX_VdXXEawJHwhw
 
@@ -283,60 +349,6 @@ GET http://localhost:8084/jvm/mbean/proxyMBean?connName=192.168.61.71&mBeanName=
 GET http://localhost:8084/jvm/mbean/detail?connName=192.168.61.71&mBeanName=java.lang:type=OperatingSystem&className=com.sun.managment.OperatingSystemMXBean
 
 <> 2022-01-17T050558.200.json
-
-###
-
-GET http://localhost:8084/jvm/mbean/detail?connName=192.168.61.71&mBeanName=java.lang:type=OperatingSystem
-
-<> 2022-01-17T045952.200.json
-
-###
-
-GET http://localhost:8084/jvm/mbean/detail?jmxHostAndPort=192.168.61.71:10086&mBeanName=java.lang:type=OperatingSystem
-
-<> 2022-01-17T045903.200.json
-
-###
-
-GET http://localhost:8084/version
-
-<> 2022-01-17T103048.200.json
-
-###
-
-GET http://localhost:8084/monitor/heap/memory?jmxHostAndPort=127.0.0.1:10086
-
-<> 2022-01-13T015019.200.json
-
-###
-
-GET http://localhost:8084/monitor/heap/memory?jmxHostAndPort=127.0.0.1:10086&all=true
-
-<> 2022-01-13T014901.200.json
-
-###
-
-GET http://localhost:8084/monitor/mbean/attrValue?jmxHostAndPort=127.0.0.1:10086&mBeanName=java.lang:type=OperatingSystem&attrNames=AvailableProcessors,TotalSwapSpaceSize
-
-<> 2022-01-13T112041.200.json
-
-###
-
-GET http://localhost:8084/monitor/mbean/detail?jmxHostAndPort=127.0.0.1:10086&mBeanName=com.sun.management:type=HotSpotDiagnostic
-
-<> 2022-01-13T112031.200.json
-
-###
-
-GET http://localhost:8084/monitor/mbean/names?jmxHostAndPort=127.0.0.1:10086
-
-<> 2022-01-13T112027.200.json
-
-###
-
-GET http://localhost:8084/monitor/mbean/attrValue?jmxHostAndPort=127.0.0.1:10086&mBeanName=java.lang:type=OperatingSystem&attrNames=AvailableProcessors,TotalSwapSpaceSize
-
-<> 2022-01-12T085230.200.json
 
 ###
 

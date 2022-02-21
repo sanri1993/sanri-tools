@@ -3,12 +3,13 @@ package com.sanri.tools.modules.database.dtos.meta;
 import lombok.Data;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 public class Catalog {
     private String catalog;
-    private List<String> schemas;
+    private List<String> schemas = new ArrayList<>();
 
     public Catalog() {
     }

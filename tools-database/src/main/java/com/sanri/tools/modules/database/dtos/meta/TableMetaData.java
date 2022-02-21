@@ -21,8 +21,14 @@ public class TableMetaData {
     public TableMetaData(ActualTableName actualTableName, Table table, List<Column> columns, List<Index> indexs, List<PrimaryKey> primaryKeys) {
         this.actualTableName = actualTableName;
         this.table = table;
-        this.columns.addAll(columns);
-        this.indexs.addAll(indexs);
-        this.primaryKeys.addAll(primaryKeys);
+        if (columns != null) {
+            this.columns.addAll(columns);
+        }
+        if (indexs != null) {
+            this.indexs.addAll(indexs);
+        }
+        if (primaryKeys != null) {
+            this.primaryKeys.addAll(primaryKeys);
+        }
     }
 }

@@ -327,3 +327,7 @@ GET {{baseUrl}}/comments
 ### 生成数据库文档, 根据搜索到的数据表
 GET {{baseUrl}}/db/doc/export?connName=localhost&schemas=anta&keyword=eims
 Authorization: {{Authorization}}
+
+### 对比数据表结构
+GET {{baseUrl}}/db/metadata/compare?baseConnName=192.168.48.188&compareConnName=localhost&baseCatalog=eam&compareCatalog=anta
+Authorization: {{Authorization}}

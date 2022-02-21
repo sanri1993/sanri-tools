@@ -339,6 +339,7 @@ public class GitService {
             simpMessagingTemplate.convertAndSend(destination,line);
         }
         final int waitFor = cleanCompile.waitFor();
+        log.info("{} 执行结果为: {}",destination,waitFor);
         if (waitFor == 0){
             // 记录上次编译成功时间
             final String pathMd5 = DigestUtils.md5DigestAsHex(pomRelativePath.getBytes());

@@ -14,6 +14,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.sanri.tools.modules.core.service.connect.ConnectService;
 import com.sanri.tools.modules.core.service.file.FileManager;
+import oracle.jdbc.OracleConnection;
+import oracle.jdbc.OracleDatabaseMetaData;
+import oracle.jdbc.OracleResultSet;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
@@ -65,10 +68,10 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> , In
      * @param catalog
      * @return
      */
-    public Collection<TableMetaData> tables(String connName, String catalog) throws IOException, SQLException {
+    public Collection<TableMetaData> tables(String connName, String catalog,String schema) throws IOException, SQLException {
         Map<ActualTableName, TableMetaData> actualTableNameTableMetaDataMap = tableMetaDataMap.get(connName);
         if (actualTableNameTableMetaDataMap == null){
-            actualTableNameTableMetaDataMap = refreshTableInfo(connName, catalog, null);
+            actualTableNameTableMetaDataMap = refreshTableInfo(connName, catalog, schema);
             tableMetaDataMap.put(connName,actualTableNameTableMetaDataMap);
 
             return actualTableNameTableMetaDataMap.values();
@@ -109,7 +112,7 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> , In
      * @throws SQLException
      */
     public List<TableMetaData> filterSchemaTables(String connName, String catalog, Set<String> schemas) throws IOException, SQLException {
-        Collection<TableMetaData> tables = tables(connName, catalog);
+        Collection<TableMetaData> tables = tables(connName, catalog,CollectionUtils.isNotEmpty(schemas) ? schemas.iterator().next(): null);
 
         // 首次过滤, 过滤 catalog 和 schema
         List<TableMetaData> filterTables = new ArrayList<>(tables);
@@ -168,6 +171,15 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> , In
 
     /**
      * 根据连接得到所有的 catalog 和 schema
+     * | 供应商        | Catalog支持                       | Schema支持                 |
+     * | ------------- | --------------------------------- | -------------------------- |
+     * | Oracle        | 不支持                            | Oracle User ID             |
+     * | MySQL         | 不支持                            | 数据库名                   |
+     * | MS SQL Server | 数据库名                          | 对象属主名，2005版开始有变 |
+     * | DB2           | 指定数据库对象时，Catalog部分省略 | Catalog属主名              |
+     * | Sybase        | 数据库名                          | 数据库属主名               |
+     * | Informix      | 不支持                            | 不需要                     |
+     * | PointBase     | 不支持                            | 数据库名                   |
      * @param connName
      * @return
      * @throws IOException
@@ -190,7 +202,13 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> , In
                 for (String catalog : catalogs) {
                     catalogList.add(new Catalog(catalog,schemas));
                 }
-            }else{      //  mysql
+
+                // oracle
+                if (CollectionUtils.isEmpty(catalogs)) {
+                    catalogList.add(new Catalog("orcl",schemas));
+                }
+            }else{
+                //  mysql
                 Map<String, List<String>> catalogMap = schemaList.stream()
                         .collect(Collectors.groupingBy(Schema::getCatalog,Collectors.mapping(Schema::getSchema,Collectors.toList())));
 
@@ -353,7 +371,7 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> , In
 
         List<TableMetaData> findTables = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(firstFilterTables)){
-            for (TableMetaData tableMetaData : firstFilterTables) {
+            A: for (TableMetaData tableMetaData : firstFilterTables) {
                 ActualTableName actualTableName = tableMetaData.getActualTableName();
                 String tableName = actualTableName.getTableName();
                 Table table = tableMetaData.getTable();
@@ -362,15 +380,16 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> , In
                     for (String keywordPart : keywordParts) {
                         if (tableName.contains(keywordPart) || (StringUtils.isNotBlank(tableComments) && tableComments.contains(keywordPart))) {
                             findTables.add(tableMetaData);
+                            continue A;
                         }
                     }
-                    continue;
+
                 }
 
                 //再看是否有列是匹配的
                 List<Column> columns = tableMetaData.getColumns();
                 if(CollectionUtils.isNotEmpty(columns)){
-                    for (Column column : columns) {
+                    B: for (Column column : columns) {
                         String columnName = column.getColumnName();
                         String columnComments = column.getRemark();
 
@@ -378,9 +397,10 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> , In
                             for (String keywordPart : keywordParts) {
                                 if (columnName.contains(keywordPart) || (StringUtils.isNotBlank(columnComments) && columnComments.contains(keywordPart))) {
                                     findTables.add(tableMetaData);
+                                    break B;
                                 }
                             }
-                            break;
+
                         }
                     }
                 }
@@ -470,8 +490,8 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> , In
      * @param toConnName
      */
     public void compareMetaData(String fromConnName,String fromCatalog,String toConnName,String toCatalog) throws IOException, SQLException {
-        Collection<TableMetaData> fromTables = tables(fromConnName, fromCatalog);
-        Collection<TableMetaData> toTables = tables(toConnName, toCatalog);
+        Collection<TableMetaData> fromTables = tables(fromConnName, fromCatalog,null);
+        Collection<TableMetaData> toTables = tables(toConnName, toCatalog,null);
 
         List<String> alters = new ArrayList<>();
 
@@ -527,7 +547,14 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> , In
 
         Map<ActualTableName, TableMetaData> tableNameTableMetaDataMap;
         try {
-            tablesResultSet = databaseMetaData.getTables(catalog, schema, "%", new String[]{"TABLE"});
+            final String className = databaseMetaData.getClass().getName().toLowerCase();
+            if (className.contains("oracle")) {
+                tablesResultSet = databaseMetaData.getTables(null, schema, "%", null);
+            }else if (className.contains("mysql")){
+                tablesResultSet =  databaseMetaData.getTables(null, databaseMetaData.getConnection().getCatalog(), "%", new String[]{"table"});
+            }else if (className.contains("postgresql")){
+                tablesResultSet =  databaseMetaData.getTables( databaseMetaData.getConnection().getCatalog() , "public", "%", new String[]{"TABLE"});
+            }
             List<Table> tables = tableListProcessor.handle(tablesResultSet);
 
             Map<ActualTableName, List<Column>> tableColumnsMap = refreshColumns(databaseMetaData, catalog, schema);
@@ -610,9 +637,13 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> , In
         @Override
         public List<Schema> handle(ResultSet rs) throws SQLException {
             List<Schema> schemaList = new ArrayList<>();
+            final int columnCount = rs.getMetaData().getColumnCount();
             while (rs.next()){
                 String schema = rs.getString("TABLE_SCHEM");
-                String catalog = rs.getString("TABLE_CATALOG");
+                String catalog = null;
+                if (columnCount > 1) {
+                    catalog = rs.getString("TABLE_CATALOG");
+                }
                 schemaList.add(new Schema(schema,catalog));
             }
             return schemaList;
@@ -660,6 +691,11 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> , In
                 int decimalDigits = rs.getInt("DECIMAL_DIGITS");
                 int nullableInt = rs.getInt("NULLABLE");
                 String remarks = rs.getString("REMARKS");
+
+                // 对于日期类型, 这里会返回字符串长度, 是不准备的, 手动修改 datetime 为 6
+                if ("datetime".equalsIgnoreCase(typeName)){
+                    columnSize = 6;
+                }
 //                String remarks = null;
 //                try {
 //                    byte[] remarksBytes = rs.getBytes("REMARKS");
@@ -667,7 +703,10 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> , In
 //                        remarks = new String(remarksBytes, "UTF-8");
 //                    }
 //                } catch (UnsupportedEncodingException e) {}
-                String autoIncrement = rs.getString("IS_AUTOINCREMENT");
+                String autoIncrement = null;
+                if (!(rs instanceof OracleResultSet)){
+                    autoIncrement = rs.getString("IS_AUTOINCREMENT");
+                }
 
                 boolean nullable = nullableInt == 1 ? true: false;
                 boolean isAutoIncrement = "YES".equals(autoIncrement) ? true : false;
@@ -772,6 +811,17 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> , In
     }
 
     /**
+     * 连接数据源类型
+     * @param connName 连接名称
+     * @return
+     * @throws IOException
+     */
+    public String dbType(String connName) throws IOException {
+        DatabaseConnectParam databaseConnectParam = (DatabaseConnectParam) connectService.readConnParams(JdbcService.MODULE, connName);
+        return databaseConnectParam.getDbType();
+    }
+
+    /**
      * 获取默认数据源和指定数据库的数据源
      * @param connName
      * @return
@@ -827,6 +877,9 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> , In
                     oracleDataSource.setUser(authParam.getUsername());
                     oracleDataSource.setPassword(authParam.getPassword());
                     oracleDataSource.setDriverType("thin");
+                    Properties properties = new Properties();
+                    properties.setProperty("remarksReporting","true");
+                    oracleDataSource.setConnectionProperties(properties);
                     oracleDataSource.setURL("jdbc:oracle:thin:@"+connectParam.getHost()+":"+connectParam.getPort()+":"+ database);
                     dataSource = oracleDataSource;
                     break;
