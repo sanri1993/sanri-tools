@@ -1,16 +1,17 @@
 package com.sanri.tools.modules.database.service;
 
 import com.sanri.tools.modules.core.exception.ToolException;
-import com.sanri.tools.modules.database.dtos.meta.*;
+import com.sanri.tools.modules.database.service.meta.dtos.ActualTableName;
+import com.sanri.tools.modules.database.service.meta.dtos.Column;
+import com.sanri.tools.modules.database.service.meta.dtos.Index;
+import com.sanri.tools.modules.database.service.meta.dtos.TableMetaData;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import lombok.Data;
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.sql.SQLException;
@@ -156,7 +157,7 @@ public class MetaCompareService {
      * @param compareColumns
      * @return
      */
-    private List<ModifyColumn> compareColumns(String tableName,List<Column> baseColumns, List<Column> compareColumns) {
+    private List<ModifyColumn> compareColumns(String tableName, List<Column> baseColumns, List<Column> compareColumns) {
         List<ModifyColumn> modifyColumns = new ArrayList<>();
 
         final Map<String, Column> baseColumnMap = baseColumns.stream().collect(Collectors.toMap(Column::getColumnName, Function.identity()));
@@ -193,7 +194,7 @@ public class MetaCompareService {
      * @param compareIndices
      * @return
      */
-    private List<ModifyIndex> compareIndices(String tableName,List<Index> baseIndices,List<Index> compareIndices){
+    private List<ModifyIndex> compareIndices(String tableName, List<Index> baseIndices, List<Index> compareIndices){
         List<ModifyIndex> modifyIndices = new ArrayList<>();
 
         final Map<String, Index> baseIndexMap = baseIndices.stream().collect(Collectors.toMap(index -> index.getIndexName()+"_"+index.getOrdinalPosition(), Function.identity()));

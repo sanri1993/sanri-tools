@@ -1,12 +1,10 @@
 package com.sanri.tools.modules.database.service;
 
 import com.sanri.tools.modules.core.service.file.FileManager;
-import com.sanri.tools.modules.database.dtos.ExtendTableMetaData;
-import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
+import com.sanri.tools.modules.database.service.meta.dtos.TableMetaData;
 import com.sanri.tools.modules.database.service.search.TableSearchServiceCodeImpl;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import freemarker.template.TemplateException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -15,8 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

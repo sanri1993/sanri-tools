@@ -1,10 +1,7 @@
 package com.sanri.tools.modules.database.service.search;
 
-import com.sanri.tools.modules.database.dtos.ExtendTableMetaData;
-import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
+import com.sanri.tools.modules.database.service.meta.dtos.TableMetaData;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 
 /**

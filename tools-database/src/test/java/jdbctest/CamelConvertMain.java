@@ -2,11 +2,9 @@ package jdbctest;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Converter;
-import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
+import com.sanri.tools.modules.database.service.meta.dtos.ActualTableName;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.Alias;
-import net.sf.jsqlparser.expression.Expression;
-import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
 import net.sf.jsqlparser.parser.CCJSqlParserManager;
 import net.sf.jsqlparser.schema.Column;
@@ -17,7 +15,6 @@ import net.sf.jsqlparser.util.TablesNamesFinder;
 import org.junit.Test;
 
 import java.io.StringReader;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 

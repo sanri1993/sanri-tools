@@ -1,10 +1,7 @@
 package com.sanri.tools.modules.database.dtos;
 
-import com.sanri.tools.modules.database.dtos.meta.*;
+import com.sanri.tools.modules.database.service.meta.dtos.TableMetaData;
 import lombok.Data;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 public class ExtendTableMetaData extends TableMetaData {

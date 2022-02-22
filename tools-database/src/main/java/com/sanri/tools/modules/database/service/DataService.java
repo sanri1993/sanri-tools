@@ -33,7 +33,7 @@ import com.sanri.tools.modules.core.service.NamedThreadFactory;
 import com.sanri.tools.modules.core.service.file.FileManager;
 
 import com.sanri.tools.modules.database.dtos.*;
-import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
+import com.sanri.tools.modules.database.service.meta.dtos.ActualTableName;
 
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.JSQLParserException;

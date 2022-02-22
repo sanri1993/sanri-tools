@@ -1,14 +1,12 @@
 package com.sanri.tools.modules.database.controller;
 
 import com.sanri.tools.modules.core.service.file.FileManager;
-import com.sanri.tools.modules.database.dtos.CodeGeneratorConfig;
-import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
+import com.sanri.tools.modules.database.service.meta.dtos.TableMetaData;
 import com.sanri.tools.modules.database.service.ExcelDocService;
 import com.sanri.tools.modules.database.service.JdbcService;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.poifs.filesystem.DirectoryEntry;

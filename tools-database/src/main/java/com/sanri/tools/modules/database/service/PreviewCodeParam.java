@@ -1,7 +1,7 @@
 package com.sanri.tools.modules.database.service;
 
 import com.sanri.tools.modules.database.dtos.CodeGeneratorConfig;
-import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
+import com.sanri.tools.modules.database.service.meta.dtos.ActualTableName;
 import lombok.Data;
 
 import javax.validation.Valid;

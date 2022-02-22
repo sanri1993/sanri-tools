@@ -2,8 +2,8 @@ package com.sanri.tools.modules.database.service.search;
 
 import com.sanri.tools.modules.database.dtos.ExtendTableMetaData;
 import com.sanri.tools.modules.database.dtos.TableMark;
-import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
-import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
+import com.sanri.tools.modules.database.service.meta.dtos.ActualTableName;
+import com.sanri.tools.modules.database.service.meta.dtos.TableMetaData;
 import com.sanri.tools.modules.database.service.JdbcService;
 import com.sanri.tools.modules.database.service.TableMarkService;
 import lombok.extern.slf4j.Slf4j;
@@ -12,8 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

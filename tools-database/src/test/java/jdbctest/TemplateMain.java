@@ -1,19 +1,17 @@
 package jdbctest;
 
-import com.sanri.tools.modules.database.dtos.meta.*;
 import com.sanri.tools.modules.database.service.MetaCompareService;
+import com.sanri.tools.modules.database.service.meta.dtos.*;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.StringWriter;
 import java.util.*;
 
 public class TemplateMain {

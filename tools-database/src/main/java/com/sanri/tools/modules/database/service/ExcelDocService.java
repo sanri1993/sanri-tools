@@ -1,8 +1,10 @@
 package com.sanri.tools.modules.database.service;
 
 import com.sanri.tools.modules.core.service.file.FileManager;
-import com.sanri.tools.modules.database.dtos.CodeGeneratorConfig;
-import com.sanri.tools.modules.database.dtos.meta.*;
+import com.sanri.tools.modules.database.service.meta.dtos.Column;
+import com.sanri.tools.modules.database.service.meta.dtos.PrimaryKey;
+import com.sanri.tools.modules.database.service.meta.dtos.Table;
+import com.sanri.tools.modules.database.service.meta.dtos.TableMetaData;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;

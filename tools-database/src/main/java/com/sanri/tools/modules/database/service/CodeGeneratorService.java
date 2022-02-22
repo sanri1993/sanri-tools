@@ -30,8 +30,8 @@ import org.springframework.util.ReflectionUtils;
 import com.sanri.tools.modules.core.service.file.FileManager;
 
 import com.sanri.tools.modules.database.dtos.*;
-import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
-import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
+import com.sanri.tools.modules.database.service.meta.dtos.ActualTableName;
+import com.sanri.tools.modules.database.service.meta.dtos.TableMetaData;
 import com.sanri.tools.modules.database.service.rename.JavaBeanInfo;
 
 import freemarker.template.Configuration;

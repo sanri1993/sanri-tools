@@ -1,6 +1,6 @@
 package com.sanri.tools.modules.database.controller.dtos;
 
-import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
+import com.sanri.tools.modules.database.service.meta.dtos.TableMetaData;
 import com.sanri.tools.modules.database.service.MetaCompareService;
 import lombok.Data;
 

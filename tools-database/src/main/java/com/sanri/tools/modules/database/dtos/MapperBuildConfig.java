@@ -1,6 +1,5 @@
 package com.sanri.tools.modules.database.dtos;
 
-import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
 import lombok.Data;
 
 import javax.validation.Valid;

@@ -1,8 +1,6 @@
 package com.sanri.tools.modules.database.service;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,20 +8,14 @@ import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
 import com.sanri.tools.modules.core.service.connect.ConnectService;
 import com.sanri.tools.modules.core.service.file.FileManager;
-import oracle.jdbc.OracleConnection;
-import oracle.jdbc.OracleDatabaseMetaData;
-import oracle.jdbc.OracleResultSet;
+import com.sanri.tools.modules.database.service.meta.dtos.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.ColumnListHandler;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.beans.factory.InitializingBean;
@@ -35,15 +27,14 @@ import com.sanri.tools.modules.core.dtos.UpdateConnectEvent;
 import com.sanri.tools.modules.core.dtos.param.AuthParam;
 import com.sanri.tools.modules.core.dtos.param.ConnectParam;
 import com.sanri.tools.modules.core.dtos.param.DatabaseConnectParam;
-import com.sanri.tools.modules.core.service.file.ConnectServiceOldFileBase;
 
 import com.sanri.tools.modules.database.dtos.ConnectionMetaData;
 import com.sanri.tools.modules.database.dtos.DynamicQueryDto;
-import com.sanri.tools.modules.database.dtos.meta.*;
 
 import lombok.extern.slf4j.Slf4j;
 import oracle.jdbc.pool.OracleDataSource;
 
+import static com.sanri.tools.modules.database.service.meta.DatabaseMetaDataLoad.*;
 
 @Service
 @Slf4j
@@ -615,11 +606,6 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> , In
     }
 
     // 数据处理器
-    static SchemaListProcessor schemaListProcessor = new SchemaListProcessor();
-    static TableListProcessor tableListProcessor = new TableListProcessor();
-    static ColumnListProcessor columnListProcessor = new ColumnListProcessor();
-    static IndexListProcessor indexListProcessor = new IndexListProcessor();
-    static PrimaryKeyListProcessor primaryKeyListProcessor = new PrimaryKeyListProcessor();
     public static DynamicQueryProcessor dynamicQueryProcessor = new DynamicQueryProcessor();
 
     @Override
@@ -633,133 +619,6 @@ public class JdbcService implements ApplicationListener<UpdateConnectEvent> , In
         }
     }
 
-    private static class SchemaListProcessor implements ResultSetHandler<List<Schema>>{
-        @Override
-        public List<Schema> handle(ResultSet rs) throws SQLException {
-            List<Schema> schemaList = new ArrayList<>();
-            final int columnCount = rs.getMetaData().getColumnCount();
-            while (rs.next()){
-                String schema = rs.getString("TABLE_SCHEM");
-                String catalog = null;
-                if (columnCount > 1) {
-                    catalog = rs.getString("TABLE_CATALOG");
-                }
-                schemaList.add(new Schema(schema,catalog));
-            }
-            return schemaList;
-        }
-    }
-    private static class TableListProcessor implements ResultSetHandler<List<Table>>{
-        @Override
-        public List<Table> handle(ResultSet rs) throws SQLException {
-            List<Table> tables = new ArrayList<>();
-            while (rs.next()){
-                String catalog = rs.getString("TABLE_CAT");
-                String schema = rs.getString("TABLE_SCHEM");
-                String tableName = rs.getString("TABLE_NAME");
-                String remarks = rs.getString("REMARKS");
-//                String remarks = null;
-//                try {
-//                    // 解决注释字段乱码问题
-//                    byte[] remarksBytes = rs.getBytes("REMARKS");
-//                    if (remarksBytes != null) {
-//                        remarks = new String(remarksBytes, "UTF-8");
-//                    }
-//                } catch (UnsupportedEncodingException e) {}
-                ActualTableName actualTableName = new ActualTableName(catalog, schema, tableName);
-                Table table = new Table(actualTableName, remarks);
-                tables.add(table);
-            }
-            return tables;
-        }
-    }
-    private static class ColumnListProcessor implements ResultSetHandler<List<Column>>{
-
-        @Override
-        public List<Column> handle(ResultSet rs) throws SQLException {
-            List<Column> columns = new ArrayList<>();
-            while (rs.next()){
-                String catalog = rs.getString("TABLE_CAT");
-                String schema = rs.getString("TABLE_SCHEM");
-                String tableName = rs.getString("TABLE_NAME");
-                ActualTableName actualTableName = new ActualTableName(catalog, schema, tableName);
-
-                String columnName = rs.getString("COLUMN_NAME");
-                int dataType = rs.getInt("DATA_TYPE");
-                String typeName = rs.getString("TYPE_NAME");
-                int columnSize = rs.getInt("COLUMN_SIZE");
-                int decimalDigits = rs.getInt("DECIMAL_DIGITS");
-                int nullableInt = rs.getInt("NULLABLE");
-                String remarks = rs.getString("REMARKS");
-
-                // 对于日期类型, 这里会返回字符串长度, 是不准备的, 手动修改 datetime 为 6
-                if ("datetime".equalsIgnoreCase(typeName)){
-                    columnSize = 6;
-                }
-//                String remarks = null;
-//                try {
-//                    byte[] remarksBytes = rs.getBytes("REMARKS");
-//                    if (remarksBytes != null) {
-//                        remarks = new String(remarksBytes, "UTF-8");
-//                    }
-//                } catch (UnsupportedEncodingException e) {}
-                String autoIncrement = null;
-                if (!(rs instanceof OracleResultSet)){
-                    autoIncrement = rs.getString("IS_AUTOINCREMENT");
-                }
-
-                boolean nullable = nullableInt == 1 ? true: false;
-                boolean isAutoIncrement = "YES".equals(autoIncrement) ? true : false;
-                final String columnDef = rs.getString("COLUMN_DEF");
-                Column column = new Column(actualTableName, columnName, dataType, typeName, columnSize, decimalDigits, nullable, remarks, isAutoIncrement,columnDef);
-                columns.add(column);
-            }
-            return columns;
-        }
-    }
-    private static class IndexListProcessor implements ResultSetHandler<List<Index>>{
-
-        @Override
-        public List<Index> handle(ResultSet rs) throws SQLException {
-            List<Index> indices = new ArrayList<>();
-            while (rs.next()){
-                String catalog = rs.getString("TABLE_CAT");
-                String schema = rs.getString("TABLE_SCHEM");
-                String tableName = rs.getString("TABLE_NAME");
-                ActualTableName actualTableName = new ActualTableName(catalog, schema, tableName);
-
-                boolean nonUnique = rs.getBoolean("NON_UNIQUE");
-                String indexName = rs.getString("INDEX_NAME");
-                short type = rs.getShort("TYPE");
-                short ordinalPosition = rs.getShort("ORDINAL_POSITION");
-                String columnName = rs.getString("COLUMN_NAME");
-                Index index = new Index(actualTableName, !nonUnique, indexName, type, ordinalPosition, columnName);
-                indices.add(index);
-            }
-            return indices;
-        }
-    }
-    private static class PrimaryKeyListProcessor implements ResultSetHandler<List<PrimaryKey>>{
-
-        @Override
-        public List<PrimaryKey> handle(ResultSet rs) throws SQLException {
-            List<PrimaryKey> primaryKeys = new ArrayList<>();
-            while (rs.next()){
-                String catalog = rs.getString("TABLE_CAT");
-                String schema = rs.getString("TABLE_SCHEM");
-                String tableName = rs.getString("TABLE_NAME");
-                ActualTableName actualTableName = new ActualTableName(catalog, schema, tableName);
-
-                String columnName = rs.getString("COLUMN_NAME");
-                short keySeq = rs.getShort("KEY_SEQ");
-                String pkName = rs.getString("PK_NAME");
-
-                PrimaryKey primaryKey = new PrimaryKey(actualTableName, columnName, keySeq, pkName);
-                primaryKeys.add(primaryKey);
-            }
-            return primaryKeys;
-        }
-    }
 
     public static class DynamicQueryProcessor implements ResultSetHandler<DynamicQueryDto>{
         @Override

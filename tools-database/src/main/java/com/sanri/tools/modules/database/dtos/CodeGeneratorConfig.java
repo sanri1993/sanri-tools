@@ -1,9 +1,8 @@
 package com.sanri.tools.modules.database.dtos;
 
-import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
+import com.sanri.tools.modules.database.service.meta.dtos.ActualTableName;
 import lombok.Data;
 
-import javax.sql.DataSource;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;

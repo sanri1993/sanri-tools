@@ -2,25 +2,19 @@ package com.sanri.tools.modules.database.service.rename;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Converter;
-import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
-import com.sanri.tools.modules.database.dtos.meta.Column;
-import com.sanri.tools.modules.database.dtos.meta.PrimaryKey;
-import com.sanri.tools.modules.database.dtos.meta.TableMetaData;
+import com.sanri.tools.modules.database.service.meta.dtos.Column;
+import com.sanri.tools.modules.database.service.meta.dtos.PrimaryKey;
+import com.sanri.tools.modules.database.service.meta.dtos.TableMetaData;
 import com.sanri.tools.modules.database.service.RenameStrategy;
-import com.sun.crypto.provider.JceKeyStore;
-import org.apache.commons.collections.buffer.PriorityBuffer;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.math.BigDecimal;
 import java.sql.JDBCType;
-import java.sql.Types;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component

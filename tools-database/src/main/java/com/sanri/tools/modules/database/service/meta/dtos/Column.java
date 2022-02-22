@@ -1,10 +1,8 @@
-package com.sanri.tools.modules.database.dtos.meta;
+package com.sanri.tools.modules.database.service.meta.dtos;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 
 @Data
 @EqualsAndHashCode(exclude = "actualTableName")

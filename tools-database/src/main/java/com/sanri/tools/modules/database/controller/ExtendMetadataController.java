@@ -1,7 +1,7 @@
 package com.sanri.tools.modules.database.controller;
 
 import com.sanri.tools.modules.database.dtos.TableRelationTree;
-import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
+import com.sanri.tools.modules.database.service.meta.dtos.ActualTableName;
 import com.sanri.tools.modules.database.dtos.BatchTableRelationParam;
 import com.sanri.tools.modules.database.dtos.TableMark;
 import com.sanri.tools.modules.database.dtos.TableRelationDto;
@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;

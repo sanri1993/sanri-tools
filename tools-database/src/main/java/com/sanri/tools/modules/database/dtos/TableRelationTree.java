@@ -1,7 +1,6 @@
 package com.sanri.tools.modules.database.dtos;
 
-import com.sanri.tools.modules.database.dtos.meta.ActualTableName;
-import lombok.Data;
+import com.sanri.tools.modules.database.service.meta.dtos.ActualTableName;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;

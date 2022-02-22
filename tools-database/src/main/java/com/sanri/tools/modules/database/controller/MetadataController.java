@@ -5,9 +5,11 @@ import com.sanri.tools.modules.core.service.connect.dtos.ConnectInput;
 import com.sanri.tools.modules.core.service.connect.dtos.ConnectOutput;
 import com.sanri.tools.modules.database.controller.dtos.TableModify;
 import com.sanri.tools.modules.database.dtos.ExtendTableMetaData;
-import com.sanri.tools.modules.database.dtos.meta.*;
 import com.sanri.tools.modules.database.service.JdbcService;
 import com.sanri.tools.modules.database.service.MetaCompareService;
+import com.sanri.tools.modules.database.service.meta.dtos.ActualTableName;
+import com.sanri.tools.modules.database.service.meta.dtos.Catalog;
+import com.sanri.tools.modules.database.service.meta.dtos.TableMetaData;
 import com.sanri.tools.modules.database.service.search.TableSearchServiceCodeImpl;
 import freemarker.template.TemplateException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +66,7 @@ public class MetadataController {
      * @param connName 连接名称
      */
     @GetMapping("/tables")
-    public Collection<TableMetaData> tables(@NotNull String connName, String catalog,String schema) throws SQLException, IOException {
+    public Collection<TableMetaData> tables(@NotNull String connName, String catalog, String schema) throws SQLException, IOException {
         Collection<TableMetaData> tables = jdbcService.tables(connName, catalog, schema);
         return tables;
     }
