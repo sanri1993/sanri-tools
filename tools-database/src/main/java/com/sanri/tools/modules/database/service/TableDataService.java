@@ -1,25 +1,28 @@
 package com.sanri.tools.modules.database.service;
 
-import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.ExcelReader;
-import com.alibaba.excel.context.AnalysisContext;
-import com.alibaba.excel.event.AnalysisEventListener;
-import com.alibaba.excel.read.metadata.ReadSheet;
+import java.io.IOException;
+import java.io.StringReader;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import com.google.common.collect.Maps;
 import com.sanri.tools.modules.core.exception.ToolException;
-import com.sanri.tools.modules.database.dtos.ExcelImportParam;
-import com.sanri.tools.modules.database.service.meta.dtos.ActualTableName;
-import com.sanri.tools.modules.database.service.meta.dtos.Column;
-import com.sanri.tools.modules.database.dtos.TableDataParam;
-import com.sanri.tools.modules.database.service.meta.dtos.TableMetaData;
-import lombok.extern.slf4j.Slf4j;
-import net.sf.jsqlparser.JSQLParserException;
-import net.sf.jsqlparser.parser.CCJSqlParserManager;
-import net.sf.jsqlparser.statement.select.Limit;
-import net.sf.jsqlparser.statement.select.PlainSelect;
-import net.sf.jsqlparser.statement.select.Select;
+import com.sanri.tools.modules.database.service.dtos.data.ExtendTableRelation;
+import com.sanri.tools.modules.database.service.meta.aspect.JdbcConnection;
+import com.sanri.tools.modules.database.service.meta.dtos.*;
+import net.sf.cglib.beans.BeanMap;
+import net.sf.jsqlparser.statement.Statement;
+import net.sf.jsqlparser.statement.select.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
+import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.ColumnListHandler;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
@@ -30,21 +33,33 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelReader;
+import com.alibaba.excel.context.AnalysisContext;
+import com.alibaba.excel.event.AnalysisEventListener;
+import com.alibaba.excel.read.metadata.ReadSheet;
+import com.sanri.tools.modules.database.service.dtos.data.DirtyDataInfo;
+import com.sanri.tools.modules.database.service.dtos.data.ExcelImportParam;
+import com.sanri.tools.modules.database.service.dtos.data.TableDataParam;
+import com.sanri.tools.modules.database.service.dtos.meta.TableMeta;
+import com.sanri.tools.modules.database.service.dtos.meta.TableRelation;
+import com.sanri.tools.modules.database.service.meta.TabeRelationMetaData;
+
+import lombok.extern.slf4j.Slf4j;
+import net.sf.jsqlparser.JSQLParserException;
+import net.sf.jsqlparser.parser.CCJSqlParserManager;
 
 @Service
 @Slf4j
 public class TableDataService {
     @Autowired
-    private JdbcService jdbcService;
+    private JdbcDataService jdbcDataService;
     @Autowired
-    private DataService dataService;
+    private JdbcMetaService jdbcMetaService;
+    @Autowired
+    private TableSearchService tableSearchService;
+    @Autowired
+    private TabeRelationMetaData tabeRelationMetaData;
 
     private ExpressionParser expressionParser = new SpelExpressionParser();
 
@@ -58,15 +73,113 @@ public class TableDataService {
      * @return
      */
     public int emptyTable(String connName, ActualTableName actualTableName) throws IOException, SQLException {
-        String sql = "truncate "+actualTableName.getSchema()+"."+actualTableName.getTableName();
-        if (StringUtils.isBlank(actualTableName.getSchema())){
-            sql = "truncate "+actualTableName.getCatalog()+"."+actualTableName.getTableName();
-        }
-        List<Integer> integers = jdbcService.executeUpdate(connName, Collections.singletonList(sql));
+        String sql = "truncate "+actualTableName.getTableName();
+        List<Integer> integers = jdbcDataService.executeUpdate(connName, Collections.singletonList(sql),actualTableName.getNamespace());
         if (CollectionUtils.isNotEmpty(integers)){
             return integers.get(0);
         }
         return 0 ;
+    }
+
+    /**
+     * 清空数据 一对一清空模板
+     */
+    public static final String sqlLeftJoinTemplate = "SELECT t1.${firstSourcePrimaryKey} FROM ${sourceTableName} t1 LEFT JOIN ${targetTableName} t2 ON t1.${sourceColumnName} = t2.${targetColumnName} WHERE t2.${firstTargetPrimaryKey} IS NULL";
+    public static final String sqlRightJoinTemplate = "SELECT t2.${firstTargetPrimaryKey} FROM ${sourceTableName} t1 RIGHT JOIN ${targetTableName} t2 ON t1.${sourceColumnName} = t2.${targetColumnName} WHERE t1.${firstSourcePrimaryKey} IS NULL";
+    public static final String deleteDataSqlLeftJoinTemplate = "DELETE FROM ${sourceTableName} WHERE ${firstSourcePrimaryKey} IN ( "+ sqlLeftJoinTemplate+" ) ";
+    public static final String deleteDataSqlRightJoinTemplate = "DELETE FROM ${targetTableName} WHERE ${firstTargetPrimaryKey} IN ( " + sqlRightJoinTemplate+" ) ";
+
+    /**
+     * 不符合关系的数据检查
+     * @param connName
+     * @param namespace
+     * @return
+     */
+    @JdbcConnection
+    public List<DirtyDataInfo> checkDirtyData(String connName, Namespace namespace) throws IOException, SQLException {
+        final List<TableMeta> tables = jdbcMetaService.tables(connName, namespace);
+
+        // 获取所有表名, 关系有可能有错误的表名
+        Map<String, String> tableNameMap = tables.stream().map(TableMeta::getTable).map(Table::getActualTableName).map(ActualTableName::getTableName).collect(Collectors.toMap(Function.identity(), Function.identity()));
+        tableNameMap = new CaseInsensitiveMap<>(tableNameMap);
+
+        List<DirtyDataInfo> dirtyDataInfos = new ArrayList<>();
+        for (TableMeta table : tables) {
+            final ActualTableName actualTableName = table.getTable().getActualTableName();
+            final List<TableRelation> childs = tabeRelationMetaData.childs(connName, actualTableName);
+            if (CollectionUtils.isEmpty(childs)){
+                // 如果当前数据表是没有关系配置的, 则跳过
+                continue;
+            }
+
+            // 获取数据表主键(第一个主键)
+            final List<PrimaryKey> sourcePrimaryKeys = jdbcMetaService.primaryKeys(connName, table.getTable().getActualTableName());
+            final String firstSourcePrimaryKey = sourcePrimaryKeys.get(0).getColumnName();
+
+            for (TableRelation child : childs) {
+                if (!tableNameMap.containsKey(child.getSourceTableName()) || !tableNameMap.containsKey(child.getTargetTableName())){
+//                    throw new ToolException("数据表被删除"+child.getSourceTableName()+", "+child.getTargetTableName());
+                    log.warn("数据表[{}]或者[{}]被删除",child.getSourceTableName(),child.getTargetTableName());
+                }
+
+                final DirtyDataInfo dirtyDataInfo = new DirtyDataInfo(child);
+                dirtyDataInfos.add(dirtyDataInfo);
+
+                final List<PrimaryKey> targetPrimaryKeys = jdbcMetaService.primaryKeys(connName, new ActualTableName(namespace, child.getTargetTableName()));
+                final String firstTargetPrimaryKey = targetPrimaryKeys.get(0).getColumnName();
+                final ExtendTableRelation extendTableRelation = new ExtendTableRelation(child, firstSourcePrimaryKey,firstTargetPrimaryKey);
+
+                StringSubstitutor stringSubstitutor = new StringSubstitutor(beanToMap(extendTableRelation));
+                dirtyDataInfo.addDeleteItem(new DirtyDataInfo.DeleteItem(stringSubstitutor.replace(sqlLeftJoinTemplate),stringSubstitutor.replace(deleteDataSqlLeftJoinTemplate)));
+                dirtyDataInfo.addDeleteItem(new DirtyDataInfo.DeleteItem(stringSubstitutor.replace(sqlRightJoinTemplate),stringSubstitutor.replace(deleteDataSqlRightJoinTemplate)));
+            }
+        }
+
+        // 查询每条语句的删除数据数量
+        long startTime = System.currentTimeMillis();
+        try {
+            ResultSetHandler<Long> resultSetHandler = new ScalarHandler<>();
+            for (DirtyDataInfo dirtyDataInfo : dirtyDataInfos) {
+                final List<DirtyDataInfo.DeleteItem> deleteItems = dirtyDataInfo.getDeleteItems();
+                for (DirtyDataInfo.DeleteItem deleteItem : deleteItems) {
+                    final String querySql = deleteItem.getQuerySql();
+                    final Select select = (Select) parserManager.parse(new StringReader(querySql));
+                    final PlainSelect selectBody = (PlainSelect) select.getSelectBody();
+                    List<SelectItem> selectItems = new ArrayList<>();
+                    final SelectExpressionItem selectExpressionItem = new SelectExpressionItem();
+                    selectItems.add(selectExpressionItem);
+                    final net.sf.jsqlparser.expression.Function function = new net.sf.jsqlparser.expression.Function();
+                    function.setAllColumns(true);
+                    function.setName("count");
+                    selectExpressionItem.setExpression(function);
+                    selectBody.setSelectItems(selectItems);
+                    final Long executeQuery = jdbcDataService.executeQuery(connName, select.toString(), resultSetHandler, namespace);
+                    deleteItem.setTotal(executeQuery);
+                }
+            }
+        }catch (Exception e){
+            log.error(e.getMessage(),e);
+        }finally {
+            log.info("执行查询耗时: {} ms",(System.currentTimeMillis() - startTime));
+        }
+
+        return dirtyDataInfos;
+    }
+
+    /**
+     * 将对象装换为map
+     * @param bean
+     * @return
+     */
+    public static <T> Map<String, Object> beanToMap(T bean) {
+        Map<String, Object> map = Maps.newHashMap();
+        if (bean != null) {
+            BeanMap beanMap = BeanMap.create(bean);
+            for (Object key : beanMap.keySet()) {
+                map.put(key+"", beanMap.get(key));
+            }
+        }
+        return map;
     }
 
     /**
@@ -77,11 +190,13 @@ public class TableDataService {
         // 获取表元数据信息
         String connName = tableDataParam.getConnName();
         ActualTableName actualTableName = tableDataParam.getActualTableName();
-        TableMetaData tableMetaData = jdbcService.findTable(connName,actualTableName);
-        if (tableMetaData == null){
+        Optional<TableMeta> tableMeta = tableSearchService.getTable(connName,actualTableName);
+        if (!tableMeta.isPresent()){
             log.error("未找到数据表: [{}]",actualTableName);
             return ;
         }
+
+        final TableMeta tableMetaData = tableMeta.get();
 
         List<TableDataParam.ColumnMapper> columnMappers = tableDataParam.getColumnMappers();
         // 如果有列映射是使用 sql 语句的,先查询 sql 语句的数据,每次都去查的话性能会受影响
@@ -101,7 +216,7 @@ public class TableDataService {
             }
             plainSelect.setLimit(originLimit);
 
-            List<Object> executeQuery = jdbcService.executeQuery(connName, sql, new ColumnListHandler<Object>(1));
+            List<Object> executeQuery = jdbcDataService.executeQuery(connName, sql, new ColumnListHandler<Object>(1), actualTableName.getNamespace());
             datas.put(sqlMd5,executeQuery);
         }
 
@@ -128,6 +243,7 @@ public class TableDataService {
                     String random = columnMapper.getRandom();
                     String columnName = columnMapper.getColumnName();
                     String sql = columnMapper.getSql();
+                    final String fixed = columnMapper.getFixed();
 
                     Object value = null;
                     if (StringUtils.isNotBlank(random)) {
@@ -139,6 +255,8 @@ public class TableDataService {
                         List<Object> list = datas.get(md5Hex);
                         int position = RandomUtils.nextInt(0,list.size());
                         value = list.get(position);
+                    }else if (StringUtils.isNotBlank(fixed)){
+                        value = fixed;
                     }
 
                     // 需要判断数据库字段类型,数字型和字符型的添加不一样的
@@ -164,10 +282,15 @@ public class TableDataService {
      */
     public void importDataFromExcel(ExcelImportParam excelImportParam, MultipartFile excel) throws IOException, SQLException {
         String connName = excelImportParam.getConnName();
-        TableMetaData tableMetaData = jdbcService.findTable(connName, excelImportParam.getActualTableName());
-        if (tableMetaData == null){
-            throw new ToolException(excelImportParam.getActualTableName().getTableName()+" 数据表不存在,导入失败");
+        final ActualTableName actualTableName = excelImportParam.getActualTableName();
+        Optional<TableMeta> tableMeta = tableSearchService.getTable(connName,actualTableName);
+        if (!tableMeta.isPresent()){
+            log.error("未找到数据表: [{}]",actualTableName);
+            return ;
         }
+
+        final TableMeta tableMetaData = tableMeta.get();
+
         // 读取 Excel 数据
         ImportDataToTableListener syncReadListener = new ImportDataToTableListener(tableMetaData,excelImportParam);
         ReadSheet readSheet = EasyExcel.readSheet(0).headRowNumber(excelImportParam.getStartRow()).build();
@@ -182,7 +305,7 @@ public class TableDataService {
      * @author Jiaju Zhuang
      */
     private class ImportDataToTableListener extends AnalysisEventListener<Map<Integer, String>> {
-        private TableMetaData tableMetaData;
+        private TableMeta tableMetaData;
         private ExcelImportParam excelImportParam;
         private static final int BATCH_SIZE = 1000;
 
@@ -190,7 +313,7 @@ public class TableDataService {
 
         String insertSql = "insert into ${tableName}(${columns}) values ${values}";
 
-        public ImportDataToTableListener(TableMetaData tableMetaData, ExcelImportParam excelImportParam) {
+        public ImportDataToTableListener(TableMeta tableMetaData, ExcelImportParam excelImportParam) {
             this.tableMetaData = tableMetaData;
             this.excelImportParam = excelImportParam;
         }
@@ -275,7 +398,7 @@ public class TableDataService {
         String finalSql = stringSubstitutor.replace(insertSql);
 
         try {
-            List<Integer> executeUpdate = jdbcService.executeUpdate(connName, Arrays.asList(finalSql));
+            List<Integer> executeUpdate = jdbcDataService.executeUpdate(connName, Arrays.asList(finalSql), actualTableName.getNamespace());
             log.info("影响行数 {}",executeUpdate);
         } catch (SQLException | IOException e) {
             log.error("当前 sql 执行错误{}, 当前sql  {}",e.getMessage(),finalSql);

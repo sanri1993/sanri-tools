@@ -1,6 +1,10 @@
 package jdbctest;
 
 import com.sanri.tools.modules.database.service.MetaCompareService;
+import com.sanri.tools.modules.database.service.dtos.compare.DiffType;
+import com.sanri.tools.modules.database.service.dtos.compare.ModifyColumn;
+import com.sanri.tools.modules.database.service.dtos.compare.ModifyIndex;
+import com.sanri.tools.modules.database.service.dtos.meta.TableMetaData;
 import com.sanri.tools.modules.database.service.meta.dtos.*;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -43,7 +47,6 @@ public class TemplateMain {
         String tableName = "EIMS_SCAN_BATCH";
         final ActualTableName actualTableName = new ActualTableName("anta", null, tableName);
         final List<Column> columns = Arrays.asList(
-                new Column(actualTableName, "ID", 1, "bigint", 0, 0, false, "主键", true, null),
                 new Column(actualTableName, "BATCH_NUMBER", 1, "varchar", 64, 0, false, "批次号", false, null),
                 new Column(actualTableName, "TOTAL", 1, "int", 64, 5, true, "总扫描数", false, null),
                 new Column(actualTableName, "TIME", 1, "datetime", 0, 0, true, "扫描时间", false, null),
@@ -55,10 +58,10 @@ public class TemplateMain {
         List<Index> indices = new ArrayList<>();
         final TableMetaData tableMetaData = new TableMetaData(actualTableName, table, columns, indices, primaryKeys);
 
-        Template createTableTemplate = configuration.getTemplate("sqls/altertable.mysql.ftl");
+        Template createTableTemplate = configuration.getTemplate("sqls/altertable.oracle.ftl");
         Map<String,Object> dataModel = new HashMap<>();
         dataModel.put("meta",tableMetaData);
-        dataModel.put("diffType", MetaCompareService.DiffType.ADD);
+        dataModel.put("diffType", DiffType.ADD);
         final OutputStreamWriter outputStreamWriter = new OutputStreamWriter(System.out);
         createTableTemplate.process(dataModel,outputStreamWriter);
     }
@@ -74,7 +77,7 @@ public class TemplateMain {
         Template createTableTemplate = configuration.getTemplate("sqls/altertable.mysql.ftl");
         Map<String,Object> dataModel = new HashMap<>();
         dataModel.put("actualTableName",actualTableName);
-        dataModel.put("diffType", MetaCompareService.DiffType.DELETE);
+        dataModel.put("diffType", DiffType.DELETE);
         final OutputStreamWriter outputStreamWriter = new OutputStreamWriter(System.out);
         createTableTemplate.process(dataModel,outputStreamWriter);
     }
@@ -90,7 +93,7 @@ public class TemplateMain {
         final ActualTableName actualTableName = new ActualTableName("anta", null, tableName);
         final Column baseColumn = new Column(actualTableName, "TOTAL", 1, "int", 64, 0, true, "总扫描数", false, null);
         final Column newColumn = new Column(actualTableName, "TOTAL", 1, "int", 32, 0, true, "总扫描数", false, null);
-        final MetaCompareService.ModifyColumn modifyColumn = new MetaCompareService.ModifyColumn(tableName, MetaCompareService.DiffType.MODIFY, baseColumn, newColumn);
+        final ModifyColumn modifyColumn = new ModifyColumn(tableName, DiffType.MODIFY, baseColumn, newColumn);
 
         Template createTableTemplate = configuration.getTemplate("sqls/altertablecolumn.mysql.ftl");
         Map<String,Object> dataModel = new HashMap<>();
@@ -109,7 +112,7 @@ public class TemplateMain {
         String tableName = "EIMS_SCAN_BATCH";
         final ActualTableName actualTableName = new ActualTableName("anta", null, tableName);
         final Column newColumn = new Column(actualTableName, "UPDATE_USER", 1, "varchar", 32, 0, true, "最后更新人", false, null);
-        final MetaCompareService.ModifyColumn modifyColumn = new MetaCompareService.ModifyColumn(tableName, MetaCompareService.DiffType.ADD, null, newColumn);
+        final ModifyColumn modifyColumn = new ModifyColumn(tableName, DiffType.ADD, null, newColumn);
 
         Template createTableTemplate = configuration.getTemplate("sqls/altertablecolumn.mysql.ftl");
         Map<String,Object> dataModel = new HashMap<>();
@@ -126,7 +129,7 @@ public class TemplateMain {
         String tableName = "EIMS_SCAN_BATCH";
         final ActualTableName actualTableName = new ActualTableName("anta", null, tableName);
         final Column newColumn = new Column(actualTableName, "OPTUSER", 1, "varchar", 32, 0, true, "最后更新人", false, null);
-        final MetaCompareService.ModifyColumn modifyColumn = new MetaCompareService.ModifyColumn(tableName, MetaCompareService.DiffType.DELETE, null, newColumn);
+        final ModifyColumn modifyColumn = new ModifyColumn(tableName, DiffType.DELETE, null, newColumn);
 
         Template createTableTemplate = configuration.getTemplate("sqls/altertablecolumn.mysql.ftl");
         Map<String,Object> dataModel = new HashMap<>();
@@ -146,8 +149,8 @@ public class TemplateMain {
         final ActualTableName actualTableName = new ActualTableName("anta", null, tableName);
         final Index index = new Index(actualTableName, false, "idx_OPTUSER", (short)2, (short)1, "OPTUSER");
         final Index uniqueIndex = new Index(actualTableName, true, "idx_OPTUSER", (short)2, (short)1, "OPTUSER");
-        final MetaCompareService.ModifyIndex modifyIndex = new MetaCompareService.ModifyIndex(tableName, MetaCompareService.DiffType.ADD, null, index);
-        final MetaCompareService.ModifyIndex modifyUniqueIndex = new MetaCompareService.ModifyIndex(tableName, MetaCompareService.DiffType.ADD, null, uniqueIndex);
+        final ModifyIndex modifyIndex = new ModifyIndex(tableName, DiffType.ADD, null, index);
+        final ModifyIndex modifyUniqueIndex = new ModifyIndex(tableName, DiffType.ADD, null, uniqueIndex);
 
 
         Template createTableTemplate = configuration.getTemplate("sqls/altertableindex.mysql.ftl");
@@ -171,7 +174,7 @@ public class TemplateMain {
         final ActualTableName actualTableName = new ActualTableName("anta", null, tableName);
         final Index index = new Index(actualTableName, false, "idx_OPTUSER", (short)2, (short)1, "OPTUSER");
         final Index uniqueIndex = new Index(actualTableName, true, "idx_OPTUSER", (short)2, (short)1, "OPTUSER");
-        final MetaCompareService.ModifyIndex modifyIndex = new MetaCompareService.ModifyIndex(tableName, MetaCompareService.DiffType.MODIFY, uniqueIndex, index);
+        final ModifyIndex modifyIndex = new ModifyIndex(tableName, DiffType.MODIFY, uniqueIndex, index);
 
         Template createTableTemplate = configuration.getTemplate("sqls/altertableindex.mysql.ftl");
         final OutputStreamWriter outputStreamWriter = new OutputStreamWriter(System.out);
@@ -192,7 +195,7 @@ public class TemplateMain {
         final ActualTableName actualTableName = new ActualTableName("anta", null, tableName);
         final Index index = new Index(actualTableName, false, "idx_OPTUSER", (short)2, (short)1, "OPTUSER");
         final Index uniqueIndex = new Index(actualTableName, true, "idx_OPTUSER", (short)2, (short)1, "OPTUSER");
-        final MetaCompareService.ModifyIndex modifyIndex = new MetaCompareService.ModifyIndex(tableName, MetaCompareService.DiffType.DELETE, index, index);
+        final ModifyIndex modifyIndex = new ModifyIndex(tableName, DiffType.DELETE, index, index);
 
         Template createTableTemplate = configuration.getTemplate("sqls/altertableindex.mysql.ftl");
         final OutputStreamWriter outputStreamWriter = new OutputStreamWriter(System.out);

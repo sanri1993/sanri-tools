@@ -13,6 +13,9 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import com.sanri.tools.modules.database.service.JdbcDataService;
+import com.sanri.tools.modules.database.service.connect.ConnDatasourceAdapter;
+import com.sanri.tools.modules.database.service.dtos.data.DynamicQueryDto;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -35,8 +38,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
 import com.sanri.tools.modules.core.service.file.FileManager;
 
-import com.sanri.tools.modules.database.dtos.DynamicQueryDto;
-import com.sanri.tools.modules.database.service.JdbcService;
 import com.sanri.tools.modules.mybatis.dtos.BoundSqlParam;
 import com.sanri.tools.modules.mybatis.dtos.BoundSqlResponse;
 import com.sanri.tools.modules.mybatis.dtos.ProjectDto;
@@ -48,8 +49,6 @@ import lombok.extern.slf4j.Slf4j;
 public class MybatisService {
     @Autowired
     private FileManager fileManager;
-
-
 
     @Autowired
     private ClassloaderService classloaderService;
@@ -211,7 +210,7 @@ public class MybatisService {
             SqlCommandType sqlCommandType = mappedStatement.getSqlCommandType();
             if (sqlCommandType == SqlCommandType.SELECT){
                 resultSet = statement.executeQuery();
-                DynamicQueryDto dynamicQueryDto = JdbcService.dynamicQueryProcessor.handle(resultSet);
+                DynamicQueryDto dynamicQueryDto = JdbcDataService.dynamicQueryProcessor.handle(resultSet);
                 dynamicQueryDto.setSql(statement.toString());
                 boundSqlResponse = new BoundSqlResponse(sqlCommandType,dynamicQueryDto);
             }else{

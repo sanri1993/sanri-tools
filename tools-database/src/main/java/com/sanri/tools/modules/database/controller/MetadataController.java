@@ -1,104 +1,160 @@
 package com.sanri.tools.modules.database.controller;
 
 import com.sanri.tools.modules.core.service.connect.ConnectService;
-import com.sanri.tools.modules.core.service.connect.dtos.ConnectInput;
-import com.sanri.tools.modules.core.service.connect.dtos.ConnectOutput;
 import com.sanri.tools.modules.database.controller.dtos.TableModify;
-import com.sanri.tools.modules.database.dtos.ExtendTableMetaData;
-import com.sanri.tools.modules.database.service.JdbcService;
+import com.sanri.tools.modules.database.service.JdbcMetaService;
 import com.sanri.tools.modules.database.service.MetaCompareService;
-import com.sanri.tools.modules.database.service.meta.dtos.ActualTableName;
-import com.sanri.tools.modules.database.service.meta.dtos.Catalog;
-import com.sanri.tools.modules.database.service.meta.dtos.TableMetaData;
-import com.sanri.tools.modules.database.service.search.TableSearchServiceCodeImpl;
+import com.sanri.tools.modules.database.service.TableSearchService;
+import com.sanri.tools.modules.database.service.dtos.compare.*;
+import com.sanri.tools.modules.database.service.dtos.meta.TableMeta;
+import com.sanri.tools.modules.database.service.dtos.meta.TableMetaData;
+import com.sanri.tools.modules.database.service.dtos.search.SearchParam;
+import com.sanri.tools.modules.database.service.meta.JdbcMetaRefreshService;
+import com.sanri.tools.modules.database.service.meta.dtos.*;
 import freemarker.template.TemplateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/db/metadata")
 @Validated
 public class MetadataController {
     @Autowired
-    private JdbcService jdbcService;
+    private JdbcMetaService jdbcMetaService;
     @Autowired
     private ConnectService connectService;
     @Autowired
-    private TableSearchServiceCodeImpl tableSearchService;
-    @Autowired
     private MetaCompareService metaCompareService;
+    @Autowired
+    private TableSearchService tableSearchService;
+    @Autowired
+    private JdbcMetaRefreshService jdbcMetaRefreshService;
+
     /**
-     *
-     * 查询所有的连接
+     * 客户端信息
+     * @param connName
+     * @return
+     * @throws IOException
+     * @throws SQLException
      */
-    @GetMapping("/connections")
-    public List<String> connections(){
-        final List<ConnectOutput> connectOutputs = connectService.moduleConnects(JdbcService.MODULE);
-        return connectOutputs.stream().map(ConnectOutput::getConnectInput).map(ConnectInput::getBaseName).collect(Collectors.toList());
+    @GetMapping("/clientInfo")
+    public ClientInfo clientInfo(@NotNull String connName) throws IOException, SQLException {
+        return jdbcMetaService.clientInfo(connName);
     }
 
     /**
-     * 刷新连接获取所有的 catalogs 和 schema
+     * 刷新连接获取所有的 catalogs
      * @param connName
      * @return
      * @throws IOException
      * @throws SQLException
      */
     @GetMapping("/catalogs")
-    public List<Catalog> catalogs(@NotNull String connName) throws IOException, SQLException {
-        return jdbcService.refreshConnection(connName);
+    public List<String> catalogs(@NotNull String connName) throws IOException, SQLException {
+        return jdbcMetaService.catalogs(connName);
     }
 
     /**
-     * 首次查询连接所有的表,如果已经存在将会在缓存中获取
-     * @param catalog  数据库 catalog
-     * @param connName 连接名称
+     * 获取所有 schemas
+     * @param connName
+     * @return
      */
-    @GetMapping("/tables")
-    public Collection<TableMetaData> tables(@NotNull String connName, String catalog, String schema) throws SQLException, IOException {
-        Collection<TableMetaData> tables = jdbcService.tables(connName, catalog, schema);
-        return tables;
+    @GetMapping("/schemas")
+    public List<Schema> schemas(@NotNull String connName) throws IOException, SQLException {
+        return jdbcMetaService.schemas(connName);
     }
 
     /**
-     * 刷新 catalog 或者刷新 schema
-     * @param connName 连接名称
-     * @param catalog 数据库 catalog
-     * @param schema 数据库 scheam
+     * 查询根据 catalog 过滤的 schemas
+     * @param connName
+     * @param catalog
      * @return
      * @throws IOException
      * @throws SQLException
      */
-    @GetMapping("/refreshCatalogOrSchema")
-    public Collection<TableMetaData> refreshCatalogOrSchema(@NotNull String connName,String catalog,String schema) throws IOException, SQLException {
-        return jdbcService.refreshCatalogOrSchema(connName,catalog,schema);
+    @GetMapping("/filterSchemas")
+    public List<Schema> filterSchemas(@NotNull String connName,String catalog) throws IOException, SQLException {
+        return jdbcMetaService.filterSchemas(connName,catalog);
     }
 
     /**
-     * 刷新 table 元数据
-     * @param connName 连接名
-     * @param catalog 数据库 catalog
-     * @param schema 数据库 schema
-     * @param tableName 表名
+     * 查询所有数据表, 如果之前查询过将取缓存数据
+     * @param namespace 名称空间
+     * @param connName 连接名称
+     */
+    @GetMapping("/tables")
+    public Collection<TableMeta> tables(@NotNull String connName, Namespace namespace) throws SQLException, IOException {
+        Collection<TableMeta> tables = jdbcMetaService.tables(connName, namespace);
+        return tables;
+    }
+
+    /**
+     * 数据表列表刷新
+     * @param connName 连接名称
+     * @param namespace 名称空间
+     */
+    @GetMapping("/refreshTables")
+    public Collection<TableMeta> refreshTables(@NotNull String connName, Namespace namespace) throws SQLException, IOException {
+        Collection<TableMeta> tables = jdbcMetaService.tables(connName, namespace);
+        return tables;
+    }
+
+    /**
+     * 获取单张表的元数据信息
+     * @param connName
+     * @param actualTableName
+     * @return
+     * @throws IOException
+     * @throws SQLException
+     */
+    @GetMapping("/table")
+    public TableMeta table(@NotNull String connName,ActualTableName actualTableName) throws IOException, SQLException {
+        return jdbcMetaService.tableInfo(connName,actualTableName);
+    }
+
+    /**
+     * 获取数据表索引信息
+     * @param connName
+     * @param actualTableName
+     * @return
+     */
+    @GetMapping("/indices")
+    public List<Index> indices(@NotNull String connName,ActualTableName actualTableName) throws IOException, SQLException {
+        return jdbcMetaService.indices(connName,actualTableName);
+    }
+
+    /**
+     * 获取数据表主键信息
+     * @param connName
+     * @param actualTableName
+     * @return
+     * @throws IOException
+     * @throws SQLException
+     */
+    @GetMapping("/primaryKeys")
+    public List<PrimaryKey> primaryKeys(@NotNull String connName,ActualTableName actualTableName) throws IOException, SQLException {
+        return jdbcMetaService.primaryKeys(connName, actualTableName);
+    }
+
+    /**
+     * 刷新数据表
+     * @param connName
+     * @param actualTableName
      * @return
      * @throws IOException
      * @throws SQLException
      */
     @GetMapping("/refreshTable")
-    public TableMetaData refreshTable(@NotNull String connName, String catalog, String schema, @NotNull String tableName) throws IOException, SQLException {
-        ActualTableName actualTableName = new ActualTableName(catalog,schema,tableName);
-        return jdbcService.refreshTable(connName,actualTableName);
+    public TableMeta refreshTable(@NotNull String connName,ActualTableName actualTableName) throws IOException, SQLException {
+        return jdbcMetaRefreshService.refreshTable(connName,actualTableName);
     }
 
     /**
@@ -106,44 +162,39 @@ public class MetadataController {
      * table: column: tag:
      * 后面可以继续扩展操作符 , 像 everything 一样
      * @param connName 连接名称
-     * @param catalog 数据库 catalog
-     * @param schemas 数据库 schema 列表
-     * @param keyword 关键字
+     * @param searchParam 搜索参数
      * @return
-     * @throws IOException
-     * @throws SQLException
+     * @throws Exception
      */
     @GetMapping("/searchTables")
-    public List<ExtendTableMetaData> searchTables(@NotNull String connName, String catalog, String[] schemas, String keyword) throws Exception {
-        return tableSearchService.searchTablesEx(connName, catalog, schemas, keyword);
+    public List<TableMeta> searchTables(@NotNull String connName, SearchParam searchParam) throws Exception {
+        return tableSearchService.searchTables(connName, searchParam);
     }
 
     /**
      * 元数据对比, 变更 sql 记录
-     * @param baseConnName
-     * @param compareConnName
-     * @param baseCatalog
-     * @param compareCatalog
+     * @param compareParam 对比范围限制
      * @return
      */
-    @GetMapping("/compare/changeSqls")
-    public List<String> metaCompareChangeSqls(@NotNull String baseConnName, @NotNull String compareConnName, @NotNull String baseCatalog, @NotNull String compareCatalog) throws SQLException, IOException, TemplateException {
-        return metaCompareService.changeSqls(baseConnName, compareConnName, baseCatalog, compareCatalog);
+    @PostMapping("/compare/changeSqls")
+    public List<String> metaCompareChangeSqls(@RequestBody @Validated CompareParam compareParam) throws SQLException, IOException, TemplateException {
+        return metaCompareService.changeSqls(compareParam);
     }
 
     /**
      * 元数据对比
+     * @param compareParam 对比范围限制
      * @return
      */
-    @GetMapping("/compare")
-    public List<TableModify> metaCompare(@NotNull String baseConnName, @NotNull String compareConnName, @NotNull String baseCatalog, @NotNull String compareCatalog) throws IOException, SQLException {
+    @PostMapping("/compare")
+    public List<TableModify> metaCompare(@RequestBody @Validated CompareParam compareParam) throws IOException, SQLException {
         List<TableModify> tableModifies = new ArrayList<>();
 
-        final MetaCompareService.ModifyInfo modifyInfo = metaCompareService.compare(baseConnName, compareConnName, baseCatalog, compareCatalog);
+        final ModifyInfo modifyInfo = metaCompareService.compare(compareParam);
 
         // 增删数据表
-        final List<MetaCompareService.ModifyTable> modifyTables = modifyInfo.getModifyTables();
-        for (MetaCompareService.ModifyTable modifyTable : modifyTables) {
+        final List<ModifyTable> modifyTables = modifyInfo.getModifyTables();
+        for (ModifyTable modifyTable : modifyTables) {
             tableModifies.add(new TableModify(modifyTable.getTableName(),modifyTable.getDiffType(),modifyTable.getTableMetaData()));
         }
 
@@ -151,36 +202,36 @@ public class MetadataController {
         Map<String,TableModify> tableModifyMap = new HashMap<>();
 
         // 表变更列信息 tableName => List<ModifyColumn>
-        MultiValueMap<String, MetaCompareService.ModifyColumn> modifyColumnMultiValueMap = new LinkedMultiValueMap<>();
-        for (MetaCompareService.ModifyColumn modifyColumn : modifyInfo.getModifyColumns()) {
+        MultiValueMap<String, ModifyColumn> modifyColumnMultiValueMap = new LinkedMultiValueMap<>();
+        for (ModifyColumn modifyColumn : modifyInfo.getModifyColumns()) {
             modifyColumnMultiValueMap.add(modifyColumn.getTableName(),modifyColumn);
         }
-        final Iterator<Map.Entry<String, List<MetaCompareService.ModifyColumn>>> iterator = modifyColumnMultiValueMap.entrySet().iterator();
+        final Iterator<Map.Entry<String, List<ModifyColumn>>> iterator = modifyColumnMultiValueMap.entrySet().iterator();
         while (iterator.hasNext()){
-            final Map.Entry<String, List<MetaCompareService.ModifyColumn>> next = iterator.next();
+            final Map.Entry<String, List<ModifyColumn>> next = iterator.next();
             final String tableName = next.getKey();
-            final List<MetaCompareService.ModifyColumn> modifyColumns = next.getValue();
-            final TableModify tableModify = new TableModify(tableName, MetaCompareService.DiffType.MODIFY);
+            final List<ModifyColumn> modifyColumns = next.getValue();
+            final TableModify tableModify = new TableModify(tableName, DiffType.MODIFY);
             tableModify.setModifyColumns(modifyColumns);
             tableModifyMap.put(tableName,tableModify);
 
         }
 
         // 表变更索引信息 tableName => List<ModifyIndex>
-        MultiValueMap<String, MetaCompareService.ModifyIndex> modifyIndexLinkedMultiValueMap = new LinkedMultiValueMap<>();
-        for (MetaCompareService.ModifyIndex modifyIndex : modifyInfo.getModifyIndices()) {
+        MultiValueMap<String, ModifyIndex> modifyIndexLinkedMultiValueMap = new LinkedMultiValueMap<>();
+        for (ModifyIndex modifyIndex : modifyInfo.getModifyIndices()) {
             modifyIndexLinkedMultiValueMap.add(modifyIndex.getTableName(),modifyIndex);
         }
-        final Iterator<Map.Entry<String, List<MetaCompareService.ModifyIndex>>> entryIterator = modifyIndexLinkedMultiValueMap.entrySet().iterator();
+        final Iterator<Map.Entry<String, List<ModifyIndex>>> entryIterator = modifyIndexLinkedMultiValueMap.entrySet().iterator();
         while (entryIterator.hasNext()){
-            final Map.Entry<String, List<MetaCompareService.ModifyIndex>> next = entryIterator.next();
+            final Map.Entry<String, List<ModifyIndex>> next = entryIterator.next();
             final String tableName = next.getKey();
-            final List<MetaCompareService.ModifyIndex> modifyIndices = next.getValue();
+            final List<ModifyIndex> modifyIndices = next.getValue();
             if (tableModifyMap.containsKey(tableName)){
                 final TableModify tableModify = tableModifyMap.get(tableName);
                 tableModify.setModifyIndices(modifyIndices);
             }else{
-                final TableModify tableModify = new TableModify(tableName, MetaCompareService.DiffType.MODIFY);
+                final TableModify tableModify = new TableModify(tableName, DiffType.MODIFY);
                 tableModify.setModifyIndices(modifyIndices);
                 tableModifyMap.put(tableName,tableModify);
             }

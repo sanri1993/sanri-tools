@@ -10,8 +10,10 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
-import javax.sql.DataSource;
 
+import com.alibaba.druid.pool.DruidDataSource;
+import com.sanri.tools.modules.database.service.connect.ConnDatasourceAdapter;
+import com.sanri.tools.modules.database.service.meta.dtos.Namespace;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -25,8 +27,7 @@ import com.alibaba.fastjson.JSON;
 import com.sanri.tools.modules.core.exception.ToolException;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
 import com.sanri.tools.modules.core.service.file.FileManager;
-
-import com.sanri.tools.modules.database.service.JdbcService;
+import com.sanri.tools.modules.database.service.JdbcDataService;
 import com.sanri.tools.modules.quartz.dtos.TriggerTask;
 
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +36,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class QuartzService {
     @Autowired
-    private JdbcService jdbcService;
+    private JdbcDataService jdbcDataService;
+    @Autowired
+    private ConnDatasourceAdapter connDatasourceAdapter;
 
     @Autowired
     private FileManager fileManager;
@@ -59,7 +62,7 @@ public class QuartzService {
             log.info("quartz 已经绑定连接了,不能重复绑定");
             return ;
         }
-        DataSource dataSource = jdbcService.dataSource(connName);
+        DruidDataSource dataSource = connDatasourceAdapter.poolDataSource(connName);
         SchedulerFactoryBean factory = new SchedulerFactoryBean();
         factory.setAutoStartup(true);
         factory.setDataSource(dataSource);
@@ -93,7 +96,7 @@ public class QuartzService {
         String sql = "select a.trigger_group,a.trigger_name,job_group,job_name,start_time,prev_fire_time,next_fire_time ,cron_expression " +
                 "from "+namespace+".qrtz_triggers a inner join "+namespace+".qrtz_cron_triggers b on a.TRIGGER_GROUP = b .TRIGGER_GROUP and a.TRIGGER_NAME  = b.TRIGGER_NAME ";
         try {
-            List<TriggerTask> triggerTasks = jdbcService.executeQuery(connName, sql, triggerTaskProcessor);
+            List<TriggerTask> triggerTasks = jdbcDataService.executeQuery(connName, sql, triggerTaskProcessor,new Namespace(catalog,schema));
             for (TriggerTask triggerTask : triggerTasks) {
                 try {
                     String cron = triggerTask.getCron();

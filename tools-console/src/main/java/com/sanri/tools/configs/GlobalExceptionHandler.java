@@ -65,14 +65,12 @@ public class GlobalExceptionHandler {
      */
     private void printLocalStackTrack(BusinessException e) {
         StackTraceElement[] stackTrace = e.getStackTrace();
-        List<StackTraceElement> localStackTrack = new ArrayList<>();
         StringBuffer showMessage = new StringBuffer();
         if (ArrayUtils.isNotEmpty(stackTrace)) {
             for (StackTraceElement stackTraceElement : stackTrace) {
                 String className = stackTraceElement.getClassName();
                 int lineNumber = stackTraceElement.getLineNumber();
                 if (className.startsWith(packagePrefix)) {
-                    localStackTrack.add(stackTraceElement);
                     showMessage.append(className + "(" + lineNumber + ")\n");
                 }
             }

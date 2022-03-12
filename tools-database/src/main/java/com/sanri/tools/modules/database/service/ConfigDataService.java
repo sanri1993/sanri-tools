@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.sanri.tools.modules.database.service.meta.dtos.Namespace;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.ColumnListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
@@ -18,8 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ConfigDataService {
     @Autowired
-    private JdbcService jdbcService;
-
+    private JdbcDataService jdbcDataService;
 
     /**
      * 查询分组信息
@@ -28,9 +28,9 @@ public class ConfigDataService {
      * @return
      * @throws SQLException
      */
-    public List<String> groups(String connName, String schemaName) throws SQLException, IOException {
-        String sql = "select group_id from "+schemaName+".config_info group by group_id ";
-        return listQuery(connName,sql);
+    public List<String> groups(String connName, Namespace namespace) throws SQLException, IOException {
+        String sql = "select group_id from config_info group by group_id ";
+        return listQuery(connName,sql,namespace);
     }
 
     /**
@@ -38,9 +38,9 @@ public class ConfigDataService {
      * @param group
      * @return
      */
-    public List<String> dataIds(String connName, String schemaName,String group) throws SQLException, IOException {
-        String sql = "select data_id from "+schemaName+".config_info where group_id='"+group+"'";
-        return listQuery(connName,sql);
+    public List<String> dataIds(String connName, Namespace namespace,String group) throws SQLException, IOException {
+        String sql = "select data_id from config_info where group_id='"+group+"'";
+        return listQuery(connName,sql,namespace);
     }
 
     /**
@@ -49,10 +49,10 @@ public class ConfigDataService {
      * @param dataId
      * @return
      */
-    public String content(String connName,String schemaName,String group,String dataId) throws SQLException, IOException {
-        String sql = "select content from "+schemaName+".config_info where group_id='%s' and data_id = '%s'";
+    public String content(String connName,Namespace namespace,String group,String dataId) throws SQLException, IOException {
+        String sql = "select content from config_info where group_id='%s' and data_id = '%s'";
         String formatSql = String.format(sql, group, dataId);
-        String executeQuery = jdbcService.executeQuery(connName, formatSql, new ScalarHandler<String>(1));
+        String executeQuery = jdbcDataService.executeQuery(connName, formatSql, new ScalarHandler<String>(1),namespace);
         return executeQuery;
     }
 
@@ -62,18 +62,9 @@ public class ConfigDataService {
      * @param sql
      * @return
      */
-    private List<String> listQuery(String connName,String sql) throws SQLException, IOException {
+    private List<String> listQuery(String connName,String sql,Namespace namespace) throws SQLException, IOException {
         ResultSetHandler<List<String>> resultSetHandler = new ColumnListHandler<String>(1);
-        List<String> executeQuery = jdbcService.executeQuery(connName, sql, resultSetHandler);
+        List<String> executeQuery = jdbcDataService.executeQuery(connName, sql, resultSetHandler,namespace);
         return executeQuery;
     }
-
-//    @PostConstruct
-//    public void init(){
-//        pluginManager.register(PluginDto.builder().module(JdbcService.MODULE)
-//                .name("configData").author("9420")
-//                .logo("nacos.jpg")
-//                .help("配置数据.md")
-//                .desc("配置数据查询").build());
-//    }
 }

@@ -54,12 +54,12 @@ public class SecurityConnectController {
      * @param module 模块名
      */
 	@GetMapping("/{module}/connects")
-    public List<ConnectOutput> moduleConnects(@NotBlank String module){
+    public List<ConnectOutput> moduleConnects(@NotBlank @PathVariable("module") String module){
         return connectService.moduleConnects(module);
     }
     
     @GetMapping("/{module}/connectNames")
-    public List<String> moduleConnectNames(@NotBlank String module){
+    public List<String> moduleConnectNames(@NotBlank @PathVariable("module") String module){
         final List<ConnectOutput> connectOutputs = connectService.moduleConnects(module);
         return connectOutputs.stream().map(ConnectOutput::getConnectInput).map(ConnectInput::getBaseName).collect(Collectors.toList());
     }

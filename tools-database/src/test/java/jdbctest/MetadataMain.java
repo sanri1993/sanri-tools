@@ -13,7 +13,7 @@ public class MetadataMain {
 //    private static final String password = "h123";
 
     private static final String driver = "org.postgresql.Driver";
-    private static final String url = "jdbc:postgresql://10.101.72.43:5432/hdsc_db";
+    private static final String url = "jdbc:postgresql://192.168.61.71:5432/hdsc_db";
     private static final String username = "postgres";
     private static final String password = "postgres";
 

@@ -1,6 +1,6 @@
 package com.sanri.tools.modules.mybatis.dtos;
 
-import com.sanri.tools.modules.database.dtos.DynamicQueryDto;
+import com.sanri.tools.modules.database.service.dtos.data.DynamicQueryDto;
 import lombok.Data;
 import org.apache.ibatis.mapping.SqlCommandType;
 

@@ -1,15 +1,25 @@
 package com.sanri.tools.modules.database.controller;
 
-import com.sanri.tools.modules.database.dtos.*;
-import com.sanri.tools.modules.database.service.meta.dtos.ActualTableName;
-import com.sanri.tools.modules.database.service.meta.dtos.TableMetaData;
-import com.sanri.tools.modules.database.service.DataService;
-import com.sanri.tools.modules.database.service.JdbcService;
+import com.sanri.tools.modules.core.dtos.DictDto;
+import com.sanri.tools.modules.core.utils.RandomUtil;
+import com.sanri.tools.modules.database.service.DataExportService;
+import com.sanri.tools.modules.database.service.JdbcDataService;
 import com.sanri.tools.modules.database.service.TableDataService;
-import com.sanri.tools.modules.database.service.TableMarkService;
+import com.sanri.tools.modules.database.service.TableSearchService;
+import com.sanri.tools.modules.database.service.dtos.data.*;
+import com.sanri.tools.modules.database.service.dtos.data.export.ExportPreviewDto;
+import com.sanri.tools.modules.database.service.dtos.data.export.ExportProcessDto;
+import com.sanri.tools.modules.database.service.dtos.meta.TableMeta;
+import com.sanri.tools.modules.database.service.dtos.search.SearchParam;
+import com.sanri.tools.modules.database.service.meta.dtos.ActualTableName;
+import com.sanri.tools.modules.database.service.meta.dtos.Namespace;
 import net.sf.jsqlparser.JSQLParserException;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,11 +27,14 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -32,13 +45,13 @@ import java.util.stream.Collectors;
 @Validated
 public class DataController {
     @Autowired
-    private TableMarkService tableMarkService;
+    private JdbcDataService jdbcDataService;
+    @Autowired
+    private TableSearchService tableSearchService;
     @Autowired
     private TableDataService tableDataService;
     @Autowired
-    private JdbcService jdbcService;
-    @Autowired
-    private DataService dataService;
+    private DataExportService dataExportService;
 
     /**
      * 清空表数据
@@ -53,16 +66,28 @@ public class DataController {
     }
 
     /**
+     * 根据表关系, 进行脏数据检查
+     * @param connName
+     * @param namespace
+     * @return
+     * @throws IOException
+     * @throws SQLException
+     */
+    @GetMapping("/checkDirtyData")
+    public List<DirtyDataInfo> checkDirtyData(@NotNull String connName, Namespace namespace) throws IOException, SQLException {
+        return tableDataService.checkDirtyData(connName,namespace);
+    }
+
+    /**
      * 获取清除所有业务表数据 sql
      * @return
      */
     @GetMapping("/cleanTagTables")
-    public List<String> cleanTagTables(@NotNull String connName,String catalog,String[] schemas,@NotNull String tag) throws SQLException, IOException {
-        Set<String> schemasSet = Arrays.stream(schemas).collect(Collectors.toSet());
-        List<TableMetaData> tagTables = tableMarkService.searchTables(connName,catalog, schemasSet,tag);
+    public List<String> cleanTagTables(@NotNull String connName, SearchParam searchParam) throws SQLException, IOException {
+        List<TableMeta> tagTables = tableSearchService.searchTables(connName,searchParam);
         List<String> sqls = new ArrayList<>();
-        for (TableMetaData tableMetaData : tagTables) {
-            ActualTableName actualTableName = tableMetaData.getActualTableName();
+        for (TableMeta tableMetaData : tagTables) {
+            ActualTableName actualTableName = tableMetaData.getTable().getActualTableName();
             String tableName = actualTableName.getSchema()+"."+actualTableName.getTableName();
             sqls.add("truncate "+tableName);
         }
@@ -76,6 +101,15 @@ public class DataController {
      */
     @PostMapping("/singleTableRandomData")
     public void singleTableRandomData(@RequestBody @Valid TableDataParam tableDataParam) throws IOException, SQLException, JSQLParserException {
+        // 如果 mapper 中有 spel 简写, 替换成 spel
+        final Map<String, DictDto<String>> collect = dictDtos.stream().collect(Collectors.toMap(DictDto::getKey, Function.identity()));
+        final List<TableDataParam.ColumnMapper> columnMappers = tableDataParam.getColumnMappers();
+        for (TableDataParam.ColumnMapper columnMapper : columnMappers) {
+            final String random = columnMapper.getRandom();
+            if (collect.containsKey(random)){
+                columnMapper.setRandom(collect.get(random).getValue());
+            }
+        }
         tableDataService.singleTableWriteRandomData(tableDataParam);
     }
 
@@ -85,7 +119,7 @@ public class DataController {
      * @throws IOException
      */
     @PostMapping("/import/excel")
-    public void importDataFromExcel(@RequestPart("config") @Valid ExcelImportParam excelImportParam,@RequestPart("excel") MultipartFile multipartFile) throws IOException, SQLException {
+    public void importDataFromExcel(@RequestPart("config") @Valid ExcelImportParam excelImportParam, @RequestPart("excel") MultipartFile multipartFile) throws IOException, SQLException {
         tableDataService.importDataFromExcel(excelImportParam,multipartFile);
     }
 
@@ -99,13 +133,13 @@ public class DataController {
      */
     @PostMapping("/exportPreview")
     public ExportPreviewDto exportPreview(@RequestBody @Valid DataQueryParam dataQueryParam) throws IOException, SQLException, JSQLParserException {
-        DynamicQueryDto dynamicQueryDto = dataService.exportPreview(dataQueryParam);
+        DynamicQueryDto dynamicQueryDto = dataExportService.exportPreview(dataQueryParam);
         String connName = dataQueryParam.getConnName();
         String sql = dataQueryParam.getFirstSql();
 
         // 数据总数查询
         String countSql = "select count(*) from (" + sql + ") b";
-        Long executeQuery = jdbcService.executeQuery(connName, countSql, new ScalarHandler<Long>(1));
+        Long executeQuery = jdbcDataService.executeQuery(connName, countSql, new ScalarHandler<Long>(1), dataQueryParam.getNamespace());
         ExportPreviewDto exportPreviewDto = new ExportPreviewDto(dynamicQueryDto, executeQuery);
         return exportPreviewDto;
     }
@@ -119,7 +153,7 @@ public class DataController {
      */
     @PostMapping("/exportData")
     public ExportProcessDto exportData(@RequestBody @Valid DataQueryParam dataQueryParam) throws JSQLParserException, SQLException, IOException {
-        ExportProcessDto fileRelativePath = dataService.exportLowMemoryMutiProcessor(dataQueryParam);
+        ExportProcessDto fileRelativePath = dataExportService.exportLowMemoryMutiProcessor(dataQueryParam);
         return fileRelativePath;
     }
 
@@ -132,7 +166,7 @@ public class DataController {
      */
     @PostMapping("/executeQuery")
     public List<DynamicQueryDto> executeQuery(@RequestBody @Valid DataQueryParam dataQueryParam) throws IOException, SQLException {
-        List<DynamicQueryDto> dynamicQueryDtos = jdbcService.executeDynamicQuery(dataQueryParam.getConnName(), dataQueryParam.getSqls());
+        List<DynamicQueryDto> dynamicQueryDtos = jdbcDataService.executeDynamicQuery(dataQueryParam.getConnName(), dataQueryParam.getSqls(),dataQueryParam.getNamespace());
         return dynamicQueryDtos;
     }
 
@@ -144,7 +178,48 @@ public class DataController {
      */
     @PostMapping("/executeUpdate")
     public List<Integer> executeUpdate(@RequestBody @Valid DataQueryParam dataQueryParam) throws SQLException, IOException {
-        List<Integer> updates = jdbcService.executeUpdate(dataQueryParam.getConnName(), dataQueryParam.getSqls());
+        List<Integer> updates = jdbcDataService.executeUpdate(dataQueryParam.getConnName(), dataQueryParam.getSqls(),dataQueryParam.getNamespace());
         return updates;
+    }
+
+    /**
+     * 随机值方法列表
+     * @return
+     */
+    @GetMapping("/loadRandomMethods")
+    public List<DictDto<String>> loadRandomMethods(){
+        return dictDtos;
+    }
+
+    // 中文说明 => spel 表达式
+    static final List<DictDto<String>> dictDtos = new ArrayList<>();
+    static {
+        final Method[] methods1 = ReflectionUtils.getAllDeclaredMethods(RandomUtil.class);
+        final Method[] methods2 = ReflectionUtils.getAllDeclaredMethods(RandomStringUtils.class);
+        final Method[] methods3 = ReflectionUtils.getAllDeclaredMethods(RandomUtils.class);
+        Method[] allDeclaredMethods = new Method[]{};
+        allDeclaredMethods = ArrayUtils.addAll(methods1, methods2);
+        allDeclaredMethods =  ArrayUtils.addAll(allDeclaredMethods, methods3);
+
+        for (Method method : allDeclaredMethods) {
+            if (method.getDeclaringClass() == Object.class){
+                // 不要取 Object 中的方法
+                continue;
+            }
+            if (Modifier.isStatic(method.getModifiers()) && method.getParameterCount() == 0){
+                // 没有参数的静态方法, 可以直接被调用
+                StringBuffer methodSpel = new StringBuffer();
+                methodSpel.append("T").append("(").append(method.getDeclaringClass().getName()).append(")")
+                        .append(".").append(method.getName()).append("()");
+                dictDtos.add(new DictDto<>(method.getName(),methodSpel.toString()));
+            }
+//            else if (Modifier.isStatic(method.getModifiers()) && method.getName().contains("next") && method.getParameterCount() == 2){
+//                // nextInt , nextFloat 之类的方法
+//                StringBuffer methodSpel = new StringBuffer();
+//                methodSpel.append("T").append("(").append(method.getDeclaringClass().getName()).append(")")
+//                        .append(".").append(method.getName()).append("(2,10)");
+//                dictDtos.add(new DictDto<>(method.getName()+"(2,10)",methodSpel.toString()));
+//            }
+        }
     }
 }

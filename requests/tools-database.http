@@ -1,95 +1,201 @@
-### 获取所有数据库连接
-GET {{baseUrl}}/db/metadata/connections
+###############################元数据信息##############################################
+### 获取数据库连接列表
+GET {{baseUrl}}/security/connect/database/connects
+Authorization: {{Authorization}}
 
-### 获取所有 catalogs
-GET {{baseUrl}}/db/metadata/catalogs?connName=localhost
+### 获取数据库连接名列表
+GET {{baseUrl}}/security/connect/database/connectNames
+Authorization: {{Authorization}}
 
-### 获取 catalog 的所有表
-GET {{baseUrl}}/db/metadata/tables?connName=localhost&catalog=test
+### 获取 clientInfo
+GET {{baseUrl}}/db/metadata/clientInfo?connName=61.71
+Authorization: {{Authorization}}
 
-### 刷新所有的表
-GET {{baseUrl}}/db/metadata/refreshTables?connName=localhost&catalog=test&schema=
+### 获取 catalogs
+GET {{baseUrl}}/db/metadata/catalogs?connName=61.71postgre
+Authorization: {{Authorization}}
 
-### 表元数据 - 刷新表的列
-GET {{baseUrl}}/db/metadata/refreshColumns?connName=localhost&catalog=test&tableName=batch
+### 获取 schemas
+GET {{baseUrl}}/db/metadata/schemas?connName=61.71postgre
+Authorization: {{Authorization}}
 
-### 表元数据 - 刷新表的主键
-GET {{baseUrl}}/db/metadata/refreshPrimaryKeys?connName=localhost&catalog=test&tableName=batch
+### 获取指定 catalog 的 schemas
+GET {{baseUrl}}/db/metadata/filterSchemas?connName=61.71postgre&catalog=
+Authorization: {{Authorization}}
 
-### 表元数据 - 刷新表的索引
-GET {{baseUrl}}/db/metadata/refreshIndexs?connName=localhost&catalog=test&tableName=batch
+### 获取数据表
+GET {{baseUrl}}/db/metadata/tables?connName=61.71postgre&catalog=postgres&schema=mm
+Authorization: {{Authorization}}
 
-### 表元数据 - 搜索表
-GET {{baseUrl}}/db/metadata/searchTables?connName=lo&catalog=hdsc_db&schemas=mct&keyword=mct_push_rule_config_event_items
+### 搜索表
+GET {{baseUrl}}/db/metadata/searchTables?connName=localhost&catalog=anta&searchSchema=table&keyword=eims
+Authorization: {{Authorization}}
 
-### 标记表-常用标记
+### 单表元数据信息
+GET {{baseUrl}}/db/metadata/table?connName=eims_oracle&namespace.schema=EAM_TEST&tableName=EIMS_IMAGE
+Authorization: {{Authorization}}
+
+### 元数据文档生成
+GET {{baseUrl}}/db/doc/export?connName=localhost&catalog=anta&searchSchema=table&keyword=eims
+Authorization: {{Authorization}}
+
+### 元数据比对
+POST {{baseUrl}}/db/metadata/compare
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+  "baseConnName": "localhost",
+  "baseNamespace": {
+    "catalog": "anta"
+  },
+  "compareConnName": "61.71",
+  "compareNamespace": {
+    "catalog": "eam"
+  }
+}
+
+### 元数据比对生成 sql 列表
+POST {{baseUrl}}/db/metadata/compare/changeSqls
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+  "baseConnName": "localhost",
+  "baseNamespace": {
+    "catalog": "anta"
+  },
+  "compareConnName": "61.71",
+  "compareNamespace": {
+    "catalog": "eam"
+  }
+}
+############################表标记扩展元数据##################################################
+### 获取常用标记
 GET {{baseUrl}}/db/metadata/extend/mark/tags
+Authorization: {{Authorization}}
 
 ### 标记表-标记表
-POST {{baseUrl}}/db/metadata/extend/mark/config/tableMark
+POST {{baseUrl}}/db/metadata/extend/mark/config/localhost/tableMark
 Content-Type: application/json
+Authorization: {{Authorization}}
 
 [
   {
-    "connName": "lo",
     "actualTableName": {
-      "catalog": null,
-      "schema": "mct",
-      "tableName": "mct_system_config"
+      "namespace": {
+        "catalog": "anta",
+        "schema": null
+      },
+      "tableName": "eims_image"
     },
     "tags": [
-      "config"
+      "biz"
     ]
   }
 ]
 
 ### 标记表-获取表标记
-GET {{baseUrl}}/db/metadata/extend/mark/tableTags?connName=lo&schema=mct&tableName=mct_system_config
+GET {{baseUrl}}/db/metadata/extend/mark/tableTags?connName=localhost&namespace.catalog=anta&tableName=eims_image
+Authorization: {{Authorization}}
 
 ### 标记表-查找某个标记的表
-GET {{baseUrl}}/db/metadata/extend/mark/tagTables?connName=lo&schema=mct&tag=config
+GET {{baseUrl}}/db/metadata/searchTables?connName=localhost&catalog=anta&searchSchema=tag&keyword=biz
+Authorization: {{Authorization}}
 
+######################表关系扩展元数据#################################
 ### 表关系 - 配置表关系
 POST {{baseUrl}}/db/metadata/extend/relation/config
 Content-Type: application/json
+Authorization: {{Authorization}}
 
 {
-  "connName": "lo",
-  "catalog": null,
+  "connName": "61.71",
+  "namespace": {
+    "catalog": "eam"
+  },
   "tableRelations": [
     {
-      "sourceTableName": {
-        "schema": "mct",
-        "tableName": "mct_event_record_biz"
-      },
-      "targetTableName": {
-        "schema": "mct",
-        "tableName": "mct_event_record_plc"
-      },
-      "sourceColumnName": "uuid",
-      "targetColumnName": "uuid",
+      "sourceTableName": "eims_image",
+      "targetTableName": "eims_invoices",
+      "sourceColumnName": "id",
+      "targetColumnName": "imageId",
+      "relation": "ONE_ONE"
+    },
+    {
+      "sourceTableName": "eims_invoices",
+      "targetTableName": "eims_invoices_detail",
+      "sourceColumnName": "invoicenumber",
+      "targetColumnName": "invoice_num",
+      "relation": "ONE_MANY"
+    },
+    {
+      "sourceTableName": "eims_scantask",
+      "targetTableName": "eims_image",
+      "sourceColumnName": "billnumber",
+      "targetColumnName": "document_code",
+      "relation": "ONE_MANY"
+    },
+    {
+      "sourceTableName": "eims_scantask",
+      "targetTableName": "eims_invoices",
+      "sourceColumnName": "billnumber",
+      "targetColumnName": "billnumber",
+      "relation": "ONE_MANY"
+    }
+  ]
+}
+
+### 数据库 - 表关系 - 通过 sql 来配置表关系
+POST {{baseUrl}}/db/metadata/extend/relation/config/fromSql
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+  "connName": "localhost",
+  "namespace": {
+    "catalog": "anta"
+  },
+  "relationSqls": [
+    {
+      "sql": "SELECT * FROM EIMS_IMAGE EI LEFT JOIN EIMS_INVOICES EI2 ON ei.ID  = ei2.IMAGEID LEFT JOIN EIMS_INVOICES_DETAIL EID ON eid.INVOICE_NUM  = ei2.INVOICENUMBER inner JOIN EIMS_SCANTASK ES ON es.BILLNUMBER  = ei.DOCUMENT_CODE ",
       "relation": "ONE_ONE"
     }
   ]
 }
 
 ### 数据库 - 表关系 - 查询表引用的关系
-GET {{baseUrl}}/db/metadata/extend/relation/parents?connName=lo&schema=mct&tableName=mct_event_handler
+GET {{baseUrl}}/db/metadata/extend/relation/parents?connName=localhost&namespace.catalog=anta&tableName=eims_invoices
+Authorization: {{Authorization}}
 
 ### 数据库 - 表关系  - 查询表的下级引用
-GET {{baseUrl}}/db/metadata/extend/relation/childs?connName=lo&schema=mct&tableName=mct_event_record_biz
+GET {{baseUrl}}/db/metadata/extend/relation/childs?connName=localhost&namespace.catalog=anta&tableName=EIMS_IMAGE
+Authorization: {{Authorization}}
 
-### 数据库 - 表关系  - 查询表的关联层级
-GET {{baseUrl}}/db/metadata/extend/relation/hierarchy?connName=lo&schema=mct&tableName=mct_event_record_biz
+### 数据库 - 表关系  - 查询数据表的被依赖项调用
+GET {{baseUrl}}/db/metadata/extend/relation/hierarchy?connName=localhost&namespace.catalog=anta&tableName=eims_image
+Authorization: {{Authorization}}
+
+### 数据库 - 表关系 - 查询表的依赖项调用
+GET {{baseUrl}}/db/metadata/extend/relation/superTypes?connName=localhost&namespace.catalog=anta&tableName=eims_invoices
+Authorization: {{Authorization}}
+
+#############################表数据随机生成##############################################
+### 数据库 - 数据  - 检查脏数据
+GET {{baseUrl}}/db/data/checkDirtyData?connName=61.71&catalog=eam
+Authorization: {{Authorization}}
 
 ### 数据库 - 数据 - 单表随机数据生成
 POST {{baseUrl}}/db/data/singleTableRandomData
 Content-Type: application/json
+Authorization: {{Authorization}}
 
 {
   "connName": "localhost",
   "actualTableName": {
-    "catalog": "test",
+    "namespace": {
+      "catalog": "test"
+    },
     "tableName": "test_index"
   },
   "size": 120,
@@ -117,14 +223,24 @@ Content-Type: application/json
   ]
 }
 
+### 数据库 - 数据 - 单表随机数据(调试)
+POST {{baseUrl}}/db/data/singleTableRandomData
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{"connName":"localhost","actualTableName":{"namespace":{"catalog":"mobile"},"tableName":"t_user","fullName":"mobile..t_user"},"columnMappers":[{"columnName":"account","random":"T(com.sanri.tools.modules.core.utils.RandomUtil).username()"},{"columnName":"password","fixed":"1234"}],"size":100}
+
 ### 数据库 - 数据 - 单表随机数据生成(关联其它表)
 POST {{baseUrl}}/db/data/singleTableRandomData
 Content-Type: application/json
+Authorization: {{Authorization}}
 
 {
   "connName": "localhost",
   "actualTableName": {
-    "catalog": "test",
+    "namespace": {
+      "catalog": "test"
+    },
     "tableName": "emp"
   },
   "size": 100,
@@ -147,12 +263,13 @@ Content-Type: application/json
 ### 数据库 - 数据 - 导入数据
 POST {{baseUrl}}/db/data/import/excel
 Content-Type: multipart/form-data; boundary=importData
+Authorization: {{Authorization}}
 
 --importData
 Content-Disposition: form-data; name="excel"; filename="acc_auth_history_record.xlsx"
 Content-Type: application/octet-stream
 
-< d:/test/acc_auth_history_record.xlsx
+< D:/20210429backup/ECS实操案例_V4.0_20201120.xlsx
 --importData
 Content-Disposition: form-data; name="config"
 Content-Type: application/json
@@ -160,17 +277,19 @@ Content-Type: application/json
 {
 "connName": "localhost",
 "actualTableName": {
-    "catalog": "test",
+   "namespace": {
+      "catalog": "test"
+    },
     "tableName": "test_index"
 },
 "startRow": 2,
 "mapping": [
     {
       "columnName": "title",
-      "index": 35
+      "index": 3
     },{
       "columnName": "author",
-      "index": 31
+      "index": 2
     },
     {
       "columnName": "idcard",
@@ -190,39 +309,64 @@ Content-Type: application/json
 ### 数据表 - 数据 - 导出数据预览
 POST {{baseUrl}}/db/data/exportPreview
 Content-Type: application/json
+Authorization: {{Authorization}}
 
 {
-  "connName": "lo",
-  "sql": "select * from mct.mct_event_record_common"
+  "connName": "localhost",
+  "namespace": {
+    "catalog": "test"
+  },
+  "sqls": ["select * from test_index"],
+  "traceId":"abcdefg"
 }
 
 ### 数据表 - 数据 - 导出数据
 POST {{baseUrl}}/db/data/exportData
 Content-Type: application/json
-
-{
-  "connName": "lo",
-  "sqls": ["select * from mct.mct_event_record_common"],
-  "traceId": "abc"
-}
-### 数据表 - 数据 - 执行查询
-POST {{baseUrl}}/db/data/executeQuery
-Content-Type: application/json
-
-{
-  "connName": "lo",
-  "sqls": ["select * from mct.mct_event_record_common limit 10"],
-  "traceId": "abc"
-}
-### 数据表 - 数据 - 执行 ddl
-POST {{baseUrl}}/db/data/executeUpdate
-Content-Type: application/json
+Authorization: {{Authorization}}
 
 {
   "connName": "localhost",
+  "namespace": {
+    "catalog": "test"
+  },
+  "sqls": ["select * from test_index"],
+  "traceId": "abc"
+}
+
+### 数据表 - 数据 - 执行查询
+POST {{baseUrl}}/db/data/executeQuery
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+  "connName": "localhost",
+  "namespace": {
+    "catalog": "test"
+  },
+  "sqls": ["select * from test_index limit 10"],
+  "traceId": "abc"
+}
+
+### 数据表 - 数据 - 执行 ddl
+POST {{baseUrl}}/db/data/executeUpdate
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+  "connName": "localhost",
+  "namespace": {
+    "catalog": "test"
+  },
   "sqls": ["create table abc(name varchar(32))"],
   "traceId": "abc"
 }
+
+### 数据库 - 数据 - 获取所有插值方法
+GET {{baseUrl}}/db/data/loadRandomMethods
+Authorization: {{Authorization}}
+
+#####################特殊数据配置数据#######################
 ### 数据表 - 配置数据(nacos,diamond) - 所有分组信息
 GET {{baseUrl}}/db/data/config/groups?connName=lo&schemaName=nacos
 
@@ -232,19 +376,25 @@ GET {{baseUrl}}/db/data/config/dataIds?connName=lo&schemaName=nacos&groupId=scp-
 ### 数据表 - 配置数据 - 获取配置数据详情
 GET {{baseUrl}}/db/data/config/content?connName=lo&schemaName=nacos&groupId=scp-st-messagecenter-component&dataId=scp-st-messagecenter-component-dev.properties
 
+###################代码生成################################
 ### 数据库 - 代码生成 - 列出所有重命名策略
 GET {{baseUrl}}/db/code/renameStrategies
+Authorization: {{Authorization}}
 
 ### 数据表 - 代码生成 - 生成 javaBean
 POST {{baseUrl}}/db/code/build/javaBean
 Content-Type: application/json
+Authorization: {{Authorization}}
 
 {
-  "connName": "lo",
-  "catalog": null,
-  "schema": "mct",
+  "connName": "localhost",
+  "namespace": {
+    "catalog": "anta"
+  },
   "tableNames": [
-    "mct_event_record_common","mct_event_record","mct_event_handler"
+    "eims_image",
+    "eims_invoices",
+    "mct_event_handler"
   ],
   "lombok": true,
   "swagger2": false,
@@ -258,40 +408,102 @@ Content-Type: application/json
 ### 数据库 - 代码生成 - mapper 生成 ;  mybatis , tk.mybatis
 POST {{baseUrl}}/db/code/build/mapper
 Content-Type: application/json
+Authorization: {{Authorization}}
 
+{
+  "projectName": "c",
+  "dataSourceConfig": {
+    "connName": "localhost",
+    "namespace": {
+      "catalog": "anta"
+    },
+    "tableNames": ["eims_static_language","eims_invoices","eims_image"]
+  },
+  "packageConfig": {
+    "entity": "c.mapper.entity",
+    "mapper": "c.mapper",
+    "controller": "c.web.controller",
+    "service": "c.service",
+    "vo": "c.dto.vo",
+    "dto": "c.dto",
+    "param": "c.dto.param",
+    "base": "c",
+    "projectName": "c",
+    "groupId": "c",
+    "artifactId": "c"
+  },
+  "pluginConfigs": [
+    {
+      "enable": true,
+      "type": "tk.mybatis.mapper.generator.MapperPlugin",
+      "properties": {
+        "mappers": "tk.mybatis.mapper.common.Mapper",
+        "caseSensitive": true,
+        "forceAnnotation": true,
+        "beginningDelimiter": "`",
+        "endingDelimiter": "`",
+        "lombok": "Getter,Setter,ToString,Accessors"
+      }
+    }
+  ],
+  "filesConfig": {
+    "entity": true,
+    "xml": true,
+    "mapper": true
+  },
+  "targetRunTime": "MyBatis3Simple",
+  "modelType": "FLAT",
+  "javaClientType": "XMLMAPPER"
+}
+
+### 数据库 - 代码生成 - 写入一个模板
+POST {{baseUrl}}/db/code/override
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+  "name": "tables.md.ftl",
+  "content": "| 表名 | 说明 |\n| ---- | ---- |\n<#list tables as table>\n| ${table.actualTableName.tableName} |  ${table.remark!}|\n</#list>"
+}
 
 ### 数据库 - 代码生成 - 列出所有模板
 GET {{baseUrl}}/db/code/templates
+Authorization: {{Authorization}}
 
 ### 数据库 - 代码生成 - 查询某个模板详情
-GET {{baseUrl}}/db/code/mapper.xml.32322.ftl/content
+GET {{baseUrl}}/db/code/tables.md.1646637373267.ftl/content
+Authorization: {{Authorization}}
 
 ### 数据库 - 代码生成 - 建立一个方案
 POST {{baseUrl}}/db/code/override
 Content-Type: application/json
+Authorization: {{Authorization}}
 
 {
   "name": "base.schema",
-  "content": "mapper.xml.32322.ftl"
+  "content": "tables.md.1646637373267.ftl"
 }
 
 ### 数据库 - 代码生成 - 列出所有方案
 GET {{baseUrl}}/db/code/schemas
+Authorization: {{Authorization}}
 
 ### 数据库 - 代码生成 - 列出某个方案的模板列表
 GET {{baseUrl}}/db/code/base.schema/templates
+Authorization: {{Authorization}}
 
 ### 数据库 - 代码生成 - 预览模板代码
 POST {{baseUrl}}/db/code/template/code/preview
 Content-Type: application/json
+Authorization: {{Authorization}}
 
 {
-  "template": "mapper.xml.32322.ftl",
+  "template": "tables.md.1646637373267.ftl",
   "connName": "localhost",
   "renameStrategyName": "defaultRenameStragtegy",
   "actualTableName": {
-    "catalog": "test",
-    "tableName": "batch"
+    "namespace": {"catalog": "anta"},
+    "tableName": "eims_image"
   },
   "packageConfig": {
     "mapper": "com.sanri.test.mapper"
@@ -300,34 +512,24 @@ Content-Type: application/json
 
 ### 数据库 - 代码生成  - 生成代码
 POST {{baseUrl}}/db/code/template/code/generator
-
 Content-Type: application/json
+Authorization: {{Authorization}}
 
 {
   "renameStrategyName": "defaultRenameStragtegy",
   "templates": [
-    "mapper.xml.32322.ftl"
+    "tables.md.1646637373267.ftl"
   ],
   "dataSourceConfig": {
     "connName": "localhost",
-    "catalog": "test",
-    "tableNames": ["batch"]
+    "namespace": {
+      "catalog": "anta"
+    },
+    "tableNames": [
+      "eims_image"
+    ]
   },
   "packageConfig": {
     "mapper": "com.sanri.test.mapper"
   }
 }
-
-### 生成数据库文档
-POST {{baseUrl}}/db/metadata/generate?connName=lo&schemas=mct
-
-### 添加注释
-GET {{baseUrl}}/comments
-
-### 生成数据库文档, 根据搜索到的数据表
-GET {{baseUrl}}/db/doc/export?connName=localhost&schemas=anta&keyword=eims
-Authorization: {{Authorization}}
-
-### 对比数据表结构
-GET {{baseUrl}}/db/metadata/compare?baseConnName=192.168.48.188&compareConnName=localhost&baseCatalog=eam&compareCatalog=anta
-Authorization: {{Authorization}}

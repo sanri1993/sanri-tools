@@ -1,20 +1,24 @@
 package com.sanri.tools.modules.database.controller;
 
-import com.sanri.tools.modules.database.dtos.TableRelationTree;
+import com.sanri.tools.modules.core.dtos.DictDto;
+import com.sanri.tools.modules.database.controller.dtos.BatchTableRelationParam;
+import com.sanri.tools.modules.database.controller.dtos.ConfigTableRelationFromSql;
+import com.sanri.tools.modules.database.service.JdbcMetaService;
+import com.sanri.tools.modules.database.service.dtos.meta.RelationSql;
+import com.sanri.tools.modules.database.service.dtos.meta.TableMark;
+import com.sanri.tools.modules.database.service.dtos.meta.TableRelation;
+import com.sanri.tools.modules.database.service.dtos.meta.TableRelationTree;
+import com.sanri.tools.modules.database.service.meta.TabeRelationMetaData;
+import com.sanri.tools.modules.database.service.meta.TableMarkMetaData;
 import com.sanri.tools.modules.database.service.meta.dtos.ActualTableName;
-import com.sanri.tools.modules.database.dtos.BatchTableRelationParam;
-import com.sanri.tools.modules.database.dtos.TableMark;
-import com.sanri.tools.modules.database.dtos.TableRelationDto;
-import com.sanri.tools.modules.database.service.JdbcService;
-import com.sanri.tools.modules.database.service.TableMarkService;
-import com.sanri.tools.modules.database.service.TableRelationService;
+import com.sanri.tools.modules.database.service.meta.dtos.Namespace;
+import net.sf.jsqlparser.JSQLParserException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -26,33 +30,39 @@ import java.util.Set;
 @Validated
 public class ExtendMetadataController {
     @Autowired
-    private TableRelationService tableRelationService;
+    private TabeRelationMetaData tableRelationService;
     @Autowired
-    private JdbcService jdbcService;
+    private JdbcMetaService jdbcService;
     @Autowired
-    private TableMarkService tableMarkService;
+    private TableMarkMetaData tableMarkService;
 
     /**
      * 可用的标签
      * @return
      */
     @GetMapping("/mark/tags")
-    public List<String> tags(){
-        return Arrays.asList("biz","dict","sys","report","biz_config","deprecated");
+    public String [] tags(){
+//        return TableMark.supportTags;
+        return TableMark.supportTags;
     }
 
     /**
      * 配置表标记,将某个表配置为字典表,业务表,系统表,统计表等
      * @param tableMarks
      */
-    @PostMapping("/mark/config/tableMark")
-    public void configTableMark(@RequestBody @Valid Set<TableMark> tableMarks){
-        tableMarkService.configTableMark(tableMarks);
+    @PostMapping("/mark/config/{connName}/tableMark")
+    public void configTableMark(@PathVariable("connName") String connName,@RequestBody @Valid Set<TableMark> tableMarks){
+        tableMarkService.configTableMark(connName,tableMarks);
     }
 
+    /**
+     * 查询某张表的表标记
+     * @param connName
+     * @param actualTableName
+     * @return
+     */
     @GetMapping("/mark/tableTags")
-    public Set<String> tableTags(@NotNull String connName, String catalog, String schema, @NotNull String tableName){
-        ActualTableName actualTableName = new ActualTableName(catalog, schema, tableName);
+    public Set<String> tableTags(@NotNull String connName, ActualTableName actualTableName){
         TableMark tableMark = tableMarkService.getTableMark(connName,actualTableName);
         return tableMark.getTags();
     }
@@ -63,10 +73,21 @@ public class ExtendMetadataController {
      */
     @PostMapping("/relation/config")
     public void configBatch(@RequestBody @Valid BatchTableRelationParam batchTableRelationParam){
-        String connName = batchTableRelationParam.getConnName();
-        String catalog = batchTableRelationParam.getCatalog();
+        final String connName = batchTableRelationParam.getConnName();
+        tableRelationService.configRelation(connName,batchTableRelationParam.getNamespace(),batchTableRelationParam.getTableRelations());
+    }
 
-        tableRelationService.configRelation(connName,catalog,batchTableRelationParam.getTableRelations());
+    /**
+     * 通过 sql 来配置表关系
+     * @param configTableRelationFromSql
+     * @throws JSQLParserException
+     */
+    @PostMapping("/relation/config/fromSql")
+    public void configBatchFromSql(@RequestBody @Valid ConfigTableRelationFromSql configTableRelationFromSql) throws JSQLParserException {
+        final String connName = configTableRelationFromSql.getConnName();
+        final Namespace namespace = configTableRelationFromSql.getNamespace();
+        final List<RelationSql> relationSqls = configTableRelationFromSql.getRelationSqls();
+        tableRelationService.configRelationFromSqls(connName,namespace,relationSqls);
     }
 
     /**
@@ -77,8 +98,7 @@ public class ExtendMetadataController {
      * @return
      */
     @GetMapping("/relation/parents")
-    public List<TableRelationDto> parents(@NotNull String connName, String catalog,String schema, @NotNull String tableName){
-        ActualTableName actualTableName = new ActualTableName(catalog, schema, tableName);
+    public List<TableRelation> parents(@NotNull String connName, @Validated ActualTableName actualTableName){
         return tableRelationService.parents(connName,actualTableName);
     }
 
@@ -90,8 +110,7 @@ public class ExtendMetadataController {
      * @return
      */
     @GetMapping("/relation/childs")
-    public List<TableRelationDto> childs(@NotNull String connName, String catalog,String schema, @NotNull String tableName){
-        ActualTableName actualTableName = new ActualTableName(catalog, schema, tableName);
+    public List<TableRelation> childs(@NotNull String connName, @Validated ActualTableName actualTableName){
         return tableRelationService.childs(connName,actualTableName);
     }
 
@@ -103,14 +122,12 @@ public class ExtendMetadataController {
      * @return
      */
     @GetMapping("/relation/hierarchy")
-    public TableRelationTree hierarchy(@NotNull String connName, String catalog, String schema,@NotNull String tableName){
-        ActualTableName actualTableName = new ActualTableName(catalog, schema, tableName);
+    public TableRelationTree hierarchy(@NotNull String connName, @Validated ActualTableName actualTableName){
         return tableRelationService.hierarchy(connName,actualTableName);
     }
 
     @GetMapping("/relation/superTypes")
-    public TableRelationTree superTypes(@NotNull String connName, String catalog, String schema,@NotNull String tableName){
-        ActualTableName actualTableName = new ActualTableName(catalog, schema, tableName);
+    public TableRelationTree superTypes(@NotNull String connName, @Validated ActualTableName actualTableName){
         return tableRelationService.superTypes(connName,actualTableName);
     }
 }

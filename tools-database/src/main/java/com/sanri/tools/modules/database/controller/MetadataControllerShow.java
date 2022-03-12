@@ -1,9 +1,11 @@
 package com.sanri.tools.modules.database.controller;
 
 import com.sanri.tools.modules.core.service.file.FileManager;
-import com.sanri.tools.modules.database.service.meta.dtos.TableMetaData;
-import com.sanri.tools.modules.database.service.ExcelDocService;
-import com.sanri.tools.modules.database.service.JdbcService;
+import com.sanri.tools.modules.database.service.JdbcMetaService;
+import com.sanri.tools.modules.database.service.TableSearchService;
+import com.sanri.tools.modules.database.service.dtos.meta.TableMeta;
+import com.sanri.tools.modules.database.service.dtos.meta.TableMetaData;
+import com.sanri.tools.modules.database.service.dtos.search.SearchParam;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -25,7 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,11 +39,13 @@ import java.util.stream.Collectors;
 @Validated
 public class MetadataControllerShow {
     @Autowired
-    private JdbcService jdbcService;
+    private JdbcMetaService jdbcMetaService;
     @Autowired
     private Configuration configuration;
     @Autowired
     private FileManager fileManager;
+    @Autowired
+    private TableSearchService tableSearchService;
 
     /**
      * 生成数据库文档
@@ -53,22 +56,26 @@ public class MetadataControllerShow {
      * @return
      */
     @GetMapping("/doc")
-    public ModelAndView generateDoc(@NotNull String connName, String catalog, String[] schemas, @NotNull String templateName) throws IOException, SQLException {
-        Set<String> schemasSet = Arrays.stream(schemas).collect(Collectors.toSet());
-        List<TableMetaData> filterTables = jdbcService.filterSchemaTables(connName,catalog,schemasSet);
+    public ModelAndView generateDoc(@NotNull String connName, SearchParam searchParam, @NotNull String templateName) throws IOException, SQLException {
+        final List<TableMeta> tableMetas = tableSearchService.searchTables(connName, searchParam);
+        final List<TableMetaData> filterTables = jdbcMetaService.tablesExtend(connName, tableMetas);
+
         // 使用过滤后的表生成文档
         ModelAndView modelAndView = new ModelAndView(templateName);
         modelAndView.addObject("connName",connName);
-        modelAndView.addObject("catalog",catalog);
-        modelAndView.addObject("schema",schemas);
+        modelAndView.addObject("catalog",searchParam.getCatalog());
+        modelAndView.addObject("schema",searchParam.getSchemas());
         modelAndView.addObject("tables",filterTables);
         return modelAndView;
     }
 
     @GetMapping("/doc/download")
-    public void downDoc(@NotNull String connName, String catalog, String[] schemas,@NotNull String templateName, HttpServletResponse response) throws IOException, SQLException, TemplateException {
-        Set<String> schemasSet = Arrays.stream(schemas).collect(Collectors.toSet());
-        List<TableMetaData> filterTables = jdbcService.filterSchemaTables(connName, catalog, schemasSet);
+    public void downDoc(@NotNull String connName, SearchParam searchParam ,@NotNull String templateName, HttpServletResponse response) throws IOException, SQLException, TemplateException {
+        final List<TableMeta> tableMetas = tableSearchService.searchTables(connName, searchParam);
+        final List<TableMetaData> filterTables = jdbcMetaService.tablesExtend(connName, tableMetas);
+
+        final String catalog = searchParam.getCatalog();
+        final List<String> schemas = searchParam.getSchemas();
 
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/octet-stream; charset=utf-8");
@@ -96,9 +103,9 @@ public class MetadataControllerShow {
      * @throws TemplateException
      */
     @GetMapping("/doc/download/word")
-    public ResponseEntity<UrlResource> downDocWord(@NotNull String connName, String catalog, String[] schemas,@NotNull String templateName) throws IOException, SQLException, TemplateException {
-        Set<String> schemasSet = Arrays.stream(schemas).collect(Collectors.toSet());
-        List<TableMetaData> filterTables = jdbcService.filterSchemaTables(connName, catalog, schemasSet);
+    public ResponseEntity<UrlResource> downDocWord(@NotNull String connName,SearchParam searchParam,@NotNull String templateName) throws IOException, SQLException, TemplateException {
+        final List<TableMeta> tableMetas = tableSearchService.searchTables(connName, searchParam);
+        final List<TableMetaData> filterTables = jdbcMetaService.tablesExtend(connName, tableMetas);
 
         File databaseDocDir = fileManager.mkTmpDir("/database/doc");
         File htmlFile = new File(databaseDocDir,System.currentTimeMillis() + ".html");
@@ -108,8 +115,8 @@ public class MetadataControllerShow {
         Template template = configuration.getTemplate(templateName+".ftl");
         Map<String,Object> model = new HashMap<>();
         model.put("connName",connName);
-        model.put("catalog",catalog);
-        model.put("schema",schemas);
+        model.put("catalog",searchParam.getCatalog());
+        model.put("schema",searchParam.getSchemas());
         model.put("tables",filterTables);
         template.process(model,outputStreamWriter);
         outputStreamWriter.flush();outputStreamWriter.close();
@@ -138,13 +145,4 @@ public class MetadataControllerShow {
         return body;
     }
 
-    @Autowired
-    private ExcelDocService excelDocService;
-
-    @PostMapping("/generate")
-    @ResponseBody
-    public String generate(@NotNull String connName,String catalog,String [] schemas) throws IOException, SQLException {
-        Path generate = excelDocService.generate(connName,catalog,schemas);
-        return generate.toString();
-    }
 }

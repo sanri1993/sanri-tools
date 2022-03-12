@@ -1,25 +1,27 @@
 package com.sanri.tools.modules.database.controller;
 
-import com.sanri.tools.modules.core.service.file.FileManager;
-import com.sanri.tools.modules.database.service.JdbcDocService;
-import freemarker.template.TemplateException;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.sql.SQLException;
+
+import javax.validation.constraints.NotNull;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.constraints.NotNull;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.sql.SQLException;
+import com.sanri.tools.modules.core.service.file.FileManager;
+import com.sanri.tools.modules.database.service.MetaDocService;
+import com.sanri.tools.modules.database.service.dtos.search.SearchParam;
 
 @RestController
 @RequestMapping("/db/doc")
 public class DatabaseDocController {
 
     @Autowired
-    private JdbcDocService jdbcDocService;
+    private MetaDocService metaDocService;
     @Autowired
     private FileManager fileManager;
 
@@ -34,8 +36,8 @@ public class DatabaseDocController {
      * @throws SQLException
      */
     @GetMapping("/export")
-    public String exportDoc(@NotNull String connName, String catalog, String[] schemas, String keyword) throws Exception {
-        final File generateDoc = jdbcDocService.generateDoc(connName, catalog, schemas, keyword);
+    public String exportDoc(@NotNull String connName, SearchParam searchParam) throws Exception {
+        final File generateDoc = metaDocService.metaDoc(connName, searchParam);
         Path path = fileManager.relativePath(generateDoc.toPath());
         return path.toString();
     }

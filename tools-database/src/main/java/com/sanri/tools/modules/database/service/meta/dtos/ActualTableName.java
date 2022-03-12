@@ -3,6 +3,7 @@ package com.sanri.tools.modules.database.service.meta.dtos;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 
@@ -21,56 +22,31 @@ public class ActualTableName {
      */
     @NotNull
     private String tableName;
-    /**
-     * 完全限定名
-     */
-    private String fullName;
 
     public ActualTableName() {
     }
 
     public ActualTableName(String catalog, String schema, String tableName) {
-        this.catalog = catalog;
-        this.schema = schema;
+        this.namespace = new Namespace(catalog,schema);
         this.tableName = tableName;
-
-        this.fullName = StringUtils.join(Arrays.asList(catalog, schema,tableName),'.');
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof ActualTableName)){
-            return false;
-        }
-        ActualTableName other = (ActualTableName) obj;
-        if (getFullName() == null && other.getFullName() == null ) {
-            return true;
-        }
-
-        return getFullName().equals(other.getFullName());
+    public ActualTableName(Namespace namespace, @NotNull String tableName) {
+        this.namespace = namespace;
+        this.tableName = tableName;
     }
 
-    @Override
-    public int hashCode() {
-        if (getFullName() == null){
-            return 0 ;
-        }
-        return getFullName().hashCode();
+    @JsonIgnore
+    public String getCatalog(){
+        return namespace.getCatalog();
     }
 
-    public String getCatalog() {
-        return catalog;
-    }
-
-    public String getSchema() {
-        return schema;
-    }
-
-    public String getTableName() {
-        return tableName;
+    @JsonIgnore
+    public String getSchema(){
+        return namespace.getSchema();
     }
 
     public String getFullName() {
-        return StringUtils.join(Arrays.asList(catalog,schema,tableName),'.');
+        return StringUtils.join(Arrays.asList(namespace.getCatalog(),namespace.getSchema(),tableName),'.');
     }
 }

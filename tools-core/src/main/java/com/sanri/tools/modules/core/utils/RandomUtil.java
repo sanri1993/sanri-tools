@@ -1,6 +1,7 @@
 package com.sanri.tools.modules.core.utils;
 
 import com.alibaba.fastjson.JSONObject;
+import com.sanri.tools.modules.core.exception.ToolException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -63,9 +64,27 @@ public class RandomUtil {
 				AREANO_MAP = JSONObject.parseObject(IOUtils.toString(idcodeStream, charset));
 				JOBS = StringUtils.split(IOUtils.toString(jobStream, charset), ',');
 			}
+
+			// 过滤出 6 位身份证号
+			final Set<String> areaNos = AREANO_MAP.keySet();
+			final Iterator<String> iterator = areaNos.iterator();
+			while (iterator.hasNext()){
+				final String areaNo = iterator.next();
+				if (StringUtils.isNotBlank(areaNo) && areaNo.length() == 6){
+					AREA_CITY_MAP.add(areaNo);
+				}
+			}
 		} catch (IOException e) {
 			log.error(e.getMessage(),e);
 		}
+	}
+
+	/**
+	 * uuid , 去掉 -
+	 * @return
+	 */
+	public static String uuid(){
+		return UUID.randomUUID().toString().replaceAll("-","");
 	}
 
 	/**
@@ -212,6 +231,9 @@ public class RandomUtil {
 	 * @return
      */
 	public static String idcard(){
+		if (AREA_CITY_MAP.size() == 0){
+			return idcard("430124");
+		}
 		int nextInt = RandomUtils.nextInt(0, AREA_CITY_MAP.size());
 		return idcard(AREA_CITY_MAP.get(nextInt));
 	}

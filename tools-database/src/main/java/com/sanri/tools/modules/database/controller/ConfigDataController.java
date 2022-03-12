@@ -1,6 +1,7 @@
 package com.sanri.tools.modules.database.controller;
 
 import com.sanri.tools.modules.database.service.ConfigDataService;
+import com.sanri.tools.modules.database.service.meta.dtos.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,17 +25,17 @@ public class ConfigDataController {
     private ConfigDataService configDataService;
 
     @GetMapping("/groups")
-    public List<String> groups(@NotNull String connName, String schemaName) throws SQLException, IOException {
-        return configDataService.groups(connName,schemaName);
+    public List<String> groups(@NotNull String connName, Namespace namespace) throws SQLException, IOException {
+        return configDataService.groups(connName,namespace);
     }
 
     @GetMapping("/dataIds")
-    public List<String> dataIds(@NotNull String connName,String schemaName,@NotNull String groupId) throws SQLException, IOException {
-        return configDataService.dataIds(connName,schemaName,groupId);
+    public List<String> dataIds(@NotNull String connName,Namespace namespace,@NotNull String groupId) throws SQLException, IOException {
+        return configDataService.dataIds(connName,namespace,groupId);
     }
 
     @GetMapping("/content")
-    public String content(@NotNull String connName,String schemaName,@NotNull String groupId,@NotNull String dataId) throws SQLException, IOException {
-        return configDataService.content(connName,schemaName,groupId,dataId);
+    public String content(@NotNull String connName,Namespace namespace,@NotNull String groupId,@NotNull String dataId) throws SQLException, IOException {
+        return configDataService.content(connName,namespace,groupId,dataId);
     }
 }
