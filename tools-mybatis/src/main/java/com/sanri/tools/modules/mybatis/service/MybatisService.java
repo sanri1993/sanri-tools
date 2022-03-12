@@ -44,6 +44,8 @@ import com.sanri.tools.modules.mybatis.dtos.ProjectDto;
 
 import lombok.extern.slf4j.Slf4j;
 
+import javax.sql.ConnectionPoolDataSource;
+
 @Service
 @Slf4j
 public class MybatisService {
@@ -53,10 +55,10 @@ public class MybatisService {
     @Autowired
     private ClassloaderService classloaderService;
 
-    @Autowired
-    private JdbcService jdbcService;
-
     public static final String MODULE = "mybatis";
+
+    @Autowired
+    private ConnDatasourceAdapter connDatasourceAdapter;
 
     // projectName => Configuration
     private Map<String, Configuration> projectConfigurationMap = new ConcurrentHashMap<>();
@@ -197,7 +199,8 @@ public class MybatisService {
         }
 
         // 获取 sql 语句, 需要依赖于数据库连接
-        Connection connection = jdbcService.connection(boundSqlParam.getConnName());
+        Connection connection = connDatasourceAdapter.connection(boundSqlParam.getConnName());
+
         PreparedStatement statement = null;ResultSet resultSet = null;
         BoundSqlResponse boundSqlResponse;
         try {

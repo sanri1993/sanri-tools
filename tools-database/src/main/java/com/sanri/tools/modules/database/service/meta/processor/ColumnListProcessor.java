@@ -32,13 +32,6 @@ public class ColumnListProcessor implements ResultSetHandler<List<Column>> {
             if ("datetime".equalsIgnoreCase(typeName)) {
                 columnSize = 6;
             }
-//                String remarks = null;
-//                try {
-//                    byte[] remarksBytes = rs.getBytes("REMARKS");
-//                    if (remarksBytes != null) {
-//                        remarks = new String(remarksBytes, "UTF-8");
-//                    }
-//                } catch (UnsupportedEncodingException e) {}
             String autoIncrement = null;
 
             boolean nullable = nullableInt == 1 ? true : false;

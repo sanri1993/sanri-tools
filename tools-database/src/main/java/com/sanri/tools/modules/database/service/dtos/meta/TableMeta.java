@@ -1,5 +1,7 @@
-package com.sanri.tools.modules.database.service.meta.dtos;
+package com.sanri.tools.modules.database.service.dtos.meta;
 
+import com.sanri.tools.modules.database.service.meta.dtos.Column;
+import com.sanri.tools.modules.database.service.meta.dtos.Table;
 import lombok.Data;
 
 import java.util.ArrayList;

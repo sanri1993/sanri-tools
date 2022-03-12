@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(exclude = "actualTableName")
 public class Column {
     @JsonIgnore
     private ActualTableName actualTableName;

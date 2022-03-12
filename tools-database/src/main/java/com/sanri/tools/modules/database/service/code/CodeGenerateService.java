@@ -1,4 +1,5 @@
-package com.sanri.tools.modules.database.service;
+package com.sanri.tools.modules.database.service.code;
+
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,26 +19,25 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ReflectionUtils;
 
 import com.sanri.tools.modules.core.service.file.FileManager;
-
-import com.sanri.tools.modules.database.dtos.*;
-import com.sanri.tools.modules.database.service.meta.dtos.ActualTableName;
-import com.sanri.tools.modules.database.service.meta.dtos.TableMetaData;
-import com.sanri.tools.modules.database.service.rename.JavaBeanInfo;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import lombok.extern.slf4j.Slf4j;
 
+
+/**
+ * 代码生成
+ */
 @Service
 @Slf4j
-public class CodeGeneratorService {
+public class CodeGenerateService {
     @Autowired
-    private JdbcService jdbcService;
+    private TableSearchService tableSearchService;
+    @Autowired
+    private JdbcMetaService jdbcMetaService;
 
     @Autowired
     private FileManager fileManager;
@@ -45,11 +45,13 @@ public class CodeGeneratorService {
     @Autowired
     private Configuration configuration;
 
-    // 生成代码的目录
-    private static final String BASE_GENERATE_DIR = "code/generate/";
+    /**
+     * 生成代码的目录
+     */
+    public static final String BASE_GENERATE_DIR = "code/generate/";
 
     @Autowired(required = false)
-    private Map<String,RenameStrategy> renameStrategyMap = new HashMap<>();
+    private Map<String, RenameStrategy> renameStrategyMap = new HashMap<>();
 
     /**
      * 所有的命名策略
@@ -57,48 +59,6 @@ public class CodeGeneratorService {
      */
     public Set<String> renameStrategies(){
         return renameStrategyMap.keySet();
-    }
-
-    /** 使用模板生成代码 **/
-    @Autowired
-    private TemplateService templateService;
-
-    /**
-     * 使用某一张表进行代码的预览
-     * 模板代码预览
-     * @param previewCodeParam
-     */
-    public String previewCode(PreviewCodeParam previewCodeParam) throws IOException, SQLException, TemplateException {
-        // 获取表元数据
-        List<TableMetaData> tableMetaData = jdbcService.filterChoseTables(previewCodeParam.getConnName(), previewCodeParam.getActualTableName().getCatalog(), Collections.singletonList(previewCodeParam.getActualTableName()));
-        if (!CollectionUtils.isEmpty(tableMetaData)){
-            TableMetaData previewTable = tableMetaData.get(0);
-            RenameStrategy renameStrategy = renameStrategyMap.get(previewCodeParam.getRenameStrategyName());
-            // 生成代码
-            return templateService.preview(previewCodeParam,previewTable,renameStrategy);
-        }
-        return "";
-    }
-
-    /**
-     * 使用模板方案代码生成
-     * @param template
-     * @param connName
-     * @param actualTableName
-     * @param renameStrategyName
-     * @return
-     */
-    public Path codeGenerator(CodeGeneratorParam codeGeneratorParam) throws IOException, SQLException, TemplateException {
-        CodeGeneratorConfig.DataSourceConfig dataSourceConfig = codeGeneratorParam.getDataSourceConfig();
-        String connName = dataSourceConfig.getConnName();
-        String catalog = dataSourceConfig.getCatalog();
-        List<TableMetaData> filterTables = jdbcService.filterChoseTables(connName, catalog, dataSourceConfig.getTables());
-
-        String renameStrategyName = codeGeneratorParam.getRenameStrategyName();
-        RenameStrategy renameStrategy = renameStrategyMap.get(renameStrategyName);
-
-        File file = templateService.processBatch(codeGeneratorParam,filterTables,renameStrategy);
-        return fileManager.relativePath(file.toPath());
     }
 
     /**
@@ -113,8 +73,8 @@ public class CodeGeneratorService {
     @JdbcConnection
     public File javaBeanBuild(JavaBeanBuildConfig javaBeanBuildConfig) throws IOException, SQLException {
         String connName = javaBeanBuildConfig.getConnName();
-        String catalog = javaBeanBuildConfig.getCatalog();
-        List<TableMetaData> filterTables = jdbcService.filterChoseTables(connName, catalog, javaBeanBuildConfig.getTables());
+        final List<TableMeta> tableMetas = tableSearchService.getTables(connName, javaBeanBuildConfig.getNamespace(), javaBeanBuildConfig.getTableNames());
+        final List<TableMetaData> filterTables = jdbcMetaService.tablesExtend(connName, tableMetas);
 
         // 获取重命名工具
         String renameStrategy = javaBeanBuildConfig.getRenameStrategy();
@@ -148,15 +108,4 @@ public class CodeGeneratorService {
         return javaBeanDir;
     }
 
-
-
-//    @PostConstruct
-//    public void register(){
-//        pluginManager.register(PluginDto.builder()
-//                .module(MODULE).name("codeGenerate").author("sanri").envs("default")
-//                .logo("mysql.jpg")
-//                .desc("代码生成功能")
-//                .help("代码生成.md")
-//                .build());
-//    }
 }

@@ -1,5 +1,7 @@
 package com.sanri.tools.modules.database.service.meta.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
@@ -7,16 +9,13 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 
-@Setter
+@Data
 public class ActualTableName {
     /**
-     * 数据库 catalog
+     * 命名空间
      */
-    private String catalog;
-    /**
-     * 数据库 schema
-     */
-    private String schema;
+    @Valid
+    private Namespace namespace;
     /**
      * 表名
      */

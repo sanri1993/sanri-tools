@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 @Setter
 @ToString
 public class Namespace {
-    private String connName;
     private String catalog;
     private String schema;
 
