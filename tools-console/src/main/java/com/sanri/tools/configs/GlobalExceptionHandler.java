@@ -142,13 +142,27 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ToolException.class)
     public ResponseDto toolException(ToolException e){
-        StackTraceElement stackTraceElement = e.getStackTrace()[0];
-        String className = stackTraceElement.getClassName();
-        int lineNumber = stackTraceElement.getLineNumber();
-        String methodName = stackTraceElement.getMethodName();
-        String mark = StringUtils.join(new String[]{className,".", methodName, "(", lineNumber + "", ") ",}, "");
+        final StackTraceElement[] stackTrace = e.getStackTrace();
+
+        String className = stackTrace[0].getClassName();
+        int lineNumber = stackTrace[0].getLineNumber();
+        String methodName = stackTrace[0].getMethodName();
+        String rootMark = StringUtils.join(new String[]{className,".", methodName, "(", lineNumber + "", ") ",}, "");
         BusinessException businessException = BusinessException.create(e.getMessage());
-        log.error(mark + businessException.getMessage());
+
+        StringBuffer stringBufferr = new StringBuffer(rootMark + " "+businessException.getMessage());
+
+        for (StackTraceElement stackTraceElement : stackTrace) {
+            className = stackTraceElement.getClassName();
+            lineNumber = stackTraceElement.getLineNumber();
+            methodName = stackTraceElement.getMethodName();
+            String mark = StringUtils.join(new String[]{className,".", methodName, "(", lineNumber + "", ") ",}, "");
+
+            if (className.startsWith(packagePrefix) && !className.contains("$")) {
+                stringBufferr.append("\n").append("  at " + mark);
+            }
+        }
+        log.error(stringBufferr.toString());
         return businessException.getResponseDto();
     }
 }

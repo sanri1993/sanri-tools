@@ -18,6 +18,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -58,7 +59,7 @@ public class MetadataController {
      * @throws SQLException
      */
     @GetMapping("/catalogs")
-    public List<String> catalogs(@NotNull String connName) throws IOException, SQLException {
+    public List<String> catalogs(@NotEmpty String connName) throws IOException, SQLException {
         return jdbcMetaService.catalogs(connName);
     }
 

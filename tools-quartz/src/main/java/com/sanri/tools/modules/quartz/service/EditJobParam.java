@@ -1,5 +1,6 @@
 package com.sanri.tools.modules.quartz.service;
 
+import com.sanri.tools.modules.database.service.meta.dtos.Namespace;
 import lombok.Data;
 import org.quartz.JobKey;
 
@@ -8,6 +9,7 @@ import javax.validation.constraints.NotNull;
 @Data
 public class EditJobParam {
 //    private JobKey jobKey;
+    private Namespace namespace;
     /**
      * 任务名
      */

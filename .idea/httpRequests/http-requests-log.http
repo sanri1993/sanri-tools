@@ -1,3 +1,83 @@
+GET http://localhost:8084/quartz/trigger?connName=192.168.60.116&catalog=cc_dt_qa_fssc&group=DEFAULT&name=voucherPreDelTrigger&classloaderName=job
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ3NDM1MDIxLCJuYmYiOjE2NDcyNjIyMjEsImlhdCI6MTY0NzQzNTAxNH0.U-xShtkgrbmTwgheGl4mffMk1l7aaKyJv8AYfYTD-I0
+
+<> 2022-03-15T103904.200.json
+
+###
+
+GET http://localhost:8084/quartz/trigger?connName=192.168.60.116&group=DEFAULT&name=voucherPreDelTrigger&classloaderName=job
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ3NDM1MDIxLCJuYmYiOjE2NDcyNjIyMjEsImlhdCI6MTY0NzQzNTAxNH0.U-xShtkgrbmTwgheGl4mffMk1l7aaKyJv8AYfYTD-I0
+
+<> 2022-03-15T103834.200.json
+
+###
+
+GET http://localhost:8084/quartz/trigger?connName=192.168.60.116&group=DEFAULT&name=voucherPreDelTrigger&classloaderName=job
+
+<> 2022-03-15T103826.200.json
+
+###
+
+GET http://localhost:8084/quartz/triggers?connName=192.168.60.116&catalog=cc_dt_qa_fssc&tablePrefix=QRTZ_
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ3NDM1MDIxLCJuYmYiOjE2NDcyNjIyMjEsImlhdCI6MTY0NzQzNTAxNH0.U-xShtkgrbmTwgheGl4mffMk1l7aaKyJv8AYfYTD-I0
+
+<> 2022-03-15T103653.200.json
+
+###
+
+GET http://localhost:8084/quartz/triggers?connName=192.168.60.116&catalog=cc_dt_qa_fssc&tablePrefix=QRTZ_
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ3NDM1MDIxLCJuYmYiOjE2NDcyNjIyMjEsImlhdCI6MTY0NzQzNTAxNH0.U-xShtkgrbmTwgheGl4mffMk1l7aaKyJv8AYfYTD-I0
+
+<> 2022-03-15T103615.200.json
+
+###
+
+GET http://localhost:8084/quartz/triggers?connName=192.168.60.116&catalog=cc_dt_qa_fssc&tablePrefix=QRTZ_
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ3NDM1MDIxLCJuYmYiOjE2NDcyNjIyMjEsImlhdCI6MTY0NzQzNTAxNH0.U-xShtkgrbmTwgheGl4mffMk1l7aaKyJv8AYfYTD-I0
+
+<> 2022-03-15T103506.200.json
+
+###
+
+GET http://localhost:8084/quartz/triggers?connName=192.168.60.116&catalog=cc_dt_qa_fssc&tablePrefix=qrtz_
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ3NDM1MDIxLCJuYmYiOjE2NDcyNjIyMjEsImlhdCI6MTY0NzQzNTAxNH0.U-xShtkgrbmTwgheGl4mffMk1l7aaKyJv8AYfYTD-I0
+
+<> 2022-03-15T103444.200.json
+
+###
+
+GET http://localhost:8084/quartz/triggers?connName=localhost&catalog=anta&tablePrefix=xxl_job_qrtz_
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ3NDM1MDIxLCJuYmYiOjE2NDcyNjIyMjEsImlhdCI6MTY0NzQzNTAxNH0.U-xShtkgrbmTwgheGl4mffMk1l7aaKyJv8AYfYTD-I0
+
+<> 2022-03-14T085113.200.json
+
+###
+
+GET http://localhost:8084/quartz/triggers?connName=localhost&catalog=anta&tablePrefix=xxl_job_qrtz_
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ3NDM1MDIxLCJuYmYiOjE2NDcyNjIyMjEsImlhdCI6MTY0NzQzNTAxNH0.U-xShtkgrbmTwgheGl4mffMk1l7aaKyJv8AYfYTD-I0
+
+<> 2022-03-14T085033.200.json
+
+###
+
+POST http://localhost:8084/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "0"
+}
+
+<> 2022-03-14T085021.200.json
+
+###
+
+GET http://localhost:8084/quartz/triggers?connName=localhost&catalog=anta&tablePrefix=xxl_job_qrtz_
+
+<> 2022-03-14T085013.200.json
+
+###
+
 POST http://localhost:8084/db/data/singleTableRandomData
 Content-Type: application/json
 Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ3MjIwNzc5LCJuYmYiOjE2NDcwNDc5NzksImlhdCI6MTY0NzIyMDc3Mn0.bG7tN22eTX0RqqdnI7Mx-M9yDROp2OPaDYskU4Uw348
@@ -326,121 +406,6 @@ GET http://localhost:8084/db/data/checkDirtyData?connName=localhost&catalog=anta
 Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
 
 <> 2022-03-09T024314.200.json
-
-###
-
-GET http://localhost:8084/db/data/checkDirtyData?connName=localhost&catalog=anta
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-09T024016.200.json
-
-###
-
-GET http://localhost:8084/db/data/checkDirtyData?connName=localhost&catalog=anta
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-09T023945.200.json
-
-###
-
-GET http://localhost:8084/db/data/checkDirtyData?connName=localhost&catalog=anta
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-09T023459.200.json
-
-###
-
-POST http://localhost:8084/db/metadata/extend/relation/config
-Content-Type: application/json
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-{
-  "connName": "localhost",
-  "namespace": {
-    "catalog": "anta"
-  },
-  "tableRelations": [
-    {
-      "sourceTableName": "eims_image",
-      "targetTableName": "eims_invoices",
-      "sourceColumnName": "id",
-      "targetColumnName": "imageId",
-      "relation": "ONE_ONE"
-    },
-    {
-      "sourceTableName": "eims_invoices",
-      "targetTableName": "eims_invoices_detail",
-      "sourceColumnName": "invoicenumber",
-      "targetColumnName": "invoice_num",
-      "relation": "ONE_MANY"
-    },
-    {
-      "sourceTableName": "eims_scantask",
-      "targetTableName": "eims_image",
-      "sourceColumnName": "billnumber",
-      "targetColumnName": "document_code",
-      "relation": "ONE_MANY"
-    },
-    {
-      "sourceTableName": "eims_scantask",
-      "targetTableName": "eims_invoices",
-      "sourceColumnName": "billnumber",
-      "targetColumnName": "billnumber",
-      "relation": "ONE_MANY"
-    }
-  ]
-}
-
-<> 2022-03-09T023452.200.json
-
-###
-
-GET http://localhost:8084/db/data/checkDirtyData?connName=localhost&catalog=anta
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-09T023340.200.json
-
-###
-
-GET http://localhost:8084/db/data/checkDirtyData?connName=localhost&catalog=anta
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-09T022231.200.json
-
-###
-
-GET http://localhost:8084/db/data/checkDirtyData?connName=localhost&catalog=anta
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-09T021207.200.json
-
-###
-
-GET http://localhost:8084/db/data/checkDirtyData?connName=localhost&catalog=anta
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-09T020913.200.json
-
-###
-
-GET http://localhost:8084/db/data/checkDirtyData?connName=localhost&namespace.catalog=anta
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-09T020829.200.json
-
-###
-
-GET http://localhost:8084/db/data/checkDirtyData?connName=localhost&namespace.catalog=anta
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-09T020809.200.json
-
-###
-
-GET http://localhost:8084/db/data/checkDirtyData?connName=localhost&namespace.catalog=anta
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-09T020725.200.json
 
 ###
 

@@ -1,16 +1,10 @@
-### bindQuartz
-POST {{baseUrl}}/quartz/localhost@job/bindQuartz
-Content-Type: application/json
-
-{
-  "org.quartz.jobStore.tablePrefix": "qrtz_"
-}
-
 ### quartz - triggers
-GET {{baseUrl}}/quartz/triggers?connNaame=localhost&catalog=job
+GET {{baseUrl}}/quartz/triggers?connName=192.168.60.116&catalog=cc_dt_qa_fssc&tablePrefix=QRTZ_
+Authorization: {{Authorization}}
 
 ### quartz - trigger
-GET {{baseUrl}}/quartz/trigger?connName=localhost@job&group=default&name=mm&classloaderName=job
+GET {{baseUrl}}/quartz/trigger?connName=192.168.60.116&catalog=cc_dt_qa_fssc&group=DEFAULT&name=voucherPreDelTrigger&classloaderName=job
+Authorization: {{Authorization}}
 
 ### quartz - pause
 GET {{baseUrl}}/quartz/pause?connName=localhost@job&group=default&name=mm&classloaderName=job

@@ -1,8 +1,10 @@
 package com.sanri.tools.modules.quartz.controller;
 
+import com.sanri.tools.modules.database.service.meta.dtos.Namespace;
 import com.sanri.tools.modules.quartz.dtos.TriggerTask;
 import com.sanri.tools.modules.quartz.service.EditJobParam;
 import com.sanri.tools.modules.quartz.service.QuartzService;
+import com.sanri.tools.modules.quartz.service.QuartzServiceNew;
 import lombok.Data;
 import org.quartz.JobKey;
 import org.quartz.SchedulerException;
@@ -24,17 +26,8 @@ import java.util.Map;
 public class QuartzController {
     @Autowired
     private QuartzService quartzService;
-
-    /**
-     * 绑定一个 quartz
-     * @param connName 连接名
-     * @param settings 设置
-     * @throws Exception
-     */
-    @PostMapping("/{connName}/bindQuartz")
-    public void bindQuartz(@PathVariable("connName") String connName, @RequestBody Map<String,Object> settings) throws Exception {
-        quartzService.bindQuartz(connName,settings);
-    }
+    @Autowired
+    private QuartzServiceNew quartzServiceNew;
 
     /**
      * 添加或修改一个 job
@@ -43,35 +36,9 @@ public class QuartzController {
      */
     @PostMapping("/{connName}/editJob")
     public void editJob(@PathVariable("connName") String connName, @RequestBody @Valid EditJobParam editJobParam) throws Exception {
-        quartzService.editJob(connName,editJobParam);
+        quartzService.editJob(connName, editJobParam.getNamespace(), editJobParam);
     }
 
-    // 缓存上一次用过的 catalog 和 schema
-    CacheConnectDto cacheLastConn;
-
-    @Data
-    public static final class CacheConnectDto{
-        private String connName;
-        private String catalog;
-        private String schema;
-
-        public CacheConnectDto() {
-        }
-
-        public CacheConnectDto(String connName, String catalog, String schema) {
-            this.connName = connName;
-            this.catalog = catalog;
-            this.schema = schema;
-        }
-    }
-
-    /**
-     * @return
-     */
-    @GetMapping("/loadCache")
-    public CacheConnectDto loadCache(){
-        return cacheLastConn;
-    }
 
     /**
      * 查询所有的任务列表
@@ -83,9 +50,8 @@ public class QuartzController {
      * @throws SQLException
      */
     @GetMapping("/triggers")
-    public List<TriggerTask> triggers(@NotNull String connName, String catalog, String schema) throws IOException, SQLException {
-        cacheLastConn = new CacheConnectDto(connName,catalog,schema);
-        return quartzService.triggerTasks(connName,catalog,schema);
+    public List<TriggerTask> triggers(@NotNull String connName, Namespace namespace,String tablePrefix) throws Exception {
+        return quartzServiceNew.triggerTasks(connName,namespace,tablePrefix);
     }
 
     /**
@@ -96,9 +62,9 @@ public class QuartzController {
      * @throws SchedulerException
      */
     @GetMapping("/trigger")
-    public void trigger(@NotNull String connName,String group,String name) throws Exception {
+    public void trigger(@NotNull String connName,Namespace namespace,String group,String name) throws Exception {
         JobKey jobKey = new JobKey(name, group);
-        quartzService.trigger(connName,jobKey);
+        quartzService.trigger(connName,namespace,jobKey);
     }
 
     /**
@@ -109,9 +75,9 @@ public class QuartzController {
      * @throws SchedulerException
      */
     @GetMapping("/pause")
-    public void pause(@NotNull String connName,String name,String group) throws Exception {
+    public void pause(@NotNull String connName,Namespace namespace,String name,String group) throws Exception {
         JobKey jobKey = new JobKey(name, group);
-        quartzService.pause(connName,jobKey);
+        quartzService.pause(connName,namespace,jobKey);
     }
 
     /**
@@ -122,9 +88,9 @@ public class QuartzController {
      * @throws SchedulerException
      */
     @GetMapping("/resume")
-    public void resume(@NotNull String connName,String name,String group) throws Exception {
+    public void resume(@NotNull String connName,Namespace namespace,String name,String group) throws Exception {
         JobKey jobKey = new JobKey(name, group);
-        quartzService.resume(connName,jobKey);
+        quartzService.resume(connName,namespace,jobKey);
     }
 
     /**
@@ -137,9 +103,9 @@ public class QuartzController {
      * @throws SchedulerException
      */
     @GetMapping("/remove")
-    public void remove(@NotNull String connName,@NotNull String triggerName,@NotNull String triggerGroup,@NotNull String jobName,@NotNull String jobGroup) throws Exception {
+    public void remove(@NotNull String connName,Namespace namespace,@NotNull String triggerName,@NotNull String triggerGroup,@NotNull String jobName,@NotNull String jobGroup) throws Exception {
         TriggerKey triggerKey = TriggerKey.triggerKey(triggerName, triggerGroup);
         JobKey jobKey = JobKey.jobKey(jobName, jobGroup);
-        quartzService.remove(connName,triggerKey,jobKey);
+        quartzService.remove(connName,namespace,triggerKey,jobKey);
     }
 }
