@@ -5,6 +5,7 @@
 - 连接管理
 - 文件管理
 - 类加载器管理
+- 随机数据生成
 
 ### 工具模块间依赖关系
 
@@ -50,7 +51,7 @@ tools-name/src/main/resources 执行 install.txt
 3. 尝试能不能运行成功, 并运行版本号接口 tools-console.http 中的第一个接口
 4. 新建自己模块并开发
 5. 将自己模块加到 tools-console 中的 pom.xml  就可以调试了
-6. 将插件注册上来, 添加文件 tool_plugin.properties , 内容参考任何一个模块即可
+6. 将插件注册上来, 添加文件 tools-[模块名]_plugin.properties , 内容参考任何一个模块即可
 ```
 
 ### 接口调试
