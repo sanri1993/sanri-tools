@@ -15,6 +15,9 @@ import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.expression.Expression;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -116,5 +119,25 @@ public class RandomDataController {
 
         ClassLoader classloader = classloaderService.getClassloader(classloaderName);
         return jsoupSpiderDataService.spiderData(className,classloader,params);
+    }
+
+    // sepl 表达式解析器
+    private ExpressionParser expressionParser = new SpelExpressionParser();
+
+    /**
+     * spel 表达式数据
+     * @param spel
+     * @param length
+     * @return
+     */
+    @GetMapping("/spelData")
+    public List<String> spelData(String spel,int length){
+        List<String> datas = new ArrayList<>();
+        for (int i = 0; i < length; i++) {
+            Expression expression = expressionParser.parseExpression(spel);
+            String value = expression.getValue(String.class);
+            datas.add(value);
+        }
+        return datas;
     }
 }

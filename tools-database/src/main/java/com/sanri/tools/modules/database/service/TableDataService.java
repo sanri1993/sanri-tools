@@ -61,6 +61,7 @@ public class TableDataService {
     @Autowired
     private TabeRelationMetaData tabeRelationMetaData;
 
+    // sepl 表达式解析器
     private ExpressionParser expressionParser = new SpelExpressionParser();
 
     // jsqlparser 解析

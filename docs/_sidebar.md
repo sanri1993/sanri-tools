@@ -1,15 +1,17 @@
-* [开始](/)
-* 数据准备
+* [快速开始](/quickStart)
+* 系统设计
+   - [总体设计](/design)
    - [连接管理](/connect)
-   - [类加载器](/classloader)
-* 存储系统
-   - [文件存储](/filemanager)
-* 权限管理 
-   - [权限管理](/auth)
-* [使用工具](/tools/)
-   - [database](/tools/database)
-   - [redis](/tools/redis)
-   - [kafka](/tools/kafka)
+   - [数据可视化](/visualization)
+   - [数据调用](/datacall)
+   - [权限](/auth)
+* [模块列表与使用](/modules/)
+   - [database](/modules/database)
+   - [Redis](/modules/redis)
+   - [kafka](/modules/kafka)
+   - [gitpatch](/modules/gitpatch)
+   - [name](/modules/name)
+
 * [二开](/custom)
 * [前端](/front)
-
+* [问题与解答FAQ](/FAQ)

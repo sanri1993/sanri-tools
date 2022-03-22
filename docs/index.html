@@ -13,16 +13,29 @@
   <script>
     window.$docsify = {
       name: 'sanritools',
-	  loadSidebar: true,
-	  loadNavbar:true,
+      loadSidebar: true,
+      loadNavbar:true,
       repo: 'https://gitee.com/sanri/sanri-tools-maven',
-	  subMaxLevel: 2,
-	  formatUpdated: '{MM}/{DD} {HH}:{mm}',
+      subMaxLevel: 2,
+      homepage: 'quickStart.md',
+      formatUpdated: '{YYYY}/{MM}/{DD} {HH}:{mm}',
+      disqus: 'shortname'
     }
   </script>
   <!-- Docsify v4 -->
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+
+  <!--缩放图片-->
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
+
+  <!--复制代码-->
+  <script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
+
+  <!-- 讨论，好像没生效-->
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/disqus.min.js"></script>
+
+  <!-- search -->
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
 
 </body>
 </html>
