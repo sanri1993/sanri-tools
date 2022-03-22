@@ -1,9 +1,9 @@
 * [快速开始](/quickStart)
 * 系统设计
-   - [总体设计](/design)
-   - [连接管理](/connect)
-   - [数据可视化](/visualization)
-   - [数据调用](/datacall)
+   - [总体设计](/desgin/design)
+   - [连接管理](/desgin/connect)
+   - [数据可视化](/desgin/visualization)
+   - [数据调用](/desgin/datacall)
    - [权限](/auth)
 * [模块列表与使用](/modules/)
    - [database](/modules/database)

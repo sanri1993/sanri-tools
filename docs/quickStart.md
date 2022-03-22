@@ -11,7 +11,7 @@
    ```shell
    java -Dloader.path=sanritoolslib --data.path.base=/tmp -Xms256m -Xmx256m -jar sanritools.jar
    ```
-4. 访问地址 `http://localhost:8084/`，默认帐号密码为 admin/0
+4. 访问地址 `http://localhost:8084/`，默认帐号密码为 admin/0, 当进入首页能看到插件列表时, 表示安装成功
 
 ## 创建一个连接
 
