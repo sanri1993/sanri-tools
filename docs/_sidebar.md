@@ -5,7 +5,7 @@
    - [数据可视化](/desgin/visualization)
    - [数据调用](/desgin/datacall)
    - [权限](/auth)
-* [模块列表与使用](/modules/)
+* [模块列表](/modules/)
    - [database](/modules/database)
    - [Redis](/modules/redis)
    - [kafka](/modules/kafka)
@@ -14,4 +14,5 @@
 
 * [二开](/custom)
 * [前端](/front)
-* [问题与解答FAQ](/FAQ)
+* [FAQ](/FAQ)
+* [捐赠](/donate)

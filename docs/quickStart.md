@@ -7,9 +7,8 @@
 2. 下载依赖的 jar 包， 并解压   sanritoolslib [下载地址](https://cowtransfer.com/s/0df01e65aaca4f)
 
 3. 启动项目
-
    ```shell
-   java -Dloader.path=sanritoolslib --data.path.base=/tmp -Xms256m -Xmx256m -jar sanritools.jar
+   java -Dloader.path=sanritoolslib -Xms256m -Xmx256m -jar sanritools.jar
    ```
 4. 访问地址 `http://localhost:8084/`，默认帐号密码为 admin/0, 当进入首页能看到插件列表时, 表示安装成功
 
