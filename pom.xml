@@ -15,7 +15,7 @@
         <module>tools-soap</module>
         <module>tools-swagger-doc</module>
         <module>tools-mybatis</module>
-        <module>tools-name</module>
+<!--        <module>tools-name</module>-->
         <module>tools-dubbo</module>
         <module>tools-mongodb</module>
         <module>tools-quartz</module>
