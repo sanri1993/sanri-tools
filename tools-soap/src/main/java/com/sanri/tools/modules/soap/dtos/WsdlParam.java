@@ -4,9 +4,9 @@ import lombok.Data;
 
 /**
  * 
- * 作者:sanri <br/>
- * 时间:2017-6-21下午1:27:31<br/>
- * 功能: webservice 参数 <br/>
+ * 作者:sanri <br>
+ * 时间:2017-6-21下午1:27:31<br>
+ * 功能: webservice 参数 <br>
  */
 @Data
 public class WsdlParam {

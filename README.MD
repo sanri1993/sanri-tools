@@ -8,7 +8,8 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
 
 ## 文档
 
-文档地址: https://sanri.gitee.io/blog/#/sanritools2/
+* 文档地址: https://sanri.gitee.io/sanri-tools-maven
+* javaDoc: 
 
 ## 工具理念和定位
 

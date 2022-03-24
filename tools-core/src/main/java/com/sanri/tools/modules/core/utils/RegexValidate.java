@@ -60,9 +60,9 @@ public class RegexValidate {
 	
 	/**
 	 * 
-	 * 作者:sanri</br>
-	 * 时间:2016-9-26下午1:34:26</br>
-	 * 功能:正则验证</br>
+	 * 作者:sanri
+	 * 时间:2016-9-26下午1:34:26
+	 * 功能:正则验证
 	 */
 	public static boolean validate(String value, Pattern pattern) {
 		if (value == null) {
@@ -76,9 +76,9 @@ public class RegexValidate {
 	}
 	/**
 	 * 
-	 * 作者:sanri</br>
-	 * 时间:2016-9-26下午1:34:40</br>
-	 * 功能:正则提取字符串</br>
+	 * 作者:sanri
+	 * 时间:2016-9-26下午1:34:40
+	 * 功能:正则提取字符串
 	 */
 	public static List<String> match(String value, Pattern pattern) {
 		if (value == null) {
@@ -105,8 +105,8 @@ public class RegexValidate {
 	
 	/**
 	 * 统计 字符串中 包含正则表达示匹配的元素个数
-	 * @param content
-	 * @param regex
+	 * @param content 文本源
+	 * @param regex 正则表达式
 	 * @return 个数
 	 */
 	public static long countRegex(String content,Pattern pattern){
@@ -123,9 +123,9 @@ public class RegexValidate {
 	
 	/**
 	 * 
-	 * 功能:<br/>
-	 * 创建时间:2016-9-24下午3:58:40<br/>
-	 * 作者：sanri<br/>
+	 * 功能:<br>
+	 * 创建时间:2016-9-24下午3:58:40<br>
+	 * 作者：sanri<br>
 	 * see StringUtil.isBlank()
 	 */
 	@Deprecated

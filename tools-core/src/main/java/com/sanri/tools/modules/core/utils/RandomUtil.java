@@ -28,8 +28,8 @@ import java.util.*;
 
 /**
  * 
- * 创建时间:2016-9-24下午5:33:29<br/>
- * 创建者:sanri<br/>
+ * 创建时间:2016-9-24下午5:33:29<br>
+ * 创建者:sanri<br>
  */
 public class RandomUtil {
 	private static Logger log = LoggerFactory.getLogger(RandomUtil.class);
@@ -88,7 +88,7 @@ public class RandomUtil {
 	}
 
 	/**
-	 * 功能:生成 length 个中文 <br/>
+	 * 功能:生成 length 个中文 <br>
 	 * 创建时间:2016-4-16上午11:24:40 
 	 * 作者：sanri 
 	 * */
@@ -118,10 +118,10 @@ public class RandomUtil {
 	
 	/**
 	 * 
-	 * 功能:随机生成用户名<br/>
-	 * 创建时间:2017-8-13上午8:04:32<br/>
-	 * 作者：sanri<br/>
-	 * @return<br/>
+	 * 功能:随机生成用户名<br>
+	 * 创建时间:2017-8-13上午8:04:32<br>
+	 * 作者：sanri<br>
+	 * @return<br>
 	 */
 	public static String username(){
 		boolean sex = random.nextBoolean();
@@ -133,12 +133,12 @@ public class RandomUtil {
 	}
 	/**
 	 *
-	 * 功能:给定格式 ,开始时间,结束时间,生成一个在开始和结束内的日期<br/>
-	 * 创建时间:2016-4-16下午3:57:38<br/>
-	 * 作者：sanri<br/>
-	 * 入参说明:<br/>
-	 * 出参说明：字符串日期类型由 format 格式化<br/>
-	 * @throws ParseException<br/>
+	 * 功能:给定格式 ,开始时间,结束时间,生成一个在开始和结束内的日期<br>
+	 * 创建时间:2016-4-16下午3:57:38<br>
+	 * 作者：sanri<br>
+	 * 入参说明:<br>
+	 * 出参说明：字符串日期类型由 format 格式化<br>
+	 * @throws ParseException<br>
 	 */
 	public static String date(String format,String begin,String end) throws ParseException{
 		if(StringUtils.isBlank(format)){
@@ -157,16 +157,16 @@ public class RandomUtil {
 	}
 	/**
 	 *
-	 * 功能:得到由开始时间和结束时间内的一个时间戳<br/>
-	 * 创建时间:2016-4-16下午4:07:31<br/>
-	 * 作者：sanri<br/>
-	 * 入参说明:<br/>
-	 * 出参说明：如果时间给的不对,则是当前时间<br/>
+	 * 功能:得到由开始时间和结束时间内的一个时间戳<br>
+	 * 创建时间:2016-4-16下午4:07:31<br>
+	 * 作者：sanri<br>
+	 * 入参说明:<br>
+	 * 出参说明：如果时间给的不对,则是当前时间<br>
 	 * @param format
 	 * @param begin
 	 * @param end
 	 * @return
-	 * @throws ParseException<br/>
+	 * @throws ParseException<br>
 	 */
 	public static long timestamp(String format,String begin,String end) throws ParseException{
 		if(StringUtils.isBlank(format)){
@@ -190,16 +190,16 @@ public class RandomUtil {
 
 	/**
 	 *
-	 * 功能:生成身份证号<br/>
-	 * 创建时间:2016-4-16下午2:31:37<br/>
-	 * 作者：sanri<br/>
-	 * 入参说明:[area:区域号][yyyyMMdd:出生日期][sex:偶=女,奇=男]<br/>
-	 * 出参说明：330602 19770717 201 1<br/>
+	 * 功能:生成身份证号<br>
+	 * 创建时间:2016-4-16下午2:31:37<br>
+	 * 作者：sanri<br>
+	 * 入参说明:[area:区域号][yyyyMMdd:出生日期][sex:偶=女,奇=男]<br>
+	 * 出参说明：330602 19770717 201 1<br>
 	 *
 	 * @param area
 	 * @param yyyyMMdd
 	 * @param sno
-	 * @return<br/>
+	 * @return<br>
 	 */
 	public static String idcard(String area, String yyyyMMdd, String sno) {
 		String idCard17 = area + yyyyMMdd + sno;
@@ -239,12 +239,12 @@ public class RandomUtil {
 	}
 	/**
 	 *
-	 * 功能:随机生成地址<br/>
-	 * 创建时间:2016-4-16下午6:19:14<br/>
-	 * 作者：sanri<br/>
-	 * 入参说明:<br/>
-	 * 出参说明：<br/>
-	 * @return<br/>
+	 * 功能:随机生成地址<br>
+	 * 创建时间:2016-4-16下午6:19:14<br>
+	 * 作者：sanri<br>
+	 * 入参说明:<br>
+	 * 出参说明：<br>
+	 * @return<br>
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static String address(){
@@ -270,9 +270,9 @@ public class RandomUtil {
 	}
 	/**
 	 *
-	 * 功能:随机邮件地址,length 指 用户名长度<br/>
-	 * 创建时间:2016-9-24下午6:11:54<br/>
-	 * 作者：sanri<br/>
+	 * 功能:随机邮件地址,length 指 用户名长度<br>
+	 * 创建时间:2016-9-24下午6:11:54<br>
+	 * 作者：sanri<br>
 	 */
 	public static String email(int length){
 		int randomIndex = RandomUtils.nextInt(0, EMAIL_SUFFIX.length);

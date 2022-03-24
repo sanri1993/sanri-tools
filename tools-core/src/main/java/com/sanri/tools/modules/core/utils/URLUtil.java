@@ -25,7 +25,7 @@ public class URLUtil {
 
     /**
      * 相对化地址
-     * /a/b/c 相对于 /a ==> b/c
+     * <pre>/a/b/c 相对于 /a ==> b/c</pre>
      * 相对化后的地址不以 / 开头
      * @return
      */
@@ -38,10 +38,12 @@ public class URLUtil {
 
     /**
      * 绝对化地址
-     * basePath 必须要是以 协议开头的地址 例 http://xx/xx/xx
-     * 例:
+     * basePath 必须要是以 协议开头的地址 例 http://xx/xx/xx <br>
+     * 例: <br>
+     * <pre>
      *  http://www.baidu.com/c/d  ocr /a/b ==> http://www.baidu.com/a/b
      *  http://www.baidu.com/c/d/m  ocr  ../b ==> http://www.baidu.com/c/b
+     * </pre>
      * @param basePath
      * @param path
      * @return
@@ -55,7 +57,7 @@ public class URLUtil {
 
     /**
      * 解析出所有查询参数
-     * @param uri
+     * @param uri 带参数的 url 信息
      * @return
      * @throws URISyntaxException
      */

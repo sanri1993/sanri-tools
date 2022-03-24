@@ -18,9 +18,9 @@ import java.util.Map.Entry;
 
 /**
  * 
- * 作者:sanri <br/>
- * 时间:2017-6-21下午2:51:46<br/>
- * 功能:webservice 服务 <br/>
+ * 作者:sanri <br>
+ * 时间:2017-6-21下午2:51:46<br>
+ * 功能:webservice 服务 <br>
  */
 @Slf4j
 public class WsdlService {
@@ -38,9 +38,9 @@ public class WsdlService {
 
 	/**
 	 * 
-	 * 作者:sanri <br/>
-	 * 时间:2017-6-21下午2:49:24<br/>
-	 * 功能:解析当前服务所有 port <br/>
+	 * 作者:sanri <br>
+	 * 时间:2017-6-21下午2:49:24<br>
+	 * 功能:解析当前服务所有 port <br>
 	 * @param findAllService
 	 */
 	@SuppressWarnings("unchecked")

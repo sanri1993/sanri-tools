@@ -9,9 +9,9 @@ import java.util.List;
 
 /**
  * 
- * 作者:sanri <br/>
- * 时间:2017-6-21上午11:15:33<br/>
- * 功能: webservice 类型 <br/>
+ * 作者:sanri <br>
+ * 时间:2017-6-21上午11:15:33<br>
+ * 功能: webservice 类型 <br>
  */
 @Data
 public class WsdlType {

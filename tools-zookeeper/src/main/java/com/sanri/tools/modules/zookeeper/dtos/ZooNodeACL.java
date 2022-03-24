@@ -7,9 +7,9 @@ import java.util.List;
 
 /**
  * 
- * 作者:sanri <br/>
- * 时间:2017-7-24下午6:21:09<br/>
- * 功能:节点的 acl 权限 <br/>
+ * 作者:sanri <br>
+ * 时间:2017-7-24下午6:21:09<br>
+ * 功能:节点的 acl 权限 <br>
  */
 @Data
 public class ZooNodeACL {
@@ -28,9 +28,9 @@ public class ZooNodeACL {
 	
 	/**
 	 * 
-	 * 作者:sanri <br/>
-	 * 时间:2017-7-24下午6:31:04<br/>
-	 * 功能:对权限进行解析  <br/>
+	 * 作者:sanri <br>
+	 * 时间:2017-7-24下午6:31:04<br>
+	 * 功能:对权限进行解析  <br>
 	 */
 	private void parserPerms() {
 		if ((perms & 0x1) == 1) {

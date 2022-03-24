@@ -9,15 +9,11 @@
 
 ## 个人微信和技术群
 
-![个人微信](http://pic.yupoo.com/sanri1993/136eb7a3/medium.jpg)
-
-![技术群](http://pic.yupoo.com/sanri1993/d5859281/medium.jpg)
+![个人微信](http://pic.yupoo.com/sanri1993/136eb7a3/medium.jpg)![技术群](http://pic.yupoo.com/sanri1993/d5859281/medium.jpg)
 
 
 ## 捐赠
 
 说了这么多，作者更希望来点实质的，请作者喝杯咖啡啥的，觉得这工具很差也请别丢拖板，提供好的建议即可
 
-![支付宝](http://pic.yupoo.com/sanri1993/0ee103ad/medium.jpg)
-
-![微信](http://pic.yupoo.com/sanri1993/b1c913bf/medium.jpg)
+![支付宝](http://pic.yupoo.com/sanri1993/0ee103ad/medium.jpg)![微信](http://pic.yupoo.com/sanri1993/b1c913bf/medium.jpg)

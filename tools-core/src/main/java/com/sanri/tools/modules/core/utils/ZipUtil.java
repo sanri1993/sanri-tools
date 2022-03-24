@@ -15,18 +15,18 @@ import java.util.List;
 
 /**
  * 
- * 作者:sanri <br/>
- * 时间:2017-4-24下午4:09:47<br/>
- * 功能:zip 处理工具类,需要 apache-commons-compress 支持 <br/>
+ * 作者:sanri <br>
+ * 时间:2017-4-24下午4:09:47<br>
+ * 功能:zip 处理工具类,需要 apache-commons-compress 支持 <br>
  */
 @Slf4j
 public class ZipUtil {
 
 	/**
 	 * 
-	 * 作者:sanri <br/>
-	 * 时间:2017-4-24下午4:11:31<br/>
-	 * 功能: 压缩文件 <br/>
+	 * 作者:sanri <br>
+	 * 时间:2017-4-24下午4:11:31<br>
+	 * 功能: 压缩文件 <br>
 	 * @param dirOrFile 需要压缩的文件或目录
 	 * @param zipFile 压缩文件路径和名称
 	 */
@@ -64,9 +64,9 @@ public class ZipUtil {
 	
 	/**
 	 * 
-	 * 作者:sanri <br/>
-	 * 时间:2017-7-22下午3:13:08<br/>
-	 * 功能:对 zip 方法的优化,直接在当前目录创建压缩文件  <br/>
+	 * 作者:sanri <br>
+	 * 时间:2017-7-22下午3:13:08<br>
+	 * 功能:对 zip 方法的优化,直接在当前目录创建压缩文件  <br>
 	 * @param dirOrFile 需要压缩的文件或目录
 	 * @return 
 	 */
@@ -78,10 +78,10 @@ public class ZipUtil {
 
 	/**
 	 * 
-	 * 作者:sanri <br/>
-	 * 时间:2017-4-24下午4:34:31<br/>
-	 * 功能:递归目录下所有文件 <br/>
-	 * 入参: <br/>
+	 * 作者:sanri <br>
+	 * 时间:2017-4-24下午4:34:31<br>
+	 * 功能:递归目录下所有文件 <br>
+	 * 入参: <br>
 	 */
 	private static void findFiles(File dirOrFile, List<File> files) {
 		if (dirOrFile.isDirectory()) {
@@ -97,10 +97,10 @@ public class ZipUtil {
 
 	/**
 	 * 
-	 * 作者:sanri <br/>
-	 * 时间:2017-4-24下午5:10:32<br/>
-	 * 功能: zip 解压缩<br/>
-	 * 入参: <br/>
+	 * 作者:sanri <br>
+	 * 时间:2017-4-24下午5:10:32<br>
+	 * 功能: zip 解压缩<br>
+	 * 入参: <br>
 	 */
 	public static void unzip(File zipFile, String outputPath) {
 		if(StringUtils.isBlank(outputPath)){

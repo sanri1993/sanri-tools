@@ -38,9 +38,9 @@ import java.util.Map;
 
 /**
  * 
- * 作者:sanri <br/>
- * 时间:2017-6-21上午11:25:05<br/>
- * 功能: webservice 方法 <br/> 
+ * 作者:sanri <br>
+ * 时间:2017-6-21上午11:25:05<br>
+ * 功能: webservice 方法 <br>
  */
 @Slf4j
 public class WsdlOperation {
@@ -58,9 +58,9 @@ public class WsdlOperation {
 
 	/**
 	 * 
-	 * 作者:sanri <br/>
-	 * 时间:2017-6-22下午3:44:47<br/>
-	 * 功能:调用方法 <br/>
+	 * 作者:sanri <br>
+	 * 时间:2017-6-22下午3:44:47<br>
+	 * 功能:调用方法 <br>
 	 * @param jsonObject 传入对应参数类型的结构,去掉一层复杂类型;例如:
 	 * <xs:complexType name="getWeatherbyCityName">
 	 *	<xs:sequence>
@@ -116,9 +116,9 @@ public class WsdlOperation {
 
 	/**
 	 * 
-	 * 作者:sanri <br/>
-	 * 时间:2017-6-22下午9:01:15<br/>
-	 * 功能:发送 soap 消息串,得到响应结果 <br/>
+	 * 作者:sanri <br>
+	 * 时间:2017-6-22下午9:01:15<br>
+	 * 功能:发送 soap 消息串,得到响应结果 <br>
 	 * @param soapMessage xml字符串 soap 格式
 	 * @return xml 字符串,soap 格式
 	 * @throws IOException 
@@ -153,9 +153,9 @@ public class WsdlOperation {
 
 	/**
 	 * 
-	 * 作者:sanri <br/>
-	 * 时间:2017-6-22下午7:25:35<br/>
-	 * 功能:构建异常消息 <br/>
+	 * 作者:sanri <br>
+	 * 时间:2017-6-22下午7:25:35<br>
+	 * 功能:构建异常消息 <br>
 	 * @param nextElement
 	 */
 	private JSONObject buildExceptionJsonObject(org.dom4j.Element nextElement) {
@@ -165,9 +165,9 @@ public class WsdlOperation {
 
 	/**
 	 * 
-	 * 作者:sanri <br/>
-	 * 时间:2017-6-22下午5:34:24<br/>
-	 * 功能:构建返回值信息 <br/>
+	 * 作者:sanri <br>
+	 * 时间:2017-6-22下午5:34:24<br>
+	 * 功能:构建返回值信息 <br>
 	 * @param parentElement 父级元素
 	 * @param outputObject 输出对象
 	 * @param paramInfo 出参信息
@@ -228,9 +228,9 @@ public class WsdlOperation {
 
 	/**
 	 * 
-	 * 作者:sanri <br/>
-	 * 时间:2017-6-21上午11:22:35<br/>
-	 * 功能:构建消息模板 <br/>
+	 * 作者:sanri <br>
+	 * 时间:2017-6-21上午11:22:35<br>
+	 * 功能:构建消息模板 <br>
 	 * @return
 	 */
 	public String buildRequestTemplate(){
@@ -240,9 +240,9 @@ public class WsdlOperation {
 	
 	/**
 	 * 
-	 * 作者:sanri <br/>
-	 * 时间:2017-6-21上午11:24:24<br/>
-	 * 功能:内部使用,构建消息模板 <br/>
+	 * 作者:sanri <br>
+	 * 时间:2017-6-21上午11:24:24<br>
+	 * 功能:内部使用,构建消息模板 <br>
 	 * 暂时只实现了 soap11 
 	 * @return
 	 */
@@ -302,9 +302,9 @@ public class WsdlOperation {
 
 //	/**
 //	 * 
-//	 * 作者:sanri <br/>
-//	 * 时间:2017-6-23上午11:44:41<br/>
-//	 * 功能: 递归构建 soap 消息,使用 wsdlType 来构建 <br/>
+//	 * 作者:sanri <br>
+//	 * 时间:2017-6-23上午11:44:41<br>
+//	 * 功能: 递归构建 soap 消息,使用 wsdlType 来构建 <br>
 //	 * @param parentElement 父级元素
 //	 * @param paramType 当前类型
 //	 * @param inputValue 输入值
@@ -323,9 +323,9 @@ public class WsdlOperation {
 
 	/**
 	 * 
-	 * 作者:sanri <br/>
-	 * 时间:2017-6-21下午7:47:20<br/>
-	 * 功能:递归构建 soap 消息 <br/>
+	 * 作者:sanri <br>
+	 * 时间:2017-6-21下午7:47:20<br>
+	 * 功能:递归构建 soap 消息 <br>
 	 * @param inputValue  输入值
 	 * @param parentElement　 父级元素
 	 * @param currentParam 当前参数
@@ -358,9 +358,9 @@ public class WsdlOperation {
 	
 	/**
 	 * 
-	 * 作者:sanri <br/>
-	 * 时间:2017-6-21下午7:49:36<br/>
-	 * 功能:递归构建 Encoded 格式的 soap 消息  <br/>
+	 * 作者:sanri <br>
+	 * 时间:2017-6-21下午7:49:36<br>
+	 * 功能:递归构建 Encoded 格式的 soap 消息  <br>
 	 * @param inputValue  输入值
 	 * @param parentElement　 父级元素
 	 * @param currentParam 当前参数
@@ -423,9 +423,9 @@ public class WsdlOperation {
 
 	/**
 	 * 
-	 * 作者:sanri <br/>
-	 * 时间:2017-6-21下午3:04:57<br/>
-	 * 功能:解析出参 <br/> TODO 对于 http get 和 post 还没有做处理
+	 * 作者:sanri <br>
+	 * 时间:2017-6-21下午3:04:57<br>
+	 * 功能:解析出参 <br> TODO 对于 http get 和 post 还没有做处理
 	 */
 	void parserOutput() {
 		log.debug("解析方法:"+bindingOperation.getName()+" 出参");
@@ -443,9 +443,9 @@ public class WsdlOperation {
 
 	/**
 	 * 
-	 * 作者:sanri <br/>
-	 * 时间:2017-6-21下午3:05:10<br/>
-	 * 功能:解析入参 <br/>
+	 * 作者:sanri <br>
+	 * 时间:2017-6-21下午3:05:10<br>
+	 * 功能:解析入参 <br>
 	 */
 	void parserInput() {
 		log.debug("解析方法:"+bindingOperation.getName()+" 入参");
@@ -463,9 +463,9 @@ public class WsdlOperation {
 
 	/**
 	 * 
-	 * 作者:sanri <br/>
-	 * 时间:2017-6-21下午7:03:54<br/>
-	 * 功能:获取参数,一般消息都只有一个部分 part,如以后有多个 part 需更改这里 TODO  <br/>
+	 * 作者:sanri <br>
+	 * 时间:2017-6-21下午7:03:54<br>
+	 * 功能:获取参数,一般消息都只有一个部分 part,如以后有多个 part 需更改这里 TODO  <br>
 	 * @param message
 	 * @return
 	 */

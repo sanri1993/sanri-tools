@@ -26,9 +26,9 @@ import java.util.Map;
 
 /**
  * 
- * 作者:sanri <br/>
- * 时间:2017-6-21上午11:13:06<br/>
- * 功能: wsdl 上下文环境,对于每一个 WsdlService 会有一个 <br/>
+ * 作者:sanri <br>
+ * 时间:2017-6-21上午11:13:06<br>
+ * 功能: wsdl 上下文环境,对于每一个 WsdlService 会有一个 <br>
  * 思路:读取 wsdl 前面的 types 节点,把类型存入 typesMap 中,把节点存入参数映射 paramMap 
  */
 @Slf4j
@@ -59,9 +59,9 @@ public class WsdlContext {
 	}
 	/**
 	 * 
-	 * 作者:sanri <br/>
-	 * 时间:2017-6-21上午11:16:49<br/>
-	 * 功能:解析所有 wsdl 类型 <br/>
+	 * 作者:sanri <br>
+	 * 时间:2017-6-21上午11:16:49<br>
+	 * 功能:解析所有 wsdl 类型 <br>
 	 */
 	@SuppressWarnings("unchecked")
 	public void processTypes(){
@@ -89,9 +89,9 @@ public class WsdlContext {
 
 	/**
 	 * 
-	 * 作者:sanri <br/>
-	 * 时间:2017-6-21下午5:50:52<br/>
-	 * 功能:递归解析参数映射 ,获取参数类型<br/>
+	 * 作者:sanri <br>
+	 * 时间:2017-6-21下午5:50:52<br>
+	 * 功能:递归解析参数映射 ,获取参数类型<br>
 	 * @param xmlSchema
 	 */
 	@SuppressWarnings("unchecked")
@@ -170,9 +170,9 @@ public class WsdlContext {
 
 	/**
 	 * 
-	 * 作者:sanri <br/>
-	 * 时间:2017-6-21下午5:07:03<br/>
-	 * 功能:递归解析类型映射 ,可能有导入类型<br/>
+	 * 作者:sanri <br>
+	 * 时间:2017-6-21下午5:07:03<br>
+	 * 功能:递归解析类型映射 ,可能有导入类型<br>
 	 * @param xmlSchemaCollection
 	 * @param schemaImpl
 	 */
@@ -199,9 +199,9 @@ public class WsdlContext {
 
 	/**
 	 * 
-	 * 作者:sanri <br/>
-	 * 时间:2017-6-21下午5:18:09<br/>
-	 * 功能:解析参数类型,这里是独产出来的复杂类型 <br/>
+	 * 作者:sanri <br>
+	 * 时间:2017-6-21下午5:18:09<br>
+	 * 功能:解析参数类型,这里是独产出来的复杂类型 <br>
 	 * @param xmlSchemaType
 	 * @param wsdlType
 	 * @param defaultTypeName  这个主要针对复杂类型写在里面的情况,传入上级的参数名称做为类型名称
@@ -269,9 +269,9 @@ public class WsdlContext {
 	
 	/**
 	 * 
-	 * 作者:sanri <br/>
-	 * 时间:2017-6-21下午7:01:17<br/>
-	 * 功能:获取参数 <br/>
+	 * 作者:sanri <br>
+	 * 时间:2017-6-21下午7:01:17<br>
+	 * 功能:获取参数 <br>
 	 * @param paramName
 	 * @return
 	 */

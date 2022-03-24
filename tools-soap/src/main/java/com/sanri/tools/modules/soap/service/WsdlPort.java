@@ -29,9 +29,9 @@ public class WsdlPort {
 	
 	/**
 	 * 
-	 * 作者:sanri <br/>
-	 * 时间:2017-6-21下午6:51:44<br/>
-	 * 功能:soap 类型 <br/>
+	 * 作者:sanri <br>
+	 * 时间:2017-6-21下午6:51:44<br>
+	 * 功能:soap 类型 <br>
 	 */
 	public enum SOAPType{
 		SOAP11,SOAP12,HTTP_GET,HTTP_POST
@@ -55,9 +55,9 @@ public class WsdlPort {
 
 	/**
 	 * 
-	 * 作者:sanri <br/>
-	 * 时间:2017-6-21下午2:56:26<br/>
-	 * 功能:解析 port 绑定所有方法 <br/>
+	 * 作者:sanri <br>
+	 * 时间:2017-6-21下午2:56:26<br>
+	 * 功能:解析 port 绑定所有方法 <br>
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void parserBindingOperations() {

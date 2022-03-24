@@ -44,11 +44,11 @@ public class WsdlServiceClient {
 
     /**
      *
-     * 功能:修正为 wsdl 正确地址<br/>
-     * 创建时间:2017-6-7下午9:02:54<br/>
-     * 作者：sanri<br/>
+     * 功能:修正为 wsdl 正确地址<br>
+     * 创建时间:2017-6-7下午9:02:54<br>
+     * 作者：sanri<br>
      * @param url 传入的 url 要么不带一个参数,要么带 ?wsdl ,其它情况不支持,暂时不会报错,以后将要修改方法使其抛出异常
-     * @return<br/>
+     * @return<br>
      */
     private static URL fixedDeployDocumentURL(String webserviceUrl){
         if(StringUtils.isBlank(webserviceUrl)){
