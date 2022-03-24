@@ -6,7 +6,7 @@
     <modules>
         <module>tools-core</module>
         <module>tools-serializable</module>
-        <module>tools-console</module>
+<!--        <module>tools-console</module>-->
         <module>tools-zookeeper</module>
         <module>tools-redis</module>
         <module>tools-kafka</module>
