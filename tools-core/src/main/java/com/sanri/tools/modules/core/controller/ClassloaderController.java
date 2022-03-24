@@ -53,7 +53,7 @@ public class ClassloaderController {
      * 上传单文件
      * @param classloaderName 类加载器名称
      * @param file 上传的 pom 文件
-     * @return
+     * @return 加载类的结果
      */
     @PostMapping("/{classloaderName}/upload/single")
     public LoadClassResponse uploadSingle(@PathVariable("classloaderName") String classloaderName, MultipartFile file) throws IOException, ClassNotFoundException {
