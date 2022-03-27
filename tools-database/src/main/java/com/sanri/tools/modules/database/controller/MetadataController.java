@@ -4,7 +4,9 @@ import com.sanri.tools.modules.core.service.connect.ConnectService;
 import com.sanri.tools.modules.database.controller.dtos.TableModify;
 import com.sanri.tools.modules.database.service.JdbcMetaService;
 import com.sanri.tools.modules.database.service.MetaCompareService;
+import com.sanri.tools.modules.database.service.MetaConvertService;
 import com.sanri.tools.modules.database.service.TableSearchService;
+import com.sanri.tools.modules.database.service.code.dtos.ProjectGenerateConfig;
 import com.sanri.tools.modules.database.service.dtos.compare.*;
 import com.sanri.tools.modules.database.service.dtos.meta.TableMeta;
 import com.sanri.tools.modules.database.service.dtos.meta.TableMetaData;
@@ -38,6 +40,8 @@ public class MetadataController {
     private TableSearchService tableSearchService;
     @Autowired
     private JdbcMetaRefreshService jdbcMetaRefreshService;
+    @Autowired
+    private MetaConvertService metaConvertService;
 
     /**
      * 客户端信息
@@ -170,6 +174,20 @@ public class MetadataController {
     @GetMapping("/searchTables")
     public List<TableMeta> searchTables(@NotNull String connName, SearchParam searchParam) throws Exception {
         return tableSearchService.searchTables(connName, searchParam);
+    }
+
+    /**
+     *
+     * @param dbType 需要输出的 ddl 类型
+     * @param dataSourceConfig 数据源配置
+     * @return
+     * @throws SQLException
+     * @throws IOException
+     * @throws TemplateException
+     */
+    @PostMapping("/output/{dbType}/ddl")
+    public List<String> metaDDL(@PathVariable("dbType") String dbType, @RequestBody ProjectGenerateConfig.DataSourceConfig dataSourceConfig) throws SQLException, IOException, TemplateException {
+        return metaConvertService.batchConvertTableDDL(dataSourceConfig, dbType);
     }
 
     /**

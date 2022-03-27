@@ -1,411 +1,648 @@
-GET http://localhost:8084/quartz/trigger?connName=192.168.60.116&catalog=cc_dt_qa_fssc&group=DEFAULT&name=voucherPreDelTrigger&classloaderName=job
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ3NDM1MDIxLCJuYmYiOjE2NDcyNjIyMjEsImlhdCI6MTY0NzQzNTAxNH0.U-xShtkgrbmTwgheGl4mffMk1l7aaKyJv8AYfYTD-I0
+GET http://localhost:8084/mybatis/test/BatchMapper.xml/content
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
 
-<> 2022-03-15T103904.200.json
-
-###
-
-GET http://localhost:8084/quartz/trigger?connName=192.168.60.116&group=DEFAULT&name=voucherPreDelTrigger&classloaderName=job
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ3NDM1MDIxLCJuYmYiOjE2NDcyNjIyMjEsImlhdCI6MTY0NzQzNTAxNH0.U-xShtkgrbmTwgheGl4mffMk1l7aaKyJv8AYfYTD-I0
-
-<> 2022-03-15T103834.200.json
+<> 2022-03-26T100600.200.json
 
 ###
 
-GET http://localhost:8084/quartz/trigger?connName=192.168.60.116&group=DEFAULT&name=voucherPreDelTrigger&classloaderName=job
-
-<> 2022-03-15T103826.200.json
-
-###
-
-GET http://localhost:8084/quartz/triggers?connName=192.168.60.116&catalog=cc_dt_qa_fssc&tablePrefix=QRTZ_
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ3NDM1MDIxLCJuYmYiOjE2NDcyNjIyMjEsImlhdCI6MTY0NzQzNTAxNH0.U-xShtkgrbmTwgheGl4mffMk1l7aaKyJv8AYfYTD-I0
-
-<> 2022-03-15T103653.200.json
-
-###
-
-GET http://localhost:8084/quartz/triggers?connName=192.168.60.116&catalog=cc_dt_qa_fssc&tablePrefix=QRTZ_
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ3NDM1MDIxLCJuYmYiOjE2NDcyNjIyMjEsImlhdCI6MTY0NzQzNTAxNH0.U-xShtkgrbmTwgheGl4mffMk1l7aaKyJv8AYfYTD-I0
-
-<> 2022-03-15T103615.200.json
-
-###
-
-GET http://localhost:8084/quartz/triggers?connName=192.168.60.116&catalog=cc_dt_qa_fssc&tablePrefix=QRTZ_
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ3NDM1MDIxLCJuYmYiOjE2NDcyNjIyMjEsImlhdCI6MTY0NzQzNTAxNH0.U-xShtkgrbmTwgheGl4mffMk1l7aaKyJv8AYfYTD-I0
-
-<> 2022-03-15T103506.200.json
-
-###
-
-GET http://localhost:8084/quartz/triggers?connName=192.168.60.116&catalog=cc_dt_qa_fssc&tablePrefix=qrtz_
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ3NDM1MDIxLCJuYmYiOjE2NDcyNjIyMjEsImlhdCI6MTY0NzQzNTAxNH0.U-xShtkgrbmTwgheGl4mffMk1l7aaKyJv8AYfYTD-I0
-
-<> 2022-03-15T103444.200.json
-
-###
-
-GET http://localhost:8084/quartz/triggers?connName=localhost&catalog=anta&tablePrefix=xxl_job_qrtz_
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ3NDM1MDIxLCJuYmYiOjE2NDcyNjIyMjEsImlhdCI6MTY0NzQzNTAxNH0.U-xShtkgrbmTwgheGl4mffMk1l7aaKyJv8AYfYTD-I0
-
-<> 2022-03-14T085113.200.json
-
-###
-
-GET http://localhost:8084/quartz/triggers?connName=localhost&catalog=anta&tablePrefix=xxl_job_qrtz_
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ3NDM1MDIxLCJuYmYiOjE2NDcyNjIyMjEsImlhdCI6MTY0NzQzNTAxNH0.U-xShtkgrbmTwgheGl4mffMk1l7aaKyJv8AYfYTD-I0
-
-<> 2022-03-14T085033.200.json
-
-###
-
-POST http://localhost:8084/login
+POST http://localhost:8084/mybatis/boundSql
 Content-Type: application/json
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
 
 {
-  "username": "admin",
-  "password": "0"
-}
-
-<> 2022-03-14T085021.200.json
-
-###
-
-GET http://localhost:8084/quartz/triggers?connName=localhost&catalog=anta&tablePrefix=xxl_job_qrtz_
-
-<> 2022-03-14T085013.200.json
-
-###
-
-POST http://localhost:8084/db/data/singleTableRandomData
-Content-Type: application/json
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ3MjIwNzc5LCJuYmYiOjE2NDcwNDc5NzksImlhdCI6MTY0NzIyMDc3Mn0.bG7tN22eTX0RqqdnI7Mx-M9yDROp2OPaDYskU4Uw348
-
-{"connName":"localhost","actualTableName":{"namespace":{"catalog":"mobile"},"tableName":"t_user","fullName":"mobile..t_user"},"columnMappers":[{"columnName":"account","random":"T(com.sanri.tools.modules.core.utils.RandomUtil).username()"},{"columnName":"password","fixed":"1234"}],"size":100}
-
-<> 2022-03-12T092307.200.json
-
-###
-
-POST http://localhost:8084/db/data/singleTableRandomData
-Content-Type: application/json
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ3MjIwNzc5LCJuYmYiOjE2NDcwNDc5NzksImlhdCI6MTY0NzIyMDc3Mn0.bG7tN22eTX0RqqdnI7Mx-M9yDROp2OPaDYskU4Uw348
-
-{"connName":"localhost","actualTableName":{"namespace":{"catalog":"mobile"},"tableName":"t_user","fullName":"mobile..t_user"},"columnMappers":[{"columnName":"id","random":"T(org.apache.commons.lang3.RandomUtils).nextInt(1,100)"},{"columnName":"account","random":"T(com.sanri.tools.modules.core.utils.RandomUtil).username()"},{"columnName":"password","fixed":"1234"}],"size":100}
-
-<> 2022-03-12T092053.200.json
-
-###
-
-POST http://localhost:8084/db/data/singleTableRandomData
-Content-Type: application/json
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ3MjIwNzc5LCJuYmYiOjE2NDcwNDc5NzksImlhdCI6MTY0NzIyMDc3Mn0.bG7tN22eTX0RqqdnI7Mx-M9yDROp2OPaDYskU4Uw348
-
-{"connName":"localhost","actualTableName":{"namespace":{"catalog":"mobile"},"tableName":"t_user","fullName":"mobile..t_user"},"columnMappers":[{"columnName":"id","random":"T(com.sanri.tools.modules.core.utils.RandomUtil).uuid()"},{"columnName":"account","random":"T(com.sanri.tools.modules.core.utils.RandomUtil).username()"},{"columnName":"password","fixed":"1234"}],"size":100}
-
-<> 2022-03-12T091943.200.json
-
-###
-
-POST http://localhost:8084/login
-Content-Type: application/json
-
-{
-  "username": "admin",
-  "password": "0"
-}
-
-<> 2022-03-12T091939.200.json
-
-###
-
-POST http://localhost:8084/db/data/singleTableRandomData
-Content-Type: application/json
-Authorization: {{Authorization}}
-
-{"connName":"localhost","actualTableName":{"namespace":{"catalog":"mobile"},"tableName":"t_user","fullName":"mobile..t_user"},"columnMappers":[{"columnName":"id","random":"T(com.sanri.tools.modules.core.utils.RandomUtil).uuid()"},{"columnName":"account","random":"T(com.sanri.tools.modules.core.utils.RandomUtil).username()"},{"columnName":"password","fixed":"1234"}],"size":100}
-
-<> 2022-03-12T091934.200.json
-
-###
-
-GET http://localhost:8084/db/data/loadRandomMethods
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ3MTYwNTU0LCJuYmYiOjE2NDY5ODc3NTQsImlhdCI6MTY0NzE2MDU0N30.ApTG-je6KOBjQY7KTkXgxUWCwGfgwR5j6baNjFfDjzs
-
-<> 2022-03-11T045248.200.json
-
-###
-
-GET http://localhost:8084/db/data/loadRandomMethods
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ3MTYwNTU0LCJuYmYiOjE2NDY5ODc3NTQsImlhdCI6MTY0NzE2MDU0N30.ApTG-je6KOBjQY7KTkXgxUWCwGfgwR5j6baNjFfDjzs
-
-<> 2022-03-11T044857.200.json
-
-###
-
-GET http://localhost:8084/db/data/loadRandomMethods
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ3MTYwNTU0LCJuYmYiOjE2NDY5ODc3NTQsImlhdCI6MTY0NzE2MDU0N30.ApTG-je6KOBjQY7KTkXgxUWCwGfgwR5j6baNjFfDjzs
-
-<> 2022-03-11T043559.200.json
-
-###
-
-POST http://localhost:8084/login
-Content-Type: application/json
-
-{
-  "username": "admin",
-  "password": "0"
-}
-
-<> 2022-03-11T043554.200.json
-
-###
-
-GET http://localhost:8084/db/data/loadRandomMethods
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-11T043546.200.json
-
-###
-
-GET http://localhost:8084/db/data/loadRandomMethods
-
-<> 2022-03-11T043540.200.json
-
-###
-
-GET http://localhost:8084/db/metadata/clientInfo?connName=61.71
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-10T011415.200.json
-
-###
-
-GET http://localhost:8084/db/metadata/clientInfo?connName=61.71
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-10T105404.200.json
-
-###
-
-GET http://localhost:8084/db/metadata/clientInfo?connName=61.71
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-10T105352.200.json
-
-###
-
-GET http://localhost:8084/db/metadata/clientInfo?connName=61.71
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-10T095956.200.json
-
-###
-
-GET http://localhost:8084/db/metadata/clientInfo?connName=61.71
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-10T095950.200.json
-
-###
-
-GET http://localhost:8084/db/metadata/clientInfo?connName=61.71
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-10T095939.200.json
-
-###
-
-GET http://localhost:8084/db/metadata/clientInfo?connName=61.71
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-09T060758.200.json
-
-###
-
-GET http://localhost:8084/db/metadata/clientInfo?connName=localhost
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-09T060733.200.json
-
-###
-
-GET http://localhost:8084/db/metadata/clientInfo?connName=localhost
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-09T060122.200.json
-
-###
-
-GET http://localhost:8084/db/metadata/clientInfo?connName=61.71postgre
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-09T060046.200.json
-
-###
-
-GET http://localhost:8084/db/metadata/clientInfo?connName=61.71postgre
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-09T060022.404.json
-
-###
-
-GET http://localhost:8084/db/metadata/filterSchemas?connName=61.71postgre&catalog=
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-09T034647.200.json
-
-###
-
-GET http://localhost:8084/db/metadata/filterSchemas?connName=61.71postgre&catalog=
-
-<> 2022-03-09T034641.200.json
-
-###
-
-GET http://localhost:8084/db/metadata/schemas?connName=61.71postgre
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-09T034632.200.json
-
-###
-
-GET http://localhost:8084/security/connect/database/connectNames
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-09T034344.200.json
-
-###
-
-GET http://localhost:8084/security/connect/database/connectNames
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-09T034304.200.json
-
-###
-
-GET http://localhost:8084/security/connect/database/connectNames
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-09T034240.200.json
-
-###
-
-GET http://localhost:8084/security/connect/database/connects
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-09T034156.200.json
-
-###
-
-GET http://localhost:8084/security/connect/database/connects
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-09T034139.200.json
-
-###
-
-GET http://localhost:8084/security/connect/database/connectNames
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-09T034131.200.json
-
-###
-
-GET http://localhost:8084/security/connect/datbase/connectNames
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-09T034124.200.json
-
-###
-
-GET http://localhost:8084/db/data/checkDirtyData?connName=61.71&catalog=eam
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-09T024730.200.json
-
-###
-
-POST http://localhost:8084/db/metadata/extend/relation/config
-Content-Type: application/json
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-{
-  "connName": "61.71",
-  "namespace": {
-    "catalog": "eam"
-  },
-  "tableRelations": [
+  "project": "test",
+  "fileName": "BatchMapper.xml",
+  "classloaderName": "222",
+  "statementId": "com.sanri.test.testmybatis.mapper.BatchMapper.batchUpdateUseTmpTable",
+  "params": [
     {
-      "sourceTableName": "eims_image",
-      "targetTableName": "eims_invoices",
-      "sourceColumnName": "id",
-      "targetColumnName": "imageId",
-      "relation": "ONE_ONE"
+      "parameterInfo": {
+        "name": "batchSubList",
+        "type": "java.util.List",
+        "parameterTypes": ["com.sanri.test.testmybatis.po.Batch"]
+      },
+      "value": "[{\"id\":23}]"
     },
     {
-      "sourceTableName": "eims_invoices",
-      "targetTableName": "eims_invoices_detail",
-      "sourceColumnName": "invoicenumber",
-      "targetColumnName": "invoice_num",
-      "relation": "ONE_MANY"
-    },
-    {
-      "sourceTableName": "eims_scantask",
-      "targetTableName": "eims_image",
-      "sourceColumnName": "billnumber",
-      "targetColumnName": "document_code",
-      "relation": "ONE_MANY"
-    },
-    {
-      "sourceTableName": "eims_scantask",
-      "targetTableName": "eims_invoices",
-      "sourceColumnName": "billnumber",
-      "targetColumnName": "billnumber",
-      "relation": "ONE_MANY"
+      "parameterInfo": {
+        "name": "timestamp",
+        "type": "long"
+      },
+      "value": "123"
     }
   ]
 }
 
-<> 2022-03-09T024715.200.json
+<> 2022-03-26T094713.200.json
 
 ###
 
-GET http://localhost:8084/db/data/checkDirtyData?connName=61.71&catalog=eam
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
+POST http://localhost:8084/mybatis/boundSql
+Content-Type: application/json
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
 
-<> 2022-03-09T024643.200.json
+{
+  "project": "test",
+  "fileName": "BatchMapper.xml",
+  "classloaderName": "222",
+  "statementId": "com.sanri.test.testmybatis.mapper.BatchMapper.batchUpdateUseTmpTable",
+  "params": [
+    {
+      "parameterInfo": {
+        "name": "batchSubList",
+        "type": "java.util.List",
+        "parameterTypes": ["com.sanri.test.testmybatis.po.Batch"]
+      },
+      "value": "[{\"id\":\"abc\"}]"
+    },
+    {
+      "parameterInfo": {
+        "name": "timestamp",
+        "type": "long"
+      },
+      "value": "123"
+    }
+  ]
+}
+
+<> 2022-03-26T094636.200.json
 
 ###
 
-GET http://localhost:8084/security/connect/database/connects
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
+POST http://localhost:8084/mybatis/boundSql
+Content-Type: application/json
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
 
-<> 2022-03-09T024620.200.json
+{
+  "project": "test",
+  "fileName": "BatchMapper.xml",
+  "classloaderName": "222",
+  "statementId": "com.sanri.test.testmybatis.mapper.BatchMapper.batchUpdateUseTmpTable",
+  "params": [
+    {
+      "parameterInfo": {
+        "name": "batchSubList",
+        "type": "java.util.List",
+        "parameterTypes": ["com.sanri.test.testmybatis.po.Batch"]
+      },
+      "value": "[{\"id\":\"abc\"}]"
+    },
+    {
+      "parameterInfo": {
+        "name": "timestamp",
+        "type": "long"
+      },
+      "value": "123"
+    }
+  ]
+}
+
+<> 2022-03-26T094538.200.json
 
 ###
 
-GET http://localhost:8084/db/data/checkDirtyData?connName=localhost&catalog=anta
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
+GET http://localhost:8084/mybatis/test/BatchMapper.xml/statementInfos?classLoaderName=222
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
 
-<> 2022-03-09T024541.200.json
-
-###
-
-GET http://localhost:8084/db/data/checkDirtyData?connName=localhost&catalog=anta
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
-
-<> 2022-03-09T024357.200.json
+<> 2022-03-26T094530.200.json
 
 ###
 
-GET http://localhost:8084/db/data/checkDirtyData?connName=localhost&catalog=anta
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ2OTcwNDg5LCJuYmYiOjE2NDY3OTc2ODksImlhdCI6MTY0Njk3MDQ4Mn0.RvZtQzSqQ_11IYFqCJA_wSQFPA_1uhACakJY8jXLKs4
+GET http://localhost:8084/mybatis/test/BatchMapper.xml/statementInfos?classLoaderName=222
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
 
-<> 2022-03-09T024314.200.json
+<> 2022-03-26T093951.200.json
+
+###
+
+GET http://localhost:8084/mybatis/test/BatchMapper.xml/statementInfos?classLoaderName=222
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+<> 2022-03-26T093814.200.json
+
+###
+
+GET http://localhost:8084/mybatis/test/BatchMapper.xml/statementInfos?classLoaderName=222
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+###
+
+POST http://localhost:8084/mybatis/boundSql
+Content-Type: application/json
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+{
+  "project": "test",
+  "fileName": "BatchMapper.xml",
+  "classloaderName": "222",
+  "statementId": "com.sanri.test.testmybatis.mapper.BatchMapper.batchUpdateUseTmpTable",
+  "params": [
+    {
+      "parameterInfo": {
+        "name": "batchSubList",
+        "type": "java.util.List"
+      },
+      "value": "[{\"id\":\"abc\"}]"
+    },
+    {
+      "parameterInfo": {
+        "name": "timestamp",
+        "type": "long"
+      },
+      "value": "123"
+    }
+  ]
+}
+
+<> 2022-03-26T091318.200.json
+
+###
+
+POST http://localhost:8084/mybatis/boundSql
+Content-Type: application/json
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+{
+  "project": "test",
+  "fileName": "BatchMapper.xml",
+  "classloaderName": "222",
+  "statementId": "com.sanri.test.testmybatis.mapper.BatchMapper.batchUpdateUseTmpTable",
+  "params": [
+    {
+      "parameterInfo": {
+        "name": "batchSubList",
+        "type": "java.util.List"
+      },
+      "value": "[{\"id\":\"abc\"}]"
+    },
+    {
+      "parameterInfo": {
+        "name": "timestamp",
+        "type": "long"
+      },
+      "value": "123"
+    }
+  ]
+}
+
+<> 2022-03-26T091021.200.json
+
+###
+
+POST http://localhost:8084/mybatis/boundSql
+Content-Type: application/json
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+{
+  "project": "test",
+  "fileName": "BatchMapper.xml",
+  "classloaderName": "222",
+  "statementId": "com.sanri.test.testmybatis.mapper.BatchMapper.batchUpdateUseTmpTable",
+  "params": [
+    {
+      "parameterInfo": {
+        "name": "batchSubList",
+        "type": "java.util.List"
+      },
+      "value": "[{\"id\":\"abc\"}]"
+    },
+    {
+      "parameterInfo": {
+        "name": "timestamp",
+        "type": "long"
+      },
+      "value": "123"
+    }
+  ]
+}
+
+<> 2022-03-26T090728.200.json
+
+###
+
+POST http://localhost:8084/mybatis/boundSql
+Content-Type: application/json
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+{
+  "project": "test",
+  "fileName": "BatchMapper.xml",
+  "classloaderName": "222",
+  "statementId": "com.sanri.test.testmybatis.mapper.BatchMapper.batchUpdateUseTmpTable",
+  "params": [
+    {
+      "parameterInfo": {
+        "name": "batchSubList",
+        "type": "java.util.List"
+      },
+      "value": "[{\"id\":\"abc\"}]"
+    },
+    {
+      "parameterInfo": {
+        "name": "timestamp",
+        "type": "long"
+      },
+      "value": "123"
+    }
+  ]
+}
+
+<> 2022-03-26T090619.200.json
+
+###
+
+GET http://localhost:8084/mybatis/test/BatchMapper.xml/statementInfos?classLoaderName=222
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+<> 2022-03-26T090459.200.json
+
+###
+
+POST http://localhost:8084/mybatis/boundSql
+Content-Type: application/json
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+{
+  "project": "test",
+  "fileName": "BatchMapper.xml",
+  "classloaderName": "222",
+  "statementId": "com.sanri.test.testmybatis.mapper.BatchMapper.batchUpdateUseTmpTable",
+  "params": [
+    {
+      "parameterInfo": {
+        "name": "batchSubList",
+        "type": "java.util.ArrayList"
+      },
+      "value": "[{\"id\":\"abc\"}]"
+    },
+    {
+      "parameterInfo": {
+        "name": "timestamp",
+        "type": "long"
+      },
+      "value": "123"
+    }
+  ]
+}
+
+<> 2022-03-26T090438.200.json
+
+###
+
+POST http://localhost:8084/mybatis/boundSql
+Content-Type: application/json
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+{
+  "project": "test",
+  "fileName": "BatchMapper.xml",
+  "classloaderName": "222",
+  "statementId": "com.sanri.test.testmybatis.mapper.BatchMapper.testTransaction"
+}
+
+<> 2022-03-26T090043.200.json
+
+###
+
+GET http://localhost:8084/mybatis/test/BatchMapper.xml/statementInfos?classLoaderName=222
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+<> 2022-03-26T085958.200.json
+
+###
+
+POST http://localhost:8084/mybatis/boundSql
+Content-Type: application/json
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+{
+  "project": "test",
+  "fileName": "BatchMapper.xml",
+  "classloaderName": "222",
+  "statementId": "com.sanri.test.testmybatis.mapper.BatchMapper.selectAll"
+}
+
+<> 2022-03-26T085930.200.json
+
+###
+
+POST http://localhost:8084/mybatis/boundSql
+Content-Type: application/json
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+{
+  "project": "test",
+  "fileName": "BatchMapper.xml",
+  "classloaderName": "222",
+  "statementId": "com.sanri.test.testmybatis.mapper.BatchMapper.selectAll"
+}
+
+<> 2022-03-26T085923.200.json
+
+###
+
+POST http://localhost:8084/mybatis/boundSql
+Content-Type: application/json
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+{
+  "project": "test",
+  "connName": "localhost",
+  "classloaderName": "222",
+  "statementId": "com.sanri.test.testmybatis.mapper.BatchMapper.selectAll"
+}
+
+<> 2022-03-26T085840.200.json
+
+###
+
+POST http://localhost:8084/mybatis/boundSql
+Content-Type: application/json
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+{
+  "project": "test",
+  "connName": "localhost",
+  "statementId": "com.sanri.test.testmybatis.mapper.BatchMapper.selectAll"
+}
+
+<> 2022-03-26T085801.200.json
+
+###
+
+POST http://localhost:8084/mybatis/boundSql
+Content-Type: application/json
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+{
+  "project": "test",
+  "connName": "localhost",
+  "statementId": "com.sanri.test.testmybatis.mapper.BatchMapper.selectAll"
+}
+
+<> 2022-03-26T065318.200.json
+
+###
+
+POST http://localhost:8084/mybatis/boundSql
+Content-Type: application/json
+
+{
+  "project": "test",
+  "connName": "localhost",
+  "statementId": "com.sanri.test.testmybatis.mapper.BatchMapper.selectAll"
+}
+
+<> 2022-03-26T065311.200.json
+
+###
+
+GET http://localhost:8084/mybatis/test/BatchMapper.xml/statementInfos?classLoaderName=222
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+<> 2022-03-26T065151.200.json
+
+###
+
+GET http://localhost:8084/mybatis/test/BatchMapper.xml/statementInfos?classLoaderName=222
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+<> 2022-03-26T064025.200.json
+
+###
+
+GET http://localhost:8084/mybatis/test/BatchMapper.xml/statementInfos?classLoaderName=222
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+<> 2022-03-26T063908.200.json
+
+###
+
+GET http://localhost:8084/mybatis/test/BatchMapper.xml/statementInfos?classLoaderName=222
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+<> 2022-03-26T063752.200.json
+
+###
+
+GET http://localhost:8084/mybatis/test/BatchMapper.xml/statementInfos?classLoaderName=222
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+<> 2022-03-26T063513.200.json
+
+###
+
+GET http://localhost:8084/mybatis/test/BatchMapper.xml/statementInfos?classLoaderName=222
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+<> 2022-03-26T063308.200.json
+
+###
+
+GET http://localhost:8084/mybatis/test/BatchMapper.xml/statementInfos?classLoaderName=222
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+<> 2022-03-26T063152.200.json
+
+###
+
+GET http://localhost:8084/mybatis/test/BatchMapper.xml/statementInfos?classLoaderName=222
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+<> 2022-03-26T063115.200.json
+
+###
+
+GET http://localhost:8084/mybatis/test/BatchMapper.xml/statementInfos?classLoaderName=222
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+<> 2022-03-26T062256.200.json
+
+###
+
+GET http://localhost:8084/mybatis/test/BatchMapper.xml/statementInfos?classLoaderName=222
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+<> 2022-03-26T062225.200.json
+
+###
+
+GET http://localhost:8084/mybatis/test/BatchMapper.xml/statementInfos?classLoaderName=222
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+<> 2022-03-26T054016.200.json
+
+###
+
+GET http://localhost:8084/mybatis/test/BatchMapper.xml/statementInfos?classLoaderName=222
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+<> 2022-03-26T053739.200.json
+
+###
+
+GET http://localhost:8084/mybatis/test/BatchMapper.xml/statementInfos?classLoaderName=222
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+<> 2022-03-26T053725.200.json
+
+###
+
+GET http://localhost:8084/mybatis/test/BatchMapper.xml/statementInfos?classLoaderName=222
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+<> 2022-03-26T052513.200.json
+
+###
+
+GET http://localhost:8084/mybatis/test/BatchMapper.xml/statementInfos?classLoaderName=222
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+<> 2022-03-26T045944.200.json
+
+###
+
+GET http://localhost:8084/mybatis/test/BatchMapper.xml/statementInfos?classLoaderName=222
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+<> 2022-03-26T045540.200.json
+
+###
+
+GET http://localhost:8084/mybatis/test/BatchMapper.xml/statementInfos?classLoaderName=222
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+<> 2022-03-26T045426.200.json
+
+###
+
+GET http://localhost:8084/mybatis/test/BatchMapper.xml/statementInfos
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+<> 2022-03-26T045006.200.json
+
+###
+
+GET http://localhost:8084/mybatis/test/BatchMapper.xml/statementInfos
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+<> 2022-03-26T044550.200.json
+
+###
+
+GET http://localhost:8084/mybatis/test/files
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+<> 2022-03-26T044512.200.json
+
+###
+
+POST http://localhost:8084/mybatis/test/uploadFiles
+Content-Type: multipart/form-data; boundary=uploadFiles
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+--uploadFiles
+Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
+Content-Type: application/octet-stream
+
+< d:\test\BatchMapper.xml
+--uploadFiles--
+
+<> 2022-03-26T044413.200.json
+
+###
+
+POST http://localhost:8084/mybatis/test/uploadFiles
+Content-Type: multipart/form-data; boundary=uploadFiles
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+--uploadFiles
+Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
+Content-Type: application/octet-stream
+
+< d:\test\BatchMapper.xml
+--uploadFiles--
+
+<> 2022-03-26T044230.200.json
+
+###
+
+GET http://localhost:8084/mybatis/projects
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4NDU2NDM1LCJuYmYiOjE2NDgyODM2MzUsImlhdCI6MTY0ODQ1NjQyOH0.JPebGUxBmyu_Dvwleufcy56oKqV9z8qS3mzy_d5GCqM
+
+<> 2022-03-26T043401.200.json
+
+###
+
+POST http://localhost:8084/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "0"
+}
+
+<> 2022-03-26T043355.200.json
+
+###
+
+POST http://localhost:8084/db/metadata/output/mysql/ddl
+Content-Type: application/json
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4Mjk2NDQxLCJuYmYiOjE2NDgxMjM2NDEsImlhdCI6MTY0ODI5NjQzNH0.e4w0R8cU-gD4YtyBWElK-jYaZt4k0rIpUj-jSjtoCr8
+
+{
+  "connName": "localhost",
+  "namespace": {
+    "catalog": "anta"
+  },
+  "tableNames": ["eims_image"]
+}
+
+<> 2022-03-24T080750.200.json
+
+###
+
+POST http://localhost:8084/db/metadata/output/mysql/ddl
+Content-Type: application/json
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjQ4Mjk2NDQxLCJuYmYiOjE2NDgxMjM2NDEsImlhdCI6MTY0ODI5NjQzNH0.e4w0R8cU-gD4YtyBWElK-jYaZt4k0rIpUj-jSjtoCr8
+
+{
+  "connName": "localhost",
+  "metaspace": {
+    "catalog": "anta"
+  },
+  "tableNames": ["eims_image"]
+}
+
+<> 2022-03-24T080724.200.json
+
+###
+
+POST http://localhost:8084/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "0"
+}
+
+<> 2022-03-24T080721.200.json
+
+###
+
+POST http://localhost:8084/db/metadata/output/mysql/ddl
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+  "connName": "localhost",
+  "metaspace": {
+    "catalog": "anta"
+  },
+  "tableNames": ["eims_image"]
+}
+
+<> 2022-03-24T080707.200.json
 
 ###
 

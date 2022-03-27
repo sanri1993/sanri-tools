@@ -39,6 +39,19 @@ Authorization: {{Authorization}}
 GET {{baseUrl}}/db/doc/export?connName=localhost&catalog=anta&searchSchema=table&keyword=eims
 Authorization: {{Authorization}}
 
+### 元数据输出 DDL 语句
+POST {{baseUrl}}/db/metadata/output/mysql/ddl
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+  "connName": "localhost",
+  "namespace": {
+    "catalog": "anta"
+  },
+  "tableNames": ["eims_image"]
+}
+
 ### 元数据比对
 POST {{baseUrl}}/db/metadata/compare
 Content-Type: application/json

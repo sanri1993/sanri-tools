@@ -175,6 +175,16 @@ public interface DatabaseMetaDataLoad {
     }
 
     /**
+     * 获取数据库某张表的 ddl
+     * @param dataSource
+     * @param actualTableName
+     * @return
+     */
+	default String ddl(DruidDataSource dataSource, ActualTableName actualTableName) throws IOException, SQLException {
+	    throw new ToolException("功能未实现 DDL 功能");
+	}
+
+    /**
      * 获取列数据
      * @param dataSource
      * @param actualTableName

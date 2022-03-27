@@ -99,7 +99,11 @@ public class ClassloaderController {
             return classloaderService.uploadClass(uploadClassInfo.getClassloaderName(), files);
         }finally {
             // 清空临时目录
-            FileUtils.forceDelete(uploadTemp);
+            try {
+                FileUtils.forceDelete(uploadTemp);
+            }catch (IOException e){
+                //ignore
+            }
         }
     }
 

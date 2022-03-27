@@ -1,49 +1,66 @@
-### mybatis - 上传 mapper 文件
-POST {{baseUrl}}/mybatis/uploadMapperFile
-Content-Type: multipart/form-data; boundary=uploadMapperFile
+### 上传一个 mybatis xml 文件
+POST {{baseUrl}}/mybatis/test/uploadFiles
+Content-Type: multipart/form-data; boundary=uploadFiles
+Authorization: {{Authorization}}
 
---uploadMapperFile
+--uploadFiles
 Content-Disposition: form-data; name="file"; filename="BatchMapper.xml"
 Content-Type: application/octet-stream
 
-< d:/test/ScheduleMapper.xml
---uploadMapperFile
-Content-Disposition: form-data; name="project"
-Content-Type: application/x-www-form-urlencoded
-
-ir
---uploadMapperFile
-Content-Disposition: form-data; name="classloaderName"
-Content-Type: application/x-www-form-urlencoded
-
-entity
-### mybatis 的 mapper 文件不会在启动的时候加载, 需要手动 reload
-GET {{baseUrl}}/mybatis/reload
-
-### mybatis - 列出所有当前加载的项目
+< d:/test/BatchMapper.xml
+### 项目列表
 GET {{baseUrl}}/mybatis/projects
+Authorization: {{Authorization}}
 
-### mybatis 获取加载到的 sqlId
-GET {{baseUrl}}/mybatis/statementIds?project=ir
+### 项目文件列表
+GET {{baseUrl}}/mybatis/test/files
+Authorization: {{Authorization}}
 
-### mybatis - 获取 sqlId 需要的参数
-GET {{baseUrl}}/mybatis/statementParams?project=ir&statementId=com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition
+### 获取文件内容
+GET {{baseUrl}}/mybatis/test/BatchMapper.xml/content
+Authorization: {{Authorization}}
 
-### mybatis 执行获取绑定的 sql
+### 获取语句列表
+GET {{baseUrl}}/mybatis/test/BatchMapper.xml/statementInfos?classLoaderName=222
+Authorization: {{Authorization}}
+
+### 根据参数信息获取绑定 sql 语句(无参数)
 POST {{baseUrl}}/mybatis/boundSql
 Content-Type: application/json
+Authorization: {{Authorization}}
 
 {
-  "project": "ir",
-  "connName": "lo",
-  "statementId": "com.eg.egsc.scp.informationrelease.mapper.ScheduleMapper.queryByCondition",
-  "className": "java.util.HashMap",
-  "arg": {
-    "value": {
-      "scheduleMode": "normal",
-      "pageSize": 10,
-      "start": 0,
-      "isExamine": 0
+  "project": "test",
+  "fileName": "BatchMapper.xml",
+  "classloaderName": "222",
+  "statementId": "com.sanri.test.testmybatis.mapper.BatchMapper.testTransaction"
+}
+
+### 根据参数信息获取绑定 sql 语句(有参数)
+POST {{baseUrl}}/mybatis/boundSql
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+  "project": "test",
+  "fileName": "BatchMapper.xml",
+  "classloaderName": "222",
+  "statementId": "com.sanri.test.testmybatis.mapper.BatchMapper.batchUpdateUseTmpTable",
+  "params": [
+    {
+      "parameterInfo": {
+        "name": "batchSubList",
+        "type": "java.util.List",
+        "parameterTypes": ["com.sanri.test.testmybatis.po.Batch"]
+      },
+      "value": "[{\"id\":23}]"
+    },
+    {
+      "parameterInfo": {
+        "name": "timestamp",
+        "type": "long"
+      },
+      "value": "123"
     }
-  }
+  ]
 }

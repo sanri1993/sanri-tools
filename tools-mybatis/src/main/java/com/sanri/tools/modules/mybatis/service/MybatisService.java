@@ -38,13 +38,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
 import com.sanri.tools.modules.core.service.file.FileManager;
 
-import com.sanri.tools.modules.mybatis.dtos.BoundSqlParam;
+import com.sanri.tools.modules.mybatis.dtos.BoundSqlCallParam;
 import com.sanri.tools.modules.mybatis.dtos.BoundSqlResponse;
 import com.sanri.tools.modules.mybatis.dtos.ProjectDto;
 
 import lombok.extern.slf4j.Slf4j;
-
-import javax.sql.ConnectionPoolDataSource;
 
 @Service
 @Slf4j
@@ -174,7 +172,7 @@ public class MybatisService {
      * 获取绑定的 sql 语句
      * @return
      */
-    public BoundSqlResponse boundSql(BoundSqlParam boundSqlParam) throws ClassNotFoundException, IOException, SQLException {
+    public BoundSqlResponse boundSql(BoundSqlCallParam boundSqlParam) throws ClassNotFoundException, IOException, SQLException {
         String project = boundSqlParam.getProject();
         String statementId = boundSqlParam.getStatementId();
         Configuration configuration = projectConfigurationMap.computeIfAbsent(project, k -> new Configuration());
@@ -256,9 +254,4 @@ public class MybatisService {
             }
         }
     }
-
-//    @PostConstruct
-//    public void register(){
-//        pluginManager.register(PluginDto.builder().module("call").name("mybatis").author("9420").logo("mybatis.png").desc("mybatis 快速调用").build());
-//    }
 }

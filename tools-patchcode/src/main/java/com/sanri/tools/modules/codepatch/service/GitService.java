@@ -63,9 +63,9 @@ import lombok.extern.slf4j.Slf4j;
  * git 模块数据目录结构
  * $dataDir[Dir]
  *   gitrepositorys[Dir]
- *     group1
+ *     group1[Dir]
  *       repository1[Dir]
- *     group2
+ *     group2[Dir]
  *       repository2[Dir]
  *     group_repository1_info[File]
  *     group_repository1_lock[File]
