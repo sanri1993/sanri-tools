@@ -3,7 +3,9 @@ package com.sanri.tools.modules.database.controller;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.database.service.code.CodeGenerateService;
 import com.sanri.tools.modules.database.service.code.CodeMybatisGenerateService;
+import com.sanri.tools.modules.database.service.code.CodeSqlService;
 import com.sanri.tools.modules.database.service.code.dtos.*;
+import net.sf.jsqlparser.JSQLParserException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,8 @@ public class CodeSnippetController {
     private FileManager fileManager;
     @Autowired
     private CodeMybatisGenerateService codeMybatisGenerateService;
+    @Autowired
+    private CodeSqlService codeSqlService;
 
     @GetMapping("/renameStrategies")
     public Set<String> renameStrategies(){
@@ -72,4 +76,18 @@ public class CodeSnippetController {
         return path.toString();
     }
 
+    /**
+     * 通过 sql语句 生成代码
+     * @param codeFromSqlParam
+     * @return
+     * @throws JSQLParserException
+     * @throws SQLException
+     * @throws IOException
+     */
+    @PostMapping("/generatorCodeFromSql")
+    public String generatorCodeFromSql(@Validated @RequestBody CodeFromSqlParam codeFromSqlParam) throws JSQLParserException, SQLException, IOException {
+        final File file = codeSqlService.generateCode(codeFromSqlParam);
+        Path path = fileManager.relativePath(file.toPath());
+        return path.toString();
+    }
 }

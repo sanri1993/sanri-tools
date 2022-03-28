@@ -1,4 +1,4 @@
-package jdbctest;
+package other;
 
 import org.junit.Test;
 import org.springframework.expression.Expression;

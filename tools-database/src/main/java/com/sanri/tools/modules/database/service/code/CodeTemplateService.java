@@ -159,7 +159,7 @@ public class CodeTemplateService {
      * 添加通用模板数据
      * @param context
      */
-    private void addCommonData(Map<String, Object> context) {
+    public static void addCommonData(Map<String, Object> context) {
         context.putIfAbsent("date", DateFormatUtils.ISO_8601_EXTENDED_DATE_FORMAT.format(System.currentTimeMillis()));
         context.putIfAbsent("time", DateFormatUtils.ISO_8601_EXTENDED_TIME_FORMAT.format(System.currentTimeMillis()));
         context.putIfAbsent("author", System.getProperty("user.name"));

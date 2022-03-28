@@ -23,7 +23,7 @@ public class DefaultRenameStragtegy implements RenameStrategy {
    private Converter<String, String> propertyConverter = CaseFormat.LOWER_UNDERSCORE.converterTo(CaseFormat.LOWER_CAMEL);
    private Converter<String, String> classNameConverter = CaseFormat.LOWER_UNDERSCORE.converterTo(CaseFormat.UPPER_CAMEL);
 
-    static MultiValueMap<Class<?>,JDBCType> multiValueMap = new LinkedMultiValueMap<>();
+    public static MultiValueMap<Class<?>,JDBCType> multiValueMap = new LinkedMultiValueMap<>();
     static {
         multiValueMap.put(String.class,Arrays.asList(JDBCType.CHAR,JDBCType.VARCHAR,JDBCType.LONGVARCHAR,JDBCType.NVARCHAR,JDBCType.NCHAR));
         multiValueMap.put(Date.class,Arrays.asList(JDBCType.TIMESTAMP,JDBCType.DATE));

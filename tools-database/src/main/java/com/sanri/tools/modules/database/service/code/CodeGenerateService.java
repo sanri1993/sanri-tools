@@ -76,6 +76,17 @@ public class CodeGenerateService {
         final List<TableMeta> tableMetas = tableSearchService.getTables(connName, javaBeanBuildConfig.getNamespace(), javaBeanBuildConfig.getTableNames());
         final List<TableMetaData> filterTables = jdbcMetaService.tablesExtend(connName, tableMetas);
 
+        return generateCode(javaBeanBuildConfig, filterTables);
+    }
+
+    /**
+     * 根据数据表的元数据信息, 生成数据表
+     * @param javaBeanBuildConfig
+     * @param filterTables
+     * @return
+     * @throws IOException
+     */
+    public File generateCode(JavaBeanBuildConfig javaBeanBuildConfig, List<TableMetaData> filterTables) throws IOException {
         // 获取重命名工具
         String renameStrategy = javaBeanBuildConfig.getRenameStrategy();
         RenameStrategy renameStrategyImpl = renameStrategyMap.get(renameStrategy);
@@ -104,7 +115,6 @@ public class CodeGenerateService {
                 IOUtils.closeQuietly(outputStreamWriter);
             }
         }
-
         return javaBeanDir;
     }
 

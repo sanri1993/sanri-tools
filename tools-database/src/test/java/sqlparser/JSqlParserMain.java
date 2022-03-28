@@ -1,4 +1,4 @@
-package jdbctest;
+package sqlparser;
 
 import java.io.StringReader;
 import java.math.BigDecimal;
@@ -9,6 +9,8 @@ import java.util.Map;
 
 import com.sanri.tools.modules.database.service.dtos.data.ExtendTableRelation;
 import com.sanri.tools.modules.database.service.dtos.meta.TableRelation;
+import com.sanri.tools.modules.database.service.sqlparser.FindTable;
+import com.sanri.tools.modules.database.service.sqlparser.TablesFinder;
 import net.sf.jsqlparser.expression.operators.relational.IsNullExpression;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.commons.text.StringSubstitutor;
@@ -30,7 +32,7 @@ import net.sf.jsqlparser.util.TablesNamesFinder;
 
 import static com.sanri.tools.modules.database.service.TableDataService.*;
 
-public class CamelConvertMain {
+public class JSqlParserMain {
     // jsqlparser 解析
     CCJSqlParserManager parserManager = new CCJSqlParserManager();
 
@@ -41,6 +43,15 @@ public class CamelConvertMain {
         Select select = (Select) parserManager.parse(new StringReader(sql));
         TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
         List<String> tableList = tablesNamesFinder.getTableList(select);
+        System.out.println(tableList);
+    }
+
+    @Test
+    public void testTableNamesFinder() throws JSQLParserException {
+        String sql = "select t1.*,t2.roleId from t_sys_user t1 inner join t_sys_user_role t2 on t1.userId = t2.userId where username = '张三' and t2.rolename like '%管理员%' limit 10";
+        Select select = (Select) parserManager.parse(new StringReader(sql));
+        TablesFinder tablesNamesFinder = new TablesFinder();
+        List<FindTable> tableList = tablesNamesFinder.getTableList(select);
         System.out.println(tableList);
     }
 

@@ -1,4 +1,4 @@
-package jdbctest;
+package other;
 
 import java.io.IOException;
 import java.util.Arrays;

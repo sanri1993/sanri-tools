@@ -1,4 +1,4 @@
-package jdbctest;
+package other;
 
 import com.sanri.tools.modules.database.service.MetaCompareService;
 import com.sanri.tools.modules.database.service.dtos.compare.DiffType;
