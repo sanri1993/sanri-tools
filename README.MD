@@ -39,7 +39,7 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
 
 2. 启动 jar  
 ```
-java -Dloader.path=sanritoolslib --data.path.base=数据基础路径 -Xms256m -Xmx256m -jar sanritools.jar
+java -Dloader.path=sanritoolslib -Xms256m -Xmx256m -jar sanritools.jar
 ```
 
 ## 版本和文档说明
@@ -54,6 +54,9 @@ java -Dloader.path=sanritoolslib --data.path.base=数据基础路径 -Xms256m -X
 * [代码增量工具](tools-patchcode/src/main/resources/tools-patchcode-introduce.md)
 * [Redis监控工具](tools-redis/src/main/resources/tools-redis-introduce.md)
 * [权限管理](tools-security/src/main/resources/tools-security-introduce.md)
+* [Mybatis工具](tools-mybatis/src/main/resources/tools-mybatis-introduce.md)
+* [jvm工具](tools-jvm/src/main/resources/tools-jvm-introduce.md)
+* [soapui](tools-soap/src/main/resources/tools-soap-introduce.md)
 
 ## 关于单元测试
 工具使用了更方便的单元测试,直接发送 http 请求来测试,所有的单元测试都在 requests/模块名.http 文件中
