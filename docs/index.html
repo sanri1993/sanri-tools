@@ -7,6 +7,9 @@
   <meta name="description" content="Description">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+
+  <!-- gitalk -->
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.css">
 </head>
 <body>
   <div id="app"></div>
@@ -31,11 +34,24 @@
   <!--复制代码-->
   <script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
 
-  <!-- 讨论，好像没生效-->
-  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/disqus.min.js"></script>
-
   <!-- search -->
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
 
+
+  <!--插入“gitalk评论”模块-->
+  <script src="//unpkg.com/docsify/lib/plugins/gitalk.min.js"></script>
+  <script src="//unpkg.com/gitalk/dist/gitalk.min.js"></script>
+  <script src="js/md5.min.js"></script>
+  <script>
+    const gitalk = new Gitalk({
+      clientID: '350304a08670cab7061e',
+      clientSecret: 'bbb5e851dff594489ff2667ad4cbd4f1df1a39f1',
+      repo: 'https://gitee.com/sanri/sanri-tools-maven',
+      owner: 'sanri1993',
+      admin: ['sanri1993'],
+      id: location.pathname,      // Ensure uniqueness and length less than 50
+      distractionFreeMode: false  // Facebook-like distraction free mode
+    })
+  </script>
 </body>
 </html>

@@ -25,4 +25,10 @@
 3. 在输入框进行一个空搜索，即可展示出所有的数据表
 4. 点击任意一个表，便可以在右边展示表的列，索引，表标记，表关系等信息
 
+## 其它强大能力
+
+- [database](/modules/database)
+- [Redis](/modules/redis)
+- [kafka](/modules/kafka)
+- [gitpatch](/modules/gitpatch)
 
