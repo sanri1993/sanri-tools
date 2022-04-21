@@ -11,6 +11,7 @@ import com.sanri.tools.modules.database.service.meta.dtos.Namespace;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class MetaCompareService {
     @Autowired
     private JdbcMetaService jdbcMetaService;
@@ -116,7 +118,8 @@ public class MetaCompareService {
         final String baseDbType = connDatasourceAdapter.dbType(baseConnName);
         final String compareDbType = connDatasourceAdapter.dbType(compareConnName);
         if (!baseDbType.equals(compareDbType)){
-            throw new ToolException("仅支持同类型数据库比较");
+            log.warn("不同的数据库({} <=> {})比较,可能比较结果会有问题",baseDbType,compareDbType);
+//            throw new ToolException("仅支持同类型数据库比较");
         }
 
         final Collection<TableMetaData> baseTables = jdbcMetaService.tableInfos(baseConnName, compareParam.getBaseNamespace());
@@ -193,7 +196,7 @@ public class MetaCompareService {
                 continue;
             }
 
-            if (!baseColumn.equals(compareColumn)){
+            if (!baseColumn.equalsValues(compareColumn,ignoreCase)){
                 modifyColumns.add(new ModifyColumn(tableName,DiffType.MODIFY,baseColumn,compareColumn));
             }
         }
