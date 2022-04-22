@@ -138,6 +138,15 @@ public class ProjectGenerateConfig {
          * 需要处理的数据表名
          */
         private List<String> tableNames = new ArrayList<>();
+
+        public DataSourceConfig() {
+        }
+
+        public DataSourceConfig(@NotNull String connName, Namespace namespace, List<String> tableNames) {
+            this.connName = connName;
+            this.namespace = namespace;
+            this.tableNames = tableNames;
+        }
     }
 
     @Data

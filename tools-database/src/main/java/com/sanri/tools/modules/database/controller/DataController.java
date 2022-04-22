@@ -6,6 +6,7 @@ import com.sanri.tools.modules.database.service.DataExportService;
 import com.sanri.tools.modules.database.service.JdbcDataService;
 import com.sanri.tools.modules.database.service.TableDataService;
 import com.sanri.tools.modules.database.service.TableSearchService;
+import com.sanri.tools.modules.database.service.dtos.SqlList;
 import com.sanri.tools.modules.database.service.dtos.data.*;
 import com.sanri.tools.modules.database.service.dtos.data.export.ExportPreviewDto;
 import com.sanri.tools.modules.database.service.dtos.data.export.ExportProcessDto;
@@ -27,7 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.sql.SQLException;
@@ -147,8 +147,8 @@ public class DataController {
     /**
      * 导出数据为 csv 格式,导出进度会写入指定 key , 可查询导出进度
      * 当数据量过大时使用多线程导出
-     * @param connName
-     * @param sql
+     * @param connName connName
+     * @param sql sql
      * @return
      */
     @PostMapping("/exportData")
@@ -159,7 +159,7 @@ public class DataController {
 
     /**
      * 执行查询 sql
-     * @param dataQueryParam
+     * @param dataQueryParam 数据查询参数
      * @return
      * @throws IOException
      * @throws SQLException
@@ -172,14 +172,24 @@ public class DataController {
 
     /**
      * 执行更新操作, 包含 ddl
-     * @param dataQueryParam
+     * @param dataQueryParam dataQueryParam
      * @return
      * @throws SQLException
      */
     @PostMapping("/executeUpdate")
-    public List<Integer> executeUpdate(@RequestBody @Valid DataQueryParam dataQueryParam) throws SQLException, IOException {
+    public List<Integer> executeUpdate(@RequestBody @Validated DataQueryParam dataQueryParam) throws SQLException, IOException {
         List<Integer> updates = jdbcDataService.executeUpdate(dataQueryParam.getConnName(), dataQueryParam.getSqls(),dataQueryParam.getNamespace());
         return updates;
+    }
+
+    /**
+     * 生成数据变更可重复执行 sql
+     * @param dataChangeParam
+     * @return
+     */
+    @PostMapping("/dataChangeSqls")
+    public List<SqlList> generateDataChangeSqls(@RequestBody @Validated DataChangeParam dataChangeParam) throws IOException, SQLException {
+        return tableDataService.generateDataChangeSqls(dataChangeParam);
     }
 
     /**

@@ -188,7 +188,9 @@ public class WhereTableColumnFinder implements ExpressionVisitor {
         if (tableAliasMap.size() == 1){
             final ExtendFindTable extendFindTable = tableAliasMap.values().iterator().next();
             com.sanri.tools.modules.database.service.meta.dtos.Column findColumn = findTableColumn(tableColumn, extendFindTable);
-            if (findColumn == null) return;
+            if (findColumn == null) {
+                return;
+            }
             tableColumnsMap.add(extendFindTable.getFindTable().getName(),findColumn);
             return ;
         }
@@ -199,7 +201,9 @@ public class WhereTableColumnFinder implements ExpressionVisitor {
                 return ;
             }
             com.sanri.tools.modules.database.service.meta.dtos.Column findColumn = findTableColumn(tableColumn, extendFindTable);
-            if (findColumn == null) return;
+            if (findColumn == null) {
+                return;
+            }
             tableColumnsMap.add(extendFindTable.getFindTable().getName(),findColumn);
         }else{
             // 如果没有别名, 则需要一张表一张表的查找

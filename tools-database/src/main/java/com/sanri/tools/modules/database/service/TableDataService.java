@@ -1,7 +1,9 @@
 package com.sanri.tools.modules.database.service;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.SQLException;
@@ -9,19 +11,31 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.alibaba.druid.pool.DruidDataSource;
 import com.google.common.collect.Maps;
 import com.sanri.tools.modules.core.exception.ToolException;
-import com.sanri.tools.modules.database.service.dtos.data.ExtendTableRelation;
+import com.sanri.tools.modules.database.service.connect.ConnDatasourceAdapter;
+import com.sanri.tools.modules.database.service.dtos.SqlList;
+import com.sanri.tools.modules.database.service.dtos.compare.DiffType;
+import com.sanri.tools.modules.database.service.dtos.data.*;
+import com.sanri.tools.modules.database.service.dtos.data.transfer.DataChange;
+import com.sanri.tools.modules.database.service.dtos.data.transfer.TransferDataRow;
+import com.sanri.tools.modules.database.service.dtos.processors.ListDataRowProcessor;
 import com.sanri.tools.modules.database.service.meta.aspect.JdbcConnection;
 import com.sanri.tools.modules.database.service.meta.dtos.*;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import net.sf.cglib.beans.BeanMap;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.select.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
+import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.ColumnListHandler;
+import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -38,9 +52,6 @@ import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.read.metadata.ReadSheet;
-import com.sanri.tools.modules.database.service.dtos.data.DirtyDataInfo;
-import com.sanri.tools.modules.database.service.dtos.data.ExcelImportParam;
-import com.sanri.tools.modules.database.service.dtos.data.TableDataParam;
 import com.sanri.tools.modules.database.service.dtos.meta.TableMeta;
 import com.sanri.tools.modules.database.service.dtos.meta.TableRelation;
 import com.sanri.tools.modules.database.service.meta.TabeRelationMetaData;
@@ -66,6 +77,125 @@ public class TableDataService {
 
     // jsqlparser 解析
     private CCJSqlParserManager parserManager = new CCJSqlParserManager();
+
+    @Autowired
+    private ConnDatasourceAdapter connDatasourceAdapter;
+
+    @Autowired
+    private Configuration configuration;
+
+    /**
+     * 生成数据变更 sql 语句, 可重复执行的
+     * @param connName
+     * @param actualTableName
+     * @param selectItems
+     * @param condition
+     * @return
+     */
+    @JdbcConnection
+    public List<SqlList> generateDataChangeSqls(DataChangeParam dataChangeParam) throws IOException, SQLException {
+        // 生成 sql 语句
+        final ActualTableName actualTableName = dataChangeParam.getActualTableName();
+        final String condition = dataChangeParam.getCondition();
+
+        // 如果是删除语句 , 则不需要后面的数据查询了
+        if (dataChangeParam.getDiffType() == DiffType.DELETE){
+            List<SqlList> sqlLists = new ArrayList<>();
+            for (String dbType : dataChangeParam.getDbTypes()) {
+                final SqlList sqlList = new SqlList(dbType);
+                sqlLists.add(sqlList);
+                sqlList.addSql("delete from "+actualTableName.getTableName()+" where "+ condition);
+            }
+            return sqlLists;
+        }
+
+        List<SqlList> sqlLists = new ArrayList<>();
+
+        // 补充主键查询, 如果没有查询主键的话
+        final List<String> selectItems = dataChangeParam.getSelectItems();
+        final List<PrimaryKey> primaryKeys = jdbcMetaService.primaryKeys(dataChangeParam.getConnName(), actualTableName);
+        final List<String> primaryKeysColumnNames = primaryKeys.stream().map(PrimaryKey::getColumnName).collect(Collectors.toList());
+        final Collection<String> finallySelectItems = CollectionUtils.union(selectItems, primaryKeysColumnNames);
+
+        String sql = "select " + StringUtils.join(finallySelectItems,',') + " from " + actualTableName.getTableName();;
+
+        if (StringUtils.isNotBlank(condition)){
+            sql += (" where " + condition);
+        }
+
+        // 查询到要更改的数据
+        final DruidDataSource druidDataSource = connDatasourceAdapter.poolDataSource(dataChangeParam.getConnName(), dataChangeParam.getActualTableName().getNamespace());
+        QueryRunner queryRunner = new QueryRunner(druidDataSource);
+        final List<ListDataRowProcessor.Row> result = queryRunner.query(sql, ListDataRowProcessor.INSTANCE);
+        log.info("SQL[{}]查询到本次需要变更的数据量为:[{}]",sql,result.size());
+
+        List<DataChange> dataChanges = new ArrayList<>();
+        for (ListDataRowProcessor.Row row : result) {
+            final DataChange dataChange = new DataChange(dataChangeParam.getDiffType(), actualTableName.getTableName());
+            dataChanges.add(dataChange);
+
+            // 列数据映射 columnName => 列值
+            final Map<String, DataChange.ColumnValue> columnValueMap = row.getFields().stream().collect(Collectors.toMap(field -> field.getColumn().getColumnName(), field -> new DataChange.ColumnValue(Objects.toString(field.getValue(),null),field.getColumnType())));
+
+            switch (dataChangeParam.getDiffType()){
+                case ADD:
+                    final DataChange.Insert insert = new DataChange.Insert(row.getColumnNames());
+                    dataChange.setInsert(insert);
+
+                    for (TransferDataRow.TransferDataField field : row.getFields()) {
+                        insert.addColumnValue(new DataChange.ColumnValue(Objects.toString(field.getValue(),null),field.getColumnType()));
+                    }
+
+                    insert.setUniqueKey(primaryKeys.get(0).getColumnName());
+
+                    break;
+                case MODIFY:
+                    final DataChange.Update update = new DataChange.Update();
+                    dataChange.setUpdate(update);
+
+                    // 修改项
+                    for (String selectItem : selectItems) {
+                        final DataChange.ColumnValue columnValue = columnValueMap.get(selectItem);
+                        update.putColumnSet(selectItem,columnValue);
+                    }
+
+                    // where 条件
+                    final String columnName = primaryKeys.get(0).getColumnName();
+                    final DataChange.ColumnValue columnValue = columnValueMap.get(columnName);
+                    DataChange.Condition where = new DataChange.Condition(columnName,columnValue);
+                    update.setWhere(where);
+                    break;
+            }
+
+        }
+
+        // 对于所有的变更生成 sql 语句, 其中 update 语句需要加上条件
+        for (String dbType : dataChangeParam.getDbTypes()) {
+            final SqlList sqlList = new SqlList(dbType);
+            sqlLists.add(sqlList);
+
+            Template createTableTemplate = configuration.getTemplate("sqls/datachange."+dbType+".sql.ftl");
+            for (DataChange dataChange : dataChanges) {
+                Map<String,Object> dataModel = new HashMap<>();
+
+                final BeanMap beanMap = BeanMap.create(dataChange);
+                beanMap.forEach((key,value) -> {
+                    dataModel.put((String) key,value);
+                });
+
+                StringWriter stringWriter = new StringWriter();
+                try {
+                    createTableTemplate.process(dataModel,stringWriter);
+
+                    sqlList.addSql(stringWriter.toString());
+                } catch (TemplateException e) {
+                    log.error("数据表[{}]对于数据库类型[{}]数据变更SQL生成失败",dataChange.getTableName(),dbType);
+                }
+            }
+        }
+
+        return sqlLists;
+    }
 
     /**
      * 清空数据表

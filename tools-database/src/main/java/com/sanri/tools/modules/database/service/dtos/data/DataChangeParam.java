@@ -1,0 +1,54 @@
+package com.sanri.tools.modules.database.service.dtos.data;
+
+import com.sanri.tools.modules.core.exception.ToolException;
+import com.sanri.tools.modules.database.service.dtos.compare.DiffType;
+import com.sanri.tools.modules.database.service.meta.dtos.ActualTableName;
+import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Data
+public class DataChangeParam {
+    /**
+     * 连接名
+     */
+    private String connName;
+    /**
+     * 操作的数据表
+     */
+    private ActualTableName actualTableName;
+    /**
+     * insert 语句的选择列
+     */
+    private List<String> selectItems = new ArrayList<>();
+    /**
+     * 查询过滤条件
+     */
+    private String condition;
+    /**
+     * 生成 sql 的变更类型 insert update delete
+     */
+    private String changeType;
+
+    /**
+     * 生成的方言列表 mysql , oracle
+     */
+    private List<String> dbTypes = new ArrayList<>();
+
+    /**
+     * 获取变更类型
+     * @return
+     */
+    public DiffType getDiffType(){
+        switch (changeType){
+            case "insert":
+                return DiffType.ADD;
+            case "update":
+                return DiffType.MODIFY;
+            case "delete":
+                return DiffType.DELETE;
+        }
+        throw new ToolException("不支持的变更类型:"+changeType);
+    }
+}

@@ -51,19 +51,27 @@ public class TableRelation {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         TableRelation that = (TableRelation) o;
 
-        if (sourceTableName != null ? !sourceTableName.equalsIgnoreCase(that.sourceTableName) : that.sourceTableName != null)
+        if (sourceTableName != null ? !sourceTableName.equalsIgnoreCase(that.sourceTableName) : that.sourceTableName != null) {
             return false;
-        if (targetTableName != null ? !targetTableName.equalsIgnoreCase(that.targetTableName) : that.targetTableName != null)
+        }
+        if (targetTableName != null ? !targetTableName.equalsIgnoreCase(that.targetTableName) : that.targetTableName != null) {
             return false;
-        if (sourceColumnName != null ? !sourceColumnName.equalsIgnoreCase(that.sourceColumnName) : that.sourceColumnName != null)
+        }
+        if (sourceColumnName != null ? !sourceColumnName.equalsIgnoreCase(that.sourceColumnName) : that.sourceColumnName != null) {
             return false;
-        if (targetColumnName != null ? !targetColumnName.equalsIgnoreCase(that.targetColumnName) : that.targetColumnName != null)
+        }
+        if (targetColumnName != null ? !targetColumnName.equalsIgnoreCase(that.targetColumnName) : that.targetColumnName != null) {
             return false;
+        }
 //        if (relation != null ? !relation.equals(that.relation) : that.relation != null) return false;
 
         return true;

@@ -27,13 +27,21 @@ public class Namespace {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Namespace namespace = (Namespace) o;
 
-        if (catalog != null ? !catalog.equalsIgnoreCase(namespace.catalog) : namespace.catalog != null) return false;
-        if (schema != null ? !schema.equalsIgnoreCase(namespace.schema) : namespace.schema != null) return false;
+        if (catalog != null ? !catalog.equalsIgnoreCase(namespace.catalog) : namespace.catalog != null) {
+            return false;
+        }
+        if (schema != null ? !schema.equalsIgnoreCase(namespace.schema) : namespace.schema != null) {
+            return false;
+        }
 
         return true;
     }

@@ -14,4 +14,12 @@ public class Table {
         this.actualTableName = actualTableName;
         this.remark = remark;
     }
+
+    /**
+     * 获取表名
+     * @return
+     */
+    public String getTableName(){
+        return this.actualTableName.getTableName();
+    }
 }

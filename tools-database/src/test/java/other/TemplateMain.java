@@ -1,14 +1,15 @@
 package other;
 
-import com.sanri.tools.modules.database.service.MetaCompareService;
 import com.sanri.tools.modules.database.service.dtos.compare.DiffType;
 import com.sanri.tools.modules.database.service.dtos.compare.ModifyColumn;
 import com.sanri.tools.modules.database.service.dtos.compare.ModifyIndex;
+import com.sanri.tools.modules.database.service.dtos.data.transfer.DataChange;
 import com.sanri.tools.modules.database.service.dtos.meta.TableMetaData;
 import com.sanri.tools.modules.database.service.meta.dtos.*;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import net.sf.cglib.beans.BeanMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerProperties;
@@ -202,6 +203,85 @@ public class TemplateMain {
         Map<String,Object> dataModel = new HashMap<>();
 
         dataModel.put("modifyIndex",modifyIndex);
+        createTableTemplate.process(dataModel,outputStreamWriter);
+    }
+
+    /**
+     * 增删改数据
+     */
+    @Test
+    public void test8() throws IOException, TemplateException {
+        String dbType = "oracle";
+
+        DataChange dataChange = new DataChange(DiffType.ADD,"eims_scantask");
+        DataChange.Insert insert = new DataChange.Insert(Arrays.asList("billnumber","scanner","scantype","ttcode","create_time"));
+        dataChange.setInsert(insert);
+        List<DataChange.ColumnValue> columnValues  = new ArrayList<>();
+        insert.setColumnValues(columnValues);
+        columnValues.add(new DataChange.ColumnValue("yx001", DataChange.VARCHAR));
+        columnValues.add(new DataChange.ColumnValue(",yujia,", DataChange.VARCHAR));
+        columnValues.add(new DataChange.ColumnValue("2", DataChange.NUMBER));
+        columnValues.add(new DataChange.ColumnValue("null", DataChange.DEFAULT));
+        columnValues.add(new DataChange.ColumnValue("2022-04-18 11:27:00", DataChange.DATETIME));
+
+        Template createTableTemplate = configuration.getTemplate("sqls/datachange."+dbType+".sql.ftl");
+        final OutputStreamWriter outputStreamWriter = new OutputStreamWriter(System.out);
+        Map<String,Object> dataModel = new HashMap<>();
+
+        final BeanMap beanMap = BeanMap.create(dataChange);
+        beanMap.forEach((key,value) -> {
+            dataModel.put((String) key,value);
+        });
+        createTableTemplate.process(dataModel,outputStreamWriter);
+    }
+
+    /**
+     * 增删改数据
+     */
+    @Test
+    public void test9() throws IOException, TemplateException {
+        DataChange dataChange = new DataChange(DiffType.MODIFY,"eims_scantask");
+        DataChange.Update update = new DataChange.Update();
+        dataChange.setUpdate(update);
+
+        Map<String, DataChange.ColumnValue> columnSet = new HashMap<>();
+        update.setColumnSet(columnSet);
+        columnSet.put("scanner",new DataChange.ColumnValue(",admin,", DataChange.VARCHAR));
+
+        DataChange.Condition condition = new DataChange.Condition("id",new DataChange.ColumnValue("dsafdsafasdfasfd",DataChange.VARCHAR));
+        update.setWhere(condition);
+
+        Template createTableTemplate = configuration.getTemplate("sqls/datachange.mysql.sql.ftl");
+        final OutputStreamWriter outputStreamWriter = new OutputStreamWriter(System.out);
+        Map<String,Object> dataModel = new HashMap<>();
+
+        final BeanMap beanMap = BeanMap.create(dataChange);
+        beanMap.forEach((key,value) -> {
+            dataModel.put((String) key,value);
+        });
+        createTableTemplate.process(dataModel,outputStreamWriter);
+    }
+
+    /**
+     * 增删改数据
+     */
+    @Test
+    public void test10() throws IOException, TemplateException {
+        DataChange dataChange = new DataChange(DiffType.DELETE,"eims_scantask");
+        DataChange.Delete delete = new DataChange.Delete();
+        dataChange.setDelete(delete);
+
+        DataChange.Condition condition = new DataChange.Condition("id",new DataChange.ColumnValue("dsafdsafasdfasfd",DataChange.VARCHAR));
+        delete.setWhere(condition);
+
+        Template createTableTemplate = configuration.getTemplate("sqls/datachange.mysql.sql.ftl");
+        final OutputStreamWriter outputStreamWriter = new OutputStreamWriter(System.out);
+        Map<String,Object> dataModel = new HashMap<>();
+
+        final BeanMap beanMap = BeanMap.create(dataChange);
+        beanMap.forEach((key,value) -> {
+            dataModel.put((String) key,value);
+        });
         createTableTemplate.process(dataModel,outputStreamWriter);
     }
 }

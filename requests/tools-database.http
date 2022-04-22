@@ -546,3 +546,27 @@ Authorization: {{Authorization}}
     "mapper": "com.sanri.test.mapper"
   }
 }
+
+### 数据库 - 可重复执行 sql - 数据变更项
+POST {{baseUrl}}/db/data/dataChangeSqls
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+  "connName": "61.71",
+  "actualTableName": {
+    "namespace": {
+      "catalog": "eam"
+    },
+    "tableName": "EIMS_IMAGE"
+  },
+  "selectItems": [
+    "FILE_NAME",
+    "OPT_USER",
+    "MODIFY_TIME",
+    "IS_SHOW"
+  ],
+  "condition": "  OPT_USER  = 'yujia' AND P_DELETED  <> 'true' AND DOCUMENT_CODE  = '0120210628000534' ",
+  "changeType": "insert",
+  "dbTypes": ["mysql","oracle"]
+}

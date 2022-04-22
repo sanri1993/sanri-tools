@@ -42,7 +42,9 @@ public class Column {
      * @return
      */
     public boolean equalsValues(Column other,boolean ignoreCase){
-        if (other == null)return false;
+        if (other == null) {
+            return false;
+        }
 
         if (ignoreCase) {
             return StringUtils.compareIgnoreCase(other.getColumnName(), columnName) == 0
