@@ -32,4 +32,7 @@ build/
 
 velocity.log
 
+
+
 http-requests-log.http
+/tools-console/src/main/webapp/
