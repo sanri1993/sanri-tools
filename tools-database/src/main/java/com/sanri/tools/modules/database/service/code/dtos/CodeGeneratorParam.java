@@ -13,4 +13,12 @@ public class CodeGeneratorParam {
    private String renameStrategyName;
    // 单一文件 , 这时只会使用 dataSourceConfig
    private boolean single;
+
+   /**
+    * 获取连接名, 方便获取连接
+    * @return
+    */
+   public String getConnName(){
+      return dataSourceConfig.getConnName();
+   }
 }

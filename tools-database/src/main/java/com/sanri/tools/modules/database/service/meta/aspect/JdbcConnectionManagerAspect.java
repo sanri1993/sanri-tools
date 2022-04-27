@@ -6,6 +6,7 @@ import com.sanri.tools.modules.database.service.connect.ConnDatasourceAdapter;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.Joinpoint;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -13,6 +14,7 @@ import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cglib.core.ReflectUtils;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
@@ -68,9 +70,13 @@ public class JdbcConnectionManagerAspect {
             // 出现异常, 直接关闭连接
             final Map<DruidDataSource, ConnectionHolder> druidDataSourceConnectionHolderMap = connectionThreadLocal.get();
             for (ConnectionHolder connectionHolder : druidDataSourceConnectionHolderMap.values()) {
-                final Connection connection = connectionHolder.getConnection();
-                if (connection != null && !connection.isClosed()){
-                    connection.close();
+                if (connectionHolder != null) {
+                    final Connection connection = connectionHolder.getConnection();
+                    if (connection != null && !connection.isClosed()) {
+                        connection.close();
+                    }
+                }else{
+                    log.error("connectionHolder 为空");
                 }
             }
             throw throwable;
@@ -156,6 +162,13 @@ public class JdbcConnectionManagerAspect {
         if (connNameField != null){
             String connName = (String) ReflectionUtils.getField(connNameField, pointArg);
             druidDataSource = connDatasourceAdapter.poolDataSource(connName);
+        }else {
+            // 支持参数方法中有 getConnName
+            final Method getConnName = MethodUtils.getAccessibleMethod(pointArg.getClass(), "getConnName");
+            if (getConnName != null){
+                final String connName = (String) ReflectionUtils.invokeMethod(getConnName, pointArg);
+                druidDataSource = connDatasourceAdapter.poolDataSource(connName);
+            }
         }
 
         if (druidDataSource == null){

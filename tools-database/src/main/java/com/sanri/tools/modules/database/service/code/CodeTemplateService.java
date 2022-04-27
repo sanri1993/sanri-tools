@@ -1,5 +1,7 @@
 package com.sanri.tools.modules.database.service.code;
 
+import com.alibaba.druid.pool.DruidDataSource;
+import com.sanri.tools.modules.core.dtos.DictDto;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.database.service.JdbcMetaService;
 import com.sanri.tools.modules.database.service.TableSearchService;
@@ -8,6 +10,7 @@ import com.sanri.tools.modules.database.service.code.dtos.CodeGeneratorParam;
 import com.sanri.tools.modules.database.service.code.dtos.JavaBeanInfo;
 import com.sanri.tools.modules.database.service.code.dtos.PreviewCodeParam;
 import com.sanri.tools.modules.database.service.code.rename.RenameStrategy;
+import com.sanri.tools.modules.database.service.connect.ConnDatasourceAdapter;
 import com.sanri.tools.modules.database.service.dtos.meta.TableMeta;
 import com.sanri.tools.modules.database.service.dtos.meta.TableMetaData;
 import com.sanri.tools.modules.database.service.meta.aspect.JdbcConnection;
@@ -18,18 +21,21 @@ import freemarker.template.TemplateException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.StringWriter;
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.sql.SQLException;
@@ -50,6 +56,10 @@ public class CodeTemplateService {
     private TableSearchService tableSearchService;
     @Autowired
     private JdbcMetaService jdbcMetaService;
+    @Autowired
+    private ApplicationContext applicationContext;
+    @Autowired
+    private ConnDatasourceAdapter connDatasourceAdapter;
 
     private FreeMarkerTemplate freeMarkerTemplate = new FreeMarkerTemplate();
 
@@ -60,6 +70,25 @@ public class CodeTemplateService {
     private static final String basePath = "code/templates";
     private static final String[] SCHEMA_EXTENSION = {"schema"};
     private static final String[] TEMPLATE_EXTENSION = {"ftl","vm"};
+
+    /**
+     * 模板列表
+     * @return
+     * @throws IOException
+     */
+    public List<DictDto<String>> templateExamples() throws IOException {
+        final Resource[] resources = applicationContext.getResources("classpath:templates/code/examples/*.ftl");
+        List<DictDto<String>> dictDtos = new ArrayList<>();
+        List<String> examples = new ArrayList<>();
+        for (Resource resource : resources) {
+            final String filename = resource.getFilename();
+            try(final InputStream inputStream = resource.getInputStream()){
+                final String content = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+                dictDtos.add(new DictDto<>(filename,content));
+            }
+        }
+        return dictDtos;
+    }
 
     /**
      * 使用项目目录下模板生成代码
@@ -173,8 +202,16 @@ public class CodeTemplateService {
      * @param renameStrategyName
      * @return
      */
+    @JdbcConnection
     public Path codeGenerator(CodeGeneratorParam codeGeneratorParam) throws IOException, SQLException, TemplateException {
         ProjectGenerateConfig.DataSourceConfig dataSourceConfig = codeGeneratorParam.getDataSourceConfig();
+
+        // 这里主要是获取连接的数据库信息
+        final DruidDataSource druidDataSource = connDatasourceAdapter.poolDataSource(dataSourceConfig.getConnName(), dataSourceConfig.getNamespace());
+        final Properties connectProperties = druidDataSource.getConnectProperties();
+        connectProperties.put("url", druidDataSource.getUrl());
+        connectProperties.put("username",druidDataSource.getUsername());
+        connectProperties.put("driverClassName",druidDataSource.getDriverClassName());
 
         // 命名策略
         String renameStrategyName = codeGeneratorParam.getRenameStrategyName();
@@ -184,7 +221,7 @@ public class CodeTemplateService {
         final List<TableMeta> tableMetas = tableSearchService.getTables(dataSourceConfig.getConnName(), dataSourceConfig.getNamespace(), dataSourceConfig.getTableNames());
         final List<TableMetaData> filterTables = jdbcMetaService.tablesExtend(dataSourceConfig.getConnName(),tableMetas);
 
-        File file = processBatch(codeGeneratorParam,filterTables,renameStrategy);
+        File file = processBatch(codeGeneratorParam,filterTables,renameStrategy,connectProperties);
         return fileManager.relativePath(file.toPath());
     }
 
@@ -210,13 +247,14 @@ public class CodeTemplateService {
 
     /**
      * 根据需要的表, 生成模板代码
-     * @param renameStrategy
      * @param filterTables
+     * @param renameStrategy
+     * @param connectProperties
      * @return
      * @throws IOException
      * @throws TemplateException
      */
-    public File processBatch(CodeGeneratorParam codeGeneratorParam, List<TableMetaData> filterTables, RenameStrategy renameStrategy) throws IOException, TemplateException {
+    public File processBatch(CodeGeneratorParam codeGeneratorParam, List<TableMetaData> filterTables, RenameStrategy renameStrategy, Properties connectProperties) throws IOException, TemplateException {
         List<String> templateNames = codeGeneratorParam.getTemplates();
         List<Template> templates = new ArrayList<>(templateNames.size());
         for (String templateName : templateNames) {
@@ -234,6 +272,8 @@ public class CodeTemplateService {
         for (Template template : templates) {
             if (single){
                 Map<String, Object> context = new HashMap<>();
+                addCommonData(context);
+                context.put("connectProperties",connectProperties);
                 context.put("tables",filterTables);
                 String process = freeMarkerTemplate.process(template, context);
                 String fileName = StringUtils.capitalize(FilenameUtils.getBaseName(template.getName()));
@@ -243,10 +283,11 @@ public class CodeTemplateService {
                 for (TableMetaData filterTable : filterTables) {
                     ActualTableName actualTableName = filterTable.getActualTableName();
                     Map<String, Object> context = new HashMap<>();
+                    addCommonData(context);
+                    context.put("connectProperties",connectProperties);
                     context.put("table", filterTable);
                     JavaBeanInfo mapping = renameStrategy.mapping(filterTable);
                     context.put("mapping", mapping);
-                    addCommonData(context);
                     context.put("package", packageConfig);
                     String process = freeMarkerTemplate.process(template, context);
 

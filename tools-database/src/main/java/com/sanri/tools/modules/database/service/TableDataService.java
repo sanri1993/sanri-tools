@@ -176,13 +176,7 @@ public class TableDataService {
 
             Template createTableTemplate = configuration.getTemplate("sqls/datachange."+dbType+".sql.ftl");
             for (DataChange dataChange : dataChanges) {
-                Map<String,Object> dataModel = new HashMap<>();
-
-                final BeanMap beanMap = BeanMap.create(dataChange);
-                beanMap.forEach((key,value) -> {
-                    dataModel.put((String) key,value);
-                });
-
+                Map<String,Object> dataModel =  beanToMap(dataChange);
                 StringWriter stringWriter = new StringWriter();
                 try {
                     createTableTemplate.process(dataModel,stringWriter);

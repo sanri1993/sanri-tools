@@ -1,5 +1,6 @@
 package com.sanri.tools.modules.database.controller;
 
+import com.sanri.tools.modules.core.dtos.DictDto;
 import com.sanri.tools.modules.database.controller.dtos.TemplateContent;
 import com.sanri.tools.modules.database.service.JdbcMetaService;
 import com.sanri.tools.modules.database.service.TableSearchService;
@@ -12,6 +13,7 @@ import com.sanri.tools.modules.database.service.dtos.meta.TableMetaData;
 import com.sanri.tools.modules.database.service.meta.dtos.ActualTableName;
 import freemarker.template.TemplateException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -58,6 +60,15 @@ public class CodeTemplateController {
     @GetMapping("/templates")
     public List<String> templates(){
         return codeTemplateService.templates();
+    }
+
+    /**
+     * 模板示例列表
+     * @return
+     */
+    @GetMapping("/template/examples")
+    public List<DictDto<String>> examples() throws IOException {
+        return codeTemplateService.templateExamples();
     }
 
     /**

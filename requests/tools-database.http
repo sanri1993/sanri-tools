@@ -570,3 +570,7 @@ Authorization: {{Authorization}}
   "changeType": "insert",
   "dbTypes": ["mysql","oracle"]
 }
+
+### 模板示例列表
+GET {{baseUrl}}/db/code/template/examples
+Authorization: {{Authorization}}
