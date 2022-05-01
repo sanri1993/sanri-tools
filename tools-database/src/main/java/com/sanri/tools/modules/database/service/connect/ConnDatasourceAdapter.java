@@ -124,8 +124,10 @@ public class ConnDatasourceAdapter {
         }
 
         final String url = databaseConnect.getUrl();
-        // 连接属性
+        // 连接属性(默认值)
         Properties properties = connectProperties(url);
+        // 覆盖连接属性
+        properties.putAll(databaseConnect.getProperties());
         druidDataSource.setConnectProperties(properties);
         return druidDataSource;
     }
@@ -144,6 +146,7 @@ public class ConnDatasourceAdapter {
             properties.setProperty("useSSL","false");
             properties.setProperty("useUnicode","true");
             properties.setProperty("characterEncoding","UTF-8");
+            properties.setProperty("allowPublicKeyRetrieval","true");
         }
         return properties;
     }

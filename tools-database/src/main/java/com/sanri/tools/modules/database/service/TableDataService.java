@@ -146,7 +146,9 @@ public class TableDataService {
                         insert.addColumnValue(new DataChange.ColumnValue(Objects.toString(field.getValue(),null),field.getColumnType()));
                     }
 
-                    insert.setUniqueKey(primaryKeys.get(0).getColumnName());
+                    if (CollectionUtils.isNotEmpty(primaryKeys)) {
+                        insert.setUniqueKey(primaryKeys.get(0).getColumnName());
+                    }
 
                     break;
                 case MODIFY:
@@ -160,10 +162,12 @@ public class TableDataService {
                     }
 
                     // where 条件
-                    final String columnName = primaryKeys.get(0).getColumnName();
-                    final DataChange.ColumnValue columnValue = columnValueMap.get(columnName);
-                    DataChange.Condition where = new DataChange.Condition(columnName,columnValue);
-                    update.setWhere(where);
+                    if (CollectionUtils.isNotEmpty(primaryKeys)) {
+                        final String columnName = primaryKeys.get(0).getColumnName();
+                        final DataChange.ColumnValue columnValue = columnValueMap.get(columnName);
+                        DataChange.Condition where = new DataChange.Condition(columnName, columnValue);
+                        update.setWhere(where);
+                    }
                     break;
             }
 

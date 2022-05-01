@@ -5,6 +5,9 @@ import com.sanri.tools.modules.database.service.dtos.compare.DiffType;
 import com.sanri.tools.modules.database.service.meta.dtos.ActualTableName;
 import lombok.Data;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,10 +16,12 @@ public class DataChangeParam {
     /**
      * 连接名
      */
+    @NotBlank
     private String connName;
     /**
      * 操作的数据表
      */
+    @Valid
     private ActualTableName actualTableName;
     /**
      * insert 语句的选择列
@@ -29,6 +34,7 @@ public class DataChangeParam {
     /**
      * 生成 sql 的变更类型 insert update delete
      */
+    @NotBlank
     private String changeType;
 
     /**

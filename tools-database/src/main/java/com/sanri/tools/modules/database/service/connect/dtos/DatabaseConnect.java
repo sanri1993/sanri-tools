@@ -2,6 +2,9 @@ package com.sanri.tools.modules.database.service.connect.dtos;
 
 import lombok.Data;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 数据源连接
  */
@@ -11,4 +14,8 @@ public class DatabaseConnect {
     private String username;
     private String password;
     private String driverClassName;
+    /**
+     * 连接属性配置
+     */
+    private Map<String,String> properties = new HashMap<>();
 }
