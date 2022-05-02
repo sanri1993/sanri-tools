@@ -10,7 +10,7 @@
    * 编译的实时展示将消耗大量浏览器占用内存, 编译大型项目时需要将编译实时窗口关闭在后台控制台看输出结果 
    * 当 下载仓库或者 pull 出现冲突之类的问题时, 需要手动操作, 目录在 $tmp/gitrepositorys/$group/$repository
    
-![git](../../../../images/git.png)
+![git](http://pic.yupoo.com/sanri1993/8b97e31d/a9886420.png)
 
 ### 常见报错说明
 - 当前仓库 xxx 已经被 xxx 锁定

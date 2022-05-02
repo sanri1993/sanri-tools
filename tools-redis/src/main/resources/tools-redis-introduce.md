@@ -26,10 +26,10 @@ Redis 模块提供 redis 的 key列表，key 数据查询，慢查询监控
 
 ### 界面
 
-![redis分模块](../../../../images/redis分模块.png)
+![redis分模块](http://pic.yupoo.com/sanri1993/a79dec14/f353f7d9.png)
 
-![Redis](../../../../images/Redis.png)
+![Redis](http://pic.yupoo.com/sanri1993/12057b1b/87719dca.png)
 
-![Redis-2](../../../../images/Redis-2.png)
+![Redis-2](http://pic.yupoo.com/sanri1993/c8184c61/e5b8a764.png)
 
-![Redis-3](../../../../images/Redis-3.png)
+![Redis-3](http://pic.yupoo.com/sanri1993/e4214600/55f375bc.png)

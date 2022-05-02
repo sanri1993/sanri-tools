@@ -73,6 +73,8 @@ java -Dloader.path=sanritoolslib -Xms256m -Xmx256m -jar sanritools.jar
 
 **官网前端只会支持最新版本, 不会对旧版本做兼容**
 
+![首页](http://pic.yupoo.com/sanri1993/3ae171e2/25570811.png)
+
 ## 如何二开
 详情见[二开文档](help/contribute.md)
 

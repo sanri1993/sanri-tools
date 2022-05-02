@@ -22,7 +22,7 @@
 
 扩展的元数据信息包括：表关联关系，即A表a字段和 B 表 b 字段， 形成一对一， 一对多， 多对多的关系(暂不支持多字段关联)
 
-![安全连接管理](../../../../images/数据库元数据.png)
+![安全连接管理](http://pic.yupoo.com/sanri1993/9617ca49/37792bec.png)
 
 元数据搜索功能，可以根据表名，表注释，字段名，字段注释，表标签进行搜索
 
@@ -33,37 +33,83 @@
 #### 模板生成
 通过使用变量，将代码整合成模板，然后将多个模板形成一个方案，下次就可以按照这个方案生成多张表的代码，模板目前只支持 freemarker
 
-![代码生成-1](../../../../images/代码生成-1.png)
+![代码生成-1](http://pic.yupoo.com/sanri1993/22bd8df6/20435249.png)
 
 目前支持的模板变量如下 
 
-1. 通用数据,不管是 javaBean、模板代码、还是项目构建都会有这个数据 
+**通用变量**
+
 ```
-author      : 当前作者，取计算机名 
-date        : 当前日期 yyyy-MM-dd 
-time        : 当前时间 HH:mm:ss
+date: String yyyy-MM-dd
+time: String HH:mm:ss
+author: String 服务器用户名
+connectProperties: Map
+  url: String 连接数据库 url
+  username: String 连接数据库用户名
+  driverClassName: String 驱动类名
 ```
 
-2. javaBean 构建时数据 
+**每张数据表生成一个文件**
+
 ```
-bean        : 当前表对应的 java 实体类信息 ,引用类 JavaBeanInfo
-beanConfig  : bean 的配置信息,引用类 JavaBeanBuildConfig
-table       : 表元数据信息,引用类 TableMetaData
+table: TableMetaData
+mapping: JavaBeanInfo
+  className: String
+  lowerClassName: String
+  imports: Set<String>;
+  fields: BeanField
+    typeName: String
+    fieldName: String
+    comment: String
+    key: boolean
+    column: Column
+    capitalName: String
+package: PackageConfig
+  parent: String
+  mapper: String
+  service: String
+  controller: String
+  entity: String
+  vo: String
+  dto: String
+  param: String
 ```
 
-3. 模板代码生成(每一个模板都是针对单张表的生成)
-```
-bean        : 当前表对应的 java 实体类信息 ,引用类 JavaBeanInfo
-table       : 表元数据信息,引用类 TableMetaData
-codeConfig  : 如果是模板代码生成 ,引用 CodeGeneratorParam
-```
+**所有数据表生成一个文件**
 
-4. 项目构建数据
 ```
-tables      : 表元数据信息,引用类 TableMetaData:List
-beans       : 当前表对应的 java 实体类信息 ,引用类 JavaBeanInfo:List
-config      : 如果是项目构建,引用 CodeGeneratorConfig
-dataSource  : 数据源,引用类 ConnectionMetaData
+tables: List<TableMetaData>  数据表列表
+  actualTableName: ActualTableName 表名信息
+    namespace: Namespace
+      catalog: String
+      schema: String
+    tableName: String
+  table: Table
+    actualTableName: ActualTableName
+    remark: String
+  columns: List<Column>
+    actualTableName: ActualTableName
+    columnName: String
+    dataType: int 字段类型 javax.sql.Types
+    typeName: String
+    columnSize: int 列长度
+    decimalDigits: int 列精度
+    nullable: boolean 是否可以空, 真表示可以空
+    remark: String
+    autoIncrement: boolean 自增
+    defaultValue: String 默认值
+  indices: List<Index> 索引信息
+    actualTableName: ActualTableName
+    unique: boolean
+    indexName: String
+    indexType: short
+    ordinalPosition: short
+    columnName: String
+  primaryKeys: List<PrimaryKey>
+    actualTableName: ActualTableName
+    columnName: String
+    keySeq: int
+    pkName: String
 ```
 
 #### mapper 生成
@@ -71,7 +117,7 @@ mybatis 的代码生成，可以配置插件，例如 tk.mybatis 代码生成
 
 可以生成 entity， dto， mapper， xml 一整套文件
 
-![代码生成-2](../../../../images/代码生成-2.png)
+![代码生成-2](http://pic.yupoo.com/sanri1993/79c32fa4/31420bc6.png)
 
 #### 项目代码生成(还在开发中)
 可以直接生成一个项目的代码，下载下来可以直接运行，需要依赖我的项目辅助包
@@ -87,13 +133,13 @@ mybatis 的代码生成，可以配置插件，例如 tk.mybatis 代码生成
 
 配置数据用于读取类似 diamond，nacos 的配置数据
 
-![配置数据](../../../../images/配置数据.png)
+![配置数据](http://pic.yupoo.com/sanri1993/67e7135a/88c90735.png)
 
 #### 数据导出
 
 通过 sql 语句从数据库导出数据，支持海量数据(使用多线程导出)，目前客户端工具虽然都有导出支持，但是都不太友好，并且大量数据导出时可能会卡死
 
-![数据导出](../../../../images/数据导出.png)
+![数据导出](http://pic.yupoo.com/sanri1993/39fdf282/86304951.png)
 
 #### 随机数据生成
 

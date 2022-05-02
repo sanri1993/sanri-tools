@@ -74,24 +74,24 @@ User(name,$Roles,$Groups)
 
 #### 用户管理
 
-![用户管理](../../../../images/用户管理.png)
+![用户管理](http://pic.yupoo.com/sanri1993/ee6d4799/a74c5647.png)
 
 #### 角色管理
 
-![角色管理](../../../../images/角色管理.png)
+![角色管理](http://pic.yupoo.com/sanri1993/14f6a586/c33bf88a.png)
 
 #### 资源管理
 
-![资源管理](../../../../images/资源管理.png)
+![资源管理](http://pic.yupoo.com/sanri1993/69761ae7/36a786b7.png)
 
 #### 组织管理
 
-![组织管理](../../../../images/组织管理.png)
+![组织管理](http://pic.yupoo.com/sanri1993/c9d62787/f1671afe.png)
 
 #### 权限视图 对应设计中的存储设计
 
-![权限视图](../../../../images/权限视图.png)
+![权限视图](http://pic.yupoo.com/sanri1993/2d309e37/e4a79bb3.png)
 
 这里描述的只是简单的挂载情况，并没有列全，如需要看详细的，需要点击右边按扭【全部挂载】查看所有的资源挂载信息
 
-![权限视图-全部挂载](../../../../images/权限视图-全部挂载.png)
+![权限视图-全部挂载](http://pic.yupoo.com/sanri1993/c2c56500/4abceed5.png)
