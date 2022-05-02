@@ -125,6 +125,32 @@ op:/core:menu_git,menu_level_1_basedata
 /root/a/b/
 ```
 
+## 界面
+
+### 用户管理
+
+![用户管理](http://pic.yupoo.com/sanri1993/ee6d4799/a74c5647.png)
+
+### 角色管理
+
+![角色管理](http://pic.yupoo.com/sanri1993/14f6a586/c33bf88a.png)
+
+### 资源管理
+
+![资源管理](http://pic.yupoo.com/sanri1993/69761ae7/36a786b7.png)
+
+### 组织管理
+
+![组织管理](http://pic.yupoo.com/sanri1993/c9d62787/f1671afe.png)
+
+### 权限视图 对应设计中的存储设计
+
+![权限视图](http://pic.yupoo.com/sanri1993/2d309e37/e4a79bb3.png)
+
+这里描述的只是简单的挂载情况，并没有列全，如需要看详细的，需要点击右边按扭【全部挂载】查看所有的资源挂载信息
+
+![权限视图-全部挂载](http://pic.yupoo.com/sanri1993/c2c56500/4abceed5.png)
+
 ## FAQ 
 
 对于这个权限系统，当时我自己写的时候都有点搞懵逼，估计大部分用户也一样，所以我添加了一个权限视图的菜单，可以更方便的看到当前的权限挂载情况，菜单路径为 【安全管理】->【权限视图】

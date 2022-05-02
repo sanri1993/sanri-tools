@@ -1,3 +1,4 @@
+* [简介](introduce)
 * [快速开始](/quickStart)
 * 系统设计
    - [总体设计](/desgin/design)
@@ -13,7 +14,7 @@
    - [mybatis](/modules/mybatis)
    - [quartz](/modules/quartz)
    - [name](/modules/name)
-
+* [配置](/config)
 * [二开](/custom)
 * [前端](/front)
 * [FAQ](/FAQ)

@@ -24,3 +24,13 @@
 * 可以明文展示数据，需要提前上传序列化的类 
 * 可以进行 key 搜索，对 key 做一些操作，如 set 类型，我可以求交，并，补集 
 * 支持集群，主从，能知道集群各节点的情况
+
+## 界面
+
+![redis分模块](http://pic.yupoo.com/sanri1993/a79dec14/f353f7d9.png)
+
+![Redis](http://pic.yupoo.com/sanri1993/12057b1b/87719dca.png)
+
+![Redis-2](http://pic.yupoo.com/sanri1993/c8184c61/e5b8a764.png)
+
+![Redis-3](http://pic.yupoo.com/sanri1993/e4214600/55f375bc.png)

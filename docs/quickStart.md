@@ -31,4 +31,7 @@
 - [Redis](/modules/redis)
 - [kafka](/modules/kafka)
 - [gitpatch](/modules/gitpatch)
+- [mybatis](/modules/mybatis)
+- [quartz](/modules/quartz)
+- [name](/modules/name)
 
