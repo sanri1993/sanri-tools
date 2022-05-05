@@ -9,7 +9,9 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
 ## 文档
 
 * 文档地址: https://sanri.gitee.io/sanri-tools-maven
-* javaDoc: 稍后生成 
+* 在线预览: http://123.60.46.33:8084  admin / 0 
+
+> 在线预览只能预览前端功能, 后端功能需要在公司内网部署才能使用
 
 ## 工具理念和定位
 
