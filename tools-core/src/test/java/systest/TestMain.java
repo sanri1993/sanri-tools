@@ -37,49 +37,4 @@ public class TestMain {
         }
         return booleans;
     }
-
-    @Test
-    public void test3() throws IOException, InterruptedException {
-        CountDownLatch countDownLatch = new CountDownLatch(32);
-        final OkHttpClient client = new OkHttpClient();
-        for (int i = 0; i < 30020; i++) {
-            new Thread(){
-                @Override
-                public void run() {
-                    for (int j = 0; j < 2; j++) {
-                        String url = "https://www.databuff.com:19091/api/saasApply/trialApply";
-                        JSONObject jsonObject = JSON.parseObject("{\"emailAddr\":\"222@163.com\",\"applyPw\":\"42eea062752b3cbe127f031f3c23b5c9\",\"applyName\":\"asdfasdf\",\"applyPhone\":\"13800138000\",\"companyName\":\"dsafasdfasdf\"}");
-                        jsonObject.put("emailAddr", RandomUtil.email(RandomUtils.nextInt(3,50)));
-
-                        System.out.println("注册数据: "+ jsonObject);
-
-                        RequestBody body = RequestBody.create(
-                                MediaType.parse("application/json"), jsonObject.toJSONString());
-
-                        Request request = new Request.Builder()
-                                .url(url)
-                                .post(body)
-                                .build();
-
-                        Call call = client.newCall(request);
-                        try {
-                            Response response = call.execute();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    countDownLatch.countDown();
-                }
-            }.start();
-        }
-
-        countDownLatch.await();
-    }
-
-    public interface MyClient{
-
-        @Post("https://www.databuff.com:19091/api/saasApply/trialApply")
-        public void test(@Body JSONObject data );
-    }
 }
