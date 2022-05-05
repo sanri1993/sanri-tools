@@ -51,6 +51,42 @@ npm run dev
 
 如果需要使用到 `tools-core` 中的能力，则需要引入 tools-core 模块，它提供了随机数，文件存储服务，类加载器等功能
 
+**根据名称获取一个类加载器**
+```java
+class Test{
+    @Autowired
+    private ClassloaderService classloaderService;
+
+    ClassLoader classLoader = classloaderService.getClassloader(classloaderName);
+}
+```
+
+**根据名称获取一个序列化工具**
+```java
+import com.sanri.tools.modules.serializer.service.Serializer;
+
+class Test{
+    @Autowired
+    private SerializerChoseService serializerChoseService;
+
+    Serializer serializer = serializerChoseService.choseSerializer(serializerParam.getHashKey());
+}
+    
+```
+
+**根据名称获取用户创建的连接信息**
+
+这里获取的数据都是字符串信息, 需要用户自己将数据转化成存储的数据结构 
+
+```java
+class Test{
+    @Autowired
+    private ConnectService connectService;
+
+    String database = connectService.loadContent("database", connName);
+}
+```
+
 **注册插件**
 
 如果需要把你的插件展示到首页上来，你需要提供 `tools-[模块名]_plugin.properties` 文件到 classpath 

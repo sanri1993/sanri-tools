@@ -18,11 +18,11 @@ spring:
     mode: HTML
 translate:
   baidu:
-    appId: 20181123000238271
-    secret: PoT5TnMl_4pVIhosG_Fk
+    appId:
+    secret:
   youdao:
-    appId: 28a343197650d05a
-    secret: hioXXfQjbWnRDuLrvbvx3tGpo7hDUpHt
+    appId:
+    secret:
 management:
   endpoints:
     web:
