@@ -110,6 +110,11 @@
             <artifactId>tools-zookeeper</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>tools-fastdfs</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -223,6 +228,11 @@
                         <include>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>tools-springsecurity-websocket</artifactId>
+                        </include>
+
+                        <include>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>tools-fastdfs</artifactId>
                         </include>
                     </includes>
                     <includeSystemScope>true</includeSystemScope>

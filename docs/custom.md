@@ -90,3 +90,11 @@ class Test{
 **注册插件**
 
 如果需要把你的插件展示到首页上来，你需要提供 `tools-[模块名]_plugin.properties` 文件到 classpath 
+
+**提供菜单信息**
+
+如果需要向前端提供菜单, 需要提供配置文件 `tools-[模块名].menus.conf` 到 classpath 
+
+### 打包部署时注意事项 
+
+在 build 中的 spring-boot-maven-plugin 插件中, 需要将自己的模块包含到打包目录, 并且 lib 包中也要更新新引入的 jar 包

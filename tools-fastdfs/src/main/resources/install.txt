@@ -1,0 +1,1 @@
+mvn install:install-file -DgroupId=org.csource -DartifactId=fastdfs-client-java -Dversion=1.27-SNAPSHOT -Dpackaging=jar -Dfile=fastdfs-client-java-1.27-SNAPSHOT.jar
