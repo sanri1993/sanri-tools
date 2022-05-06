@@ -264,4 +264,8 @@ public class PluginManager implements InitializingBean {
             this.lastCallTime = lastCallTime;
         }
     }
+
+    public Map<String, EnhancePlugin> getPluginRegisterMap() {
+        return pluginRegisterMap;
+    }
 }

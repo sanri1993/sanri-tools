@@ -24,6 +24,7 @@
         <module>tools-security</module>
         <module>tools-jvm</module>
         <module>tools-springsecurity-websocket</module>
+        <module>tools-fastdfs</module>
     </modules>
 
     <parent>

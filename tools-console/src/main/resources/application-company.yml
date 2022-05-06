@@ -8,3 +8,6 @@ logging:
   path: /tmp/sanritools/logs
 maven:
   remoteRepositorys: https://mirrors.huaweicloud.com/repository/maven/
+collect:
+  ip: localhost
+  port: 8085

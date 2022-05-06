@@ -6,9 +6,11 @@ import com.sanri.tools.modules.codepatch.service.dtos.*;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotBlank;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -82,7 +84,7 @@ public class GitController {
      * @throws GitAPIException
      */
     @GetMapping("/branchs")
-    public Branchs branchs(String group,String repository) throws IOException, GitAPIException {
+    public Branchs branchs(@NotBlank String group, @NotBlank String repository) throws IOException, GitAPIException {
         final List<Branchs.Branch> branchs = gitService.branchs(group, repository);
         final String currentBranch = gitService.currentBranch(group, repository);
         return new Branchs(branchs, currentBranch);
@@ -99,7 +101,7 @@ public class GitController {
      * @throws URISyntaxException
      */
     @GetMapping("/switchBranch")
-    public String switchBranch(String group, String repository, String branchName) throws IOException, GitAPIException, URISyntaxException {
+    public String switchBranch(@NotBlank String group, @NotBlank String repository, @NotBlank String branchName) throws IOException, GitAPIException, URISyntaxException {
         return gitService.switchBranch(group, repository, branchName);
     }
 
@@ -112,7 +114,7 @@ public class GitController {
      * @throws URISyntaxException
      */
     @GetMapping("/pull")
-    public void pull(String group, String repository) throws GitAPIException, IOException, URISyntaxException {
+    public void pull(@NotBlank String group, @NotBlank String repository) throws GitAPIException, IOException, URISyntaxException {
         gitService.pull(group,repository);
     }
 
@@ -125,7 +127,7 @@ public class GitController {
      * @throws GitAPIException
      */
     @GetMapping("/commits")
-    public List<Commit> commits(String group, String repository) throws IOException, GitAPIException {
+    public List<Commit> commits(@NotBlank String group, @NotBlank String repository) throws IOException, GitAPIException {
         return gitService.listCommits(group,repository,1000);
     }
 
@@ -137,7 +139,7 @@ public class GitController {
      * @throws GitAPIException
      */
     @PostMapping("/v2/changeFiles")
-    public ChangeFiles changeFilesV2(@RequestBody BatchCommitIdPatch batchCommitIdPatch) throws IOException, GitAPIException {
+    public ChangeFiles changeFilesV2(@RequestBody @Validated BatchCommitIdPatch batchCommitIdPatch) throws IOException, GitAPIException {
         final String group = batchCommitIdPatch.getGroup();
         final String repository = batchCommitIdPatch.getRepository();
         return gitService.createPatch(group,repository,batchCommitIdPatch.getCommitIds());
@@ -152,7 +154,7 @@ public class GitController {
      */
     @Deprecated
     @PostMapping("/changeFiles")
-    public ChangeFiles changeFiles(@RequestBody BatchCommitIdPatch commitIdPatch) throws IOException, GitAPIException {
+    public ChangeFiles changeFiles(@RequestBody @Validated BatchCommitIdPatch commitIdPatch) throws IOException, GitAPIException {
         final String group = commitIdPatch.getGroup();
         final String repository = commitIdPatch.getRepository();
         final ChangeFiles changeFiles = gitService.createPatch(group, repository, commitIdPatch.getCommitBeforeId(), commitIdPatch.getCommitAfterId());
@@ -168,7 +170,7 @@ public class GitController {
      */
     @Deprecated
     @PostMapping("/createPatch")
-    public String createPatch(@RequestBody BatchCommitIdPatch commitIdPatch) throws IOException, GitAPIException {
+    public String createPatch(@RequestBody @Validated BatchCommitIdPatch commitIdPatch) throws IOException, GitAPIException {
         final String group = commitIdPatch.getGroup();
         final String repository = commitIdPatch.getRepository();
         final ChangeFiles changeFiles = gitService.createPatch(group, repository, commitIdPatch.getCommitBeforeId(), commitIdPatch.getCommitAfterId());
@@ -186,7 +188,7 @@ public class GitController {
      * @throws GitAPIException
      */
     @PostMapping("/v2/createPatch")
-    public String createPatchV2(@RequestBody BatchCommitIdPatch batchCommitIdPatch) throws IOException, GitAPIException {
+    public String createPatchV2(@RequestBody @Validated BatchCommitIdPatch batchCommitIdPatch) throws IOException, GitAPIException {
         final String group = batchCommitIdPatch.getGroup();
         final String repository = batchCommitIdPatch.getRepository();
         final ChangeFiles changeFiles = gitService.createPatch(group, repository, batchCommitIdPatch.getCommitIds());
@@ -202,7 +204,7 @@ public class GitController {
      * @return
      */
     @PostMapping("/guessCompileModules")
-    public List<Module> guessCompileModules(@RequestBody BatchCommitIdPatch batchCommitIdPatch) throws IOException, GitAPIException {
+    public List<Module> guessCompileModules(@RequestBody @Validated BatchCommitIdPatch batchCommitIdPatch) throws IOException, GitAPIException {
         final String group = batchCommitIdPatch.getGroup();
         final String repository = batchCommitIdPatch.getRepository();
         return gitService.guessCompileModules(group,repository,batchCommitIdPatch.getCommitIds());
@@ -216,7 +218,7 @@ public class GitController {
      * @throws IOException
      */
     @GetMapping("/lock")
-    public void lock(HttpServletRequest request,String group, String repository) throws IOException {
+    public void lock(HttpServletRequest request,@NotBlank String group, @NotBlank String repository) throws IOException {
         gitService.lock(request.getRemoteAddr(),group,repository);
     }
 
@@ -228,7 +230,7 @@ public class GitController {
      * @throws IOException
      */
     @GetMapping("/unLock")
-    public void unLock(String group, String repository,String force) throws IOException {
+    public void unLock(@NotBlank String group, @NotBlank String repository,String force) throws IOException {
         gitService.unLock(group,repository,Boolean.parseBoolean(force));
     }
 
@@ -240,7 +242,7 @@ public class GitController {
      * @throws IOException
      */
     @GetMapping("/newCompileTime")
-    public long newCompileTime(String group, String repository) throws IOException {
+    public long newCompileTime(@NotBlank String group, @NotBlank String repository) throws IOException {
         return gitService.newCompileTime(group, repository);
     }
 }
