@@ -129,6 +129,9 @@ public class ConnDatasourceAdapter {
         // 覆盖连接属性
         properties.putAll(databaseConnect.getProperties());
         druidDataSource.setConnectProperties(properties);
+        // 连接失败时, 只尝试 5 次
+        druidDataSource.setConnectionErrorRetryAttempts(5);
+        druidDataSource.setBreakAfterAcquireFailure(true);
         return druidDataSource;
     }
 
