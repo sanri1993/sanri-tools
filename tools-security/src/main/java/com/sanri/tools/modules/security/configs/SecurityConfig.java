@@ -145,7 +145,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "index.html",
                 "/**/*.css","/**/*.js",
                 "/**/*.png","/**/*.jpg","/**/*.gif","/**/*.ico","/**/img/*","/**/images/*","/**/images/**/*",
-                "/**/fonts/*"
+                "/**/fonts/*",
+                "/static/**"
         );
     }
 
