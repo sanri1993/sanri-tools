@@ -37,6 +37,32 @@ public class StreamUtil {
     }
 
     /**
+     * 设置响应头
+     * @param mime
+     * @param filename
+     * @param response
+     */
+    public void downloadSetResponse(MimeType mime, String filename, HttpServletResponse response){
+        boolean isAuto = false;
+        if(mime == MimeType.AUTO){
+            mime = parseMIME(filename);
+            isAuto = true;
+        }
+        response.setContentType(mime.getContentType());
+        response.setHeader("Set-Cookie", "fileDownload=true; path=/");
+
+        String suffix = mime.getSuffix();
+        HttpServletRequest request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
+        String encodeFileName = encodeFilename(filename, request);
+        if(StringUtils.isNotBlank(suffix) && !isAuto){
+            encodeFileName  += ("."+ mime.getSuffix());
+        }
+
+        response.setHeader("Content-Disposition", "attachment;filename=\"" + encodeFileName + "\"");
+        response.setHeader("Access-Control-Expose-Headers", "*");
+    }
+
+    /**
      * 作者:sanri <br/>
      * 时间:2017-10-31下午4:18:54<br/>
      * 功能:下载 <br/>
@@ -51,22 +77,8 @@ public class StreamUtil {
         if (input == null) {
             return;
         }
-        boolean isAuto = false;
-        if(mime == MimeType.AUTO){
-            mime = parseMIME(fileName);
-            isAuto = true;
-        }
-        response.setContentType(mime.getContentType());
-        response.setHeader("Set-Cookie", "fileDownload=true; path=/");
+        downloadSetResponse(mime,fileName,response);
 
-        String suffix = mime.getSuffix();
-        HttpServletRequest request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
-        String encodeFileName = encodeFilename(fileName, request);
-        if(StringUtils.isNotBlank(suffix) && !isAuto){
-            encodeFileName  += ("."+ mime.getSuffix());
-        }
-
-        response.setHeader("Content-Disposition", "attachment;filename=\"" + encodeFileName + "\"");
         long length = input.available();
         if (length != -1) {
             response.setContentLength((int) length);
@@ -93,7 +105,7 @@ public class StreamUtil {
         throw new IllegalArgumentException("不支持的 mime 类型，文件名为:"+fileName);
     }
 
-    private static String encodeFilename(String filename, HttpServletRequest request) {
+    public static String encodeFilename(String filename, HttpServletRequest request) {
         /**
          * 获取客户端浏览器和操作系统信息
          * 在IE浏览器中得到的是：User-Agent=Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; Maxthon; Alexa Toolbar)

@@ -122,7 +122,7 @@ public class FileManagerController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentDispositionFormData("attachment", filenameEncode);
-        headers.add("fileName",filenameEncode);
+        headers.add("filename",filenameEncode);
         headers.add("Access-Control-Expose-Headers", "fileName");
         headers.add("Access-Control-Expose-Headers", "Content-Disposition");
 //        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
