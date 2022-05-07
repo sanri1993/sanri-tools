@@ -3,29 +3,29 @@ package com.sanri.tools.modules.fastdfs.controller;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotBlank;
 
+import com.sanri.tools.modules.core.dtos.DictDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.csource.common.MyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import com.sanri.tools.modules.core.exception.ToolException;
 import com.sanri.tools.modules.core.utils.StreamUtil;
@@ -34,6 +34,7 @@ import com.sanri.tools.modules.fastdfs.service.FastdfsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @Slf4j
@@ -62,6 +63,29 @@ public class FileController {
             throw new ToolException("文件丢失");
         }
         streamUtil.preview(new ByteArrayInputStream(bytes), StreamUtil.MimeType.STREAM,response);
+    }
+
+    /**
+     * 文件上传
+     * @param connName
+     * @param files
+     * @throws IOException
+     * @throws MyException
+     * @return
+     */
+    @PostMapping("/uploadFiles")
+    @ResponseBody
+    public List<DictDto<String>> uploadFiles(@NotBlank String connName , @RequestParam("files") MultipartFile[] files) throws IOException, MyException {
+        List<DictDto<String>> dictDtos = new ArrayList<>();
+        for (MultipartFile file : files) {
+            final String originalFilename = file.getOriginalFilename();
+            try(final InputStream inputStream = file.getInputStream()){
+                final byte[] bytes = IOUtils.toByteArray(inputStream);
+                final String dfsId = fastdfsService.uploadFile(connName, bytes, originalFilename);
+                dictDtos.add(new DictDto<>(originalFilename,dfsId));
+            }
+        }
+        return dictDtos;
     }
 
     /**

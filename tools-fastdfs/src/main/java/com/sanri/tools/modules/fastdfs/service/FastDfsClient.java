@@ -29,6 +29,20 @@ public class FastDfsClient {
 	}
 
 	/**
+	 * 上传文件
+	 * @param bytes
+	 * @param extension
+	 * @throws IOException
+	 * @throws MyException
+	 * @return
+	 */
+	public String uploadFile(byte [] bytes, String extension) throws IOException, MyException {
+		StorageClient1 storageClient1 = new StorageClient1(trackerServer, null);
+		final String dfsId = storageClient1.upload_file1(bytes, extension, null);
+		return dfsId;
+	}
+
+	/**
 	 * 获取文件信息
 	 * @param dfsId
 	 * @return

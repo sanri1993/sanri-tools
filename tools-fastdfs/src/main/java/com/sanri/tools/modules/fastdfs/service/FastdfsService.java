@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.io.FilenameUtils;
 import org.csource.common.MyException;
 import org.csource.fastdfs.FileInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,21 @@ public class FastdfsService {
     public byte [] downloadStream(String connName,String dfsId) throws IOException, MyException {
         final FastDfsClient fastDfsClient = fastDfsClient(connName);
         return fastDfsClient.downloadStream(dfsId);
+    }
+
+    /**
+     * 上传一个文件
+     * @param connName
+     * @param bytes
+     * @param filename
+     * @throws IOException
+     * @throws MyException
+     * @return
+     */
+    public String uploadFile(String connName, byte [] bytes, String filename) throws IOException, MyException {
+        final String extension = FilenameUtils.getExtension(filename);
+        final FastDfsClient fastDfsClient = fastDfsClient(connName);
+        return fastDfsClient.uploadFile(bytes,extension);
     }
 
     /**
