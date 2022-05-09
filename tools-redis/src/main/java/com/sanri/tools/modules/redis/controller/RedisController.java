@@ -23,6 +23,15 @@ public class RedisController {
     private RedisTreeKeyService redisTreeKeyService;
 
     /**
+     * 连接重建
+     * @param connParam
+     */
+    @PostMapping("/connect/rebuild")
+    public void rebuildConnect(@Validated ConnParam connParam) throws IOException {
+        redisService.rebuildConnect(connParam);
+    }
+
+    /**
      * 清空当前库
      * @param connParam
      */

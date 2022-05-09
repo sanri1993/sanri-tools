@@ -57,7 +57,12 @@ public class SecurityConnectController {
     public List<ConnectOutput> moduleConnects(@NotBlank @PathVariable("module") String module){
         return connectService.moduleConnects(module);
     }
-    
+
+    /**
+     * 连接列表, 只有名称信息
+     * @param module
+     * @return
+     */
     @GetMapping("/{module}/connectNames")
     public List<String> moduleConnectNames(@NotBlank @PathVariable("module") String module){
         final List<ConnectOutput> connectOutputs = connectService.moduleConnects(module);

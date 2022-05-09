@@ -617,4 +617,22 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
             jedis.close();
         }
     }
+
+    /**
+     * 连接重建
+     * @param connParam
+     */
+    public void rebuildConnect(ConnParam connParam) throws IOException {
+        final String connName = connParam.getConnName();
+        final int index = connParam.getIndex();
+
+        if (clientMap.containsKey(connName)){
+            log.info("重建连接: {}",connName);
+            final RedisConnection redisConnection = clientMap.get(connName);
+            redisConnection.close();
+            clientMap.remove(connName);
+        }
+
+        redisConnection(connParam);
+    }
 }

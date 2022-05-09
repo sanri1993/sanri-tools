@@ -28,6 +28,8 @@ public enum  SystemMessage implements ExceptionCause<BusinessException> {
     POOL_OBJECT_NOT_ENOUGH(5006,"对象池[{0}]对象不足"),
     CALL_MODUL_FAIL(5007,"{0} 模块调用错误"),
     FILE_NOT_FOUND(5008,"文件读写错误"),
+    CONNECT_ERROR(5009,"连接失败"),
+    SERVICE_ERROR(5010,"服务不可达"),
 
     FILE_INCOMPLETE(5901,"文件不完整，上传失败"),
     FILE_CORRUPTED(5902,"文件损坏，上传失败"),

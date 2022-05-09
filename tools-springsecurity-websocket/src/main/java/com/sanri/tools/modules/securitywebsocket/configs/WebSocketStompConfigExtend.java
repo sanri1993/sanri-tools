@@ -1,5 +1,6 @@
 package com.sanri.tools.modules.securitywebsocket.configs;
 
+import com.sanri.tools.modules.security.configs.SpringAsyncSecurityConfig;
 import com.sanri.tools.modules.websocket.configs.WebSocketStompConfig;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,41 +31,9 @@ public class WebSocketStompConfigExtend implements WebSocketMessageBrokerConfigu
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
         taskExecutor.setCorePoolSize(Runtime.getRuntime().availableProcessors() * 2);
         taskExecutor.setAllowCoreThreadTimeOut(true);
-        taskExecutor.setTaskDecorator(new AsyncTaskDecorator());
+        taskExecutor.setTaskDecorator(new SpringAsyncSecurityConfig.AsyncTaskDecorator());
         registration.taskExecutor(taskExecutor);
     }
 
-    /**
-     * 对于异步任务时, 同样也能获取到 TraceId 和权限信息
-     * spring 的异步任务 @Async
-     */
-    public static class AsyncTaskDecorator implements TaskDecorator {
-        @Override
-        public Runnable decorate(Runnable runnable) {
-            try {
-                RequestAttributes context = RequestContextHolder.currentRequestAttributes();
-                Map<String,String> previous = MDC.getCopyOfContextMap();
-                final SecurityContext securityContext = SecurityContextHolder.getContext();
-                return () -> {
-                    try {
-                        RequestContextHolder.setRequestAttributes(context);
 
-                        SecurityContextHolder.setContext(securityContext);
-
-                        MDC.setContextMap(previous);
-
-                        runnable.run();
-                    } finally {
-                        RequestContextHolder.resetRequestAttributes();
-
-                        SecurityContextHolder.clearContext();
-
-                        MDC.clear();
-                    }
-                };
-            } catch (IllegalStateException e) {
-                return runnable;
-            }
-        }
-    }
 }

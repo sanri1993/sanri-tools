@@ -16,12 +16,14 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.naming.ServiceUnavailableException;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Path;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StreamCorruptedException;
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -136,8 +138,23 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IOException.class)
     public ResponseDto ioException(IOException e){
+        if (e.getCause() != null && e.getCause() instanceof ServiceUnavailableException){
+            return serviceUnavailableException((ServiceUnavailableException) e.getCause());
+        }
         log.error(e.getMessage(),e);
         return SystemMessage.NETWORK_ERROR.result();
+    }
+
+    @ExceptionHandler(ServiceUnavailableException.class)
+    public ResponseDto serviceUnavailableException(ServiceUnavailableException e){
+        log.error(e.getMessage(),e);
+        return SystemMessage.SERVICE_ERROR.result();
+    }
+
+    @ExceptionHandler(ConnectException.class)
+    public ResponseDto connectException(ConnectException e){
+        log.error(e.getMessage(),e);
+        return SystemMessage.CONNECT_ERROR.result();
     }
 
     @ExceptionHandler(ToolException.class)

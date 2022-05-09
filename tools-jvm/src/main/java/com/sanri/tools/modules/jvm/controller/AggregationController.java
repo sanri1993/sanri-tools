@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.management.InstanceNotFoundException;
 import javax.management.IntrospectionException;
 import javax.management.MBeanException;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 
 @RestController
 @RequestMapping("/jvm")
@@ -37,6 +39,9 @@ public class AggregationController {
     private MBeanMonitorService mBeanMonitorService;
     @Autowired
     private DiagnosticCommandService diagnosticCommandService;
+
+    @Resource(name = "asyncExecutor")
+    private Executor executor;
 
     /**
      * 监控数据列表
@@ -53,7 +58,7 @@ public class AggregationController {
                     } catch (IOException | ClassNotFoundException e) {
                         log.info("执行 mbean 获取时异常:{}", e.getMessage(), e);
                     }
-                }),
+                },executor),
                 CompletableFuture.runAsync(() -> {
                     try {
                         final Object proxyMXBean = mBeanMonitorService.proxyMXBean(connName, ManagementFactory.RUNTIME_MXBEAN_NAME, RuntimeMXBean.class.getName());
@@ -61,7 +66,7 @@ public class AggregationController {
                     } catch (IOException | ClassNotFoundException e) {
                         log.info("执行 mbean 获取时异常:{}", e.getMessage(), e);
                     }
-                }),
+                },executor),
                 CompletableFuture.runAsync(() -> {
                     try {
                         final Object proxyMXBean = mBeanMonitorService.proxyMXBean(connName, ManagementFactory.COMPILATION_MXBEAN_NAME, CompilationMXBean.class.getName());
@@ -69,7 +74,7 @@ public class AggregationController {
                     } catch (IOException | ClassNotFoundException e) {
                         log.info("执行 mbean 获取时异常:{}", e.getMessage(), e);
                     }
-                }),
+                },executor),
                 CompletableFuture.runAsync(() -> {
                     try {
                         final Object proxyMXBean = mBeanMonitorService.proxyMXBean(connName, ManagementFactory.THREAD_MXBEAN_NAME, ThreadMXBean.class.getName());
@@ -77,7 +82,7 @@ public class AggregationController {
                     } catch (IOException | ClassNotFoundException e) {
                         log.info("执行 mbean 获取时异常:{}", e.getMessage(), e);
                     }
-                }),
+                },executor),
                 CompletableFuture.runAsync(() -> {
                     try {
                         final Object proxyMXBean = mBeanMonitorService.proxyMXBean(connName, ManagementFactory.CLASS_LOADING_MXBEAN_NAME, ClassLoadingMXBean.class.getName());
@@ -85,7 +90,7 @@ public class AggregationController {
                     } catch (IOException | ClassNotFoundException e) {
                         log.info("执行 mbean 获取时异常:{}", e.getMessage(), e);
                     }
-                }),
+                },executor),
                 CompletableFuture.runAsync(() -> {
                     try {
                         final Object proxyMXBean = mBeanMonitorService.proxyMXBean(connName, ManagementFactory.MEMORY_MXBEAN_NAME, MemoryMXBean.class.getName());
@@ -93,7 +98,7 @@ public class AggregationController {
                     } catch (IOException | ClassNotFoundException e) {
                         log.info("执行 mbean 获取时异常:{}", e.getMessage(), e);
                     }
-                }),
+                },executor),
                 CompletableFuture.runAsync(() -> {
                     try {
                         final List<VMParam> vmParams = diagnosticCommandService.flagsSetted(connName);
@@ -101,7 +106,7 @@ public class AggregationController {
                     } catch (Exception e) {
                         log.info("执行 flagsSetted 获取时异常:{}", e.getMessage(), e);
                     }
-                }),
+                },executor),
                 CompletableFuture.runAsync(() -> {
                     try {
                         final List<PlatformManagedObject> platformManagedObjects = mBeanMonitorService.proxyMXBeans(connName, GarbageCollectorMXBean.class.getName());
@@ -114,8 +119,9 @@ public class AggregationController {
                         log.info("执行 mbean 获取时异常:{}", e.getMessage(), e);
                     }
 
-                })
+                },executor)
         );
+
         voidCompletableFuture.get();
         return aggregationVMInfo;
     }
