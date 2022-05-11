@@ -2,10 +2,12 @@ package com.sanri.tools.modules.elasticsearch.controller;
 
 import java.io.IOException;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import com.sanri.tools.modules.core.service.connect.ConnectService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import com.alibaba.fastjson.JSONObject;
@@ -16,6 +18,7 @@ import com.sanri.tools.modules.elasticsearch.remote.apis.ClusterApis;
 
 @RestController
 @RequestMapping("/elasticsearch")
+@Validated
 public class EsController {
 
     @Autowired
@@ -76,13 +79,13 @@ public class EsController {
     }
 
     @PostMapping("/search/{connName}/{indexName}")
-    public JSONObject search(@PathVariable("connName") String connName,@PathVariable("indexName") String indexName, @RequestBody JSONObject dsl) throws IOException {
+    public JSONObject search(@PathVariable("connName") @NotBlank String connName, @PathVariable("indexName") String indexName, @RequestBody JSONObject dsl) throws IOException {
         String address = loadAddress(connName);
         return clusterApis.indexDataSearch(address,indexName,dsl.toJSONString());
     }
 
     @PostMapping("/search/{connName}")
-    public JSONObject search(@PathVariable("connName") String connName, @RequestBody JSONObject dsl) throws IOException {
+    public JSONObject search(@PathVariable("connName") @NotBlank String connName, @RequestBody JSONObject dsl) throws IOException {
         String address = loadAddress(connName);
         return clusterApis.dslSearch(address,dsl.toJSONString());
     }
@@ -93,13 +96,9 @@ public class EsController {
      * @return
      * @throws IOException
      */
-    private String loadAddress(String connName) throws IOException {
+    private String loadAddress(@NotBlank String connName) throws IOException {
         SimpleConnectParam simpleConnectParam = (SimpleConnectParam) connectService.readConnParams("elasticsearch",connName);
         return simpleConnectParam.getConnectParam().httpConnectString();
     }
 
-//    @PostConstruct
-//    private void register(){
-//        pluginManager.register(PluginDto.builder().module("monitor").name("elasticsearch").author("9420").build());
-//    }
 }

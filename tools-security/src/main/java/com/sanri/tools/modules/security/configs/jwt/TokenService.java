@@ -6,6 +6,8 @@ import java.util.Date;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 
+import com.sanri.tools.modules.core.exception.ToolException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
@@ -15,13 +17,14 @@ import io.jsonwebtoken.*;
 import lombok.Data;
 
 @Component
+@Slf4j
 public class TokenService {
     // 密钥
     private static final String base64Secret = "MDk4ZjZiY2Q0NjIxZDM3M2NhZGU0ZTgzMjYyN2I0ZjY=";
     // 加密算法
     private static final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
-    // 过期时间 2 天
-    private static final int expiresSecond = 172800000;
+    // 过期时间 15 天 1296000 000
+    private static final int expiresMillis = 1296000000;
     // 快过期的检测时间 2 小时
     public static final int issueAtSecond = 7200;
 
@@ -41,9 +44,9 @@ public class TokenService {
                 .claim("username", tokenInfo.getUsername())
                 .signWith(signatureAlgorithm, signingKey);
 
-        //添加Token过期时间 2 天
+        //添加Token过期时间 15 天
         final long timeMillis = System.currentTimeMillis();
-        long expMillis = timeMillis + expiresSecond;
+        long expMillis = timeMillis + expiresMillis;
         builder.setExpiration(new Date(expMillis)).setNotBefore(new Date(timeMillis)).setIssuedAt(new Date(expMillis - issueAtSecond));
 
         //生成JWT
@@ -61,13 +64,19 @@ public class TokenService {
         return new TokenInfo(username);
     }
 
-    public static Claims parseToken(String token){
+    public static Claims parseToken(String token) {
         if (StringUtils.isBlank(token)) {
             throw new BadCredentialsException("token 验证失败(空)");
         }
-        final Jws<Claims> claimsJws = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(base64Secret))
-                .parseClaimsJws(token);
-        return claimsJws.getBody();
+        try{
+            final Jws<Claims> claimsJws = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(base64Secret))
+                    .parseClaimsJws(token);
+            return claimsJws.getBody();
+        }catch (ExpiredJwtException e){
+            log.debug("token 过期: {}",e.getMessage());
+            throw new ToolException("token 过期: {}");
+        }
+
     }
 
 

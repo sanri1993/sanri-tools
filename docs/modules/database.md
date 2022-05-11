@@ -51,6 +51,44 @@
 
 #### 关于模板
 
+> 上传的模板名称必须使用特定格式 模板名称.后缀.模板引擎 例: test.md.ftl
+> 目前只支持 ftl 模板引擎, 即 freemarker 
+
+**模板示例**
+
+这些示例都可以在 database/examples 文件夹中找到
+
+* 所有数据表和列信息 `文件名需要命名为 table-and-colums.md.ftl`
+
+```
+<#list tables as tableMetaData >
+    ### ${tableMetaData.table.tableName} ${tableMetaData.table.remark}
+    <#list tableMetaData.columns as column>
+        ${column.columnName}  ${column.typeName} ${column.remark}
+    </#list>
+</#list>
+```
+
+* 所有数据表信息 `文件名需要命名为 tables.txt.ftl`
+
+```
+<#list tables as tableMetaData >
+    ${tableMetaData.table.tableName} ${tableMetaData.table.remark}
+</#list>
+```
+
+* 所有索引信息 `文件名需要命名为 indices.md.ftl`
+
+````
+<#list tables as tableMetaData>
+    ### ${tableMetaData.table.tableName}
+    <#list tableMetaData.indices as index >
+        ${index.indexName} (${index.columnName})
+    </#list>
+</#list>
+````
+
+
 模板使用 freemarker, 可用变量列表为
 
 **通用变量**

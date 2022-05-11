@@ -158,6 +158,8 @@
             <artifactId>plexus-utils</artifactId>
             <version>2.0.6</version>
         </dependency>
+
+        <!-- crf 字节码编译 -->
         <dependency>
             <groupId>org.benf</groupId>
             <artifactId>cfr</artifactId>
