@@ -11,3 +11,10 @@ maven:
 collect:
   ip: localhost
   port: 8085
+translate:
+  baidu:
+    appId: 20181123000238271
+    secret:
+  youdao:
+    appId: 28a343197650d05a
+    secret:

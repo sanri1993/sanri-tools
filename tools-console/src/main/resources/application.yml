@@ -17,13 +17,6 @@ spring:
     enabled: true
     encoding: UTF-8
     mode: HTML
-translate:
-  baidu:
-    appId:
-    secret:
-  youdao:
-    appId:
-    secret:
 management:
   endpoints:
     web:

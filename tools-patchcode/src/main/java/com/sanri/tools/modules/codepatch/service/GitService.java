@@ -876,7 +876,7 @@ public class GitService {
                 // 可重入
                 return ;
             }
-            throw new IllegalStateException("当前仓库 "+group+" - "+repository+" 已经被" + ip + " 锁定");
+            throw new ToolException("当前仓库 "+group+" - "+repository+" 已经被" + ip + " 锁定");
         }
         // 锁定仓库
         FileUtils.writeStringToFile(lockFile, remoteAddr, StandardCharsets.UTF_8);

@@ -72,7 +72,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new UnanimousBased(decisionVoters);
     }
 
-
     @Bean
     public WhiteSpaceFilter whiteSpaceFilter(){
         return new WhiteSpaceFilter(urlPermsLoad,tokenService);
@@ -148,6 +147,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/**/fonts/*",
                 "/static/**"
         );
+
+        web.httpFirewall(logStrictHttpFirewall());
     }
 
     @Bean
@@ -182,5 +183,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(daoAuthenticationProvider()).authenticationProvider(jwtAuthenticationProvider());
+    }
+
+    @Bean
+    public LogStrictHttpFirewall logStrictHttpFirewall(){
+        return new LogStrictHttpFirewall();
     }
 }

@@ -12,11 +12,15 @@ import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.naming.ServiceUnavailableException;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Path;
@@ -120,6 +124,16 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseDto otherException(Exception e){
+        if (e instanceof HttpMediaTypeNotAcceptableException){
+            HttpMediaTypeNotAcceptableException exception = (HttpMediaTypeNotAcceptableException) e;
+            if (RequestContextHolder.currentRequestAttributes() != null) {
+                HttpServletRequest request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
+                log.error("HttpMediaTypeNotAcceptableException 当前请求 url : {} \n supports: {}",request.getRequestURI(),exception.getSupportedMediaTypes());
+            }else {
+                log.info("HttpMediaTypeNotAcceptableException 不是 http 请求: {}",exception.getSupportedMediaTypes());
+            }
+
+        }
         log.error(e.getMessage(),e);
         return ResponseDto.err(e.getClass().getSimpleName()).message(e.getMessage());
     }
