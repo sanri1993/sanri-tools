@@ -9,7 +9,7 @@ logging:
 maven:
   remoteRepositorys: https://mirrors.huaweicloud.com/repository/maven/
 collect:
-  ip: localhost
+  ip: 123.60.46.33
   port: 8085
 translate:
   baidu:
