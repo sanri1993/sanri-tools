@@ -14,10 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
@@ -37,6 +34,11 @@ public class RandomDataService {
      */
     public Object randomData(String className,ClassLoader classLoader) throws ClassNotFoundException {
         Class<?> clazz = classLoader.loadClass(className);
+        return populateDataStart(clazz);
+    }
+
+    public Object populateDataStart(Class<?> clazz ){
+        typeMapping.get().clear();
         return populateData(clazz);
     }
 
@@ -45,12 +47,14 @@ public class RandomDataService {
      * @param clazz
      * @return
      */
-    public Object populateData(Class<?> clazz){
+    protected Object populateData(Class<?> clazz){
         if(isPrimitiveExtend(clazz)){
             return populateDataOrigin(null,clazz);
         }
         return populateDataComplex(clazz);
     }
+
+    private final ThreadLocal<Map<String, Class<?>>> typeMapping = ThreadLocal.withInitial(HashMap::new);
 
     /**
      * 这个方法可以注入简单类型和复杂类型,注入单个类型
@@ -76,6 +80,38 @@ public class RandomDataService {
             }
             if(propertyType == Map.class){
                 return populateMapData(parameterizedType, columnName);
+            }
+
+            final TypeVariable[] typeParameters = propertyType.getTypeParameters();
+            for (int i = 0; i < parameterizedType.getActualTypeArguments().length; i++) {
+                final Type actualTypeArgument = parameterizedType.getActualTypeArguments()[i];
+                final TypeVariable typeParameter = typeParameters[i];
+                typeMapping.get().put(typeParameter.getName(), (Class<?>) actualTypeArgument);
+            }
+            // 注入 Bean
+            return populateData(propertyType);
+        }
+
+        if (type instanceof TypeVariable){
+            final Map<String, Class<?>> classMap = typeMapping.get();
+            final Class<?> clazz = classMap.get(type.getTypeName());
+            if (clazz != null){
+                return populateData(clazz);
+            }
+        }
+
+        if (type instanceof GenericArrayType){
+            GenericArrayType genericArrayType = (GenericArrayType) type;
+            final Type genericComponentType = genericArrayType.getGenericComponentType();
+            final Map<String, Class<?>> classMap = typeMapping.get();
+            final Class<?> clazz = classMap.get(genericComponentType.getTypeName());
+            if (clazz != null){
+                final int arraySize = RandomUtils.nextInt(2, 10);
+                final Object array = Array.newInstance(clazz, arraySize);
+                for (int i = 0; i < arraySize; i++) {
+                    Array.set(array,i,populateData(clazz));
+                }
+                return array;
             }
         }
 

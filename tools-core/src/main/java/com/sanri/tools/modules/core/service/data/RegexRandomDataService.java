@@ -1,14 +1,12 @@
 package com.sanri.tools.modules.core.service.data;
 
-import com.sanri.tools.modules.core.service.data.regex.OrdinaryNode;
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.validation.constraints.Pattern;
+
+import com.sanri.tools.modules.core.service.data.randomstring.RandomStringGenerator;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.Pattern;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 使用正则表达式生成随机数据
@@ -16,19 +14,14 @@ import javax.validation.constraints.Pattern;
 @Service
 @Slf4j
 public class RegexRandomDataService extends RandomDataService{
+    public static final RandomStringGenerator generator = new RandomStringGenerator();
     /**
      * 从正则表达式生成随机数据
      * @param expression
      * @return
      */
     public static String regexRandom(String expression)  {
-        try {
-            OrdinaryNode ordinaryNode = new OrdinaryNode(expression);
-            return ordinaryNode.random();
-        } catch (Exception e) {
-            log.error("使用正则表达式生成数据失败,{}:{}",e.getClass().getSimpleName(),e.getMessage());
-        }
-        return "";
+        return generator.generateByRegex(expression);
     }
 
     /**

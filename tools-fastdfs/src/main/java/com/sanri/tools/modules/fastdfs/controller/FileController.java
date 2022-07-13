@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotBlank;
 
-import com.sanri.tools.modules.core.dtos.DictDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
@@ -23,18 +22,20 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.csource.common.MyException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import com.sanri.tools.modules.core.exception.ToolException;
-import com.sanri.tools.modules.core.utils.StreamUtil;
-import com.sanri.tools.modules.fastdfs.service.FastdfsService;
-
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.sanri.tools.modules.core.dtos.DictDto;
+import com.sanri.tools.modules.core.exception.ToolException;
+import com.sanri.tools.modules.core.utils.StreamResponse;
+import com.sanri.tools.modules.fastdfs.service.FastdfsService;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @Slf4j
@@ -46,7 +47,7 @@ public class FileController {
     private FastdfsService fastdfsService;
 
     @Autowired
-    private StreamUtil streamUtil;
+    private StreamResponse streamUtil;
 
     /**
      * 文件预览
@@ -62,7 +63,7 @@ public class FileController {
         if (bytes == null){
             throw new ToolException("文件丢失");
         }
-        streamUtil.preview(new ByteArrayInputStream(bytes), StreamUtil.MimeType.STREAM,response);
+        streamUtil.preview(new ByteArrayInputStream(bytes), MediaType.APPLICATION_OCTET_STREAM,response);
     }
 
     /**
@@ -114,7 +115,7 @@ public class FileController {
 
         String downloadFilename = "download_"+dfsIdArray.size()+"_"+ DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT.format(System.currentTimeMillis()) + "."+ extension;
 
-        streamUtil.downloadSetResponse(StreamUtil.MimeType.STREAM,downloadFilename,response);
+        streamUtil.preDownloadSetResponse(MediaType.APPLICATION_OCTET_STREAM,downloadFilename,response);
         HttpServletRequest request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
         response.setHeader("filename", downloadFilename);
 

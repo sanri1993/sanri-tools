@@ -17,15 +17,21 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NameService {
 
-    // 分词器
+    /**
+     * 分词器实现列表
+     */
     @Autowired(required = false)
     private List<TokenizerTool> tokenizerTools = new ArrayList<>();
 
-    // 翻译工具, 包含业务翻译,英语翻译
+    /**
+     * 翻译工具, 包含业务翻译,英语翻译
+     */
     @Autowired(required = false)
     private List<Translate> translates = new ArrayList<>();
 
-    // 后续处理工具
+    /**
+     * 后续处理工具
+     */
     @Autowired(required = false)
     private List<CharHandler> charHandlers = new ArrayList<>();
 

@@ -22,20 +22,30 @@ public class RedisNode {
     private String id;
     private HostAndPort hostAndPort;
     private String role;
-    // 父级 id
+    /**
+     * 父级 id
+     */
     private String masterId;
 
-    // 槽位范围,只有集群模式才会有
+    /**
+     * 槽位范围,只有集群模式才会有
+     */
     private int slotStart;
     private int slotEnd;
 
-    // 当前节点数据量
+    /**
+     * 当前节点数据量
+     */
     private Map<String,Long> dbSizes = new LinkedHashMap<>();
 
-    // 数据库数量
+    /**
+     * 数据库数量
+     */
     private int dbs;
 
-    // redis 连接
+    /**
+     * redis 连接
+     */
     @JsonIgnore
     private JedisPool jedisPool;
     private int index;
@@ -44,7 +54,9 @@ public class RedisNode {
     private RedisNode masterNode;
     private List<RedisNode> slaveNodes = new ArrayList<>();
 
-    // info 信息, 避免重复翻译
+    /**
+     * info 信息, 避免重复翻译
+     */
     private Info info = new Info();
 
     public RedisNode() {
@@ -219,6 +231,46 @@ public class RedisNode {
         }
     }
 
+    public Server calcServer(){
+        if (info.server != null){
+            return info.server;
+        }
+        final Jedis jedis = browerJedis();
+        try{
+            info.server = server(jedis);
+            return info.server;
+        }finally {
+            jedis.close();
+        }
+    }
+
+    private Server server(Jedis jedis){
+        String info = jedis.info("Server");
+        List<String[]> parser = CommandReply.colonCommandReply.parser(info);
+        Server server = new Server();
+        for (String[] line : parser) {
+            if (line.length == 2){
+                if ("redis_version".equals(line[0])){
+                    server.setVersion(line[1]);
+                }else if ("redis_mode".equals(line[0])){
+                    server.setMode(line[1]);
+                }else if ("os".equals(line[0])){
+                    server.setOs(line[1]);
+                }else if ("arch_bits".equals(line[0])){
+                    server.setArchBits(line[1]);
+                }else if ("process_id".equals(line[0])){
+                    server.setPid(line[1]);
+                }else if ("tcp_port".equals(line[0])){
+                    server.setPort(line[1]);
+                }else if ("uptime_in_seconds".equals(line[0])){
+                    server.setUpTime(NumberUtils.toInt(line[1]));
+                }
+            }
+        }
+
+        return server;
+    }
+
     private Memory memory(Jedis jedis){
         String info = jedis.info("Memory");
         List<String[]> parser = CommandReply.colonCommandReply.parser(info);
@@ -323,9 +375,21 @@ public class RedisNode {
     }
 
     @Data
+    public static final class Server {
+        private String version;
+        private String mode;
+        private String os;
+        private String archBits;
+        private String pid;
+        private String port;
+        private int upTime;
+    }
+
+    @Data
     public static final class Info{
         private Boolean cluster;
         private Replication replication;
         private Memory memory;
+        private Server server;
     }
 }

@@ -60,7 +60,6 @@ public class CodeSqlService {
     @Autowired
     private Configuration configuration;
 
-    // jsqlparser 解析
     private CCJSqlParserManager parserManager = new CCJSqlParserManager();
 
     /**

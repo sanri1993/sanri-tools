@@ -23,8 +23,7 @@ import com.sanri.tools.modules.core.dtos.param.ConnectParam;
 import com.sanri.tools.modules.core.dtos.param.MongoAuthParam;
 import com.sanri.tools.modules.core.dtos.param.MongoConnectParam;
 import com.sanri.tools.modules.core.dtos.param.PageParam;
-import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
-import com.sanri.tools.modules.core.service.file.ConnectServiceOldFileBase;
+import com.sanri.tools.modules.classloader.ClassloaderService;
 
 import com.sanri.tools.modules.mongodb.dtos.CollectionDto;
 

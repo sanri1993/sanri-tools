@@ -20,11 +20,12 @@
         <module>tools-quartz</module>
         <module>tools-elasticsearch</module>
         <module>tools-tcp</module>
-        <module>tools-patchcode</module>
+        <module>tools-version-control</module>
         <module>tools-security</module>
         <module>tools-jvm</module>
         <module>tools-springsecurity-websocket</module>
         <module>tools-fastdfs</module>
+        <module>tools-maven</module>
     </modules>
 
     <parent>
@@ -67,11 +68,17 @@
             <artifactId>commons-lang3</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.4</version>
+        </dependency>
+        <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
             <version>3.2.1</version>
         </dependency>
         <dependency>
+
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
             <version>1.8.3</version>
@@ -149,9 +156,8 @@
                     <target>1.8</target>
                     <encoding>UTF-8</encoding>
                     <compilerArguments>
-                        <!--                        <verbose />-->
                         <!-- 将jdk的依赖jar打入项目中，这样项目中使用的jdk的依赖就能正常使用 主要是加载 asm 的包 -->
-<!--                        <bootclasspath>${java.home}/lib/rt.jar;${java.home}/lib/jce.jar;${java.home}/lib/jsse.jar;${java.home}/lib/tools.jar</bootclasspath>-->
+                        <bootclasspath>${java.home}/lib/rt.jar;${java.home}/lib/jce.jar;${java.home}/lib/jsse.jar;${java.home}/lib/tools.jar</bootclasspath>
                     </compilerArguments>
                 </configuration>
             </plugin>

@@ -17,4 +17,5 @@ public class UploadClassInfo {
     @JSONField(serialize = false)
     private MultipartFile [] files;
     private String pomContent;
+    private String settings;
 }

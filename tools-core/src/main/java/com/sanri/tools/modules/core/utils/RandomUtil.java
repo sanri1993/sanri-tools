@@ -39,7 +39,10 @@ public class RandomUtil {
     public static final String BOY="伟刚勇毅俊峰强军平保东文辉力明永健鸿世广万志义兴良海山仁波宁贵福生龙元全国胜学祥才发武新利清飞彬富顺信子杰涛昌成康星光天达安岩中茂进林有坚和彪博诚先敬震振壮会思群豪心邦承乐绍功松善厚庆磊民友裕河哲江超浩亮政谦亨奇固之轮翰朗伯宏言若鸣朋斌梁栋维启克伦翔旭鹏泽晨辰士以建家致树炎德行时泰盛雄琛钧冠策腾楠榕风航弘正日";
 
 	public static JSONObject AREANO_MAP;
-	public static List<String> AREA_CITY_MAP = new ArrayList<>(); 		// 身份证前 6 位码
+	/**
+	 * 身份证前 6 位码
+	 */
+	public static List<String> AREA_CITY_MAP = new ArrayList<>();
 	public static JSONObject CITY_LIST;
     public static final String[] EMAIL_SUFFIX="@gmail.com,@yahoo.com,@msn.com,@hotmail.com,@aol.com,@ask.com,@live.com,@qq.com,@0355.net,@163.com,@163.net,@263.net,@3721.net,@yeah.net,@googlemail.com,@126.com,@sina.com,@sohu.com,@yahoo.com.cn".split(",");
     public static final String[] PHONE_SEGMENT = "133,149,153,173,177,180,181,189,199,130,131,132,145,155,156,166,171,175,176,185,186,166,135,136,137,138,139,147,150,151,152,157,158,159,172,178,182,183,184,187,188,198,170".split(",");

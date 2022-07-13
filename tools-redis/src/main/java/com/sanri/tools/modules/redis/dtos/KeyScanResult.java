@@ -12,10 +12,14 @@ public class KeyScanResult {
     private List<KeyResult> keys = new ArrayList<>();
     private String nodeId;
     private String cursor;
-    // 标志本节点是否完成
+    /**
+     * 标志本节点是否完成
+     */
     @JsonIgnore
     private boolean finish;
-    // 标志所有节点是否完成
+    /**
+     * 标志所有节点是否完成
+     */
     private boolean done;
 
     public KeyScanResult() {

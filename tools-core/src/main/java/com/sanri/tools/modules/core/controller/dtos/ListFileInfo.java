@@ -1,5 +1,9 @@
 package com.sanri.tools.modules.core.controller.dtos;
 
+import java.io.File;
+
+import org.apache.commons.io.FileUtils;
+
 import lombok.Data;
 
 @Data
@@ -18,5 +22,12 @@ public class ListFileInfo {
         this.size = size;
         this.directory = directory;
         this.lastUpdateTime = lastUpdateTime;
+    }
+
+    public ListFileInfo(File file) {
+        this.name = file.getName();
+        this.size = FileUtils.sizeOf(file);
+        this.directory = file.isDirectory();
+        this.lastUpdateTime = file.lastModified();
     }
 }

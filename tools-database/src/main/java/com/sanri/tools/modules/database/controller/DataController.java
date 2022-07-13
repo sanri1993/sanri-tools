@@ -201,7 +201,9 @@ public class DataController {
         return dictDtos;
     }
 
-    // 中文说明 => spel 表达式
+    /**
+     * 中文说明 => spel 表达式
+     */
     static final List<DictDto<String>> dictDtos = new ArrayList<>();
     static {
         final Method[] methods1 = ReflectionUtils.getAllDeclaredMethods(RandomUtil.class);

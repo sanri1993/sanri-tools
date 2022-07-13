@@ -46,7 +46,6 @@ public class TabeRelationMetaData {
      */
     private Map<String,Map<Namespace, Set<TableRelation>>> tableRelationMap = new ConcurrentHashMap<>();
 
-    // jsqlparser 解析
     private CCJSqlParserManager parserManager = new CCJSqlParserManager();
 
     /**

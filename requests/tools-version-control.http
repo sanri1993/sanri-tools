@@ -1,0 +1,108 @@
+### git 相关操作 - 查看分组列表
+GET {{baseUrl}}/security/connect/git/connectNames
+Authorization: {{Authorization}}
+
+### git 相关操作 - 查看分组仓库列表
+GET {{baseUrl}}/git/repositorys?group=sanri
+Authorization: {{Authorization}}
+
+### git 相关操作 - 查看分支列表
+GET {{baseUrl}}/git/branchs?group=sanri&repository=sanri-tools-maven
+Authorization: {{Authorization}}
+
+### git 相关操作 - 切换分支
+GET {{baseUrl}}/git/switchBranch?group=sanri&repository=sanri-tools-maven&branchName=master
+Authorization: {{Authorization}}
+
+### git 相关操作 - 更新提交记录
+GET {{baseUrl}}/git/pull?group=sanri&repository=sanri-tools-maven
+Authorization: {{Authorization}}
+
+### git 相关操作 - 获取提交记录列表
+GET {{baseUrl}}/git/commits?group=sanri&repository=sanri-tools-maven
+Authorization: {{Authorization}}
+
+### git 相关操作 - 获取变更文件列表
+POST {{baseUrl}}/git/diffChanges
+Authorization: {{Authorization}}
+Content-Type: application/json
+
+{
+  "projectLocation": {
+    "group": "sanri",
+    "repository": "sanri-tools-maven"
+  },
+  "commitIds": ["21d1a8b0fae7ee3b75440aefb9cc97ee7cc16444"]
+}
+
+### git 相关操作 - 获取变更文件树
+POST {{baseUrl}}/git/diffTree
+Authorization: {{Authorization}}
+Content-Type: application/json
+
+{
+  "projectLocation": {
+    "group": "sanri",
+    "repository": "sanri-tools-maven"
+  },
+  "commitIds": ["21d1a8b0fae7ee3b75440aefb9cc97ee7cc16444"]
+}
+
+### maven 项目相关操作 - 获取模块树
+GET {{baseUrl}}/project/maven/modules?group=sanri&repository=sanri-tools-maven
+Authorization: {{Authorization}}
+
+### maven 项目相关操作 - 猜测编译模块
+POST {{baseUrl}}/project/maven/guessCompileModules
+Authorization: {{Authorization}}
+Content-Type: application/json
+
+{
+  "projectLocation": {
+    "group": "sanri",
+    "repository": "sanri-tools-maven"
+  },
+  "commitIds": ["5610e14a221fae6e6a3086cc0d5e68a4070d796d","1ebf3ea9201f0f2b388276bbdbd5fa1ef5879fc1"]
+}
+
+### maven 项目相关操作 - 执行 maven 命令 (编译, 打包)
+POST {{baseUrl}}/project/maven/execute/goals
+Authorization: {{Authorization}}
+Content-Type: application/json
+
+{
+  "settingsName": "test",
+  "projectLocation": {
+    "group": "sanri",
+    "repository": "sanri-tools-maven"
+  },
+  "relativePomFile": "tools-core/pom.xml",
+  "goals": ["clean","compile","package"]
+}
+
+### maven 项目操作 - 依赖分析
+POST {{baseUrl}}/project/maven/resolve/dependencies
+Authorization: {{Authorization}}
+Content-Type: application/json
+
+{
+  "settings": "test",
+  "projectLocation": {
+    "group": "yuanian",
+    "repository": "fssc_eam"
+  },
+  "relativePomFile": "eam-service/fssc-eims/fssc-eims-core/taxmpv2-eam/utax-eam-base/pom.xml"
+}
+
+### maven 项目操作 - 单文件编译
+POST {{baseUrl}}/project/maven/compileLittleFiles
+Authorization: {{Authorization}}
+Content-Type: application/json
+
+{
+  "projectLocation": {
+    "group": "yuanian",
+    "repository": "fssc_eam"
+  },
+  "relativePaths": ["eam-service/fssc-eims/fssc-eims-core/taxmpv2-eam/utax-eam-base/src/main/java/com/wenjing/eambase/service/pushbiz/OnlyCollectImageFinishUpload.java"]
+}

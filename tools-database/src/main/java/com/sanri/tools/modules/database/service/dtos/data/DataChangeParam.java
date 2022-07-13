@@ -54,6 +54,7 @@ public class DataChangeParam {
                 return DiffType.MODIFY;
             case "delete":
                 return DiffType.DELETE;
+            default:
         }
         throw new ToolException("不支持的变更类型:"+changeType);
     }

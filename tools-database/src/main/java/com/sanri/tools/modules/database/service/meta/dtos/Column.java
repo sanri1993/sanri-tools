@@ -10,7 +10,9 @@ public class Column {
     @JsonIgnore
     private ActualTableName actualTableName;
     private String columnName;
-    // javax.sql.Types
+    /**
+     * {@link javax.sql.Types}
+     */
     private int dataType;
     private String typeName;
     private int columnSize;

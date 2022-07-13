@@ -21,7 +21,6 @@ public class TableRelation {
     private String sourceColumnName;
     private String targetColumnName;
 
-    // ONE_ONE,ONE_MANY,MANY_MANY
     @NotNull
     @EnumStringValue({"ONE_ONE","ONE_MANY","MANY_MANY"})
     private String relation;

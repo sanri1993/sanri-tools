@@ -17,7 +17,9 @@ public class DubboProviderDto {
     private String version;
     private String serviceClassName;
     private String application;
-    // dubbo 版本
+    /**
+     * dubbo 版本
+     */
     private String dubbo;
     private long timestamp;
     private String methods;

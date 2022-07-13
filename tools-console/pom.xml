@@ -60,7 +60,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>tools-patchcode</artifactId>
+            <artifactId>tools-version-control</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -80,6 +80,16 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>tools-springsecurity-websocket</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>tools-websocket</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>tools-serializable</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -95,16 +105,8 @@
             <artifactId>tools-tcp</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>tools-websocket</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>tools-springsecurity-websocket</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>tools-zookeeper</artifactId>
@@ -114,6 +116,11 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>tools-fastdfs</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sanri.tools</groupId>
+            <artifactId>tools-maven</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -183,7 +190,7 @@
                         </include>
                         <include>
                             <groupId>${project.groupId}</groupId>
-                            <artifactId>tools-patchcode</artifactId>
+                            <artifactId>tools-version-control</artifactId>
                         </include>
                         <include>
                             <groupId>${project.groupId}</groupId>
@@ -233,6 +240,11 @@
                         <include>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>tools-fastdfs</artifactId>
+                        </include>
+
+                        <include>
+                            <groupId>com.sanri.tools</groupId>
+                            <artifactId>tools-maven</artifactId>
                         </include>
                     </includes>
                     <includeSystemScope>true</includeSystemScope>

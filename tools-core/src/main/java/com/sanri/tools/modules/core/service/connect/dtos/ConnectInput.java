@@ -21,7 +21,6 @@ public class ConnectInput {
      * @examples yaml,json
      */
     @NotBlank
-    // yaml json
     private String configTypeName;
     /**
      * 数据所在组织

@@ -30,11 +30,7 @@ public class UserManagerService {
     @Autowired
     private GroupService groupService;
     @Autowired
-    private ResourceService resourceService;
-    @Autowired
     private RoleRepository roleRepository;
-    @Autowired
-    private ResourceRepository resourceRepository;
     @Autowired
     private RoleService roleService;
 

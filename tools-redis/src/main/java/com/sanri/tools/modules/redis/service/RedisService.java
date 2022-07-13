@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PreDestroy;
 
-import com.sanri.tools.modules.core.dtos.param.ConnectParam;
 import com.sanri.tools.modules.core.service.connect.ConnectService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -20,8 +19,7 @@ import org.springframework.stereotype.Service;
 import com.sanri.tools.modules.core.dtos.UpdateConnectEvent;
 import com.sanri.tools.modules.core.dtos.param.RedisConnectParam;
 import com.sanri.tools.modules.core.exception.ToolException;
-import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
-import com.sanri.tools.modules.core.service.file.ConnectServiceOldFileBase;
+import com.sanri.tools.modules.classloader.ClassloaderService;
 
 import com.sanri.tools.modules.redis.dtos.*;
 import com.sanri.tools.modules.redis.dtos.in.*;
@@ -43,7 +41,10 @@ import redis.clients.util.JedisClusterCRC16;
 @Service
 @Slf4j
 public class RedisService implements ApplicationListener<UpdateConnectEvent> {
-    // 保存的 redis 连接信息
+    /**
+     * 保存的 redis 连接信息
+     * connName => RedisConnection
+     */
     private Map<String, RedisConnection> clientMap = new ConcurrentHashMap<>();
     @Autowired
     private ConnectService connectService;

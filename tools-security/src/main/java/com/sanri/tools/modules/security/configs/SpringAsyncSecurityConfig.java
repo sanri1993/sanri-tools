@@ -21,7 +21,7 @@ public class SpringAsyncSecurityConfig {
     @Bean(name = "asyncExecutor")
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(10);
+        executor.setCorePoolSize(1);
         executor.setMaxPoolSize(100);
         executor.setThreadGroupName("MyCustomExecutor");
         executor.setWaitForTasksToCompleteOnShutdown(true);

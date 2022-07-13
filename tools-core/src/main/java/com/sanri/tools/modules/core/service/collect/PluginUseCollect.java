@@ -33,7 +33,11 @@ public class PluginUseCollect implements DataCollect , InitializingBean {
 	private Socket socket;
 	private BufferedWriter bufferedWriter;
 
+	@Override
 	public void collect() {
+		if (true) {
+            return ;
+        }
 		final Map<String, PluginManager.EnhancePlugin> pluginRegisterMap = pluginManager.getPluginRegisterMap();
 		final String userIp = NetUtil.getLocalIPs().get(0);
 		final String sendData = JSON.toJSONString(pluginRegisterMap.values());

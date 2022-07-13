@@ -92,6 +92,22 @@ public class RedisMonitorController {
     }
 
     /**
+     * 服务信息
+     * @param connParam
+     * @param nodeId
+     * @return
+     */
+    @GetMapping("/serverInfo")
+    public RedisNode.Server serverInfo(@Validated ConnParam connParam, String nodeId) throws IOException {
+        final RedisConnection redisConnection = redisService.redisConnection(connParam);
+        RedisNode redisNode = redisConnection.findRedisNodeById(nodeId);
+        if (redisNode != null) {
+            return redisNode.calcServer();
+        }
+        return null;
+    }
+
+    /**
      * 客户端连接列表
      * @param connParam
      * @return

@@ -31,7 +31,9 @@ public class RedisTreeKeyService {
     @Autowired
     private SerializerChoseService serializerChoseService;
 
-    // 1 万条以下的数据可以使用
+    /**
+     * 2 万条以下的数据可以使用
+     */
     public static final long supportKeys = 20000;
 
     /**

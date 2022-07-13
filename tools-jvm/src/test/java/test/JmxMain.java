@@ -27,6 +27,21 @@ import com.sun.management.ThreadMXBean;
 
 public class JmxMain {
 
+
+    @Test
+    public void testJmx() throws IOException {
+        JMXServiceURL jmxServiceURL = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://10.101.72.42:59949/jmxrmi");
+        JMXConnector connect = JMXConnectorFactory.connect(jmxServiceURL, null);
+
+        MBeanServerConnection mBeanServerConnection = connect.getMBeanServerConnection();
+        String[] domains = mBeanServerConnection.getDomains();
+        for (String domain : domains) {
+            System.out.println(domain);
+        }
+
+        connect.close();
+    }
+
     @Test
     public void test0(){
         System.out.println(JmxMain.class.getProtectionDomain().getCodeSource().getLocation());

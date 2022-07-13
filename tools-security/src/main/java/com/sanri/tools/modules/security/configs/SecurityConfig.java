@@ -31,6 +31,8 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
+import org.springframework.security.web.header.Header;
+import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -146,7 +148,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/**/*.png","/**/*.jpg","/**/*.gif","/**/*.ico","/**/img/*","/**/images/*","/**/images/**/*",
                 "/**/fonts/*",
                 "/static/**"
-        );
+        ).antMatchers("/public/**");
 
         web.httpFirewall(logStrictHttpFirewall());
     }

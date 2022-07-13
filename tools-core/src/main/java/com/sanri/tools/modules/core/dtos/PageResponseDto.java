@@ -4,7 +4,9 @@ import lombok.Data;
 
 @Data
 public class PageResponseDto<T> {
-    //返回对象，可装list以及其他参数
+    /**
+     * 返回对象，可装list以及其他参数
+     */
     private Object obj;
     private Long total;
 
@@ -14,5 +16,9 @@ public class PageResponseDto<T> {
     public PageResponseDto(Object obj, Long total) {
         this.obj = obj;
         this.total = total;
+    }
+
+    public Object getData(){
+        return obj;
     }
 }

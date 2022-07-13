@@ -12,9 +12,13 @@ import java.util.Set;
  */
 @Getter
 public class ConsumerGroupInfo {
-    // 组协调器
+    /**
+     * 组协调器
+     */
     private BrokerInfo coordinator;
-    // 分区分配策略 默认 range
+    /**
+     * 分区分配策略 默认 range
+     */
     private String partitionAssignor;
     private List<MemberInfo> memberInfos = new ArrayList<>();
 

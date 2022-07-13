@@ -1,16 +1,21 @@
 package com.sanri.tools.modules.core.utils;
 
+import com.sanri.tools.modules.core.exception.ToolException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 import org.apache.commons.compress.archivers.zip.Zip64Mode;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -102,44 +107,185 @@ public class ZipUtil {
 	 * 功能: zip 解压缩<br>
 	 * 入参: <br>
 	 */
-	public static void unzip(File zipFile, String outputPath) {
-		if(StringUtils.isBlank(outputPath)){
-			//如果没有指定输出目录,则使用 zipFile 文件目录
-			outputPath = zipFile.getParent();
+	public static File unzip(File zipFile, File outputDir) throws IOException {
+		if (zipFile == null){
+			throw new ToolException("zip 文件不能为空");
 		}
-		if (zipFile != null && zipFile.exists()) {
-			//创建输出目录
-			File outputDir = new File(outputPath);
-			if(!outputDir.exists()){
-				outputDir.mkdirs();
+		if (outputDir == null){
+			outputDir = zipFile.getParentFile();
+		}
+		if (!outputDir.isAbsolute()){
+			outputDir = new File(zipFile.getParentFile(),outputDir.getPath());
+		}
+//		if (!outputDir.isDirectory()){
+//			throw new ToolException("zip 解压输出路径必须是一个路径");
+//		}
+		outputDir.mkdirs();
+
+		// 解压出来的最终路径
+		File unzipDir = null;
+
+		try(InputStream is = new FileInputStream(zipFile);
+			ZipArchiveInputStream zais = new ZipArchiveInputStream(is);) {
+
+			ArchiveEntry archiveEntry = null;
+			while ((archiveEntry = zais.getNextEntry()) != null) {
+				String entryFileName = archiveEntry.getName();
+				File entryFile = new File(outputDir,entryFileName);
+				if(archiveEntry.isDirectory()){
+					entryFile.mkdirs();
+					continue;
+				}
+				try(FileOutputStream fos = new FileOutputStream(entryFile);){
+					IOUtils.copy(zais, fos);
+				}
 			}
-			
-			//开始解压
-			InputStream is = null;
-			ZipArchiveInputStream zais = null;
-			try {
-				is = new FileInputStream(zipFile);
-				zais = new ZipArchiveInputStream(is);
+		}
+
+		return outputDir;
+	}
+
+	public static final class UnzipConfig{
+
+	}
+
+	/**
+	 * Zip 文件, 用于压缩或者解压缩
+	 */
+	public static final class ZipFile implements Closeable{
+		private File zipFile;
+		private ZipArchiveOutputStream outputStream;
+
+		public ZipFile(File zipFile) throws IOException {
+			zipFile.getParentFile().mkdirs();
+
+			final String extension = FilenameUtils.getExtension(zipFile.getName());
+			if (!"zip".equalsIgnoreCase(extension)){
+				// 如果没有 zip 后缀名, 自动添加 zip 后缀名
+				this.zipFile = new File(zipFile.getParentFile(),zipFile.getName() + ".zip");
+			}else {
+				this.zipFile = zipFile;
+			}
+
+			// 如果 zip 文件不存在, 则创建文件用于压缩, 否则就是需要解压的文件
+			if (!this.zipFile.exists()){
+				this.zipFile.createNewFile();
+
+				this.outputStream = new ZipArchiveOutputStream(this.zipFile);
+				outputStream.setUseZip64(Zip64Mode.AsNeeded);
+			}
+		}
+
+		/**
+		 * 解压到目录
+		 * @param file
+		 * @return
+		 * @throws IOException
+		 */
+		public File unzipTo(File file) throws IOException {
+			if (!file.exists() || file.isDirectory()){
+				throw new ToolException("目录不存在或者不是一个目录");
+			}
+			// 新建同名目录进行解压
+			final File unpackDir = new File(file, zipFile.getName());
+
+			try(InputStream is = new FileInputStream(zipFile);
+				ZipArchiveInputStream zais = new ZipArchiveInputStream(is);) {
+
 				ArchiveEntry archiveEntry = null;
-				FileOutputStream fos = null;
-				while ((archiveEntry = zais.getNextEntry()) != null) {   
+				while ((archiveEntry = zais.getNextEntry()) != null) {
 					String entryFileName = archiveEntry.getName();
-					File entryFile = new File(outputDir,entryFileName);
+					File entryFile = new File(unpackDir,entryFileName);
 					if(archiveEntry.isDirectory()){
 						entryFile.mkdirs();
 						continue;
 					}
-					fos = new FileOutputStream(entryFile);
-					IOUtils.copy(zais, fos);
-					IOUtils.closeQuietly(fos);
+					try(FileOutputStream fos = new FileOutputStream(entryFile);){
+						IOUtils.copy(zais, fos);
+					}
 				}
-			} catch (IOException e) {
-				log.error("ZipUtil unzip error: {}",e.getMessage(),e);
-			} finally{
-				IOUtils.closeQuietly(is);
-				IOUtils.closeQuietly(zais);
+			}
+
+			return unpackDir;
+		}
+
+		/**
+		 * 完成 zip 文件创建
+		 * @throws IOException
+		 */
+		public void finishZip() throws IOException {
+			if (outputStream != null){
+				outputStream.finish();
+			}
+		}
+
+		/**
+		 * 添加文件列表到 zip 文件中
+		 * @param files
+		 */
+		public void addFiles(File...files) throws IOException {
+			for (File file : files) {
+				if (file.isFile()){
+					addFile(file,file.getName());
+				}else if (file.isDirectory()){
+					addDirectory(file,new OnlyPath(file.getParentFile()));
+				}
+			}
+		}
+
+		/**
+		 * 添加文件列表并完成压缩
+		 * @param files
+		 * @throws IOException
+		 */
+		public void addFilesAndFinish(File...files) throws IOException {
+			addFiles(files);
+
+			finishZip();
+		}
+
+		/**
+		 * 添加一个文件到 zip 文件中
+		 * @param file
+		 */
+		protected void addFile(File file,String path) throws IOException {
+			ZipArchiveEntry zipArchiveEntry = new ZipArchiveEntry(file, path);
+			outputStream.putArchiveEntry(zipArchiveEntry);
+			try(final FileInputStream fileInputStream = new FileInputStream(file)){
+				IOUtils.copy(fileInputStream,outputStream);
+				outputStream.closeArchiveEntry();
+			}
+		}
+
+		/**
+		 * 添加一个目录到 zip 文件中
+		 * @param dir
+		 * @param path
+		 */
+		protected void addDirectory(File dir,OnlyPath path) throws IOException {
+			final Collection<File> listFilesAndDirs = FileUtils.listFilesAndDirs(dir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
+			for (File listFilesAndDir : listFilesAndDirs) {
+				final String relativePath = path.relativize(new OnlyPath(listFilesAndDir)).toString();
+				if (listFilesAndDir.isDirectory()) {
+					// 如果是目录, 先添加一个 entry
+					JarArchiveEntry jarArchiveEntry = new JarArchiveEntry(relativePath + "/");
+					outputStream.putArchiveEntry(jarArchiveEntry);
+					outputStream.closeArchiveEntry();
+					continue;
+				}
+				addFile(listFilesAndDir,relativePath);
+			}
+		}
+
+		@Override
+		public void close() throws IOException {
+			if (outputStream != null){
+				outputStream.flush();
+				outputStream.close();
 			}
 		}
 	}
+
+
 
 }

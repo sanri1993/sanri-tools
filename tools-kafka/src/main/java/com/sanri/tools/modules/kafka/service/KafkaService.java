@@ -281,7 +281,8 @@ public class KafkaService {
 
         Collection<MemberDescription> members = consumerGroupDescription.members();
         for (MemberDescription member : members) {
-            String host = member.host();                // 需要加入这个,这样才能知道哪些主题的哪些分区在哪个主机上消费
+            // 需要加入这个,这样才能知道哪些主题的哪些分区在哪个主机上消费
+            String host = member.host();
             MemberAssignment assignment = member.assignment();
 
             Set<TopicPartition> topicPartitions = assignment.topicPartitions();

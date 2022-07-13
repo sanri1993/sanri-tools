@@ -26,6 +26,8 @@ public class ConfigData {
         this.tableMetas = tableMetas;
     }
 
-    // 中间生成的临时信息
+    /**
+     * 中间生成的临时信息
+     */
     private Map<String,Object> otherConfig = new HashMap<>();
 }

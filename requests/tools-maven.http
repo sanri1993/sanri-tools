@@ -1,0 +1,40 @@
+### 获取 maven 配置列表
+GET {{baseUrl}}/security/connect/maven/connectNames
+Authorization: {{Authorization}}
+
+### 执行任务管理 - 执行 goal 日志查看
+GET {{baseUrl}}/goals/logs/list/page?pageNo=1&pageSize=3
+Authorization: {{Authorization}}
+
+### 执行任务管理 - 读取日志
+GET {{baseUrl}}/goals/logs/readLog?logPath=20220521100815393.out.log
+Authorization: {{Authorization}}
+
+### 本地 maven 管理 - 当前 maven 版本
+GET {{baseUrl}}/maven/local/current
+Authorization: {{Authorization}}
+
+### 本地 maven 管理 - 版本列表
+GET {{baseUrl}}/maven/local/versions
+Authorization: {{Authorization}}
+
+### 本地 maven 管理 - 版本列表
+POST {{baseUrl}}/maven/local/upload
+Authorization: {{Authorization}}
+Content-Type: multipart/form-data; boundary=localUpload
+
+--localUpload
+Content-Disposition: form-data; name="file"; filename="apache-maven-3.5.0-bin.zip"
+Content-Type: application/octet-stream
+
+< C:/Users/Administrator/.m2/wrapper/dists/apache-maven-3.5.0-bin/6ps54u5pnnbbpr6ds9rppcc7iv/apache-maven-3.5.0-bin.zip
+
+### 本地 maven 管理 - 删除一个 maven 管理
+GET {{baseUrl}}/maven/local/delete?filename=apache-maven-3.5.0
+Authorization: {{Authorization}}
+
+### resolveJars
+
+### test
+GET {{baseUrl}}/maven/test
+Authorization: {{Authorization}}

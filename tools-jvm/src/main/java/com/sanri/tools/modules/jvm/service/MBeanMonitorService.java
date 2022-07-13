@@ -267,6 +267,7 @@ public class MBeanMonitorService {
                 return NumberUtils.toInt(Objects.toString(param));
             case "java.lang.String":
                 return param;
+            default:
         }
 
         // 如果是数组类型, 并且传入进来是 ArrayList , 那么把 ArrayList 转数组

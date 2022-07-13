@@ -11,7 +11,9 @@ public class YoudaoTranslateRequest {
     private String from = "auto";
     private String to = "auto";
     private String signType = "v3";
-    // 当前时间 单位:秒
+    /**
+     * 当前时间 单位:秒
+     */
     private String curtime;
     private String appKey;
     private String q;

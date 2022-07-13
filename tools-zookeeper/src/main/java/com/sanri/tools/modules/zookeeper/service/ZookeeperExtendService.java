@@ -24,7 +24,9 @@ import java.util.*;
 @Service
 @Slf4j
 public class ZookeeperExtendService implements ApplicationListener<DeleteSecurityConnectEvent> {
-    // 路径收藏  connName ==> PathFavorite
+    /**
+     * 路径收藏  connName ==> Set<PathFavorite>
+     */
     private static final Map<String, Set<PathFavorite>> pathFavorites = new HashMap<>();
 
     @Autowired

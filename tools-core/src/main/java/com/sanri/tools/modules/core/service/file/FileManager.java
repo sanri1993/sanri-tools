@@ -1,6 +1,7 @@
 package com.sanri.tools.modules.core.service.file;
 
 import com.sanri.tools.modules.core.dtos.ConfigPath;
+import com.sanri.tools.modules.core.utils.OnlyPath;
 import com.sanri.tools.modules.core.utils.ZipUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -33,13 +34,9 @@ public class FileManager {
         tmpBase = fileManagerProperties.getTmp();
         dataBase = fileManagerProperties.getData();
 
-        if (configBase == null && base != null){
+        if (base != null){
             configBase = new File(base,"configs");
-        }
-        if (tmpBase == null && base != null){
             tmpBase = new File(base,"tmp");
-        }
-        if (dataBase == null && base != null){
             dataBase = new File(base,"data");
         }
     }
@@ -296,7 +293,20 @@ public class FileManager {
         return relativize;
     }
 
+    /**
+     * 相对于临时路径的路径
+     * @param onlyPath
+     * @return
+     */
+    public OnlyPath relativePath(OnlyPath onlyPath){
+        return new OnlyPath(tmpBase).relativize(onlyPath);
+    }
+
     public File getTmpBase() {
         return tmpBase;
+    }
+
+    public File getDataBase(){
+        return dataBase;
     }
 }

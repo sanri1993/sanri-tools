@@ -6,13 +6,11 @@ import org.springframework.util.ResourceUtils;
 import sun.net.www.protocol.ftp.FtpURLConnection;
 
 import javax.net.ssl.HttpsURLConnection;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * url uri 工具;功能列表如下
@@ -151,5 +149,32 @@ public class URLUtil {
         URLConnection urlConnection = url.openConnection();
         InputStream inputStream = urlConnection.getInputStream();
         return inputStream;
+    }
+
+    /**
+     * 将 url 转成路径, 只有当协议为 file:// 协议的时候才能成功转化
+     * @param url
+     * @return
+     * @throws URISyntaxException
+     */
+    public static File toFile(URL url) throws URISyntaxException {
+        return new File(url.toURI());
+    }
+
+    /**
+     * 转文件列表
+     * @param urlIterator
+     * @return
+     * @throws URISyntaxException
+     */
+    public static List<File> convertFiles(Iterable<URL> urlIterator) throws URISyntaxException {
+        List<File> files = new ArrayList<>();
+        final Iterator<URL> iterator = urlIterator.iterator();
+        while (iterator.hasNext()){
+            final URL next = iterator.next();
+            final File file = toFile(next);
+            files.add(file);
+        }
+        return files;
     }
 }

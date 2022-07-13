@@ -4,6 +4,7 @@ import lombok.Data;
 import org.quartz.JobKey;
 import org.quartz.TriggerKey;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -14,8 +15,10 @@ public class TriggerTask {
     private Long prevFireTime;
     private Long nextFireTime;
     private String cron;
-    // 最近的执行时间
-    private List<String> nextTimes;
+    /**
+     * 最近的执行时间列表
+     */
+    private List<String> nextTimes = new ArrayList<>();
 
     public TriggerTask() {
     }

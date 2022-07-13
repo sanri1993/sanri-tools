@@ -1,9 +1,11 @@
 package com.sanri.tools.modules.core.dtos.param;
 
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.commons.lang3.math.NumberUtils;
 
 @Setter
+@ToString
 public class PageParam {
 	/**
 	 * 页号

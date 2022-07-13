@@ -66,7 +66,14 @@ public class CodeTemplateService {
     @Autowired(required = false)
     private Map<String, RenameStrategy> renameStrategyMap = new HashMap<>();
 
-    // 数据都存储在这个路径下,使用后缀来区分是方案还是模板 *.schema 是方案 , *.ftl 是 freemarker 模板 ,*.vm 是 velocity 模板
+    /**
+     * 数据都存储在这个路径下,使用后缀来区分是方案还是模板
+     * <ul>
+     *     <li>*.schema 是方案</li>
+     *     <li>*.ftl 是 freemarker 模板</li>
+     *     <li>*.vm 是 velocity 模板</li>
+     * </ul>
+     */
     private static final String basePath = "code/templates";
     private static final String[] SCHEMA_EXTENSION = {"schema"};
     private static final String[] TEMPLATE_EXTENSION = {"ftl","vm"};
@@ -118,17 +125,36 @@ public class CodeTemplateService {
         List<String> collect = files.stream().map(File::getName).collect(Collectors.toList());
         return collect;
     }
-    // 模板或者方案内容
+
+    /**
+     * 模板或者方案内容
+     * @param name 模板名或者方案名
+     * @return
+     * @throws IOException
+     */
     public String content(String name) throws IOException {
         File dir = fileManager.mkConfigDir(basePath);
         return FileUtils.readFileToString(new File(dir, name), StandardCharsets.UTF_8);
     }
-    // 方案依赖的模板列表
+
+    /**
+     * 方案依赖的模板列表
+     * @param name 方案名称
+     * @return
+     * @throws IOException
+     */
     public List<String> schemaTemplates(String name) throws IOException {
         File dir = fileManager.mkConfigDir(basePath);
         return FileUtils.readLines(new File(dir,name), StandardCharsets.UTF_8);
     }
-    // 写入模板或方案 最终于生成的模板名称是这样子的 真实名.扩展名.时间戳.模板类型;  如果为新加的,则为 真实名.扩展名.模板类型
+
+    /**
+     * 写入模板或方案 最终于生成的模板名称是这样子的 真实名.扩展名.时间戳.模板类型;
+     * 如果为新加的,则为 真实名.扩展名.模板类型
+     * @param name
+     * @param content
+     * @throws IOException
+     */
     public void writeContent(String name,String content) throws IOException {
         File dir = fileManager.mkConfigDir(basePath);
         String fileName = trueFileName(name);
@@ -137,7 +163,11 @@ public class CodeTemplateService {
         FileUtils.writeStringToFile(file, content, StandardCharsets.UTF_8);
     }
 
-    // 上传一个模板
+    /**
+     * 上传一个模板
+     * @param file 模板文件
+     * @throws IOException
+     */
     public void uploadTemplate(MultipartFile file) throws IOException {
         File dir = fileManager.mkConfigDir(basePath);
         String name = file.getOriginalFilename();

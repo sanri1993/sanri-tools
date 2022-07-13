@@ -17,7 +17,9 @@ public final class IdCard18Model {
     private int serialNo;
     private char checkCode;
 
-    // 区域代码列表
+    /**
+     * 区域代码列表
+     */
     public static String[] areaCodes;
 
     public IdCard18Model() {

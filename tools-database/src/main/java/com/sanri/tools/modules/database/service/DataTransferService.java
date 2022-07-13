@@ -1,6 +1,7 @@
 package com.sanri.tools.modules.database.service;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.sanri.tools.modules.core.service.NamedThreadFactory;
 import com.sanri.tools.modules.database.service.code.dtos.ProjectGenerateConfig;
 import com.sanri.tools.modules.database.service.connect.ConnDatasourceAdapter;
 import com.sanri.tools.modules.database.service.dtos.compare.DiffType;
@@ -48,7 +49,7 @@ public class DataTransferService {
     /**
      * 数据读写取线程池
      */
-    private ThreadPoolExecutor threadPoolExecutor =  new ThreadPoolExecutor(2,5,0, TimeUnit.SECONDS,new ArrayBlockingQueue<>(100));
+    private ThreadPoolExecutor threadPoolExecutor =  new ThreadPoolExecutor(2,5,0, TimeUnit.SECONDS,new ArrayBlockingQueue<>(100),new NamedThreadFactory("dataTransfer"));
 
     /**
      * 数据缓存队列, 每一个队列代表一个批次

@@ -8,7 +8,6 @@ import javax.validation.constraints.NotNull;
 
 @Data
 public class EditJobParam {
-//    private JobKey jobKey;
     private Namespace namespace;
     /**
      * 任务名

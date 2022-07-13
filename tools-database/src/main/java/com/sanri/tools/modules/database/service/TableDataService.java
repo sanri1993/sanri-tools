@@ -72,10 +72,11 @@ public class TableDataService {
     @Autowired
     private TabeRelationMetaData tabeRelationMetaData;
 
-    // sepl 表达式解析器
+    /**
+     * sepl 表达式解析器
+     */
     private ExpressionParser expressionParser = new SpelExpressionParser();
 
-    // jsqlparser 解析
     private CCJSqlParserManager parserManager = new CCJSqlParserManager();
 
     @Autowired
@@ -169,6 +170,7 @@ public class TableDataService {
                         update.setWhere(where);
                     }
                     break;
+                default:
             }
 
         }

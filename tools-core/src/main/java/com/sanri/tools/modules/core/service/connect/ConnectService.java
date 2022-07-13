@@ -9,6 +9,7 @@ import com.sanri.tools.modules.core.service.connect.dtos.ConnectTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
@@ -111,6 +112,8 @@ public abstract class ConnectService {
      */
     public abstract String loadContent(String module, String baseName) throws IOException;
 
+    public abstract File connectFile(String module,String baseName);
+
     /**
      * 删除一个连接
      * @param module 模块名
@@ -144,7 +147,13 @@ public abstract class ConnectService {
     }
     ObjectMapper objectMapper = new ObjectMapper();
 
-    // 使用 fastjson 在反序列化 kafka 的时候有问题, 这里换成 jackson
+    /**
+     * 使用 fastjson 在反序列化 kafka 的时候有问题, 这里换成 jackson
+     * @param module 模块名
+     * @param connName 连接名
+     * @return
+     * @throws IOException
+     */
     public AbstractConnectParam readConnParams(String module, String connName) throws IOException {
         checkAccess(module,connName);
 

@@ -27,7 +27,7 @@ import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.stereotype.Service;
 
-import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
+import com.sanri.tools.modules.classloader.ClassloaderService;
 import com.sanri.tools.modules.mybatis.dtos.BoundSqlParam;
 import com.sanri.tools.modules.mybatis.dtos.StatementIdInfo;
 
@@ -41,7 +41,9 @@ public class MybatisDynamicCallService {
     @Autowired
     private MybatisXmlFileManager mybatisXmlFileManager;
 
-    // projectName => Configuration
+    /**
+     * projectName => Configuration
+     */
     private Map<String, Configuration> projectConfigurationMap = new ConcurrentHashMap<>();
 
     private ParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();

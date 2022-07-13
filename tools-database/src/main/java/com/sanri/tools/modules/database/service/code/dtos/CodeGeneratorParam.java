@@ -11,7 +11,9 @@ public class CodeGeneratorParam {
    private ProjectGenerateConfig.DataSourceConfig dataSourceConfig;
    private ProjectGenerateConfig.PackageConfig packageConfig;
    private String renameStrategyName;
-   // 单一文件 , 这时只会使用 dataSourceConfig
+   /**
+    * 单一文件 , 这时只会使用 dataSourceConfig
+    */
    private boolean single;
 
    /**

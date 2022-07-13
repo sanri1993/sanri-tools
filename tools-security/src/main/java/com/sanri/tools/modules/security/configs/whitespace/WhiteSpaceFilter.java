@@ -23,7 +23,9 @@ public class WhiteSpaceFilter extends OncePerRequestFilter {
 
     AntPathMatcher antPathMatcher =  new AntPathMatcher();
 
-    // 白名单列表
+    /**
+     * 白名单列表
+     */
     private List<String> whitespaceUrls = new ArrayList<>();
 
     public WhiteSpaceFilter(UrlSecurityPermsLoad urlSecurityPermsLoad,TokenService tokenService) {

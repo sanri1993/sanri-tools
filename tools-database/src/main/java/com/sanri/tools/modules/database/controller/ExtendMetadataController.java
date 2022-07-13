@@ -91,6 +91,17 @@ public class ExtendMetadataController {
     }
 
     /**
+     * 查询当前名称空间所有表关系
+     * @param connName 连接名
+     * @param namespace 名称空间
+     * @return
+     */
+    @GetMapping("/relation/list")
+    public Set<TableRelation> relations(@NotNull String connName,Namespace namespace){
+        return tableRelationService.tableRelations(connName, namespace);
+    }
+
+    /**
      * 当前表被哪些表引用
      * @param connName
      * @param catalog
@@ -126,6 +137,12 @@ public class ExtendMetadataController {
         return tableRelationService.hierarchy(connName,actualTableName);
     }
 
+    /**
+     * 当前表被引用表层级关系
+     * @param connName
+     * @param actualTableName
+     * @return
+     */
     @GetMapping("/relation/superTypes")
     public TableRelationTree superTypes(@NotNull String connName, @Validated ActualTableName actualTableName){
         return tableRelationService.superTypes(connName,actualTableName);

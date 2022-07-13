@@ -212,7 +212,7 @@ public class FileBaseConnectService extends ConnectService implements Initializi
     }
 
     @Override
-    public String loadContent(String module, String baseName) throws IOException {
+    public File connectFile(String module, String baseName) {
         final Map<String, ConnectOutput> connectOutputMap = connectInfoMap.get(module);
         if (connectOutputMap != null){
             final ConnectOutput connectOutput = connectOutputMap.get(baseName);
@@ -237,11 +237,19 @@ public class FileBaseConnectService extends ConnectService implements Initializi
 
                 final String path = connectOutput.getPath();
                 final File connectBase = fileManager.mkConfigDir("connectBase");
-                final File file = new File(connectBase, path);
-                return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+                return new File(connectBase, path);
             }
         }
         throw new ToolException("连接信息不存在或已被删除:"+module+"/"+baseName);
+    }
+
+    @Override
+    public String loadContent(String module, String baseName) throws IOException {
+        final File connectFile = connectFile(module, baseName);
+        if (connectFile == null){
+            throw new ToolException("连接信息不存在或无权限: "+ module+"/"+baseName);
+        }
+        return FileUtils.readFileToString(connectFile, StandardCharsets.UTF_8);
     }
 
     /**
@@ -291,15 +299,15 @@ public class FileBaseConnectService extends ConnectService implements Initializi
         final File info = new File(connectBase, "info");
         if (!info.exists()) {
             info.createNewFile();
-            return ;
-        }
-        final List<String> connectLines = FileUtils.readLines(info, StandardCharsets.UTF_8);
-        for (String connectLine : connectLines) {
-            final String[] split = StringUtils.splitPreserveAllTokens(connectLine, ":", 11);
-            final ConnectInput connectInput = new ConnectInput(split[1], split[2], split[3],split[4]);
-            final ConnectOutput connectOutput = new ConnectOutput(NumberUtils.toLong(split[0]), connectInput, split[5], new Date(NumberUtils.toLong(split[6])), new Date(NumberUtils.toLong(split[7])), NumberUtils.toInt(split[8]), split[9]);
-            final Map<String, ConnectOutput> connectOutputMap = connectInfoMap.computeIfAbsent(connectInput.getModule(),value -> new ConcurrentHashMap<>(16));
-            connectOutputMap.put(connectInput.getBaseName(), connectOutput);
+        }else {
+            final List<String> connectLines = FileUtils.readLines(info, StandardCharsets.UTF_8);
+            for (String connectLine : connectLines) {
+                final String[] split = StringUtils.splitPreserveAllTokens(connectLine, ":", 11);
+                final ConnectInput connectInput = new ConnectInput(split[1], split[2], split[3], split[4]);
+                final ConnectOutput connectOutput = new ConnectOutput(NumberUtils.toLong(split[0]), connectInput, split[5], new Date(NumberUtils.toLong(split[6])), new Date(NumberUtils.toLong(split[7])), NumberUtils.toInt(split[8]), split[9]);
+                final Map<String, ConnectOutput> connectOutputMap = connectInfoMap.computeIfAbsent(connectInput.getModule(), value -> new ConcurrentHashMap<>(16));
+                connectOutputMap.put(connectInput.getBaseName(), connectOutput);
+            }
         }
 
         // 加载可用的模块, 每个模块自己注册连接模板, 只有注册了连接模板的模块才能创建连接 connect.[模板名].template.[文件格式]

@@ -24,7 +24,10 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 public class TableMarkMetaData {
-    // connName ==> catalog.schema.tableName ==> TableMark
+    /**
+     * 表标记存储结构
+     * connName ==> catalog.schema.tableName ==> TableMark
+     */
     private Map<String, Map<ActualTableName, TableMark>> tableMarkMap = new HashMap<>();
 
     @Autowired

@@ -62,6 +62,7 @@ public class TransferDataRow {
                 case 93:
                     // datetime
                     return DataChange.DATETIME;
+                default:
 
             }
             return DataChange.DEFAULT;

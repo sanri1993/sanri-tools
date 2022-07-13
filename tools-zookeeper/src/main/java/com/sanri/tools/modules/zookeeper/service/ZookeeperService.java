@@ -41,8 +41,11 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class ZookeeperService implements ApplicationListener {
-    // connName ==> ZkClient
-    Map<String, ZkClient> zkClientMap = new ConcurrentHashMap<String, ZkClient>();
+    /**
+     * zookeeper 客户端列表
+     * connName ==> ZkClient
+     */
+    private Map<String, ZkClient> zkClientMap = new ConcurrentHashMap<String, ZkClient>();
 
     @Autowired
     private ConnectService connectService;
@@ -119,7 +122,9 @@ public class ZookeeperService implements ApplicationListener {
         return zooNodeACLS;
     }
 
-    // 默认序列化工具
+    /**
+     * 默认序列化工具
+     */
     private static final ZkSerializer DEFAULT_ZKSERIALIZER = new BytesPushThroughSerializer();
 
     /**

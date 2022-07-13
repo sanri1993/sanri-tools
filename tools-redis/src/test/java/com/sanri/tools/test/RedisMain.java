@@ -22,6 +22,11 @@ public class RedisMain {
         jedis.close();
     }
 
+    public void testVersion(){
+        Jedis jedis = new Jedis("192.168.61.71",6699);
+        jedis.auth("Redis@1234@pAssword");
+    }
+
     @Test
     public void testScan(){
         Jedis jedis = new Jedis("10.101.40.74",7000);

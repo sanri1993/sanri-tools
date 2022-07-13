@@ -17,18 +17,20 @@ public interface UserService {
 
     /**
      * 当前登录人名称
+     * @return 当前登录用户名
      */
     String username();
 
     /**
      * 当前登录人
-     * @return
+     * @return 当前登录人
      */
     ThinUser user();
 
     /**
      * 修改密码
-     * @param oldPassword
+     * @param oldPassword 旧密码
+     * @param password 新密码
      */
     void changePassword(String oldPassword,String password);
 

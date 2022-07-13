@@ -35,7 +35,7 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSONObject;
-import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
+import com.sanri.tools.modules.classloader.ClassloaderService;
 import com.sanri.tools.modules.core.service.file.FileManager;
 
 import com.sanri.tools.modules.mybatis.dtos.BoundSqlCallParam;
@@ -58,10 +58,14 @@ public class MybatisService {
     @Autowired
     private ConnDatasourceAdapter connDatasourceAdapter;
 
-    // projectName => Configuration
+    /**
+     * projectName => Configuration
+     */
     private Map<String, Configuration> projectConfigurationMap = new ConcurrentHashMap<>();
 
-    // projectName ==> classloaderName 类加载器绑定, 主要用于下次重新加载的时候能拿到是哪个类加载器
+    /**
+     * projectName ==> classloaderName 类加载器绑定, 主要用于下次重新加载的时候能拿到是哪个类加载器
+     */
     private Map<String,String> classloaderBind = new ConcurrentHashMap<>();
 
     /**

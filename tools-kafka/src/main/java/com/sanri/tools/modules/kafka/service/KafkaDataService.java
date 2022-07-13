@@ -2,9 +2,8 @@ package com.sanri.tools.modules.kafka.service;
 
 import com.alibaba.fastjson.JSON;
 import com.sanri.tools.modules.core.dtos.param.KafkaConnectParam;
-import com.sanri.tools.modules.core.service.classloader.ClassloaderService;
+import com.sanri.tools.modules.classloader.ClassloaderService;
 import com.sanri.tools.modules.core.service.connect.ConnectService;
-import com.sanri.tools.modules.core.service.file.ConnectServiceOldFileBase;
 import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.core.utils.NetUtil;
 import com.sanri.tools.modules.kafka.dtos.*;
@@ -159,7 +158,8 @@ public class KafkaDataService {
             Document doc = new Document();
 
             Object data = kafkaDatum.getData();
-            int dataConvert = 1;            // 1 是原始数据, 2 是 json 转出来的 , 3 是 hex 数据
+            // 1 是原始数据, 2 是 json 转出来的 , 3 是 hex 数据
+            int dataConvert = 1;
             String textData = "";
             if (data instanceof String){
                 textData = (String) data;
@@ -302,7 +302,8 @@ public class KafkaDataService {
         KafkaConsumer<byte[], byte[]> consumer = kafkaService.loadConsumerClient(clusterName);
         List<PartitionKafkaData> datas = new ArrayList<>();
 
-        final int loadTimes = 5; // 加载 5 次, 每次加载 20ms
+        // 加载 5 次, 每次加载 20ms
+        final int loadTimes = 5;
         long perLoadTimeInMillis =  20 ;
 
         try {

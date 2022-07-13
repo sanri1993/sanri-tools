@@ -35,7 +35,9 @@ public class ConnectServiceOldFileBase {
     @Autowired(required = false)
     private UserService userService;
 
-    // 连接都保存在这个目录
+    /**
+     * 连接都保存在这个目录
+     */
     public static final String MODULE = "connect";
 
     /**
@@ -123,7 +125,13 @@ public class ConnectServiceOldFileBase {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
-    // 使用 fastjson 在反序列化 kafka 的时候有问题, 这里换成 jackson
+    /**
+     * 使用 fastjson 在反序列化 kafka 的时候有问题, 这里换成 jackson
+     * @param module 模块名
+     * @param connName 连接名
+     * @return
+     * @throws IOException
+     */
     public AbstractConnectParam readConnParams(String module,String connName) throws IOException {
         String content = content(module, connName);
         Class<?> paramClass = moduleParamFactory(module);

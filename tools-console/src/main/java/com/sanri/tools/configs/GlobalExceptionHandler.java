@@ -21,16 +21,17 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.naming.ServiceUnavailableException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import javax.validation.Path;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StreamCorruptedException;
 import java.net.ConnectException;
-import java.util.ArrayList;
-import java.util.List;
 
+/**
+ * @author sanri
+ */
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
@@ -86,7 +87,11 @@ public class GlobalExceptionHandler {
         }
     }
 
-    // get 请求绑定实体
+    /**
+     * get 请求绑定实体
+     * @param ex
+     * @return
+     */
     @ExceptionHandler(value = BindException.class)
     public ResponseDto bindException(BindException ex) {
         // ex.getFieldError():随机返回一个对象属性的异常信息。如果要一次性返回所有对象属性异常信息，则调用ex.getAllErrors()
@@ -106,7 +111,11 @@ public class GlobalExceptionHandler {
         return SystemMessage.ARGS_ERROR.exception(fieldError.getField(),fieldError.getRejectedValue(),fieldError.getDefaultMessage()).getResponseDto();
     }
 
-    // 方法普通参数验证
+    /**
+     * 方法普通参数验证
+     * @param ex
+     * @return
+     */
     @ExceptionHandler(value = ConstraintViolationException.class)
     public ResponseDto constraintViolationException(ConstraintViolationException ex){
         ConstraintViolation<?> constraintViolation = ex.getConstraintViolations().iterator().next();
@@ -151,7 +160,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IOException.class)
-    public ResponseDto ioException(IOException e){
+    public ResponseDto ioException(IOException e, HttpServletResponse response){
         if (e.getCause() != null && e.getCause() instanceof ServiceUnavailableException){
             return serviceUnavailableException((ServiceUnavailableException) e.getCause());
         }

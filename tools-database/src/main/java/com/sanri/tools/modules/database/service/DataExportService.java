@@ -63,7 +63,6 @@ public class DataExportService {
     @Autowired
     private JdbcDataService jdbcService;
 
-    // jsqlparser 解析
     private CCJSqlParserManager parserManager = new CCJSqlParserManager();
 
     @Autowired
@@ -199,11 +198,15 @@ public class DataExportService {
         return new ExportProcessDto(path.toString(),1,1);
     }
 
-    // 单线程导出最大数据量
+    /**
+     * 单线程导出最大数据量
+     */
     static final int exportPerLimit = 10000;
 
-    // 数据导出线程池 私用
-    ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1,10,0, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<>(100),new NamedThreadFactory("exportExcel"));
+    /**
+     * 数据导出线程池 私用
+     */
+    private ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1,10,0, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<>(100),new NamedThreadFactory("exportExcel"));
     /**
      * 多线程导出数据
      * @param dataQueryParam

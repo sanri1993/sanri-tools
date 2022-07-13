@@ -14,7 +14,9 @@ import java.util.stream.Collectors;
 
 public class ClusterNode {
     private List<RedisNode> redisNodes = new ArrayList<>();
-    // jedisCluster 线程安全, jedis 非线程安全
+    /**
+     * jedisCluster 线程安全, jedis 非线程安全
+     */
     private JedisCluster jedisCluster;
 
     public void close() {
