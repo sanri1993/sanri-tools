@@ -26,6 +26,7 @@
         <module>tools-springsecurity-websocket</module>
         <module>tools-fastdfs</module>
         <module>tools-maven</module>
+        <module>tools-rocketmq</module>
     </modules>
 
     <parent>

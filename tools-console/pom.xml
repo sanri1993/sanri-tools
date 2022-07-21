@@ -118,10 +118,16 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.sanri.tools</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>tools-maven</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>tools-rocketmq</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

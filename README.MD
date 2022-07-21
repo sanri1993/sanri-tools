@@ -30,19 +30,34 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
 * 2021.11.01 增加 git 增量工具
 * 2022.01.01 增加权限管理
 * 2022.03.01 数据库模块重构
+* 2022.06.01 补丁工具模块重构
+* 2022.07.01 添加 rocketmq 工具
+* 2022.07.20 菜单修改(见 help/newmenu.conf)
 
 ## 快速开始
 **说明:** 这里只会说当前发布最新版本的运行说明, 旧版本请参考对应的文档, 文档命名为(help/QuickStart-版本号.MD)
 
-1. 下载主运行包和依赖 jar 包
-    主运行包下载 [去下载](https://gitee.com/sanri/sanri-tools-maven/releases)
+从 3.2.0 版本开始, [前端运行包(4M)](), [依赖包(90M)](), 和[后端jar包(4M)]() 将分离, 因为之前的版本将前端包合并在后端包里无法快速修复前端 bug 
 
-  sanritoolslib [下载地址](https://cowtransfer.com/s/0df01e65aaca4f)
+大致的目录结构可以这样放置, 然后运行后端, 前端会加载 public 目录下的前端文件
 
-2. 启动 jar  
 ```
-java -Dloader.path=sanritoolslib -Xms256m -Xmx256m -jar sanritools.jar
+sanritoolslib(依赖包)
+  fastjson.jar
+  connect-mysql-java.jar 
+  ....
+public(前端包)
+  index.html
+  static
+sanritools.jar(后端运行包)
+
+启动命令, 极简形式
+java -Dloader.path=sanritoolslib -jar sanritools.jar
+
+指定内存,  后台启动
+nohup java -Dloader.path=sanritoolslib -Xms256m -Xmx256m -jar sanritools.jar >/dev/null 2>&1 & 
 ```
+
 
 ## 版本和文档说明
 当前工具的版本在 `tools-console/src/main/resources/version` 文件中, 使用 3 位版本号, 主版本.次版本.bug更新

@@ -1,0 +1,65 @@
+### clusters
+GET {{baseUrl}}/rocketmq/query/clusters?connName=192.168.60.180
+Authorization: {{Authorization}}
+
+### topics normal
+GET {{baseUrl}}/rocketmq/query/topics?connName=192.168.60.180
+Authorization: {{Authorization}}
+
+### topics system
+GET {{baseUrl}}/rocketmq/query/topics/system?connName=192.168.60.180
+Authorization: {{Authorization}}
+
+### topics retry
+GET {{baseUrl}}/rocketmq/query/topics/retry?connName=192.168.60.180
+Authorization: {{Authorization}}
+
+### consumerGroups
+GET {{baseUrl}}/rocketmq/query/consumerGroups?connName=192.168.60.180
+Authorization: {{Authorization}}
+
+### consumerGroup stat
+GET {{baseUrl}}/rocketmq/query/consumerGroup/stat?connName=192.168.60.180&consumerGroup=CC_DT_FUSION_MYSQL_YN_MQCONSUMERDELETEGROUPSERVICE_CONSOLE_DELETEGROUP
+Authorization: {{Authorization}}
+
+### consumerGroup topics
+GET {{baseUrl}}/rocketmq/query/consumerGroup/subscribes?connName=192.168.60.180&consumerGroup=CC_DT_FUSION_MYSQL_YN_MQCONSUMERDELETEGROUPSERVICE_CONSOLE_DELETEGROUP
+Authorization: {{Authorization}}
+
+### consumerGroup topic Infos
+GET {{baseUrl}}/rocketmq/query/consumerGroup/subscribeTopics?connName=192.168.60.180&consumerGroup=CC_DT_FUSION_MYSQL_YN_MQCONSUMERDELETEGROUPSERVICE_CONSOLE_DELETEGROUP
+Authorization: {{Authorization}}
+
+### consumerGroup consumer mode info
+GET {{baseUrl}}/rocketmq/query/consumerGroup/connInfo?connName=192.168.60.180&consumerGroup=CC_DT_FUSION_MYSQL_YN_MQCONSUMERDELETEGROUPSERVICE_CONSOLE_DELETEGROUP
+Authorization: {{Authorization}}
+
+### topic stat
+GET {{baseUrl}}/rocketmq/query/topic/stat?connName=192.168.60.180&topic=LIUR22061001_YN_CONSOLE_TASK_MESSAGE
+Authorization: {{Authorization}}
+
+### topic Info
+GET {{baseUrl}}/rocketmq/query/topic/info?connName=192.168.60.180&topic=LIUR22061001_YN_CONSOLE_TASK_MESSAGE
+Authorization: {{Authorization}}
+
+### topic route info
+GET {{baseUrl}}/rocketmq/query/topic/route?connName=192.168.60.180&topic=CC_DT_FUSION_MYSQL_YN_CONSOLE_DELETEGROUP
+Authorization: {{Authorization}}
+
+### topic consumer by who
+GET {{baseUrl}}/rocketmq/query/topic/consumerByWho?connName=192.168.60.180&topic=CC_DT_FUSION_MYSQL_YN_CONSOLE_DELETEGROUP
+Authorization: {{Authorization}}
+
+### topic message via queue pageQuery
+GET {{baseUrl}}/rocketmq/query/topic/queue/messageByPage?connName=192.168.60.180&topic=LIUR22061001_YN_CONSOLE_TASK_MESSAGE&queueId=3&pageSize=10&offset=-1
+Authorization: {{Authorization}}
+
+### topic message pageQuery
+GET {{baseUrl}}/rocketmq/query/topic/messageByPage?connName=192.168.60.180&topic=LIUR22061001_YN_CONSOLE_TASK_MESSAGE&pageSize=10&offset=0
+Authorization: {{Authorization}}
+
+### message Trace
+GET {{baseUrl}}/rocketmq/query/messageTrace?connName=192.168.60.180&topic=LIUR22061001_YN_CONSOLE_TASK_MESSAGE&msgId=7F000001000C030DAE81481C2E4A0510
+Authorization: {{Authorization}}
+
+

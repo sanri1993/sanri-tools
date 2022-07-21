@@ -30,6 +30,14 @@ Redis 模块有一个 json 的配置模板， 所以这里展示出来是 Redis 
 
 这里的模板文件在 [tools-redis/src/main/resources/connect.redis.template.json](tools-redis/src/main/resources/connect.redis.template.json), 取名规则 为 `connect.模块名.template.配置格式`
 
+目前支持的模块有 `database`,`zookeeper`,`redis`,`kafka`,`git`,`fastdfs`,`maven`,`jvm`,`rocketmq`
+
+* redis 不需要使用者区分是集群环境还是主从还是单点 ,只需要填写一个节点的信息即可
+* zookeeper 也不需要区分是集群环境还是单点, 只需要输入一个节点信息
+* kafka 是以 zookeeper 为基础的 ,当建立 kafka 连接时,需要保持连接名和 zookeeper 的连接名一致；kafka 的连接是 yaml 格式,和 spring 配置文件保持一致即可
+* database 完整支持 mysql,oracle,postgresql, 并部分支持所有能支持 JDBC 的数据库
+* git 用于 git 仓库代码打增量 class 包使用 
+
 ### 类加载器管理
 
 类加载器用于加载系统外的类， 用于将获取到的数据进行序列化和反序列化操作，这也是本程序主要卖点之一，将数据明文友好的展示
