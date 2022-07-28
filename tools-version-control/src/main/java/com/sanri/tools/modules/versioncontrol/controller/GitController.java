@@ -3,10 +3,12 @@ package com.sanri.tools.modules.versioncontrol.controller;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
+import com.sanri.tools.modules.versioncontrol.dtos.*;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -14,10 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.sanri.tools.modules.core.dtos.param.PageParam;
 import com.sanri.tools.modules.core.utils.OnlyPath;
-import com.sanri.tools.modules.versioncontrol.dtos.ChoseCommits;
-import com.sanri.tools.modules.versioncontrol.dtos.FilterBranchParam;
-import com.sanri.tools.modules.versioncontrol.dtos.PageBranches;
-import com.sanri.tools.modules.versioncontrol.dtos.ProjectLocation;
 import com.sanri.tools.modules.versioncontrol.git.GitBranchService;
 import com.sanri.tools.modules.versioncontrol.git.GitDiffService;
 import com.sanri.tools.modules.versioncontrol.git.GitRepositoryService;
@@ -160,6 +158,30 @@ public class GitController {
     public List<Commit> commits(@NotBlank String group, @NotBlank String repository) throws IOException, GitAPIException {
         return gitBranchService.commits(group,repository,200);
     }
+
+    /**
+     * 提交者列表
+     * @param group
+     * @param repository
+     * @return
+     */
+    @GetMapping("/authors")
+    public Set<String> authors(@NotBlank String group, @NotBlank String repository) throws IOException, GitAPIException {
+        return gitBranchService.authors(group, repository);
+    }
+
+    /**
+     * 过滤提交记录
+     * @param group
+     * @param repository
+     * @param commitFilterParam
+     * @return
+     */
+    @GetMapping("/commits/filter")
+    public List<Commit> filterCommits(@NotBlank String group, @NotBlank String repository, CommitFilterParam commitFilterParam) throws IOException, GitAPIException {
+        return gitBranchService.filterCommits(group, repository, commitFilterParam);
+    }
+
 
     /**
      * 获取变更文件记录列表

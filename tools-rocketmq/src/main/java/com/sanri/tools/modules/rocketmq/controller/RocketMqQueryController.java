@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.common.admin.ConsumeStats;
 import org.apache.rocketmq.common.admin.TopicStatsTable;
 import org.apache.rocketmq.common.protocol.body.ConsumerConnection;
+import org.apache.rocketmq.common.protocol.body.ConsumerRunningInfo;
 import org.apache.rocketmq.common.protocol.body.TopicList;
 import org.apache.rocketmq.common.protocol.route.TopicRouteData;
 import org.apache.rocketmq.tools.admin.api.MessageTrack;
@@ -116,6 +117,19 @@ public class RocketMqQueryController {
     }
 
     /**
+     * 消费组运行时信息
+     * @param connName
+     * @param consumerGroup
+     * @return
+     */
+    @GetMapping("/consumerGroup/runningInfo")
+    public ConsumerRunningInfo consumerRunningInfo(@NotBlank String connName, @NotBlank String consumerGroup, String clientId, boolean jstack) throws Exception {
+        return rocketMqConsumerService.consumerGroupRunningInfo(connName,consumerGroup,clientId,jstack);
+    }
+
+
+
+    /**
      * 订阅主题列表
      * @param connName
      * @param consumerGroup
@@ -148,6 +162,19 @@ public class RocketMqQueryController {
     @GetMapping("/consumerGroup/connInfo")
     public ConsumerConnection consumerGroupConnInfo(@NotBlank String connName, @NotBlank String consumerGroup) throws Exception {
         return rocketMqConsumerService.consumerGroupConnection(connName, consumerGroup);
+    }
+
+    /**
+     * 消费组配置
+     * @param connName
+     * @param clusterName
+     * @param consumerGroup
+     * @return
+     * @throws Exception
+     */
+    @GetMapping("/consumerGroup/config")
+    public List<BrokerSubscribeConfig> consumerGroupConfig(@NotBlank String connName, String clusterName, @NotBlank String consumerGroup) throws Exception {
+        return rocketMqConsumerService.consumerGroupConfig(connName, clusterName, consumerGroup);
     }
 
     /**
@@ -190,7 +217,7 @@ public class RocketMqQueryController {
      * @param topic
      * @return
      */
-    @GetMapping("/topicConfig")
+    @GetMapping("/topic/config")
     public List<BrokerTopicConfig> topicConfigs(@NotBlank String connName,String clusterName,@NotBlank String topic) throws Exception {
         return rocketMqTopicService.topicConfig(connName,clusterName,topic);
     }
@@ -207,25 +234,40 @@ public class RocketMqQueryController {
     }
 
     /**
-     * 主题 队列 消息分页查询
+     * 查询消息
      * @param connName
-     * @param queueMessageQueryParam
+     * @param messageQueryParam
      * @return
      */
-    @GetMapping("/topic/queue/messageByPage")
-    public TopicMessageResponse topicQueueMessageByPage(@NotBlank String connName, QueueMessageQueryParam queueMessageQueryParam) throws Exception{
-        return rocketMqMessageService.queryTopicQueueMessageByPage(connName,queueMessageQueryParam);
+    @GetMapping("/topic/queryMessageByKey")
+    public List<MessageView> queryMessageByKey(@NotBlank String connName, MessageQueryParam messageQueryParam) throws Exception {
+        final List<MessageView> messageExts = rocketMqMessageService.queryMessageByKey(connName, messageQueryParam);
+        return messageExts;
     }
 
     /**
-     * 主题 队列 消息分页查询
+     * 消费主题消息
      * @param connName
-     * @param queueMessageQueryParam
+     * @param dataConsumerParam
      * @return
      */
-    @GetMapping("/topic/messageByPage")
-    public TopicMessageResponse topicMessageByPage(@NotBlank String connName, QueueMessageQueryParam queueMessageQueryParam) throws Exception{
-        return rocketMqMessageService.queryTopicMessageByPage(connName,queueMessageQueryParam);
+    @GetMapping("/topic/consumerMessage")
+    public List<MessageView> consumerMessage(@NotBlank String connName, OffsetDataConsumerParam dataConsumerParam) throws Exception {
+        final List<MessageView> messageExts = rocketMqMessageService.consumerMessage(connName, dataConsumerParam);
+        return messageExts;
+    }
+
+    /**
+     * 根据时间来消费数据
+     * @param connName
+     * @param timestampDataConsumerParam
+     * @return
+     * @throws Exception
+     */
+    @GetMapping("/topic/consumerMessageByTime")
+    public List<MessageView> consumerMessageByTime(@NotBlank String connName, TimestampDataConsumerParam timestampDataConsumerParam) throws Exception {
+        final List<MessageView> messageExts = rocketMqMessageService.consumerMessageByTime(connName, timestampDataConsumerParam);
+        return messageExts;
     }
 
     /**

@@ -5,11 +5,15 @@ import com.sanri.tools.modules.core.service.connect.ConnectService;
 import com.sanri.tools.modules.rocketmq.dtos.RocketMqConnect;
 import io.netty.channel.DefaultChannelId;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.rocketmq.acl.common.AclClientRPCHook;
+import org.apache.rocketmq.acl.common.SessionCredentials;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.common.MixAll;
 import org.apache.rocketmq.tools.admin.DefaultMQAdminExt;
 import org.apache.rocketmq.tools.admin.MQAdminExt;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Service
 @Slf4j
-public class RocketMqService {
+public class RocketMqService implements InitializingBean {
     /**
      * connName => mq 管理端实例
      */
@@ -37,10 +41,6 @@ public class RocketMqService {
     @Autowired
     private ConnectService connectService;
 
-    static {
-        // 提前执行静态代码, 避免超时
-        DefaultChannelId.newInstance();
-    }
 
     /**
      * 创建或者获取一个 rocketMq 管理实例
@@ -48,7 +48,7 @@ public class RocketMqService {
      * @return
      * @throws IOException
      */
-    public DefaultMQAdminExt loadRocketMqAdmin(String connName) throws Exception {
+    public synchronized DefaultMQAdminExt loadRocketMqAdmin(String connName) throws Exception {
         if (mqAdminExtMap.containsKey(connName)){
             return mqAdminExtMap.get(connName);
         }
@@ -56,7 +56,14 @@ public class RocketMqService {
         final String text = connectService.loadContent(MODULE, connName);
         final RocketMqConnect rocketMqConnect = JSON.parseObject(text, RocketMqConnect.class);
 
-        final DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt();
+        DefaultMQAdminExt defaultMQAdminExt = null;
+        if (StringUtils.isNotBlank(rocketMqConnect.getAccessKey())){
+            AclClientRPCHook rpcHook = new AclClientRPCHook(new SessionCredentials(rocketMqConnect.getAccessKey(), rocketMqConnect.getSecretKey()));
+            defaultMQAdminExt = new DefaultMQAdminExt(rpcHook);
+            defaultMQAdminExt.setUseTLS(rocketMqConnect.getUseTLS() == null ? false : rocketMqConnect.getUseTLS());
+        }else {
+            defaultMQAdminExt = new DefaultMQAdminExt();
+        }
         defaultMQAdminExt.setNamesrvAddr(rocketMqConnect.getNamesrvAddr());
         defaultMQAdminExt.start();
         mqAdminExtMap.put(connName,defaultMQAdminExt);
@@ -72,5 +79,19 @@ public class RocketMqService {
     public RocketMqConnect loadConnect(String connName) throws IOException {
         final String text = connectService.loadContent(MODULE, connName);
         return JSON.parseObject(text, RocketMqConnect.class);
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        // 提前执行静态代码, 避免超时
+        new Thread(){
+            @Override
+            public void run() {
+                log.info("初始化耗时方法");
+                long startTime = System.currentTimeMillis();
+                DefaultChannelId.newInstance();
+                log.info("初始化耗时方法结束, 耗时:{} ms",(System.currentTimeMillis() - startTime));
+            }
+        }.start();
     }
 }

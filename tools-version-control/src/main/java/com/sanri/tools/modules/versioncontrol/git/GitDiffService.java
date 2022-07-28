@@ -19,6 +19,7 @@ import com.sanri.tools.modules.versioncontrol.project.dtos.TarBinFileResult;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -246,29 +247,44 @@ public class GitDiffService {
             treeFileMap.put(treeFile.getRelativePath(),treeFile);
         }
 
-        // 将仓库路径做为模块添加到树, 用于非模块变更文件的挂载
+        // 将仓库路径添加到树, 用于非模块变更文件的挂载
         final File repositoryDir = gitRepositoryService.loadRepositoryDir(group, repositoryName);
-        final OnlyPath repositoryPath = new OnlyPath(repositoryDir);
-        final DiffChangesTree.TreeFile repositoryTreeFile = new DiffChangesTree.TreeFile(new OnlyPath("/pom.xml"));
-        repositoryTreeFile.setParentRelativePath(new OnlyPath(repositoryDir.getName()));
-        treeFileMap.put(repositoryPath,repositoryTreeFile);
 
-        // 找到所有变更文件所在模块, 将模块添加到树
+        // 如果仓库本身是一个模块
+        DiffChangesTree.TreeFile repositoryTreeFile = new DiffChangesTree.TreeFile(new OnlyPath(repositoryName));
+        if (ArrayUtils.contains(repositoryDir.list(),"pom.xml")){
+            repositoryTreeFile = new DiffChangesTree.TreeFile(new OnlyPath("/pom.xml"));
+        }
+        repositoryTreeFile.setParentRelativePath(OnlyPath.ROOT);
+
+        // 找到所有变更文件所在模块信息, 准备给后面变更文件的挂载
+        Map<OnlyPath, DiffChangesTree.TreeFile> moduleTreeFileMap = new HashMap<>();
         final List<OnlyPath> chagePaths = diffChanges.getChangeFiles().stream().map(DiffChanges.DiffFile::path).map(OnlyPath::new).collect(Collectors.toList());
-        final Set<OnlyPath> pomFilesFromPaths = mavenProjectService.findPomFilesFromPaths(repositoryDir, chagePaths);
+        final Set<OnlyPath> pomFilesFromPaths = mavenProjectService.findPomFilesFromPaths(repositoryDir, chagePaths,true);
         for (OnlyPath pomFilesFromPath : pomFilesFromPaths) {
             if (pomFilesFromPath.getParent() != null) {
                 final DiffChangesTree.TreeFile treeFile = new DiffChangesTree.TreeFile(pomFilesFromPath);
-                repositoryTreeFile.getChildren().add(treeFile);
                 treeFileMap.put(pomFilesFromPath.getParent(), treeFile);
-
-                // 获取模块上次 classpath 解析时间
-                final Long resolveDependenciesTime = mavenProjectService.readResolveDependenciesTime(projectLocation, pomFilesFromPath.toString());
-                treeFile.setClasspathResolveTime(resolveDependenciesTime);
-
-                // 获取模块上次编译时间
+                moduleTreeFileMap.put(pomFilesFromPath.getParent(), treeFile);
             }
-            // 如果 parent 为 null, 则模块为项目模块, 在前面已经添加到树, 不需要重复添加
+        }
+
+        // 变更模块信息生成树结构
+        for (DiffChangesTree.TreeFile moduleTreeFile : moduleTreeFileMap.values()) {
+            final OnlyPath parentPath = moduleTreeFile.getRelativePath().getParent().getParent();
+            if (parentPath == null){
+                repositoryTreeFile.getChildren().add(moduleTreeFile);
+                moduleTreeFile.setParentRelativePath(repositoryTreeFile.getRelativePath());
+                continue;
+            }
+            if (moduleTreeFileMap.containsKey(parentPath)){
+                moduleTreeFileMap.get(parentPath).getChildren().add(moduleTreeFile);
+                moduleTreeFile.setParentRelativePath(treeFileMap.get(parentPath).getRelativePath());
+                continue;
+            }
+
+            // 如果是顶层模块, 则直接挂载仓库
+            repositoryTreeFile.getChildren().add(moduleTreeFile);
         }
 
         // 生成树形结构

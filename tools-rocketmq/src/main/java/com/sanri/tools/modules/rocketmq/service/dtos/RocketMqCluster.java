@@ -33,6 +33,11 @@ public class RocketMqCluster {
          * 非 0 表示 slave
          */
         private Long brokerId;
+
+        /**
+         * broker 地址
+         */
+        private String brokerAddr;
         /**
          * 运行时信息
          */
@@ -44,6 +49,13 @@ public class RocketMqCluster {
         public Broker(String brokerName, Long brokerId, Map<String, String> runtimeStat) {
             this.brokerName = brokerName;
             this.brokerId = brokerId;
+            this.runtimeStat = runtimeStat;
+        }
+
+        public Broker(String brokerName, Long brokerId, String brokerAddr, Map<String, String> runtimeStat) {
+            this.brokerName = brokerName;
+            this.brokerId = brokerId;
+            this.brokerAddr = brokerAddr;
             this.runtimeStat = runtimeStat;
         }
     }

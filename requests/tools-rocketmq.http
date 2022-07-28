@@ -50,12 +50,12 @@ Authorization: {{Authorization}}
 GET {{baseUrl}}/rocketmq/query/topic/consumerByWho?connName=192.168.60.180&topic=CC_DT_FUSION_MYSQL_YN_CONSOLE_DELETEGROUP
 Authorization: {{Authorization}}
 
-### topic message via queue pageQuery
-GET {{baseUrl}}/rocketmq/query/topic/queue/messageByPage?connName=192.168.60.180&topic=LIUR22061001_YN_CONSOLE_TASK_MESSAGE&queueId=3&pageSize=10&offset=-1
+### consumer message
+GET {{baseUrl}}/rocketmq/query/topic/consumerMessage?connName=192.168.60.180&topic=LIUR22061001_YN_CONSOLE_TASK_MESSAGE&queueId=3&offset=87&limit=10
 Authorization: {{Authorization}}
 
-### topic message pageQuery
-GET {{baseUrl}}/rocketmq/query/topic/messageByPage?connName=192.168.60.180&topic=LIUR22061001_YN_CONSOLE_TASK_MESSAGE&pageSize=10&offset=0
+### queryMessage
+GET {{baseUrl}}/rocketmq/query/topic/queryMessageByKey?connName=192.168.60.180&topic=LIUR22061001_YN_CONSOLE_TASK_MESSAGE&maxNum=10&key=*&begin=2022-07-01 00:00:00&end=2022-07-26 00:00:00
 Authorization: {{Authorization}}
 
 ### message Trace

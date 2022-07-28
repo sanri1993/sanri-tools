@@ -25,6 +25,8 @@ import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 
+import javax.validation.constraints.NotBlank;
+
 @Service
 @Slf4j
 public class RocketMqTopicService {
@@ -39,7 +41,7 @@ public class RocketMqTopicService {
      * 主题列表查询, 这里只会查询业务主题, 重试主题系统主题, 死信都不在这里查询
      * @param connName
      */
-    public Collection<String> normalTopics(String connName) throws Exception {
+    public Collection<String> normalTopics(@NotBlank String connName) throws Exception {
         final DefaultMQAdminExt defaultMQAdminExt = rocketMqService.loadRocketMqAdmin(connName);
         final TopicList topicList = defaultMQAdminExt.fetchAllTopicList();
         final TopicList systemTopicList = systemTopicList(connName);
@@ -55,7 +57,7 @@ public class RocketMqTopicService {
      * @param connName
      * @return
      */
-    public List<String> retryTopics(String connName) throws Exception {
+    public List<String> retryTopics(@NotBlank String connName) throws Exception {
         final DefaultMQAdminExt defaultMQAdminExt = rocketMqService.loadRocketMqAdmin(connName);
         final TopicList topicList = defaultMQAdminExt.fetchAllTopicList();
         return topicList.getTopicList().stream().filter(topic -> topic.startsWith("%RETRY")).collect(Collectors.toList());
@@ -67,7 +69,7 @@ public class RocketMqTopicService {
      * @return
      * @throws Exception
      */
-    public TopicList systemTopicList(String connName) throws Exception {
+    public TopicList systemTopicList(@NotBlank String connName) throws Exception {
         final String text = connectService.loadContent(RocketMqService.MODULE, connName);
         final RocketMqConnect rocketMqConnect = JSON.parseObject(text, RocketMqConnect.class);
 
@@ -89,7 +91,7 @@ public class RocketMqTopicService {
      * @return
      * @throws Exception
      */
-    public TopicStatsTable topicStat(String connName, String topic) throws Exception{
+    public TopicStatsTable topicStat(@NotBlank String connName, @NotBlank String topic) throws Exception{
         final DefaultMQAdminExt defaultMQAdminExt = rocketMqService.loadRocketMqAdmin(connName);
         final TopicStatsTable topicStatsTable = defaultMQAdminExt.examineTopicStats(topic);
         return topicStatsTable;
@@ -102,7 +104,7 @@ public class RocketMqTopicService {
      * @return
      * @throws Exception
      */
-    public TopicInfo topicInfo(String connName, String topic) throws Exception {
+    public TopicInfo topicInfo(@NotBlank String connName,@NotBlank String topic) throws Exception {
         final DefaultMQAdminExt defaultMQAdminExt = rocketMqService.loadRocketMqAdmin(connName);
         final TopicStatsTable topicStatsTable = defaultMQAdminExt.examineTopicStats(topic);
 
@@ -127,7 +129,7 @@ public class RocketMqTopicService {
      * @throws Exception
      * @return
      */
-    public TopicRouteData topicRouteInfo(String connName, String topic) throws Exception {
+    public TopicRouteData topicRouteInfo(@NotBlank String connName,@NotBlank String topic) throws Exception {
         final DefaultMQAdminExt defaultMQAdminExt = rocketMqService.loadRocketMqAdmin(connName);
         final TopicRouteData topicRouteData = defaultMQAdminExt.examineTopicRouteInfo(topic);
         return topicRouteData;
@@ -138,7 +140,7 @@ public class RocketMqTopicService {
      * @param connName
      * @param topic
      */
-    public Set<String> topicConsumerByWho(String connName,String topic) throws Exception {
+    public Set<String> topicConsumerByWho(@NotBlank String connName,@NotBlank String topic) throws Exception {
         final DefaultMQAdminExt defaultMQAdminExt = rocketMqService.loadRocketMqAdmin(connName);
         final GroupList groupList = defaultMQAdminExt.queryTopicConsumeByWho(topic);
         return groupList.getGroupList();
@@ -152,7 +154,7 @@ public class RocketMqTopicService {
      * @throws Exception
      * @return
      */
-    public List<BrokerTopicConfig> topicConfig(String connName, String clusterName, String topic) throws Exception {
+    public List<BrokerTopicConfig> topicConfig(@NotBlank String connName, String clusterName, @NotBlank String topic) throws Exception {
         final DefaultMQAdminExt defaultMQAdminExt = rocketMqService.loadRocketMqAdmin(connName);
         final List<BrokerMaster> brokerAddrs = rocketMqClusterService.fetchMastersInCluster(connName, clusterName);
         final List<BrokerTopicConfig> brokerTopicConfigs = new ArrayList<>();
@@ -170,7 +172,7 @@ public class RocketMqTopicService {
      * @param clusterName 集群名
      * @param topicConfig 主题配置
      */
-    public void createTopic(String connName,String clusterName,TopicConfig topicConfig) throws Exception {
+    public void createTopic(@NotBlank String connName,String clusterName,TopicConfig topicConfig) throws Exception {
         final DefaultMQAdminExt defaultMQAdminExt = rocketMqService.loadRocketMqAdmin(connName);
         final List<BrokerMaster> brokerAddrs = rocketMqClusterService.fetchMastersInCluster(connName, clusterName);
         for (BrokerMaster brokerMaster : brokerAddrs) {
@@ -185,7 +187,7 @@ public class RocketMqTopicService {
      * @param topic
      * @throws Exception
      */
-    public void dropTopic(String connName,String clusterName,String topic) throws Exception {
+    public void dropTopic(@NotBlank String connName,String clusterName,@NotBlank String topic) throws Exception {
         final DefaultMQAdminExt defaultMQAdminExt = rocketMqService.loadRocketMqAdmin(connName);
 
         final List<BrokerMaster> brokerMasters = rocketMqClusterService.fetchMastersInCluster(connName, clusterName);

@@ -65,7 +65,7 @@ public class RocketMqClusterService {
                     final String brokerAddr = masterSlaveEntry.getValue();
                     // 获取 broker 当前运行时数据
                     final KVTable kvTable = defaultMQAdminExt.fetchBrokerRuntimeStats(brokerAddr);
-                    final RocketMqCluster.Broker broker = new RocketMqCluster.Broker(brokerName, brokerId, kvTable.getTable());
+                    final RocketMqCluster.Broker broker = new RocketMqCluster.Broker(brokerName, brokerId,brokerAddr, kvTable.getTable());
                     rocketMqCluster.getBrokers().add(broker);
                 }
             }
@@ -89,7 +89,7 @@ public class RocketMqClusterService {
         final Iterator<String> iterator = clusterAddrTable.get(clusterName).iterator();
         while (iterator.hasNext()){
             final String brokerName = iterator.next();
-            final String masterBrokerAddr = brokerAddrTable.get(brokerName).getBrokerAddrs().get(0);
+            final String masterBrokerAddr = brokerAddrTable.get(brokerName).getBrokerAddrs().get(0L);
             if (masterBrokerAddr != null){
                 final BrokerMaster brokerMaster = new BrokerMaster(brokerName, masterBrokerAddr);
                 brokerMasters.add(brokerMaster);

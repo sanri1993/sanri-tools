@@ -3,9 +3,7 @@ package com.sanri.tools.modules.versioncontrol.project;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -309,28 +307,31 @@ public class MavenProjectService implements InitializingBean {
 
     /**
      * 从变更文件中, 找到所有变更文件所在模块
-     * @param changePaths
+     * @param changePaths 只包含变更文件的变更路径列表
      * @return
      */
-    public Set<OnlyPath> findPomFilesFromPaths(File repository, List<OnlyPath> changePaths){
+    public Set<OnlyPath> findPomFilesFromPaths(File repository, List<OnlyPath> changePaths,boolean containParent){
         final String findFileName = "pom.xml";
 
         Set<OnlyPath> pomPaths = new HashSet<>();
         for (OnlyPath changePath : changePaths) {
             final File resolveFile = changePath.resolveFile(repository);
             if (findFileName.equals(resolveFile.getName())){
+                // 如果修改的本身就是 pom.xml, 则本身是一个模块
                 pomPaths.add(changePath);
                 continue;
             }
 
-            OnlyPath parent = changePath;
+            OnlyPath parent = changePath.getParent();
             while (parent != null){
                 File dir = parent.resolveFile(repository);
                 final String[] list = dir.list();
                 if (ArrayUtils.contains(list,findFileName)){
-                    // 找到了父级模块, 不需要继续往上找了
+                    // 找到了父级模块,如果不需要变更的父级, 则不需要继续往上找了
                     pomPaths.add(parent.resolve(findFileName));
-                    break;
+                    if (!containParent) {
+                        break;
+                    }
                 }
                 parent = parent.getParent();
             }
@@ -390,6 +391,8 @@ public class MavenProjectService implements InitializingBean {
         return new File(parent,compilePath);
     }
 
+    ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1,100,0, TimeUnit.MINUTES,new ArrayBlockingQueue<>(10));
+
     /**
      * 监听 maven 命令, 如果遇到编译命令, 需要获取模块编译成功时间
      * @param invocationResultFuture
@@ -397,7 +400,7 @@ public class MavenProjectService implements InitializingBean {
      */
     public void listenToUpdateProjectMeta(ListenableFuture<InvocationResult> invocationResultFuture, MavenGoalsParam mavenGoalsParam) {
         final CompileTimeUpdateFutureListener compileTimeUpdateFutureListener = new CompileTimeUpdateFutureListener(mavenGoalsParam,invocationResultFuture);
-        invocationResultFuture.addListener(compileTimeUpdateFutureListener,Executors.newSingleThreadExecutor());
+        invocationResultFuture.addListener(compileTimeUpdateFutureListener,threadPoolExecutor);
     }
 
     public class CompileTimeUpdateFutureListener implements Runnable {
@@ -422,7 +425,11 @@ public class MavenProjectService implements InitializingBean {
                         final Map<String, ProjectMeta.ModuleCompileMeta> moduleCompileMetas = projectMeta.getModuleCompileMetas();
                         final ProjectMeta.ModuleCompileMeta moduleCompileMeta = moduleCompileMetas.computeIfAbsent(moduleName, k -> new ProjectMeta.ModuleCompileMeta(moduleName, mavenGoalsParam.getRelativePomFile()));
                         moduleCompileMeta.setLastCompileTime(System.currentTimeMillis());
+                    }else {
+                        final CommandLineException executionException = invocationResult.getExecutionException();
+                        log.error(executionException.getMessage(),executionException);
                     }
+
                 } catch (Exception e) {
                     log.error(e.getMessage(),e);
                 }

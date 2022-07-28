@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 
 import com.sanri.tools.modules.rocketmq.service.dtos.BrokerMaster;
+import com.sanri.tools.modules.rocketmq.service.dtos.BrokerSubscribeConfig;
 import com.sanri.tools.modules.rocketmq.service.dtos.ConsumerTopic;
 import com.sanri.tools.modules.rocketmq.service.dtos.ResetOffsetRequest;
 import org.apache.rocketmq.common.admin.ConsumeStats;
@@ -133,6 +134,26 @@ public class RocketMqConsumerService {
         final DefaultMQAdminExt defaultMQAdminExt = rocketMqService.loadRocketMqAdmin(connName);
         final ConsumerRunningInfo consumerRunningInfo = defaultMQAdminExt.getConsumerRunningInfo(consumerGroup, clientId, jstack);
         return consumerRunningInfo;
+    }
+
+    /**
+     * 消费组配置详情
+     * @param connName
+     * @param clusterName
+     * @param consumerGroup
+     * @return
+     * @throws Exception
+     */
+    public List<BrokerSubscribeConfig> consumerGroupConfig(String connName, String clusterName, String consumerGroup) throws Exception {
+        final DefaultMQAdminExt defaultMQAdminExt = rocketMqService.loadRocketMqAdmin(connName);
+
+        List<BrokerSubscribeConfig> brokerSubscribeConfigs = new ArrayList<>();
+        final List<BrokerMaster> brokerAddrs = rocketMqClusterService.fetchMastersInCluster(connName, clusterName);
+        for (BrokerMaster brokerMaster : brokerAddrs) {
+            final SubscriptionGroupConfig subscriptionGroupConfig = defaultMQAdminExt.examineSubscriptionGroupConfig(brokerMaster.getAddr(), consumerGroup);
+            brokerSubscribeConfigs.add(new BrokerSubscribeConfig(brokerMaster,subscriptionGroupConfig));
+        }
+        return brokerSubscribeConfigs;
     }
 
     /**
