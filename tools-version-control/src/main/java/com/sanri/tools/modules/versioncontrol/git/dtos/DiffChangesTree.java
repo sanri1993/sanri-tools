@@ -2,6 +2,7 @@ package com.sanri.tools.modules.versioncontrol.git.dtos;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sanri.tools.modules.core.utils.OnlyPath;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.eclipse.jgit.diff.DiffEntry;
 
@@ -19,6 +20,7 @@ public class DiffChangesTree {
 	private List<TreeFile> changeForest = new ArrayList<>();
 
 	@ToString
+	@EqualsAndHashCode
 	public static class TreeFile {
 		private DiffEntry.ChangeType changeType;
 		@JsonIgnore

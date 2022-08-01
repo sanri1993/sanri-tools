@@ -294,11 +294,11 @@ public class GitDiffService {
             final OnlyPath parentPath = moduleTreeFile.getRelativePath().getParent().getParent();
             if (parentPath == null){
                 repositoryTreeFile.getChildren().add(moduleTreeFile);
-                if (moduleTreeFile.getClasspathResolveTime() == null ){
+                if (moduleTreeFile.getClasspathResolveTime() == null){
                     // 子模块可以使用父级的上次 classpath 获取时间
                     moduleTreeFile.setClasspathResolveTime(repositoryTreeFile.getClasspathResolveTime());
                 }
-                if (moduleTreeFile.getLastCompileTime() == null || moduleTreeFile.getLastCompileTime() == 0){
+                if (moduleTreeFile.getLastCompileTime() == null){
                     moduleTreeFile.setLastCompileTime(repositoryTreeFile.getLastCompileTime());
                 }
 
@@ -312,7 +312,7 @@ public class GitDiffService {
                     // 子模块可以使用父级的上次 classpath 获取时间
                     moduleTreeFile.setClasspathResolveTime(parentTreeFile.getClasspathResolveTime());
                 }
-                if (moduleTreeFile.getLastCompileTime() == null || moduleTreeFile.getLastCompileTime() == 0){
+                if (moduleTreeFile.getLastCompileTime() == null){
                     moduleTreeFile.setLastCompileTime(parentTreeFile.getLastCompileTime());
                 }
                 moduleTreeFile.setParentRelativePath(treeFileMap.get(parentPath).getRelativePath());

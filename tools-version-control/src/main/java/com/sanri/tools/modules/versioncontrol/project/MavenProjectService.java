@@ -138,6 +138,10 @@ public class MavenProjectService implements InitializingBean {
             onlyPathModuleMap.put(modulePath,module);
         }
 
+        // 根据路径长短排序, 确保子级路径能获取到父级路径的编译时间
+        Comparator<Module> comparator = (a,b) -> a.getPomFile().path().getNameCount() - b.getPomFile().path().getNameCount();
+        Collections.sort(modules,comparator);
+
         // 生成树形结构
         for (Module module : modules) {
             final String relativePath = module.getPomFile().getRelativePath();

@@ -95,7 +95,7 @@ public class MavenProjectController {
      * @return
      */
     @PostMapping("/execute/goals")
-    public MavenPluginService.MavenExecuteLogFiles sendMavenGoals(@RequestBody @Validated MavenGoalsParam mavenGoalsParam) throws MavenInvocationException, XmlPullParserException, IOException {
+    public MavenPluginService.MavenExecuteLogFiles sendMavenGoals(@RequestBody @Valid MavenGoalsParam mavenGoalsParam) throws MavenInvocationException, XmlPullParserException, IOException {
         final File projectDir = gitRepositoryService.loadProjectDir(mavenGoalsParam.getProjectLocation());
         final File pomFile = new File(projectDir, mavenGoalsParam.getRelativePomFile());
         ExecuteMavenPluginParam executeMavenPluginParam = new ExecuteMavenPluginParam(pomFile,mavenGoalsParam.getGoals().toArray(new String[]{}));

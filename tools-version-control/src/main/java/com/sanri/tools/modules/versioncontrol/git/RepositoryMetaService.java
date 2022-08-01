@@ -8,6 +8,8 @@ import com.sanri.tools.modules.versioncontrol.project.dtos.ProjectMeta;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -41,7 +43,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @Slf4j
-public class RepositoryMetaService {
+public class RepositoryMetaService implements InitializingBean, DisposableBean {
     @Autowired(required = false)
     private UserService userService;
 
@@ -209,6 +211,16 @@ public class RepositoryMetaService {
                 }
             }
         }
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        serializer();
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+
     }
 
     /**

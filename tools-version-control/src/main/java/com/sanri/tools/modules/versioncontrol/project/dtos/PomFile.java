@@ -3,6 +3,7 @@ package com.sanri.tools.modules.versioncontrol.project.dtos;
 import java.io.File;
 import java.util.Date;
 
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -11,6 +12,7 @@ import com.sanri.tools.modules.core.utils.OnlyPath;
 
 import lombok.Data;
 
+@ToString
 public class PomFile implements Comparable<PomFile>{
     private File project;
     private OnlyPath relativePath;
@@ -48,6 +50,10 @@ public class PomFile implements Comparable<PomFile>{
 
     public String getRelativePath(){
         return relativePath.toString();
+    }
+
+    public OnlyPath path(){
+        return relativePath;
     }
 
     public String getModuleName() {
