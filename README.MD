@@ -54,7 +54,7 @@ sanritools.jar(后端运行包)
 启动命令, 极简形式
 java -Dloader.path=sanritoolslib -jar sanritools.jar
 
-指定内存,  后台启动
+指定内存, 守护进程方式启动
 nohup java -Dloader.path=sanritoolslib -Xms256m -Xmx256m -jar sanritools.jar >/dev/null 2>&1 & 
 ```
 
