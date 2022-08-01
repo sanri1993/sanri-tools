@@ -21,8 +21,6 @@ import java.util.Map;
 public class ProjectMetaService {
     @Autowired
     private RepositoryMetaService repositoryMetaService;
-    @Autowired
-    private FileManager fileManager;
 
     /**
      * 添加或者获取一个项目, 在仓库中
@@ -44,68 +42,5 @@ public class ProjectMetaService {
         return projectMeta;
     }
 
-    /**
-     * 生成或者获取一个 ModuleCopileMeta
-     * @param projectDir
-     * @param relativePomFile
-     */
-    public ProjectMeta.ModuleCompileMeta resolveModuleCompileMeta(ProjectLocation projectLocation, String relativePomFile) throws IOException {
-        final ProjectMeta projectMeta = computeIfAbsent(projectLocation);
-        final String moduleName = new OnlyPath(relativePomFile).getParent().getFileName();
-        ProjectMeta.ModuleCompileMeta moduleCompileMeta = projectMeta.getModuleCompileMetas().get(moduleName);
-        if (moduleCompileMeta != null){
-            return moduleCompileMeta;
-        }
-        moduleCompileMeta = new ProjectMeta.ModuleCompileMeta(moduleName,relativePomFile);
-        projectMeta.getModuleCompileMetas().put(moduleName,moduleCompileMeta);
-        return moduleCompileMeta;
-    }
 
-    /**
-     * 写入模块元数据的 classpath
-     * @param moduleCompileMeta
-     * @param classpath classpath 路径列表
-     */
-    public void writeModuleClasspath(ProjectMeta.ModuleCompileMeta moduleCompileMeta,String classpath) throws IOException {
-        final String pomFileRelativePath = moduleCompileMeta.getPomFileRelativePath();
-        final String relativePath = new OnlyPath(pomFileRelativePath).getParent().toString();
-        final File classPathDir = fileManager.mkTmpDir("classpath/" + relativePath);
-        final File classPathFile = new File(classPathDir, System.currentTimeMillis() + "");
-        final OnlyPath relativize = new OnlyPath(fileManager.getTmpBase()).relativize(new OnlyPath(classPathFile));
-        FileUtils.writeStringToFile(classPathFile,classpath, StandardCharsets.UTF_8);
-        moduleCompileMeta.setClasspath(relativize.toString());
-    }
-
-    /**
-     * 读取模块元数据的 classpath
-     * @param moduleCompileMeta
-     */
-    public String readModuleClasspath(ProjectMeta.ModuleCompileMeta moduleCompileMeta) throws IOException {
-        final String classpath = moduleCompileMeta.getClasspath();
-        if (StringUtils.isBlank(classpath)){
-            return "";
-        }
-        final File file = new OnlyPath(classpath).resolveFile(fileManager.getTmpBase());
-        if (file.exists()){
-            return FileUtils.readFileToString(file,StandardCharsets.UTF_8);
-        }
-        return null;
-    }
-
-    /**
-     * 获取模块 classpath 最后更新时间
-     * @param moduleCompileMeta
-     * @return
-     */
-    public Long readModuleClassPathLastUpdateTime(ProjectMeta.ModuleCompileMeta moduleCompileMeta){
-        final String classpath = moduleCompileMeta.getClasspath();
-        if (StringUtils.isBlank(classpath)){
-            return null;
-        }
-        final File file = new OnlyPath(classpath).resolveFile(fileManager.getTmpBase());
-        if (!file.exists()){
-            return null;
-        }
-        return file.lastModified();
-    }
 }

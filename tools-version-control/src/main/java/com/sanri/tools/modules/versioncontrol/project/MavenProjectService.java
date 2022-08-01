@@ -83,6 +83,8 @@ public class MavenProjectService implements InitializingBean {
     private GitDiffService gitDiffService;
     @Autowired
     private GitRepositoryService gitRepositoryService;
+    @Autowired
+    private ModuleMetaService moduleMetaService;
 
     @Autowired(required = false)
     private List<CompileResolve> compileResolves = new ArrayList<>();
@@ -104,10 +106,10 @@ public class MavenProjectService implements InitializingBean {
 
         // 获取模块最后编译时间
         final ProjectMeta projectMeta = projectMetaService.computeIfAbsent(projectLocation);
-        final Map<String, ProjectMeta.ModuleCompileMeta> moduleCompileMetas = projectMeta.getModuleCompileMetas();
+        final Map<String, ProjectMeta.ModuleMeta> moduleCompileMetas = projectMeta.getModuleCompileMetas();
         for (PomFile pomFile : pomFiles) {
-            final ProjectMeta.ModuleCompileMeta moduleCompileMeta = moduleCompileMetas.get(pomFile.getModuleName());
-            if (moduleCompileMeta != null){
+            final ProjectMeta.ModuleMeta moduleCompileMeta = moduleCompileMetas.get(pomFile.getModuleName());
+            if (moduleCompileMeta != null && moduleCompileMeta.getLastCompileTime() != null){
                 pomFile.setLastCompileTime(new Date(moduleCompileMeta.getLastCompileTime()));
             }
         }
@@ -172,28 +174,13 @@ public class MavenProjectService implements InitializingBean {
     public Collection<File> resolveModuleDependencies(ProjectLocation projectLocation, String settingsName, File projectDir, String relativePomFile) throws DependencyCollectionException, XmlPullParserException, DependencyResolutionException, ModelBuildingException, IOException {
         final File pomFile = new File(projectDir, relativePomFile);
 
-        final ProjectMeta projectMeta = projectMetaService.computeIfAbsent(projectLocation);
-        final ProjectMeta.ModuleCompileMeta moduleCompileMeta = projectMetaService.resolveModuleCompileMeta(projectLocation, relativePomFile);
-        projectMeta.addModuleCompileMeta(moduleCompileMeta);
+        final ProjectMeta.ModuleMeta moduleCompileMeta = moduleMetaService.computeIfAbsent(projectLocation, relativePomFile);
 
         // 解析依赖项
         final JarCollect jarCollect = mavenJarResolve.resolveJarFiles(settingsName, pomFile);
         final String classpath = jarCollect.getClasspath();
-        projectMetaService.writeModuleClasspath(moduleCompileMeta,classpath);
+        moduleMetaService.writeModuleClasspath(projectLocation,relativePomFile,classpath);
         return jarCollect.getFiles();
-    }
-
-    /**
-     * 读取模块上次解析 classpath 的时间
-     * @param projectLocation
-     * @param relativePomFile
-     * @return
-     */
-    public Long readResolveDependenciesTime(ProjectLocation projectLocation, String relativePomFile) throws IOException {
-        final ProjectMeta projectMeta = projectMetaService.computeIfAbsent(projectLocation);
-        final ProjectMeta.ModuleCompileMeta moduleCompileMeta = projectMetaService.resolveModuleCompileMeta(projectLocation, relativePomFile);
-
-        return projectMetaService.readModuleClassPathLastUpdateTime(moduleCompileMeta);
     }
 
     /**
@@ -422,12 +409,16 @@ public class MavenProjectService implements InitializingBean {
                         // 如果编译成功, 记录编译时间
                         final String moduleName = new OnlyPath(mavenGoalsParam.getRelativePomFile()).getParent().getFileName();
                         final ProjectMeta projectMeta = projectMetaService.computeIfAbsent(mavenGoalsParam.getProjectLocation());
-                        final Map<String, ProjectMeta.ModuleCompileMeta> moduleCompileMetas = projectMeta.getModuleCompileMetas();
-                        final ProjectMeta.ModuleCompileMeta moduleCompileMeta = moduleCompileMetas.computeIfAbsent(moduleName, k -> new ProjectMeta.ModuleCompileMeta(moduleName, mavenGoalsParam.getRelativePomFile()));
+                        final Map<String, ProjectMeta.ModuleMeta> moduleCompileMetas = projectMeta.getModuleCompileMetas();
+                        final ProjectMeta.ModuleMeta moduleCompileMeta = moduleCompileMetas.computeIfAbsent(moduleName, k -> new ProjectMeta.ModuleMeta(moduleName, mavenGoalsParam.getRelativePomFile()));
                         moduleCompileMeta.setLastCompileTime(System.currentTimeMillis());
                     }else {
                         final CommandLineException executionException = invocationResult.getExecutionException();
-                        log.error(executionException.getMessage(),executionException);
+                        if (executionException != null) {
+                            log.error(executionException.getMessage(), executionException);
+                        }else {
+                            log.error("发生了错误, 但没有找到异常信息:{}",mavenGoalsParam);
+                        }
                     }
 
                 } catch (Exception e) {

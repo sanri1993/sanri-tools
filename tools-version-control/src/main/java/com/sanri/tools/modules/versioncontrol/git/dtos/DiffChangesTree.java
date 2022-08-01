@@ -141,5 +141,13 @@ public class DiffChangesTree {
 		public void setParentRelativePath(OnlyPath parentRelativePath) {
 			this.parentRelativePath = parentRelativePath;
 		}
+
+		public Long getLastCompileTime() {
+			return lastCompileTime;
+		}
+
+		public void setLastCompileTime(Long lastCompileTime) {
+			this.lastCompileTime = lastCompileTime;
+		}
 	}
 }

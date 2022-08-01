@@ -13,8 +13,10 @@ import com.sanri.tools.modules.versioncontrol.git.dtos.Commit;
 import com.sanri.tools.modules.versioncontrol.git.dtos.TarFileParam;
 import com.sanri.tools.modules.versioncontrol.project.MavenProjectService;
 import com.sanri.tools.modules.core.dtos.RelativeFile;
+import com.sanri.tools.modules.versioncontrol.project.ModuleMetaService;
 import com.sanri.tools.modules.versioncontrol.project.PatchManager;
 import com.sanri.tools.modules.versioncontrol.project.dtos.PatchEntity;
+import com.sanri.tools.modules.versioncontrol.project.dtos.ProjectMeta;
 import com.sanri.tools.modules.versioncontrol.project.dtos.TarBinFileResult;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
@@ -54,6 +56,8 @@ public class GitDiffService {
     private PatchManager patchManager;
     @Autowired(required = false)
     private UserService userService;
+    @Autowired
+    private ModuleMetaService moduleMetaService;
 
     /**
      * bin 文件打包之前分析编译后文件元数据
@@ -253,7 +257,16 @@ public class GitDiffService {
         // 如果仓库本身是一个模块
         DiffChangesTree.TreeFile repositoryTreeFile = new DiffChangesTree.TreeFile(new OnlyPath(repositoryName));
         if (ArrayUtils.contains(repositoryDir.list(),"pom.xml")){
-            repositoryTreeFile = new DiffChangesTree.TreeFile(new OnlyPath("/pom.xml"));
+            String relativePomFile = "/pom.xml";
+            repositoryTreeFile = new DiffChangesTree.TreeFile(new OnlyPath(relativePomFile));
+
+            // 获取上次编译时间和上次解析 classpath 时间
+
+            final Long resolveDependenciesTime = moduleMetaService.readModuleClassPathLastUpdateTime(projectLocation, relativePomFile);
+            repositoryTreeFile.setClasspathResolveTime(resolveDependenciesTime);
+
+            final ProjectMeta.ModuleMeta moduleMeta = moduleMetaService.computeIfAbsent(projectLocation, relativePomFile);
+            repositoryTreeFile.setLastCompileTime(moduleMeta.getLastCompileTime());
         }
         repositoryTreeFile.setParentRelativePath(OnlyPath.ROOT);
 
@@ -262,11 +275,18 @@ public class GitDiffService {
         final List<OnlyPath> chagePaths = diffChanges.getChangeFiles().stream().map(DiffChanges.DiffFile::path).map(OnlyPath::new).collect(Collectors.toList());
         final Set<OnlyPath> pomFilesFromPaths = mavenProjectService.findPomFilesFromPaths(repositoryDir, chagePaths,true);
         for (OnlyPath pomFilesFromPath : pomFilesFromPaths) {
-            if (pomFilesFromPath.getParent() != null) {
-                final DiffChangesTree.TreeFile treeFile = new DiffChangesTree.TreeFile(pomFilesFromPath);
-                treeFileMap.put(pomFilesFromPath.getParent(), treeFile);
-                moduleTreeFileMap.put(pomFilesFromPath.getParent(), treeFile);
-            }
+            final DiffChangesTree.TreeFile treeFile = new DiffChangesTree.TreeFile(pomFilesFromPath);
+            treeFileMap.put(pomFilesFromPath.getParent(), treeFile);
+            moduleTreeFileMap.put(pomFilesFromPath.getParent(), treeFile);
+
+            // 获取模块的上次解析 classpath 时间
+            final Long resolveDependenciesTime = moduleMetaService.readModuleClassPathLastUpdateTime(projectLocation, pomFilesFromPath.toString());
+            treeFile.setClasspathResolveTime(resolveDependenciesTime);
+
+            // 获取模块上次编译时间
+            final ProjectMeta.ModuleMeta moduleMeta = moduleMetaService.computeIfAbsent(projectLocation, pomFilesFromPath.toString());
+            final Long lastCompileTime = moduleMeta.getLastCompileTime();
+            treeFile.setLastCompileTime(lastCompileTime);
         }
 
         // 变更模块信息生成树结构
@@ -274,11 +294,27 @@ public class GitDiffService {
             final OnlyPath parentPath = moduleTreeFile.getRelativePath().getParent().getParent();
             if (parentPath == null){
                 repositoryTreeFile.getChildren().add(moduleTreeFile);
+                if (moduleTreeFile.getClasspathResolveTime() == null ){
+                    // 子模块可以使用父级的上次 classpath 获取时间
+                    moduleTreeFile.setClasspathResolveTime(repositoryTreeFile.getClasspathResolveTime());
+                }
+                if (moduleTreeFile.getLastCompileTime() == null || moduleTreeFile.getLastCompileTime() == 0){
+                    moduleTreeFile.setLastCompileTime(repositoryTreeFile.getLastCompileTime());
+                }
+
                 moduleTreeFile.setParentRelativePath(repositoryTreeFile.getRelativePath());
                 continue;
             }
             if (moduleTreeFileMap.containsKey(parentPath)){
-                moduleTreeFileMap.get(parentPath).getChildren().add(moduleTreeFile);
+                final DiffChangesTree.TreeFile parentTreeFile = moduleTreeFileMap.get(parentPath);
+                parentTreeFile.getChildren().add(moduleTreeFile);
+                if (moduleTreeFile.getClasspathResolveTime() == null){
+                    // 子模块可以使用父级的上次 classpath 获取时间
+                    moduleTreeFile.setClasspathResolveTime(parentTreeFile.getClasspathResolveTime());
+                }
+                if (moduleTreeFile.getLastCompileTime() == null || moduleTreeFile.getLastCompileTime() == 0){
+                    moduleTreeFile.setLastCompileTime(parentTreeFile.getLastCompileTime());
+                }
                 moduleTreeFile.setParentRelativePath(treeFileMap.get(parentPath).getRelativePath());
                 continue;
             }

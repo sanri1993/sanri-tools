@@ -43,7 +43,10 @@ public class GoalExecuteLogManager {
     public String readLog(String logPath) throws IOException {
         final File file = mavenLogDir();
         final File logfile = new File(file, logPath);
-        return FileUtils.readFileToString(logfile, StandardCharsets.UTF_8);
+        if (logfile.exists()) {
+            return FileUtils.readFileToString(logfile, StandardCharsets.UTF_8);
+        }
+        return null;
     }
 
     /**

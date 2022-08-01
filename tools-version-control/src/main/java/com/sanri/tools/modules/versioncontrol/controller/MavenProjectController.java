@@ -16,6 +16,7 @@ import com.sanri.tools.modules.versioncontrol.git.dtos.TarFileParam;
 import com.sanri.tools.modules.versioncontrol.project.JavacCompileService;
 import com.sanri.tools.modules.versioncontrol.project.MavenProjectService;
 import com.sanri.tools.modules.versioncontrol.git.GitRepositoryService;
+import com.sanri.tools.modules.versioncontrol.project.ModuleMetaService;
 import com.sanri.tools.modules.versioncontrol.project.dtos.*;
 import org.apache.maven.model.building.ModelBuildingException;
 import org.apache.maven.shared.invoker.MavenInvocationException;
@@ -43,6 +44,8 @@ import java.util.stream.Collectors;
 public class MavenProjectController {
     @Autowired
     private MavenProjectService mavenProjectService;
+    @Autowired
+    private ModuleMetaService moduleMetaService;
     @Autowired
     private GitRepositoryService gitRepositoryService;
     @Autowired
@@ -126,7 +129,7 @@ public class MavenProjectController {
      */
     @PostMapping("/module/classpath/lastResolveTime")
     public Long lastResolveDependenciesTime(ModuleResolveDepParam moduleResolveDepParam) throws IOException {
-        return mavenProjectService.readResolveDependenciesTime(moduleResolveDepParam.getProjectLocation(),moduleResolveDepParam.getRelativePomFile());
+        return moduleMetaService.readModuleClassPathLastUpdateTime(moduleResolveDepParam.getProjectLocation(),moduleResolveDepParam.getRelativePomFile());
     }
 
     /**

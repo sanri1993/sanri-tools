@@ -28,13 +28,13 @@ public class ProjectMeta {
     /**
      * 模块编译信息元数据 模块名 => 模块编译元数据信息
      */
-    private Map<String,ModuleCompileMeta> moduleCompileMetas = new HashMap<>();
+    private Map<String, ModuleMeta> moduleCompileMetas = new HashMap<>();
 
     /**
      * 添加一个模块元数据, 如果模块存在, 则覆盖
      * @param moduleCompileMeta
      */
-    public void addModuleCompileMeta(ModuleCompileMeta moduleCompileMeta){
+    public void addModuleCompileMeta(ModuleMeta moduleCompileMeta){
         moduleCompileMetas.put(moduleCompileMeta.getModuleName(),moduleCompileMeta);
     }
 
@@ -42,7 +42,7 @@ public class ProjectMeta {
      * 模块的编译信息
      */
     @Data
-    public static final class ModuleCompileMeta{
+    public static final class ModuleMeta {
         /**
          * 模块名称
          */
@@ -50,7 +50,7 @@ public class ProjectMeta {
         /**
          * 上次编译成功时间
          */
-        private long lastCompileTime;
+        private Long lastCompileTime;
         /**
          * pom 文件相对路径, 相对于项目
          */
@@ -61,7 +61,7 @@ public class ProjectMeta {
          */
         private String classpath;
 
-        public ModuleCompileMeta(String moduleName, String pomFileRelativePath) {
+        public ModuleMeta(String moduleName, String pomFileRelativePath) {
             this.moduleName = moduleName;
             this.pomFileRelativePath = pomFileRelativePath;
         }

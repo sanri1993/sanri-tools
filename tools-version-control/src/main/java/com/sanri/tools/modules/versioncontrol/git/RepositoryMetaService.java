@@ -50,7 +50,7 @@ public class RepositoryMetaService {
 
     /**
      * 仓库信息, 包含上次访问时间等数据
-     * group => repository => Info
+     * group => repository => RepositoryMeta
      */
     private Map<String, Map<String, RepositoryMeta>> repositoryInfos = new ConcurrentHashMap<>();
 
@@ -167,7 +167,7 @@ public class RepositoryMetaService {
      */
     public RepositoryMeta repositoryMeta(String group, String repository) throws IOException {
         final Map<String, RepositoryMeta> repositoryInfo = repositoryInfos.computeIfAbsent(group, k -> new ConcurrentHashMap<>());
-        final RepositoryMeta info = repositoryInfo.computeIfAbsent(repository, k -> {
+        final RepositoryMeta repositoryMeta = repositoryInfo.computeIfAbsent(repository, k -> {
             // 如果没有仓库信息, 从文件进行读取,文件没有的话,就设置一个默认
             final File repositoryDir = gitRepositoryService.loadRepositoryDir(group, repository);
             final File file = new File(repositoryDir.getParentFile(), repository + "_info");
@@ -181,7 +181,7 @@ public class RepositoryMetaService {
             }
             return new RepositoryMeta();
         });
-        return info;
+        return repositoryMeta;
     }
 
     /**

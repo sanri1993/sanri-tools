@@ -79,7 +79,6 @@ public class MavenPluginService {
         request.setErrorHandler(fileCollectErrHandler);
         request.setUserSettingsFile(mavenSettingsResolve.settingsFile(settingsName));
         request.setLocalRepositoryDirectory(new File(settings.getLocalRepository()));
-        request.setInputStream(null);
 
         if (executeMavenPluginParam.isSkipTest()){
             // 跳过测试

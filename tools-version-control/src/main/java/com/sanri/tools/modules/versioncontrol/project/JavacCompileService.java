@@ -5,9 +5,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.sanri.tools.modules.core.exception.ToolException;
 import com.sanri.tools.modules.versioncontrol.dtos.ProjectLocation;
-import com.sanri.tools.modules.versioncontrol.project.MavenProjectService;
-import com.sanri.tools.modules.versioncontrol.project.ProjectMetaService;
 import com.sanri.tools.modules.versioncontrol.project.dtos.ProjectMeta;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,7 @@ public class JavacCompileService {
     @Autowired
     private JavaCompilerService javaCompilerService;
     @Autowired
-    private ProjectMetaService projectMetaService;
+    private ModuleMetaService moduleMetaService;
 
     /**
      * 少量文件使用 javac 进行编译, 因为是按模块拿 classpath 的, 所以是按照模块来批量编译
@@ -57,8 +56,10 @@ public class JavacCompileService {
 
             // 获取当前模块的 classpath 数据
             final OnlyPath relativize = new OnlyPath(projectDir).relativize(new OnlyPath(pomFile));
-            final ProjectMeta.ModuleCompileMeta moduleCompileMeta = projectMetaService.resolveModuleCompileMeta(projectLocation, relativize.toString());
-            final String moduleClasspath = projectMetaService.readModuleClasspath(moduleCompileMeta);
+            final String moduleClasspath = moduleMetaService.readModuleClasspath(projectLocation, relativize.toString());
+            if (StringUtils.isBlank(moduleClasspath)){
+                throw new ToolException("当前模块还未获取 classpath, 请先获取 classpath");
+            }
             final List<File> classpathFiles = ClasspathUtils.toFiles(moduleClasspath);
 
             final ModuleCompileConfig moduleCompileConfig = new ModuleCompileConfig();
