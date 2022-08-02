@@ -305,6 +305,11 @@ public class MavenProjectService implements InitializingBean {
         final String findFileName = "pom.xml";
 
         Set<OnlyPath> pomPaths = new HashSet<>();
+        if (ArrayUtils.contains(repository.list(),"pom.xml")){
+            // 如果仓库本身是一个模块
+            pomPaths.add(new OnlyPath(findFileName));
+        }
+
         for (OnlyPath changePath : changePaths) {
             final File resolveFile = changePath.resolveFile(repository);
             if (findFileName.equals(resolveFile.getName())){

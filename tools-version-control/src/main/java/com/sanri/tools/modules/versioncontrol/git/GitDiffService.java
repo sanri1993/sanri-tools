@@ -254,21 +254,8 @@ public class GitDiffService {
         // 将仓库路径添加到树, 用于非模块变更文件的挂载
         final File repositoryDir = gitRepositoryService.loadRepositoryDir(group, repositoryName);
 
-        // 如果仓库本身是一个模块
-        DiffChangesTree.TreeFile repositoryTreeFile = new DiffChangesTree.TreeFile(new OnlyPath(repositoryName));
-        if (ArrayUtils.contains(repositoryDir.list(),"pom.xml")){
-            String relativePomFile = "/pom.xml";
-            repositoryTreeFile = new DiffChangesTree.TreeFile(new OnlyPath(relativePomFile));
-
-            // 获取上次编译时间和上次解析 classpath 时间
-
-            final Long resolveDependenciesTime = moduleMetaService.readModuleClassPathLastUpdateTime(projectLocation, relativePomFile);
-            repositoryTreeFile.setClasspathResolveTime(resolveDependenciesTime);
-
-            final ProjectMeta.ModuleMeta moduleMeta = moduleMetaService.computeIfAbsent(projectLocation, relativePomFile);
-            repositoryTreeFile.setLastCompileTime(moduleMeta.getLastCompileTime());
-        }
-        repositoryTreeFile.setParentRelativePath(OnlyPath.ROOT);
+        // 仓库做为根节点
+        DiffChangesTree.TreeFile rootTreeFile = new DiffChangesTree.TreeFile(new OnlyPath(repositoryName));
 
         // 找到所有变更文件所在模块信息, 准备给后面变更文件的挂载
         Map<OnlyPath, DiffChangesTree.TreeFile> moduleTreeFileMap = new HashMap<>();
@@ -291,20 +278,34 @@ public class GitDiffService {
 
         // 变更模块信息生成树结构
         for (DiffChangesTree.TreeFile moduleTreeFile : moduleTreeFileMap.values()) {
-            final OnlyPath parentPath = moduleTreeFile.getRelativePath().getParent().getParent();
-            if (parentPath == null){
-                repositoryTreeFile.getChildren().add(moduleTreeFile);
+            moduleTreeFile.setProjectPath(rootTreeFile.getRelativePath());
+            final OnlyPath modulePath = moduleTreeFile.getRelativePath().getParent();
+            if (modulePath == null ){
+                rootTreeFile.getChildren().add(moduleTreeFile);
                 if (moduleTreeFile.getClasspathResolveTime() == null){
                     // 子模块可以使用父级的上次 classpath 获取时间
-                    moduleTreeFile.setClasspathResolveTime(repositoryTreeFile.getClasspathResolveTime());
+                    moduleTreeFile.setClasspathResolveTime(rootTreeFile.getClasspathResolveTime());
                 }
                 if (moduleTreeFile.getLastCompileTime() == null){
-                    moduleTreeFile.setLastCompileTime(repositoryTreeFile.getLastCompileTime());
+                    moduleTreeFile.setLastCompileTime(rootTreeFile.getLastCompileTime());
                 }
 
-                moduleTreeFile.setParentRelativePath(repositoryTreeFile.getRelativePath());
                 continue;
             }
+            final OnlyPath parentPath = modulePath.getParent();
+            if (parentPath == null){
+                rootTreeFile.getChildren().add(moduleTreeFile);
+                if (moduleTreeFile.getClasspathResolveTime() == null){
+                    // 子模块可以使用父级的上次 classpath 获取时间
+                    moduleTreeFile.setClasspathResolveTime(rootTreeFile.getClasspathResolveTime());
+                }
+                if (moduleTreeFile.getLastCompileTime() == null){
+                    moduleTreeFile.setLastCompileTime(rootTreeFile.getLastCompileTime());
+                }
+
+                continue;
+            }
+
             if (moduleTreeFileMap.containsKey(parentPath)){
                 final DiffChangesTree.TreeFile parentTreeFile = moduleTreeFileMap.get(parentPath);
                 parentTreeFile.getChildren().add(moduleTreeFile);
@@ -315,12 +316,11 @@ public class GitDiffService {
                 if (moduleTreeFile.getLastCompileTime() == null){
                     moduleTreeFile.setLastCompileTime(parentTreeFile.getLastCompileTime());
                 }
-                moduleTreeFile.setParentRelativePath(treeFileMap.get(parentPath).getRelativePath());
                 continue;
             }
 
             // 如果是顶层模块, 则直接挂载仓库
-            repositoryTreeFile.getChildren().add(moduleTreeFile);
+            rootTreeFile.getChildren().add(moduleTreeFile);
         }
 
         // 生成树形结构
@@ -328,22 +328,19 @@ public class GitDiffService {
             final OnlyPath parentPath = treeFile.getRelativePath().getParent();
             if (parentPath == null){
                 // 如果就是顶层路径, 则是挂载到项目下的
-                repositoryTreeFile.getChildren().add(treeFile);
-                treeFile.setParentRelativePath(repositoryTreeFile.getRelativePath());
+                rootTreeFile.getChildren().add(treeFile);
                 continue;
             }
 
             DiffChangesTree.TreeFile parentTreeFile = treeFileMap.get(parentPath);
             if (parentTreeFile != null){
                 parentTreeFile.getChildren().add(treeFile);
-                treeFile.setParentRelativePath(parentTreeFile.getRelativePath());
                 continue;
             }
 
             // 如果父级不存在, 则创建父级并添加到树
             parentTreeFile = new DiffChangesTree.TreeFile(parentPath);
             parentTreeFile.getChildren().add(treeFile);
-            treeFile.setParentRelativePath(parentTreeFile.getRelativePath());
             treeFileMap.put(parentPath,parentTreeFile);
 
             // 将创建的父级进行挂载, 一直往上, 直到找到模块进行挂载; 如果当前变更模块不属于模块, 则挂载到项目上
@@ -353,7 +350,6 @@ public class GitDiffService {
                 final DiffChangesTree.TreeFile topTreeFile = treeFileMap.get(top);
                 if (topTreeFile != null){
                     topTreeFile.getChildren().add(parentTreeFile);
-                    parentTreeFile.setParentRelativePath(topTreeFile.getRelativePath());
                     mount = true;
                     break;
                 }
@@ -363,12 +359,11 @@ public class GitDiffService {
             if (!mount){
                 // 如果未能挂载,则挂载到项目模块
 //                log.error("路径未挂载 :{}",parentPath);
-                repositoryTreeFile.getChildren().add(parentTreeFile);
-                parentTreeFile.setParentRelativePath(repositoryTreeFile.getRelativePath());
+                rootTreeFile.getChildren().add(parentTreeFile);
             }
         }
 
-        return repositoryTreeFile;
+        return rootTreeFile;
     }
 
     /**

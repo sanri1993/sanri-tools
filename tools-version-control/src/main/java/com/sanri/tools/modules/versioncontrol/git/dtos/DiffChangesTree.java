@@ -26,8 +26,7 @@ public class DiffChangesTree {
 		@JsonIgnore
 		private OnlyPath relativePath;
 		@JsonIgnore
-		private OnlyPath parentRelativePath;
-		private List<TreeFile> children = new ArrayList<>();
+		private OnlyPath projectPath;
 		/**
 		 * 模块上次解析 classpath 的时间
 		 */
@@ -36,6 +35,8 @@ public class DiffChangesTree {
 		 * 模块上次编译时间, 如果当前是文件, 则为文件编译时间
 		 */
 		private Long lastCompileTime;
+
+		private List<TreeFile> children = new ArrayList<>();
 
 		public TreeFile() {
 		}
@@ -82,7 +83,7 @@ public class DiffChangesTree {
 			if (isModule()){
 				if (relativePath.getParent().isRoot()){
 					// 如果当前模块是根路径, 响应项目名
-					return parentRelativePath.getFileName();
+					return projectPath.getFileName();
 				}
 				return relativePath.getParent().getFileName();
 			}
@@ -140,8 +141,8 @@ public class DiffChangesTree {
 			this.classpathResolveTime = classpathResolveTime;
 		}
 
-		public void setParentRelativePath(OnlyPath parentRelativePath) {
-			this.parentRelativePath = parentRelativePath;
+		public void setProjectPath(OnlyPath projectPath) {
+			this.projectPath = projectPath;
 		}
 
 		public Long getLastCompileTime() {

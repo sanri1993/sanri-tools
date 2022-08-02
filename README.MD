@@ -63,7 +63,7 @@ nohup java -Dloader.path=sanritoolslib -Xms256m -Xmx256m -jar sanritools.jar >/d
 当前工具的版本在 `tools-console/src/main/resources/version` 文件中, 使用 3 位版本号, 主版本.次版本.bug更新
 
 各模块版本信息和描述信息在模块的 `resources/tools-[模块名].plugin.properties` 中注册进来(名称,版本,作者,依赖项,帮助文档), 
-帮助文档通过链接来指定, http 开头时为网络帮助文档, 否则在本地 resources 中查找 
+> 帮助文档通过链接来指定, http 开头时为网络帮助文档, 否则在本地 resources 中查找 
 
 * [核心模块](tools-core/src/main/resources/tools-core-introduce.md)
 * [数据库模块](tools-database/src/main/resources/tools-database-introduce.md)
