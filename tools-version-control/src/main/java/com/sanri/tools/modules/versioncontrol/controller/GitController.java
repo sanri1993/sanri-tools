@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
-import com.sanri.tools.modules.versioncontrol.dtos.*;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -16,10 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.sanri.tools.modules.core.dtos.param.PageParam;
 import com.sanri.tools.modules.core.utils.OnlyPath;
-import com.sanri.tools.modules.versioncontrol.git.GitBranchService;
-import com.sanri.tools.modules.versioncontrol.git.GitDiffService;
-import com.sanri.tools.modules.versioncontrol.git.GitRepositoryService;
-import com.sanri.tools.modules.versioncontrol.git.RepositoryMetaService;
+import com.sanri.tools.modules.versioncontrol.dtos.*;
+import com.sanri.tools.modules.versioncontrol.git.*;
 import com.sanri.tools.modules.versioncontrol.git.dtos.*;
 
 @RestController
@@ -34,6 +31,8 @@ public class GitController {
     private RepositoryMetaService repositoryMetaService;
     @Autowired
     private GitDiffService gitDiffService;
+    @Autowired
+    private GitDiffService2 gitDiffService2;
 
     /**
      * 锁定一个仓库
