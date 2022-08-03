@@ -81,7 +81,7 @@ public class DiffChangesTree {
 		 */
 		public String getPath(){
 			if (isModule()){
-				if (relativePath.getParent().isRoot()){
+				if (relativePath.getParent() == null){
 					// 如果当前模块是根路径, 响应项目名
 					return projectPath.getFileName();
 				}

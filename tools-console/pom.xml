@@ -252,6 +252,11 @@
                             <groupId>com.sanri.tools</groupId>
                             <artifactId>tools-maven</artifactId>
                         </include>
+
+                        <include>
+                            <groupId>com.sanri.tools</groupId>
+                            <artifactId>tools-rocketmq</artifactId>
+                        </include>
                     </includes>
                     <includeSystemScope>true</includeSystemScope>
                 </configuration>

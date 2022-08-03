@@ -31,7 +31,13 @@ public class ModuleMetaService {
      */
     public ProjectMeta.ModuleMeta computeIfAbsent(ProjectLocation projectLocation,String relativePomFile) throws IOException {
         final ProjectMeta projectMeta = projectMetaService.computeIfAbsent(projectLocation);
-        final String moduleName = new OnlyPath(relativePomFile).getParent().getFileName();
+        final OnlyPath parent = new OnlyPath(relativePomFile).getParent();
+        String moduleName = projectLocation.getRepository();
+        if (parent != null){
+            // 当相对 pom 文件为 pom.xml 时, 模块使用项目名
+            moduleName = parent.getFileName();
+        }
+
         ProjectMeta.ModuleMeta moduleCompileMeta = projectMeta.getModuleCompileMetas().get(moduleName);
         if (moduleCompileMeta != null){
             return moduleCompileMeta;
