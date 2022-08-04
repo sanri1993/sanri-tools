@@ -35,6 +35,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.sanri.tools.modules.core.service.NamedThreadFactory;
@@ -206,7 +207,10 @@ public class DataExportService {
     /**
      * 数据导出线程池 私用
      */
-    private ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1,10,0, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<>(100),new NamedThreadFactory("exportExcel"));
+//    private ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1,10,0, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<>(100),new NamedThreadFactory("exportExcel"));
+    @Autowired
+    @Qualifier("publicSlowThreadPool")
+    private ThreadPoolExecutor threadPoolExecutor;
     /**
      * 多线程导出数据
      * @param dataQueryParam

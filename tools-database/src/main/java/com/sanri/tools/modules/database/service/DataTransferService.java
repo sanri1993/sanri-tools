@@ -21,6 +21,7 @@ import org.apache.commons.dbutils.handlers.ColumnListHandler;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -49,7 +50,10 @@ public class DataTransferService {
     /**
      * 数据读写取线程池
      */
-    private ThreadPoolExecutor threadPoolExecutor =  new ThreadPoolExecutor(2,5,0, TimeUnit.SECONDS,new ArrayBlockingQueue<>(100),new NamedThreadFactory("dataTransfer"));
+//    private ThreadPoolExecutor threadPoolExecutor =  new ThreadPoolExecutor(2,5,0, TimeUnit.SECONDS,new ArrayBlockingQueue<>(100),new NamedThreadFactory("dataTransfer"));
+    @Autowired
+    @Qualifier("publicSlowThreadPool")
+    private ThreadPoolExecutor threadPoolExecutor;
 
     /**
      * 数据缓存队列, 每一个队列代表一个批次

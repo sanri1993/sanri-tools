@@ -25,6 +25,7 @@ import org.eclipse.aether.collection.DependencyCollectionException;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.OrderComparator;
 import org.springframework.stereotype.Service;
 
@@ -387,7 +388,11 @@ public class MavenProjectService implements InitializingBean {
         return new File(parent,compilePath);
     }
 
-    ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1,100,0, TimeUnit.MINUTES,new ArrayBlockingQueue<>(10));
+//    ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1,100,0, TimeUnit.MINUTES,new ArrayBlockingQueue<>(10));
+
+    @Autowired
+    @Qualifier("publicFastThreadPool")
+    private ThreadPoolExecutor threadPoolExecutor;
 
     /**
      * 监听 maven 命令, 如果遇到编译命令, 需要获取模块编译成功时间
@@ -416,10 +421,17 @@ public class MavenProjectService implements InitializingBean {
                     InvocationResult invocationResult = invocationResultListenableFuture.get();
                     if (invocationResult.getExitCode() == 0){
                         // 如果编译成功, 记录编译时间
-                        final String moduleName = new OnlyPath(mavenGoalsParam.getRelativePomFile()).getParent().getFileName();
+                        final OnlyPath parent = new OnlyPath(mavenGoalsParam.getRelativePomFile()).getParent();
+                        String moduleName = null;
+                        if (parent != null) {
+                            moduleName = parent.getFileName();
+                        }else {
+                            moduleName = mavenGoalsParam.getProjectLocation().getRepository();
+                        }
                         final ProjectMeta projectMeta = projectMetaService.computeIfAbsent(mavenGoalsParam.getProjectLocation());
                         final Map<String, ProjectMeta.ModuleMeta> moduleCompileMetas = projectMeta.getModuleCompileMetas();
-                        final ProjectMeta.ModuleMeta moduleCompileMeta = moduleCompileMetas.computeIfAbsent(moduleName, k -> new ProjectMeta.ModuleMeta(moduleName, mavenGoalsParam.getRelativePomFile()));
+                        final String finalModuleName = moduleName;
+                        final ProjectMeta.ModuleMeta moduleCompileMeta = moduleCompileMetas.computeIfAbsent(moduleName, k -> new ProjectMeta.ModuleMeta(finalModuleName, mavenGoalsParam.getRelativePomFile()));
                         moduleCompileMeta.setLastCompileTime(System.currentTimeMillis());
                     }else {
                         final CommandLineException executionException = invocationResult.getExecutionException();
