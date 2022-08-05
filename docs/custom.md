@@ -12,11 +12,12 @@ git clone https://gitee.com/sanri/sanri-tools-maven.git
 2. 安装外部 jar 包 
 ```
 复制 tools-name/src/main/resources/install.txt 中的内容在控制台执行
+复制 tools-fastdfs/src/main/resources/install.txt 中的内容在控制台执行
 ```
 3. 尝试能不能运行成功, 并运行版本号接口 tools-console.http 中的第一个接口
 4. 下载最新版本前端 [去下载](https://gitee.com/sanri/sanritoolsvue/releases)
-5. 替换 webapp 里面的前端，并标识 webapp 为 web 项目
-6. 重新启动项目，尝试访问前端 `http://localhost:8084`
+5. 将前端解压并放在用户目录 public 下面
+6. 启动后端, 访问 http://localhost:8084/public/index.html
 
 ## 前端环境搭建(前后台分离)
 
