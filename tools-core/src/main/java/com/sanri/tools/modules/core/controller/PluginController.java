@@ -6,6 +6,8 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
+import com.sanri.tools.modules.core.service.plugin.dtos.EnhancePlugin;
+import com.sanri.tools.modules.core.service.plugin.dtos.PluginWithHelpContent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,8 +28,8 @@ public class PluginController {
      * @return
      */
     @GetMapping("/list")
-    public List<PluginManager.EnhancePlugin> plugins() throws IOException {
-        return pluginManager.list();
+    public List<EnhancePlugin> plugins() throws IOException {
+        return pluginManager.localPlugins();
     }
 
     /**
@@ -45,7 +47,7 @@ public class PluginController {
      * @return
      */
     @GetMapping("/detail")
-    public PluginManager.PluginWithHelpContent detail(@NotNull String pluginId) throws IOException {
+    public PluginWithHelpContent detail(@NotNull String pluginId) throws IOException {
         return pluginManager.detailWithHelpContent(pluginId);
     }
 

@@ -2,9 +2,9 @@ package com.sanri.tools.modules.core.controller;
 
 import com.sanri.tools.modules.core.security.UserService;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
+import com.sanri.tools.modules.core.service.plugin.dtos.EnhancePlugin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
@@ -37,8 +37,8 @@ public class ModuleCheckController {
      */
     @GetMapping("/hasModule")
     public boolean hasModule(String moduleId) throws IOException {
-        final List<PluginManager.EnhancePlugin> list = pluginManager.list();
-        for (PluginManager.EnhancePlugin enhancePlugin : list) {
+        final List<EnhancePlugin> list = pluginManager.localPlugins();
+        for (EnhancePlugin enhancePlugin : list) {
             final String id = enhancePlugin.getPluginRegister().getId();
             if (id.equals(moduleId)){
                 return true;

@@ -2,6 +2,7 @@ package com.sanri.tools.modules.core.service.collect;
 
 import com.alibaba.fastjson.JSON;
 import com.sanri.tools.modules.core.service.plugin.PluginManager;
+import com.sanri.tools.modules.core.service.plugin.dtos.EnhancePlugin;
 import com.sanri.tools.modules.core.utils.NetUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
@@ -38,7 +39,7 @@ public class PluginUseCollect implements DataCollect , InitializingBean {
 		if (true) {
             return ;
         }
-		final Map<String, PluginManager.EnhancePlugin> pluginRegisterMap = pluginManager.getPluginRegisterMap();
+		final Map<String, EnhancePlugin> pluginRegisterMap = pluginManager.getPluginRegisterMap();
 		final String userIp = NetUtil.getLocalIPs().get(0);
 		final String sendData = JSON.toJSONString(pluginRegisterMap.values());
 		// 数据上报, 通过 socket
