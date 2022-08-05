@@ -53,16 +53,18 @@ public class MvcConfiguration implements WebMvcConfigurer {
             final ApplicationHome applicationHome = new ApplicationHome(getClass());
             final File publicDir = new File(applicationHome.getSource().getParentFile(), "public");
 
+            final String property = System.getProperty("user.home");
+            String publicPath2 = new File(property,"public").toURI().toURL().toString();
+
             // 部署路径
             final String publicPath = publicDir.toURI().toURL().toString();
             // 开发路径
             final String path = new File("D:\\currentproject\\sanritoolsvue\\dist").toURI().toURL().toString();
 
-            log.info("加载前端路径列表: \n {} \n", StringUtils.join(Arrays.asList(path,publicPath),"\n"));
+            log.info("加载前端路径列表: \n {} \n", StringUtils.join(Arrays.asList(path,publicPath,publicPath2),"\n"));
 
-            registry.addResourceHandler("/public/**")
-                    .addResourceLocations(path)
-                    .addResourceLocations(publicPath);
+            registry.addResourceHandler("/public/**","/page/**")
+                    .addResourceLocations(path,publicPath,publicPath2);
         } catch (MalformedURLException e) {
             // ignore
         }
