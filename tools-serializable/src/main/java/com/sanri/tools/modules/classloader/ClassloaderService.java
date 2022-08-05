@@ -180,6 +180,7 @@ public class ClassloaderService implements InitializingBean {
         // 目标类加载器目录
         final File targetClassloaderDir = fileManager.mkDataDir("classloaders/" + classloaderName);
         final File loadClassesDir = classFileLoadClassHandler.getClassPath().resolveFile(targetClassloaderDir);
+        loadClassesDir.mkdirs();
         final URL url = loadClassesDir.toURI().toURL();
         final ExtendClassloader extendClassloader = CACHED_CLASSLOADER.computeIfAbsent(classloaderName, key -> new ExtendClassloader(classloaderName, url));
         ReflectionUtils.invokeMethod(addURLMethod,extendClassloader,url);
