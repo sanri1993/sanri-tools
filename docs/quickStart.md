@@ -2,14 +2,13 @@
 
 ## 启动项目3.2.0
 
-1. 下载完整包 <https://cowtransfer.com/s/4fc38439977f40>
-
-2. 解压 `unzip sanritools3.2.0-jdk8.zip`
-
-3. 进入目录, 并执行启动脚本
+下载完整包 <https://cowtransfer.com/s/4fc38439977f40>
 
 ```
+unzip sanritools3.2.0-jdk8.zip
+
 cd sanritools3.2.0-jdk8
+
 chmod +x server.sh 
 
 ./server.sh start 
