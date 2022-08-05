@@ -1,0 +1,1 @@
+java -Xms256m -Xmx256m -Dcom.sun.management.jmxremote.port=10086 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Djava.rmi.server.hostname=127.0.0.1 -Dloader.path=sanritoolslib -jar sanritools.jar
