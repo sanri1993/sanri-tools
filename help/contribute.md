@@ -65,11 +65,11 @@ tools-name/src/main/resources 执行 install.txt
 ### 如何接入前端
 下载前端的发布包 [去下载](https://gitee.com/sanri/sanritoolsvue/releases)
 
-- 在 tools-console/src/main 文件夹中建一个目录 webapp ,并标识为 web
-- 将前端包 dist 中的内容放到 webapp 目录 
-- 启动项目, 访问 http://localhost:8084
+将前端包解压为 public 目录, 并放到 `sanritools.jar` 同级目录
 
-注意: 前端只会支持最新版本的后端, 并且这个前端现在全是后端开发出来的, 比较丑, 有能力者可以自研前端
+启动项目, 访问 http://localhost:8084/public/index.html
+
+> 注意: 前端只会支持最新版本的后端, 并且这个前端现在全是后端开发出来的, 比较丑, 有能力者可以自研前端
 
 ### 如何让自己的模块可以新建连接
 在 resources 目录中添加一个连接配置模板文件 `connect.模块名.template.配置格式`

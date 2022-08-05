@@ -1,16 +1,21 @@
 文档更新日期: {docsify-updated} 
 
-## 启动项目
+## 启动项目3.2.0
 
-1. 下载最新版本 release [去下载](https://gitee.com/sanri/sanri-tools-maven/releases/)
+1. 下载完整包 <https://cowtransfer.com/s/4fc38439977f40>
 
-2. 下载依赖的 jar 包， 并解压   sanritoolslib [下载地址](https://cowtransfer.com/s/0df01e65aaca4f)
+2. 解压 `unzip sanritools3.2.0-jdk8.zip`
 
-3. 启动项目
-   ```shell
-   java -Dloader.path=sanritoolslib -Xms256m -Xmx256m -jar sanritools.jar
-   ```
-4. 访问地址 `http://localhost:8084/`，默认帐号密码为 admin/0, 当进入首页能看到插件列表时, 表示安装成功
+3. 进入目录, 并执行启动脚本
+
+```
+cd sanritools3.2.0-jdk8
+chmod +x server.sh 
+
+./server.sh start 
+```
+
+4. 访问项目 http://localhost:8084/public/index.html , 默认管理员帐号为 admin / 0
 
 ## 创建一个连接
 
@@ -30,6 +35,7 @@
 - [database](/modules/database)
 - [Redis](/modules/redis)
 - [kafka](/modules/kafka)
+- [rocketmq](/modules/rocketmq)
 - [gitpatch](/modules/gitpatch)
 - [mybatis](/modules/mybatis)
 - [quartz](/modules/quartz)

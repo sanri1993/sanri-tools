@@ -8,23 +8,23 @@
 
 这是由于初期对前端不熟悉,未使用 vuex 同步数据,可以在标签页右键刷新当前页就可以拿到最新建立的连接
 
-### 关于代码增量工具
+### kafka 连接不上问题
 
-代码增量工具需要依赖于 maven , 所有部署的时候, 需要配置一个 maven 环境, 并告诉每个项目成员, maven 是在哪个路径
-这样每个成员就能知道 `mavenConfigFilePath` 怎么配置 
+**node -1 类似的错误**
 
-```json
-{
-  "connectIdParam": {
-    "module": "git",
-    "connName": "sanri"
-  },
-  "authParam": {
-    "username": "root",
-    "password": "h123"
-  },
-  "sshKey":null,
-  "mavenHome": "d:/test",
-  "mavenConfigFilePath":"d:/test/conf/settings.xml"
-}
+kafka 的 broker 获取原理: 读取同名连接 zookeeper 上的 /brokers/ids/0 上的数据, 所以需要配置同名的 zookeeper 连接 
+
+**权限配置错误**
+
+因为给的模板中默认是配置了 kafka 的权限的, 使用的是 jaas 的权限配置, 即这几行配置, 还有安全的通信协议, 大部分应该都是明文(PLAINTEXT), 
+如果 kafka 本身是没有配置权限的, 可以把这个属性配置去掉, 应该就可以连接上了
+
+```
+properties:
+    sasl:
+      jaas:
+        config: org.apache.kafka.common.security.plain.PlainLoginModule required username=hd password=hd-kafka;
+      mechanism: PLAIN
+    security:
+      protocol: SASL_PLAINTEXT
 ```
