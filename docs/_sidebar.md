@@ -10,6 +10,7 @@
    - [database](/modules/database)
    - [Redis](/modules/redis)
    - [kafka](/modules/kafka)
+   - [rocketmq](/modules/rocketmq)
    - [gitpatch](/modules/gitpatch)
    - [mybatis](/modules/mybatis)
    - [quartz](/modules/quartz)
