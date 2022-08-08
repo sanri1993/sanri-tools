@@ -1,10 +1,12 @@
 package com.sanri.tools.modules.elasticsearch.controller;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import com.alibaba.fastjson.JSON;
 import com.sanri.tools.modules.core.service.connect.ConnectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -97,8 +99,9 @@ public class EsController {
      * @throws IOException
      */
     private String loadAddress(@NotBlank String connName) throws IOException {
-        SimpleConnectParam simpleConnectParam = (SimpleConnectParam) connectService.readConnParams("elasticsearch",connName);
-        return simpleConnectParam.getConnectParam().httpConnectString();
+        final String elasticsearch = connectService.loadContent("elasticsearch", connName);
+        final JSONObject jsonObject = JSON.parseObject(elasticsearch);
+        return jsonObject.getString("address");
     }
 
 }

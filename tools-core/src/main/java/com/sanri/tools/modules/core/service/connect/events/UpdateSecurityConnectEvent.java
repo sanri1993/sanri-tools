@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationEvent;
  * 第二版连接管理, 连接更新事件
  * 传入对象为 ConnectInput
  */
-public class UpdateSecurityConnectEvent extends ApplicationEvent {
+public class UpdateSecurityConnectEvent extends SecurityConnectEvent {
     /**
      * Create a new ApplicationEvent.
      *

@@ -8,6 +8,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PreDestroy;
 
 import com.sanri.tools.modules.core.service.connect.ConnectService;
+import com.sanri.tools.modules.core.service.connect.dtos.ConnectInput;
+import com.sanri.tools.modules.core.service.connect.dtos.ConnectOutput;
+import com.sanri.tools.modules.core.service.connect.events.SecurityConnectEvent;
+import com.sanri.tools.modules.core.service.connect.events.UpdateSecurityConnectEvent;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -40,7 +44,7 @@ import redis.clients.util.JedisClusterCRC16;
 
 @Service
 @Slf4j
-public class RedisService implements ApplicationListener<UpdateConnectEvent> {
+public class RedisService implements ApplicationListener<SecurityConnectEvent> {
     /**
      * 保存的 redis 连接信息
      * connName => RedisConnection
@@ -478,15 +482,21 @@ public class RedisService implements ApplicationListener<UpdateConnectEvent> {
     }
 
     @Override
-    public void onApplicationEvent(UpdateConnectEvent updateConnectEvent) {
-        UpdateConnectEvent.ConnectInfo connectInfo = (UpdateConnectEvent.ConnectInfo) updateConnectEvent.getSource();
-        if (connectInfo.getClazz() == RedisConnectParam.class) {
-            String connName = connectInfo.getConnName();
+    public void onApplicationEvent(SecurityConnectEvent updateConnectEvent) {
+        ConnectOutput connectOutput = (ConnectOutput) updateConnectEvent.getSource();
+        final ConnectInput connectInput = connectOutput.getConnectInput();
+        final String module = connectInput.getModule();
+        if (MODULE.equals(module)){
+            String connName = connectInput.getBaseName();
             final RedisConnection redisConnection = clientMap.remove(connName);
-            if (redisConnection != null) {
-                redisConnection.close();
-            }
             log.info("[{}]模块[{}]配置变更,将移除存储的元数据信息", MODULE,connName);
+            if (redisConnection != null) {
+                try {
+                    redisConnection.close();
+                }catch (Exception e){
+                    // ignore
+                }
+            }
         }
     }
 

@@ -4,10 +4,15 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.sanri.tools.modules.core.service.connect.dtos.ConnectInput;
+import com.sanri.tools.modules.core.service.connect.dtos.ConnectOutput;
+import com.sanri.tools.modules.core.service.connect.events.SecurityConnectEvent;
 import org.apache.commons.io.FilenameUtils;
 import org.csource.common.MyException;
 import org.csource.fastdfs.FileInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
@@ -17,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class FastdfsService {
+public class FastdfsService implements ApplicationListener<SecurityConnectEvent> {
 
     @Autowired
     private ConnectService connectService;
@@ -26,6 +31,8 @@ public class FastdfsService {
      * fastdfs 客户端 connName => FastDfsClient
      */
     private Map<String,FastDfsClient> fastDfsClientMap = new ConcurrentHashMap<>();
+
+    public static final String MODULE = "fastdfs";
 
     /**
      * 下载或者预览文件
@@ -79,10 +86,21 @@ public class FastdfsService {
     }
 
     private FastDfsClient createFastdfsClient(String connName) throws IOException, MyException {
-        final String content = connectService.loadContent("fastdfs", connName);
+        final String content = connectService.loadContent(MODULE, connName);
         final FastDfsConfig fastDfsConfig = JSON.parseObject(content, FastDfsConfig.class);
         final FastDfsClient fastDfsClient = new FastDfsClient(fastDfsConfig);
         fastDfsClient.reConnect();
         return fastDfsClient;
+    }
+
+    @Override
+    public void onApplicationEvent(SecurityConnectEvent event) {
+        ConnectOutput connectOutput = (ConnectOutput) event.getSource();
+        final ConnectInput connectInput = connectOutput.getConnectInput();
+        if (MODULE.equals(connectInput.getModule())){
+            final FastDfsClient fastDfsClient = fastDfsClientMap.remove(connectInput.getBaseName());
+            if (fastDfsClient != null){}
+            log.info("[{}]模块[{}]配置变更,将移除存储的元数据信息", MODULE,connectInput.getBaseName());
+        }
     }
 }

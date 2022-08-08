@@ -10,9 +10,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PreDestroy;
 
 import com.sanri.tools.modules.core.service.connect.ConnectService;
+import com.sanri.tools.modules.core.service.connect.dtos.ConnectInput;
+import com.sanri.tools.modules.core.service.connect.dtos.ConnectOutput;
+import com.sanri.tools.modules.core.service.connect.events.SecurityConnectEvent;
 import org.apache.commons.collections.IteratorUtils;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
 import com.mongodb.*;
@@ -31,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class MongoService {
+public class MongoService implements ApplicationListener<SecurityConnectEvent> {
     private Map<String, MongoClient> mongoClientMap = new ConcurrentHashMap<>();
 
     private static final String MODULE = "mongo";
@@ -150,6 +154,23 @@ public class MongoService {
             try{
                 next.close();
             }catch (Exception e){}
+        }
+    }
+
+    @Override
+    public void onApplicationEvent(SecurityConnectEvent event) {
+        final ConnectOutput connectOutput = (ConnectOutput) event.getSource();
+        final ConnectInput connectInput = connectOutput.getConnectInput();
+        if (MODULE.equals(connectInput.getModule())){
+            final MongoClient mongoClient = mongoClientMap.get(connectInput.getBaseName());
+            if (mongoClient != null){
+                try {
+                    mongoClient.close();
+                }catch (Exception e){
+                    // ignore
+                }
+            }
+            log.info("[{}]模块[{}]配置变更,将移除存储的元数据信息", MODULE,connectInput.getBaseName());
         }
     }
 }

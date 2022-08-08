@@ -1,7 +1,4 @@
 chroot: /
-connectIdParam:
-  module: kafka
-  connName: test
 kafka:
   properties:
     sasl:
@@ -15,11 +12,9 @@ kafka:
   producer:
     key-serializer: org.apache.kafka.common.serialization.StringSerializer
     value-serializer: org.apache.kafka.common.serialization.StringSerializer
-    bootstrap-servers: 10.101.72.76:9091,10.101.72.76:9092,10.101.72.76:9093
-  bootstrap-servers: 10.101.72.76:9091,10.101.72.76:9092,10.101.72.76:9093
+    bootstrap-servers: localhost:9092
+  bootstrap-servers: localhost:9092
   consumer:
-    group-id: sanritest1
+    group-id: console-group
     auto-offset-reset: earliest
     enable-auto-commit: false
-    key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-    value-deserializer: org.apache.kafka.common.serialization.StringDeserializer

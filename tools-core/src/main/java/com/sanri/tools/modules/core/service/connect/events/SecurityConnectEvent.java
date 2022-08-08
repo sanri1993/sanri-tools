@@ -2,17 +2,13 @@ package com.sanri.tools.modules.core.service.connect.events;
 
 import org.springframework.context.ApplicationEvent;
 
-/**
- * 连接删除事件
- */
-public class DeleteSecurityConnectEvent extends SecurityConnectEvent {
-
+public class SecurityConnectEvent extends ApplicationEvent {
     /**
      * Create a new ApplicationEvent.
      *
      * @param source the object on which the event initially occurred (never {@code null})
      */
-    public DeleteSecurityConnectEvent(Object source) {
+    public SecurityConnectEvent(Object source) {
         super(source);
     }
 }

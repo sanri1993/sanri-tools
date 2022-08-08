@@ -11,8 +11,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PreDestroy;
 
 import com.sanri.tools.modules.core.service.connect.ConnectService;
+import com.sanri.tools.modules.core.service.connect.dtos.ConnectInput;
 import com.sanri.tools.modules.core.service.connect.dtos.ConnectOutput;
 import com.sanri.tools.modules.core.service.connect.events.DeleteSecurityConnectEvent;
+import com.sanri.tools.modules.core.service.connect.events.SecurityConnectEvent;
+import com.sanri.tools.modules.core.service.connect.events.UpdateSecurityConnectEvent;
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.serialize.BytesPushThroughSerializer;
 import org.I0Itec.zkclient.serialize.ZkSerializer;
@@ -40,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class ZookeeperService implements ApplicationListener {
+public class ZookeeperService implements ApplicationListener<SecurityConnectEvent> {
     /**
      * zookeeper 客户端列表
      * connName ==> ZkClient
@@ -234,17 +237,19 @@ public class ZookeeperService implements ApplicationListener {
     }
 
     @Override
-    public void onApplicationEvent(ApplicationEvent event) {
-        if (event instanceof UpdateConnectEvent){
-            UpdateConnectEvent.ConnectInfo connectInfo = (UpdateConnectEvent.ConnectInfo) event.getSource();
-            if (connectInfo.getClazz() == SimpleConnectParam.class && module.equals(connectInfo.getModule())) {
-                String connName = connectInfo.getConnName();
+    public void onApplicationEvent(SecurityConnectEvent event) {
+        ConnectOutput connectOutput = (ConnectOutput) event.getSource();
+        final ConnectInput connectInput = connectOutput.getConnectInput();
+
+        if (event instanceof UpdateSecurityConnectEvent){
+
+            if (module.equals(connectInput.getModule())) {
+                String connName = connectInput.getBaseName();
                 zkClientMap.remove(connName);
                 log.info("[{}]模块[{}]配置变更,将移除存储的元数据信息",module,connName);
             }
         }else if (event instanceof DeleteSecurityConnectEvent){
-            final ConnectOutput connectOutput = (ConnectOutput) event.getSource();
-            if (ZookeeperService.module.equals(connectOutput.getConnectInput().getModule())){
+            if (ZookeeperService.module.equals(connectInput.getModule())){
                 final String baseName = connectOutput.getConnectInput().getBaseName();
                 log.info("zookeeper 删除连接[{}]",baseName);
                 zkClientMap.remove(baseName);

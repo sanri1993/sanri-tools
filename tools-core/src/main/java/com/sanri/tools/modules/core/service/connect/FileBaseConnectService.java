@@ -114,7 +114,7 @@ public class FileBaseConnectService extends ConnectService implements Initializi
         // 不放太多的字符串在内存
         connectInput.setContent(null);
 
-        applicationContext.publishEvent(new UpdateSecurityConnectEvent(connectInput));
+        applicationContext.publishEvent(new UpdateSecurityConnectEvent(connectOutput));
     }
 
     @Override

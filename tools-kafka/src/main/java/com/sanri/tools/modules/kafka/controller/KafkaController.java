@@ -42,15 +42,24 @@ public class KafkaController {
      * kafka 连接的创建需要依赖于 zookeeper
      * @param kafkaConnectParam
      */
-    @PostMapping(value = "/connect/create",consumes = "application/yaml")
-    public void createConnect(@RequestBody String yamlConfig) throws IOException {
-        ByteArrayResource byteArrayResource = new ByteArrayResource(yamlConfig.getBytes());
-        List<PropertySource<?>> load = yamlPropertySourceLoader.load("a",byteArrayResource);
-        Iterable<ConfigurationPropertySource> from = ConfigurationPropertySources.from(load);
-        Binder binder = new Binder(from);
-        BindResult<KafkaConnectParam> bind = binder.bind("", KafkaConnectParam.class);
-        KafkaConnectParam kafkaConnectParam = bind.get();
-        kafkaService.createConnect(kafkaConnectParam);
+//    @PostMapping(value = "/connect/create",consumes = "application/yaml")
+//    public void createConnect(@RequestBody String yamlConfig) throws IOException {
+//        ByteArrayResource byteArrayResource = new ByteArrayResource(yamlConfig.getBytes());
+//        List<PropertySource<?>> load = yamlPropertySourceLoader.load("a",byteArrayResource);
+//        Iterable<ConfigurationPropertySource> from = ConfigurationPropertySources.from(load);
+//        Binder binder = new Binder(from);
+//        BindResult<KafkaConnectParam> bind = binder.bind("", KafkaConnectParam.class);
+//        KafkaConnectParam kafkaConnectParam = bind.get();
+//        kafkaService.createConnect(kafkaConnectParam);
+//    }
+
+    /**
+     * 停止当前连接
+     * @param clusterName
+     */
+    @GetMapping("/closeAndRemove")
+    public void stopAndRemove(@NotNull String clusterName){
+        kafkaService.stopAndRemove(clusterName);
     }
 
     @PostMapping("/topic/create")

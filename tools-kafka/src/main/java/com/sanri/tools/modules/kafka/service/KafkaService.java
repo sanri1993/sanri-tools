@@ -18,7 +18,12 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
+import com.sanri.tools.modules.core.dtos.UpdateConnectEvent;
+import com.sanri.tools.modules.core.dtos.param.RedisConnectParam;
 import com.sanri.tools.modules.core.service.connect.ConnectService;
+import com.sanri.tools.modules.core.service.connect.dtos.ConnectInput;
+import com.sanri.tools.modules.core.service.connect.dtos.ConnectOutput;
+import com.sanri.tools.modules.core.service.connect.events.SecurityConnectEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.kafka.clients.admin.*;
@@ -31,6 +36,7 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.env.YamlPropertySourceLoader;
+import org.springframework.context.ApplicationListener;
 import org.springframework.core.Constants;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.ByteArrayResource;
@@ -54,7 +60,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @Slf4j
-public class KafkaService {
+public class KafkaService implements ApplicationListener<SecurityConnectEvent> {
     @Autowired
     private ConnectService connectService;
     @Autowired
@@ -65,6 +71,22 @@ public class KafkaService {
     public static final String MODULE = "kafka";
 
     private static final Map<String, AdminClient> adminClientMap = new ConcurrentHashMap<>();
+
+    /**
+     * 停止并移除一个连接, 避免一直在后台报错
+     * @param clusterName
+     */
+    public void stopAndRemove(String clusterName){
+        final AdminClient adminClient = adminClientMap.get(clusterName);
+        if (adminClient != null){
+            try {
+                adminClient.close();
+            }finally {
+                // 移除当前连接
+                adminClientMap.remove(clusterName);
+            }
+        }
+    }
 
     /**
      * 读取 brokers 信息
@@ -641,12 +663,6 @@ public class KafkaService {
         return mMbeans;
     }
 
-//    @PostConstruct
-//    public void register(){
-//        pluginManager.register(PluginDto.builder().module("monitor").name("kafkaGroup").author("sanri").logo("kafka.jpg").desc("消费组管理").envs("default").build());
-//        pluginManager.register(PluginDto.builder().module("monitor").name("kafkaTopic").author("sanri").logo("kafka.jpg").desc("消费主题管理").envs("default").build());
-//    }
-
     @PreDestroy
     public void destory(){
         log.info("清除 {} 客户端列表:{}", MODULE,adminClientMap.keySet());
@@ -661,41 +677,59 @@ public class KafkaService {
         }
     }
 
+    @Override
+    public void onApplicationEvent(SecurityConnectEvent securityConnectEvent) {
+        ConnectOutput connectOutput = (ConnectOutput) securityConnectEvent.getSource();
+        final ConnectInput connectInput = connectOutput.getConnectInput();
+        if (MODULE.equals(connectInput.getModule())){
+            String connName = connectInput.getBaseName();
+            final AdminClient adminClient = adminClientMap.remove(connName);
+            if (adminClient != null){
+                try{
+                    adminClient.close();
+                }catch (Exception e){
+                    // ignore
+                }
+            }
+            log.info("[{}]模块[{}]配置变更,将移除存储的元数据信息", MODULE,connName);
+        }
+    }
+
     /**
      * 创建 kafka 连接,强依赖于 zookeeper
      * @param kafkaConnectParam
      */
-    public void createConnect(KafkaConnectParam kafkaConnectParam) throws IOException {
-        KafkaProperties kafka = kafkaConnectParam.getKafka();
-        String connName = kafkaConnectParam.getConnectIdParam().getConnName();
-        String chroot = kafkaConnectParam.getChroot();
-
-        List<String> bootstrapServers = kafka.getBootstrapServers();
-        if (bootstrapServers.size() == 1){
-            String brokerOnlyOne = bootstrapServers.get(0);
-            if ("localhost:9092".equals(brokerOnlyOne)){
-                // 如果是默认的,检查 zookeeper 上的节点,如果不一致,则取 zookeeper 上的节点数据
-                List<BrokerInfo> brokers = readZookeeperBrokers(connName,chroot);
-                if (brokers.size() == 0){
-                    throw new ToolException("zookeeper "+connName+" 上的 kafka 节点为空");
-                }
-
-                List<String> bootstrapServersZookeeper = brokers.stream().map(broker -> broker.getHost() + ":" + broker.getPort()).collect(Collectors.toList());
-                String bootstrapServersString = StringUtils.join(bootstrapServersZookeeper, ',');
-                if (!bootstrapServersString.equals(brokerOnlyOne)){
-                    kafka.setBootstrapServers(bootstrapServersZookeeper);
-                }
-            }
-        }
-
-        // 一些默认参数配置
-        KafkaProperties.Consumer consumer = kafka.getConsumer();
-        consumer.setGroupId("console-sanritools-"+connName);
-        consumer.setAutoOffsetReset("earliest");
-        consumer.setEnableAutoCommit(true);
-
-        // 然后调用 连接服务,将配置序列化
-//        connectService.createConnect(MODULE, JSON.toJSONString(kafkaConnectParam));
-    }
+//    public void createConnect(KafkaConnectParam kafkaConnectParam) throws IOException {
+//        KafkaProperties kafka = kafkaConnectParam.getKafka();
+//        String connName = kafkaConnectParam.getConnectIdParam().getConnName();
+//        String chroot = kafkaConnectParam.getChroot();
+//
+//        List<String> bootstrapServers = kafka.getBootstrapServers();
+//        if (bootstrapServers.size() == 1){
+//            String brokerOnlyOne = bootstrapServers.get(0);
+//            if ("localhost:9092".equals(brokerOnlyOne)){
+//                // 如果是默认的,检查 zookeeper 上的节点,如果不一致,则取 zookeeper 上的节点数据
+//                List<BrokerInfo> brokers = readZookeeperBrokers(connName,chroot);
+//                if (brokers.size() == 0){
+//                    throw new ToolException("zookeeper "+connName+" 上的 kafka 节点为空");
+//                }
+//
+//                List<String> bootstrapServersZookeeper = brokers.stream().map(broker -> broker.getHost() + ":" + broker.getPort()).collect(Collectors.toList());
+//                String bootstrapServersString = StringUtils.join(bootstrapServersZookeeper, ',');
+//                if (!bootstrapServersString.equals(brokerOnlyOne)){
+//                    kafka.setBootstrapServers(bootstrapServersZookeeper);
+//                }
+//            }
+//        }
+//
+//        // 一些默认参数配置
+//        KafkaProperties.Consumer consumer = kafka.getConsumer();
+//        consumer.setGroupId("console-sanritools-"+connName);
+//        consumer.setAutoOffsetReset("earliest");
+//        consumer.setEnableAutoCommit(true);
+//
+//        // 然后调用 连接服务,将配置序列化
+////        connectService.createConnect(MODULE, JSON.toJSONString(kafkaConnectParam));
+//    }
 
 }
