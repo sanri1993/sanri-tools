@@ -10,6 +10,18 @@
 
   <!-- gitalk -->
 	<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.css">
+
+  <nav>
+    <a href="#/3.0.0">3.0.0</a>
+    <a href="#/2.x">2.x</a>
+    <a href="#/1.x">1.x</a>
+  </nav>
+
+  <style>
+    .content {
+      overflow: auto;
+    }
+  </style>
 </head>
 <body>
   <div id="app"></div>
@@ -17,7 +29,7 @@
     window.$docsify = {
       name: 'sanritools',
       loadSidebar: true,
-      loadNavbar:true,
+      loadNavbar:'_sidebar.md',
       repo: 'https://gitee.com/sanri/sanri-tools-maven',
       subMaxLevel: 2,
       homepage: 'introduce.md',
@@ -42,7 +54,7 @@
 
   <!--插入“gitalk评论”模块-->
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/gitalk.min.js"></script>
-<script src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
   <script>
     const gitalk = new Gitalk({
       clientID: '350304a08670cab7061e',

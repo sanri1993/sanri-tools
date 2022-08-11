@@ -33,10 +33,10 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
 * 2022.05.06 添加 fastdfs 工具
 * 2022.06.01 补丁工具模块重构
 * 2022.07.01 添加 rocketmq 工具
-* 2022.07.20 菜单修改(见 help/newmenu.conf)
+* 2022.07.20 菜单修改(见 docs/desgin/menu.md)
 
 ## 快速开始
-**说明:** 这里只会说当前发布最新版本的运行说明, 旧版本请参考对应的文档, 文档命名为(help/QuickStart-版本号.MD)
+**说明:** 这里只会说当前发布最新版本的运行说明, 旧版本请咨询作者
 
 从 3.2.0 版本开始, 前端运行包(4M), 依赖包(90M), 和后端jar包(4M) 将分离, 因为之前的版本将前端包合并在后端包里无法快速修复前端 bug 
 
@@ -95,7 +95,7 @@ nohup java -Dloader.path=sanritoolslib -Xms256m -Xmx256m -jar sanritools.jar >/d
 ![首页](http://pic.yupoo.com/sanri1993/3ae171e2/25570811.png)
 
 ## 如何二开
-详情见[二开文档](help/contribute.md)
+详情见[二开文档](docs/custom.md)
 
 ## 如何交流、反馈、参与贡献？
 

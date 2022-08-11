@@ -1,3 +1,6 @@
+<pre>
+3.2.0 版本菜单设计
+
 前端工具
     二维码工具
     时间戳工具
@@ -45,9 +48,7 @@
 	资源管理
 	权限视图
 系统管理(system)
-	连接(connect)
-		本地连接管理(localSecurityConnect)
-		外链管理(externalLink)	-- 计划中(可以链接外部管理工具, 自动登录, 需要配置登录信息)
+	本地连接管理(localSecurityConnect)
     基础数据(basedata)
         Maven
         Zookeeper
@@ -55,4 +56,4 @@
 	类加载器管理(classloader)
 	系统文件管理(filemanager)
 
-
+</pre>

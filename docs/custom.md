@@ -96,6 +96,27 @@ class Test{
 
 如果需要向前端提供菜单, 需要提供配置文件 `tools-[模块名].menus.conf` 到 classpath 
 
+### 接口调试
+工具使用了更方便的单元测试,直接发送 http 请求来测试,所有的单元测试都在 requests/模块名.http 文件中
+
+**如果添加了权限, 则需要这样发起请求**
+
+1. 先调用登录请求, 它在 `tools-security.http` 请求里面的第一个请求
+2. 然后在请求头中添加 token 信息: `Authorization: {{Authorization}}`
+
+### 如何控制权限
+在 resources 目录中添加一个权限配置文件 `authority.conf`
+
+配置格式参考 [tools-security](../tools-security/src/main/resources/tools-security-introduce.md) 中介绍的配置说明 
+
 ### 打包部署时注意事项 
 
 在 build 中的 spring-boot-maven-plugin 插件中, 需要将自己的模块包含到打包目录, 并且 lib 包中也要更新新引入的 jar 包
+
+## 技术指导 
+联系 sanri 
+
+![我的微信](https://images.gitee.com/uploads/images/2020/0802/183913_c89fb735_409739.jpeg)
+
+## 提交贡献
+如果开发的功能具有通用性时, 欢迎将开发的模块提交上来, 一起完善

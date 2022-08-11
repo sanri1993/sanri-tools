@@ -1,4 +1,4 @@
-* [简介](introduce)
+* [简介](/introduce)
 * [快速开始](/quickStart)
 * 系统设计
    - [总体设计](/desgin/design)
@@ -16,7 +16,7 @@
    - [quartz](/modules/quartz)
    - [name](/modules/name)
 * [配置](/config)
-* [二开](/custom)
+* [二次开发](/custom)
 * [前端](/front)
 * [FAQ](/FAQ)
 * [捐赠](/donate)

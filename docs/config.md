@@ -27,19 +27,6 @@ logging:
   path: /tmp/sanritools/logs
 ```
 
-
-
-###  修改类加载器默认使用仓库
-
-你可以添加仓库，或者修改默认使用仓库，这里改的是类加载器 pom 文件下载工件的配置
-
-```yaml
-maven:
-  remoteRepositorys: https://mirrors.huaweicloud.com/repository/maven/
-```
-
-
-
 ### 不加载全量工具
 
 在下载的 jar 包中删除不需要的工具即可，但需要注意依赖关系，详情可咨询作者。
