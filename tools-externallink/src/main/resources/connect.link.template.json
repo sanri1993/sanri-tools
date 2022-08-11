@@ -1,0 +1,10 @@
+{
+  "name": "baidu",
+  "url": "http://www.baidu.com",
+  "needLogin": false,
+  "loginInfo": null,
+  "routeInfo": {
+    "route": "/minitool/baidu",
+    "title": "百度"
+  }
+}

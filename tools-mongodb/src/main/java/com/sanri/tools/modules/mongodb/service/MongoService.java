@@ -57,8 +57,8 @@ public class MongoService implements ApplicationListener<SecurityConnectEvent> {
         MongoIterable<String> strings = mongoClient.listDatabaseNames();
         MongoCursor<String> iterator = strings.iterator();
         List<String> list = IteratorUtils.toList(iterator);
-        list.remove("admin");
-        list.remove("local");
+//        list.remove("admin");
+//        list.remove("local");
         return list;
     }
 
@@ -120,12 +120,6 @@ public class MongoService implements ApplicationListener<SecurityConnectEvent> {
         return new PageResponseDto<>(objects,countDocuments);
     }
 
-
-//    @PostConstruct
-//    public void register(){
-//        pluginManager.register(PluginDto.builder().module("monitor").author("9420").logo("mongo.jpg").desc("mongodb 监控管理").name(MODULE).build());
-//    }
-
     /**
      * 获取一个 mongo 客户端
      * @param connName
@@ -138,8 +132,12 @@ public class MongoService implements ApplicationListener<SecurityConnectEvent> {
             ConnectParam connectParam = mongoConnectParam.getConnectParam();
             ServerAddress serverAddress = new ServerAddress(connectParam.getHost(), connectParam.getPort());
             MongoAuthParam mongoAuthParam = mongoConnectParam.getAuthParam();
-            MongoCredential credential = MongoCredential.createCredential(mongoAuthParam.getUsername(), mongoAuthParam.getDatabase(), mongoAuthParam.getPassword().toCharArray());
-            mongoClient = new MongoClient(serverAddress,credential,MongoClientOptions.builder().build());
+            if (mongoAuthParam != null) {
+                MongoCredential credential = MongoCredential.createCredential(mongoAuthParam.getUsername(), mongoAuthParam.getDatabase(), mongoAuthParam.getPassword().toCharArray());
+                mongoClient = new MongoClient(serverAddress, credential, MongoClientOptions.builder().build());
+            }else {
+                mongoClient = new MongoClient(serverAddress, MongoClientOptions.builder().build());
+            }
             mongoClientMap.put(connName,mongoClient);
         }
         return mongoClient;

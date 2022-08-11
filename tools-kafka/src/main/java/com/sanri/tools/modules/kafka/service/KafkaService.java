@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
@@ -685,11 +686,8 @@ public class KafkaService implements ApplicationListener<SecurityConnectEvent> {
             String connName = connectInput.getBaseName();
             final AdminClient adminClient = adminClientMap.remove(connName);
             if (adminClient != null){
-                try{
-                    adminClient.close();
-                }catch (Exception e){
-                    // ignore
-                }
+                // kafka 的客户端关闭太慢了, 使用异步来关闭
+                CompletableFuture.runAsync(() -> {adminClient.close();});
             }
             log.info("[{}]模块[{}]配置变更,将移除存储的元数据信息", MODULE,connName);
         }
