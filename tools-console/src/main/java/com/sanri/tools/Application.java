@@ -1,6 +1,6 @@
 package com.sanri.tools;
 
-import com.thebeastshop.forest.springboot.annotation.ForestScan;
+import com.dtflys.forest.springboot.annotation.ForestScan;
 import org.slf4j.MDC;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

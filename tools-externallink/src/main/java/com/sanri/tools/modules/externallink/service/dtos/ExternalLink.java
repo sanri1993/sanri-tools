@@ -30,6 +30,10 @@ public class ExternalLink {
     @Data
     public static final class LoginInfo {
         /**
+         * 登录地址
+         */
+        private String loginUrl;
+        /**
          * 登录需要数据
          */
         private String loginData;

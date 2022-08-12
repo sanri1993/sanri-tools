@@ -1,8 +1,11 @@
 {
-  "name": "baidu",
   "url": "http://www.baidu.com",
   "needLogin": false,
-  "loginInfo": null,
+  "loginInfo": {
+    "loginImpl": "com.sanri.tools.modules.externallink.service.DefaultLoginImpl",
+    "loginData": "",
+    "loginUrl": ""
+  },
   "routeInfo": {
     "route": "/minitool/baidu",
     "title": "百度"

@@ -2,7 +2,6 @@ package com.sanri.tools.modules.core.service.connect.dtos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import org.apache.http.nio.reactor.ConnectingIOReactor;
 
 import java.util.Date;
 

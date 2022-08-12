@@ -1,0 +1,14 @@
+POST https://192.168.48.142/v3-public/localProviders/local?action=login
+Content-Type: application/json
+
+{
+  "username": "dev",
+  "password": "dev",
+  "description": "UI Session",
+  "responseType": "cookie",
+  "ttl": 57600000,
+  "labels": {
+    "ui-session": "true"
+  },
+  "postUrl":"https://192.168.48.142/v3-public/localProviders/local?action=login"
+}

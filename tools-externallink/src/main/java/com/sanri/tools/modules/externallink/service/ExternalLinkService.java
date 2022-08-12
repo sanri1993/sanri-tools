@@ -1,10 +1,12 @@
 package com.sanri.tools.modules.externallink.service;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.sanri.tools.modules.classloader.ClassloaderService;
@@ -41,6 +43,8 @@ public class ExternalLinkService {
             final String baseName = connectOutput.getConnectInput().getBaseName();
             final String link = connectService.loadContent("link", baseName);
             final ExternalLink externalLink = JSON.parseObject(link, ExternalLink.class);
+            // name 取自 baseName 字段
+            externalLink.setName(baseName);
             externalLinks.add(externalLink);
         }
         return externalLinks;
@@ -50,7 +54,7 @@ public class ExternalLinkService {
      * 外链的登录请求
      * @param response
      */
-    public void login(HttpServletResponse response,String connName) throws IOException, ClassNotFoundException {
+    public void login(HttpServletRequest request,HttpServletResponse response, String connName) throws IOException, ClassNotFoundException {
         String link = connectService.loadContent("link", connName);
         final ExternalLink externalLink = JSON.parseObject(link, ExternalLink.class);
         final ExternalLink.LoginInfo loginInfo = externalLink.getLoginInfo();
@@ -62,18 +66,37 @@ public class ExternalLinkService {
         final Class<?> loginClass = classloader.loadClass(loginInfo.getLoginImpl());
         final Method[] allDeclaredMethods = ReflectionUtils.getAllDeclaredMethods(loginClass);
         Method loginMethod = null;
+        Method returnValueHandle = null;
         for (Method allDeclaredMethod : allDeclaredMethods) {
             final String name = allDeclaredMethod.getName();
             if ("login".equals(name)){
                 loginMethod = allDeclaredMethod;
-                break;
+
+                if (loginMethod != null && returnValueHandle != null ){
+                    break;
+                }
+
+                continue;
+            }
+            if ("returnValueHandler".equals(name)){
+                returnValueHandle = allDeclaredMethod;
+
+                if (loginMethod != null && returnValueHandle != null ){
+                    break;
+                }
             }
         }
-        if (loginMethod == null){
-            throw new ToolException("未找到登录方法, 实现类方法名必须为 login");
+        if (loginMethod == null || returnValueHandle == null){
+            throw new ToolException("需要实现登录方法(login)和响应值处理方法(returnValueHandler), 请实现接口 com.sanri.tools.modules.externallink.service.CustomLogin");
         }
-        final Object o = ReflectUtils.newInstance(loginClass);
-        final Object invokeMethod = ReflectionUtils.invokeMethod(loginMethod, o, externalLink);
 
+        try {
+            final Object customLoginInstance = ReflectUtils.newInstance(loginClass);
+            final Object invokeMethod = ReflectionUtils.invokeMethod(loginMethod, customLoginInstance, externalLink, request);
+            ReflectionUtils.invokeMethod(returnValueHandle, customLoginInstance, externalLink, invokeMethod, response);
+        }catch (Exception e){
+            log.error(e.getMessage(),e);
+            throw new ToolException("登录失败，方法执行异常:"+e.getMessage()+", 详情见后端日志");
+        }
     }
 }
