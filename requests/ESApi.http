@@ -31,7 +31,7 @@ GET {{esUrl}}/_cat/health?v
 GET {{esUrl}}/_cat/indices?v
 
 ### 查询索引信息
-GET {{esUrl}}/goods
+GET {{esUrl}}/elastic_search_project
 
 ### search
 GET {{esUrl}}/goods/_search/

@@ -28,6 +28,7 @@
         <module>tools-maven</module>
         <module>tools-rocketmq</module>
         <module>tools-externallink</module>
+        <module>tools-proxy</module>
     </modules>
 
     <parent>

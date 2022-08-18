@@ -1,0 +1,117 @@
+### proxy
+POST {{baseUrl}}/proxy
+Authorization: {{Authorization}}
+Content-Type: application/json
+
+{
+  "address": "http://192.168.61.71:8280",
+  "method": "get",
+  "path": "/eims_war/rest/api/i18n/langs"
+}
+
+### 代理多部分请求
+POST {{baseUrl}}/proxy
+Content-Type: multipart/form-data; boundary=uploadSingle
+Authorization: {{Authorization}}
+
+--uploadSingle
+Content-Disposition: form-data; name="proxyInfo"; filename="sdaf.png"
+Content-Type: application/json
+
+{
+"address": "http://192.168.61.71:8280",
+"method": "POST",
+"path":"/eims_war/api/convert/img2imageid/default",
+"headers": {
+  "Cookie": "loginSource=PWD; CookieName=123; XSRF-TOKEN=; SESSION=ODZjMWRmMDItOTZjOC00OWJkLWExZDktMTQ1OGNjMWQ1NzUz"
+}
+}
+
+--uploadSingle
+Content-Disposition: form-data; name="srcFile"; filename="sdaf.png"
+Content-Type: application/octet-stream
+
+< C:\Users\Administrator\Downloads/sdaf.png
+--uploadSingle
+Content-Disposition: form-data; name="optUser"
+
+yujia
+--uploadSingle
+Content-Disposition: form-data; name="appCode"
+
+FSSCTEST
+--uploadSingle
+Content-Disposition: form-data; name="ttcode"
+
+FSSCTEST
+--uploadSingle
+Content-Disposition: form-data; name="noTask"
+
+undefined
+--uploadSingle
+Content-Disposition: form-data; name="appId"
+
+undefined
+--uploadSingle
+Content-Disposition: form-data; name="invoiceDatasourceType"
+
+undefined
+--uploadSingle
+Content-Disposition: form-data; name="scantype"
+
+5
+--uploadSingle
+Content-Disposition: form-data; name="billNo"
+
+--uploadSingle
+Content-Disposition: form-data; name="batchNumber"
+
+20211020001
+--uploadSingle
+Content-Disposition: form-data; name="total"
+
+1
+--uploadSingle
+Content-Disposition: form-data; name="current"
+
+1
+--uploadSingle
+Content-Disposition: form-data; name="batchScanPage"
+
+true
+
+### 列出所有 http 文件
+GET {{baseUrl}}/security/connect/http/connects
+Authorization: {{Authorization}}
+
+### 解析出所有请求
+GET {{baseUrl}}/http/requests?connName=esapi
+Authorization: {{Authorization}}
+
+### 获取某一个请求详情
+GET {{baseUrl}}/http/detail?connName=esapi&reqId=#12
+Authorization: {{Authorization}}
+
+### 发起某一个请求
+POST {{baseUrl}}/http/sendRequest
+Authorization: {{Authorization}}
+Content-Type: application/json
+
+{
+  "connName": "esapi",
+  "reqId": "#7",
+  "params": {
+    "esUrl": "http://192.168.254.131:9200"
+  }
+}
+
+### 代理 es 请求
+POST {{baseUrl}}/proxy
+Authorization: {{Authorization}}
+Content-Type: application/json
+
+{
+  "address": "http://192.168.254.131:9200",
+  "method": "get",
+  "path": "/_cat/indices"
+}

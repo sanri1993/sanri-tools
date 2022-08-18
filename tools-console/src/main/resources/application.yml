@@ -33,5 +33,8 @@ logging:
   level:
     root: info
     com.sanri.tools.modules: debug
+forest:
+  connect-timeout: 1000
+  read-timeout: 5000
 
 

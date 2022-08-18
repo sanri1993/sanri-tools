@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication(exclude = MongoAutoConfiguration.class)
 @EnableScheduling
-@ForestScan(basePackages = "com.sanri.tools.modules.*.remote.apis")
+//@ForestScan(basePackages = "com.sanri.tools.modules.*.remote.apis")
 @ServletComponentScan
 @EnableAspectJAutoProxy(exposeProxy = true)
 public class Application {

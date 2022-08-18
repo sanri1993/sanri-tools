@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,6 +44,11 @@ public class ExternalLinkService {
             final String baseName = connectOutput.getConnectInput().getBaseName();
             final String link = connectService.loadContent("link", baseName);
             final ExternalLink externalLink = JSON.parseObject(link, ExternalLink.class);
+            final ExternalLink.RouteInfo routeInfo = externalLink.getRouteInfo();
+            if (routeInfo != null){
+                long countsum = Stream.of(link.toCharArray()).count();
+                routeInfo.setRoute(routeInfo.getRoute() + "-" + countsum);
+            }
             // name 取自 baseName 字段
             externalLink.setName(baseName);
             externalLinks.add(externalLink);

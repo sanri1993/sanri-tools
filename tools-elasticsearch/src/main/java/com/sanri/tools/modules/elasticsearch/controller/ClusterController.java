@@ -21,7 +21,7 @@ import com.sanri.tools.modules.elasticsearch.remote.apis.ClusterApis;
 @RestController
 @RequestMapping("/elasticsearch")
 @Validated
-public class EsController {
+public class ClusterController {
 
     @Autowired
     private ConnectService connectService;
