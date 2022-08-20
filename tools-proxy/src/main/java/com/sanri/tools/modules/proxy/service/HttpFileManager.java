@@ -34,10 +34,6 @@ public class HttpFileManager {
 
     public static final String module = "http";
 
-    /**
-     * http 文件解析后的数据
-     */
-    private Map<String, Map<String,RequestInfo>> httpFileParseRequests = new ConcurrentHashMap<>();
 
     /**
      * 请求列表
@@ -46,17 +42,9 @@ public class HttpFileManager {
      * @throws IOException
      */
     public List<SimpleRequestInfo> requests(String connName) throws IOException {
-        Map<String,RequestInfo> requestInfoMap = new ConcurrentHashMap<>();
-
-        if (httpFileParseRequests.containsKey(connName)){
-            requestInfoMap = httpFileParseRequests.get(connName);
-            return requestInfoMap.values().stream().map(SimpleRequestInfo::new).collect(Collectors.toList());
-        }
         final String content = connectService.loadContent(module, connName);
         final String[] lines = StringUtils.split(content, '\n');
         final List<RequestInfo> requestInfos = HttpFileParse.parseRequestInfos(Arrays.asList(lines.clone()));
-        requestInfoMap = requestInfos.stream().collect(Collectors.toMap(RequestInfo::getId, Function.identity()));
-        httpFileParseRequests.put(connName,requestInfoMap);
         return requestInfos.stream().map(SimpleRequestInfo::new).collect(Collectors.toList());
     }
 
@@ -68,10 +56,16 @@ public class HttpFileManager {
      * @throws IOException
      */
     public RequestInfo detail(String connName,String reqId) throws IOException {
-        requests(connName);
+        final String content = connectService.loadContent(module, connName);
+        final String[] lines = StringUtils.split(content, '\n');
+        final List<RequestInfo> requestInfos = HttpFileParse.parseRequestInfos(Arrays.asList(lines.clone()));
 
-        final RequestInfo requestInfo = httpFileParseRequests.get(connName).get(reqId);
-        return requestInfo;
+        for (RequestInfo request : requestInfos) {
+            if (request.getId().equals(reqId)){
+                return request;
+            }
+        }
+        return null;
     }
 
     PropertyPlaceholderHelper propertyPlaceholderHelper = new PropertyPlaceholderHelper("{{","}}");

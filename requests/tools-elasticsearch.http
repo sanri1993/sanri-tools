@@ -15,3 +15,7 @@ Content-Type: application/json
 ### health
 GET {{baseUrl}}/elasticsearch/cluster/health?connName=192.168.254.131
 Authorization: {{Authorization}}
+
+### 索引信息查询
+GET {{baseUrl}}/elasticsearch/index/192.168.61.44/indexInfo?indexName=vm-utax-message-2022.08.19
+Authorization: {{Authorization}}

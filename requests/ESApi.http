@@ -66,7 +66,7 @@ GET {{esUrl}}/_cluster/state
 ###  _stats
 GET {{esUrl}}/_stats
 
-###
+### dsl 查询
 GET {{esUrl}}/zt-subscribe-room-inquiry/_search
 Content-Type: application/json
 
