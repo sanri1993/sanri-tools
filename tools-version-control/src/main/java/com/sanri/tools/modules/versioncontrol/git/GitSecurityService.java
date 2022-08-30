@@ -5,8 +5,10 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.sanri.tools.modules.core.dtos.param.AuthParam;
+import com.sanri.tools.modules.core.exception.ToolException;
 import com.sanri.tools.modules.core.service.connect.ConnectService;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.api.TransportCommand;
 import org.eclipse.jgit.api.TransportConfigCallback;
@@ -27,6 +29,7 @@ import java.net.URL;
 import java.util.List;
 
 @Service
+@Slf4j
 public class GitSecurityService {
     @Autowired
     private ConnectService connectService;
@@ -64,6 +67,10 @@ public class GitSecurityService {
         // 帐号密码授权
         final String content = connectService.loadContent(MODULE, authDto.getGroup());
         final AuthParam authParam = JSON.parseObject(content, AuthParam.class);
+        if(authParam == null){
+            log.error("未找到 git 的权限参数配置, 或许还是使用的旧版本 git 参数配置, 需要更新参数配置");
+            throw new ToolException("GIT 鉴权参数未配置, 请检查 git 参数配置");
+        }
         final UsernamePasswordCredentialsProvider usernamePasswordCredentialsProvider = new UsernamePasswordCredentialsProvider(authParam.getUsername(), authParam.getPassword());
         transportCommand.setCredentialsProvider(usernamePasswordCredentialsProvider);
     }

@@ -1,4 +1,4 @@
-package com.sanri.tools.modules.core.controller.dtos;
+package com.sanri.tools.modules.classloader.dtos;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonIgnore;

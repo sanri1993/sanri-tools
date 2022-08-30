@@ -108,7 +108,7 @@ public class QuartzServiceNew {
             return triggerTasks;
         }catch (SQLException e){
             log.error(e.getMessage());
-            throw new ToolException("当前连接[ "+connName+" ]没有 quartz 相关表");
+            throw new ToolException("当前连接[ "+connName+" ]["+namespace+"]没有 quartz 相关表");
         }
     }
 

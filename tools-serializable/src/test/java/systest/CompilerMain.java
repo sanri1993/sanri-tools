@@ -7,11 +7,19 @@ import javax.tools.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class CompilerMain {
+    @Test
+    public void test1(){
+        List a = new ArrayList();
+        a.add(11);
+        a.add("sss");
+        System.out.println(a);
+    }
     @Test
     public void test3() throws IOException {
         final InputStream resourceAsStream = CompilerMain.class.getResourceAsStream("/classpath.txt");

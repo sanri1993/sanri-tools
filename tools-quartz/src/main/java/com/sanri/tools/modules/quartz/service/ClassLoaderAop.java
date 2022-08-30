@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 @Aspect
 public class ClassLoaderAop {
 
-    @Pointcut("@annotation(com.sanri.tools.modules.quartz.service.InvokeClassLoader)")
+    @Pointcut("within(com.sanri.tools.modules.quartz..*) && @annotation(com.sanri.tools.modules.quartz.service.InvokeClassLoader)")
     public void pointcut(){}
 
     @Autowired

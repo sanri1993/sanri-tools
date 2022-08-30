@@ -62,6 +62,10 @@ public class PluginUseCollect implements DataCollect , InitializingBean {
 	}
 
 	public void reconnect(){
+        if (true) {
+            return ;
+        }
+
 		if (bufferedWriter != null){
 			try {
 				bufferedWriter.close();

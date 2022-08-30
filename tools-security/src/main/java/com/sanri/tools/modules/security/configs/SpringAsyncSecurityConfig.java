@@ -1,5 +1,6 @@
 package com.sanri.tools.modules.security.configs;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,7 @@ import java.util.concurrent.Executor;
  * 添加用户信息的异步线程配置,覆盖默认异步线程配置
  */
 @Configuration
+@Slf4j
 public class SpringAsyncSecurityConfig {
     @Bean(name = "asyncExecutor")
     public Executor getAsyncExecutor() {

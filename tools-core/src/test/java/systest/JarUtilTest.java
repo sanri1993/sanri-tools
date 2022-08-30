@@ -1,17 +1,13 @@
 package systest;
 
-import com.sanri.tools.modules.core.utils.JarUtil;
+import com.sanri.tools.modules.core.utils.JarArchiveUtil;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 import java.util.jar.Attributes;
-import java.util.jar.JarEntry;
-import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
 public class JarUtilTest {
@@ -28,9 +24,9 @@ public class JarUtilTest {
 		final Manifest manifest = new Manifest();
 		final Attributes mainAttributes = manifest.getMainAttributes();
 		mainAttributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
-		mainAttributes.put(Attributes.Name.CLASS_PATH, JarUtil.standardClasspath(classpath));
+		mainAttributes.put(Attributes.Name.CLASS_PATH, JarArchiveUtil.standardClasspath(classpath));
 
-		JarUtil.createManifestFile(new File("d:/test"), manifest);
+		JarArchiveUtil.createManifestFile(new File("d:/test"), manifest);
 	}
 
 	@Test
@@ -40,11 +36,11 @@ public class JarUtilTest {
 		final Manifest manifest = new Manifest();
 		final Attributes mainAttributes = manifest.getMainAttributes();
 		mainAttributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
-		mainAttributes.put(Attributes.Name.CLASS_PATH, JarUtil.standardClasspath(classpath));
-		JarUtil.createManifestFile(jarFileDir, manifest);
+		mainAttributes.put(Attributes.Name.CLASS_PATH, JarArchiveUtil.standardClasspath(classpath));
+		JarArchiveUtil.createManifestFile(jarFileDir, manifest);
 
 		// 打包 jar 包
-		final File jar = JarUtil.jar(new File("d:/test/test.jar"), jarFileDir);
+		final File jar = JarArchiveUtil.jar(new File("d:/test/test.jar"), jarFileDir);
 		System.out.println(jar);
 	}
 

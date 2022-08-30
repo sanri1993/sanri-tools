@@ -1,2 +1,115 @@
 ### 序列化 - 可用的序列化列表
 GET {{baseUrl}}/serializer/names
+
+### 类加载器 - 所有的类加载器
+GET {{baseUrl}}/classloader/classloaders
+Authorization: {{Authorization}}
+
+### 类加载器 - 查看类加载器加载的类
+GET {{baseUrl}}/classloader/listLoadedClasses?classloaderName=111
+Authorization: {{Authorization}}
+
+### 类加载器 - 查看某个类的所有方法信息
+GET {{baseUrl}}/classloader/user/com.mmc.dubbo.api.user.UserFact/methodNames
+
+### 类加载器 - 上传单个文件
+POST {{baseUrl}}/classloader/111/upload/single
+Content-Type: multipart/form-data; boundary=uploadSingle
+Authorization: {{Authorization}}
+
+--uploadSingle
+Content-Disposition: form-data; name="classloaderName"
+
+111
+--uploadSingle
+Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
+Content-Type: application/octet-stream
+
+< C:/Users/Administrator/Downloads\EamImageUploadService.class
+
+### 获取类方法名列表
+GET {{baseUrl}}/method/111/com.wenjing.eambase.utils.SignUtil/methodNames
+Authorization: {{Authorization}}
+
+### 获取类的方法列表(完整方法标识)
+GET {{baseUrl}}/method/111/com.wenjing.common.base.I18nKey/methods
+Authorization: {{Authorization}}
+
+### 获取类方法详细信息
+POST {{baseUrl}}/method/methodInfo
+Authorization: {{Authorization}}
+Content-Type: application/json
+
+{
+  "classloaderName": "111",
+  "className": "com.wenjing.common.base.I18nKey",
+  "methodSignature": {
+    "methodName": "getChinese",
+    "argTypes": [
+      "[Ljava.lang.String;"
+    ]
+  }
+}
+
+
+### 获取类方法详细信息
+POST {{baseUrl}}/method/methodInfo
+Authorization: {{Authorization}}
+Content-Type: application/json
+
+{
+  "classloaderName": "111",
+  "className": "com.wenjing.eambase.utils.SignUtil",
+  "methodSignature": {
+    "methodName": "getSignString",
+    "argTypes": [
+      "long",
+      "java.util.List",
+      "java.lang.String"
+    ]
+  }
+}
+
+### 参数模拟
+POST {{baseUrl}}/method/mockParams
+Authorization: {{Authorization}}
+Content-Type: application/json
+
+{
+  "classloaderName": "111",
+  "className": "com.wenjing.eambase.utils.SignUtil",
+  "methodSignature": {
+    "methodName": "getSignString",
+    "argTypes": [
+      "long",
+      "java.util.List",
+      "java.lang.String"
+    ]
+  }
+}
+
+### 调用一个类方法
+POST {{baseUrl}}/method/invoke
+Authorization: {{Authorization}}
+Content-Type: application/json
+
+{
+  "methodReq": {
+    "classloaderName": "111",
+    "className": "com.wenjing.eambase.utils.SignUtil",
+    "methodSignature": {
+      "methodName": "getSignString",
+      "argTypes": [
+        "long",
+        "java.util.List",
+        "java.lang.String"
+      ]
+    }
+  },
+  "params": [
+    8587,
+    "[\"L5rI\",\"KfMzxcI6N\",\"AKHQVQCl\",\"tdMHA11X\",\"FZC\",\"1xx8daS\",\"Mpk5e\",\"b\"]",
+    "vbWJAaC"
+  ]
+}
+

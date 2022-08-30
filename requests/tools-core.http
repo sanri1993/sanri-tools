@@ -1,28 +1,3 @@
-### 类加载器 - 所有的类加载器
-GET {{baseUrl}}/classloader/classloaders
-Authorization: {{Authorization}}
-
-### 类加载器 - 查看类加载器加载的类
-GET {{baseUrl}}/classloader/listLoadedClasses?classloaderName=job
-
-### 类加载器 - 查看某个类的所有方法信息
-GET {{baseUrl}}/classloader/user/com.mmc.dubbo.api.user.UserFact/methodNames
-
-### 类加载器 - 上传单个文件
-POST {{baseUrl}}/classloader/111/upload/single
-Content-Type: multipart/form-data; boundary=uploadSingle
-Authorization: {{Authorization}}
-
---uploadSingle
-Content-Disposition: form-data; name="classloaderName"
-
-111
---uploadSingle
-Content-Disposition: form-data; name="file"; filename="EamImageUploadService.class"
-Content-Type: application/octet-stream
-
-< C:/Users/Administrator/Downloads\EamImageUploadService.class
-
 ### 数据 - 类加载器随机数据生成
 GET {{baseUrl}}/data/random?className=com.sanri.tools.modules.core.dtos.param.DatabaseConnectParam&classloaderName=
 Authorization: {{Authorization}}

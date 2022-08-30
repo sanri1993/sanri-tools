@@ -5,23 +5,26 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.jar.JarEntry;
-import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
-import java.util.zip.CRC32;
-import java.util.zip.Deflater;
-import java.util.zip.ZipOutputStream;
 
+import com.sanri.tools.modules.core.exception.ToolException;
+import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
+import org.apache.commons.compress.archivers.jar.JarArchiveOutputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.apache.commons.lang3.ArrayUtils;
+
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Administrator
- * 打 jar 包工具
+ * 打 jar 包工具, 这个工具打 jar 是压缩格式的 jar 包, 不能被 java 加载
  */
-public class JarUtil {
+@Slf4j
+public class JarArchiveUtil {
 
     /**
      * 获取标准格式的 classpath
@@ -59,18 +62,16 @@ public class JarUtil {
             // 创建父级目录
             outputFile.getParentFile().mkdirs();
         }
-        try(final JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(outputFile));){
-            jarOutputStream.setLevel(Deflater.NO_COMPRESSION);
-            jarOutputStream.setMethod(ZipOutputStream.STORED);
+        try(final JarArchiveOutputStream jarArchiveOutputStream = new JarArchiveOutputStream(new FileOutputStream(outputFile));){
             for (File file : files) {
                 if (file.isFile()){
-                    addFile(jarOutputStream,file,file.getName());
+                    addFile(jarArchiveOutputStream,file,file.getName());
                 }else if (file.isDirectory()){
-                    addDirectory(jarOutputStream,file,new OnlyPath(file.getParentFile()));
+                    addDirectory(jarArchiveOutputStream,file,new OnlyPath(file.getParentFile()));
                 }
             }
 
-            jarOutputStream.finish();
+            jarArchiveOutputStream.finish();
         }
 
         return outputFile;
@@ -78,62 +79,39 @@ public class JarUtil {
 
     /**
      * jar 中添加一个目录
-     * @param jarOutputStream
+     * @param jarArchiveOutputStream
      * @param file
      * @param path
      * @throws IOException
      */
-    private static void addDirectory(JarOutputStream jarOutputStream,File file,OnlyPath path) throws IOException {
+    private static void addDirectory(JarArchiveOutputStream jarArchiveOutputStream,File file,OnlyPath path) throws IOException {
         final Collection<File> listFilesAndDirs = FileUtils.listFilesAndDirs(file, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
         for (File listFilesAndDir : listFilesAndDirs) {
             final String relativePath = path.relativize(new OnlyPath(listFilesAndDir)).toString();
             if (listFilesAndDir.isDirectory()) {
                 // 如果是目录, 先添加一个 entry
-                JarEntry jarEntry = new JarEntry(relativePath + "/");
-                jarEntry.setTime(listFilesAndDir.lastModified());
-                jarEntry.setSize(0);
-                jarEntry.setCrc(0);
-                jarOutputStream.putNextEntry(jarEntry);
-                jarOutputStream.closeEntry();
+                JarArchiveEntry jarArchiveEntry = new JarArchiveEntry(relativePath + "/");
+                jarArchiveOutputStream.putArchiveEntry(jarArchiveEntry);
+                jarArchiveOutputStream.closeArchiveEntry();
                 continue;
             }
-            addFile(jarOutputStream,listFilesAndDir,relativePath);
+            addFile(jarArchiveOutputStream,listFilesAndDir,relativePath);
         }
     }
 
     /**
      * jar 文件中添加一个文件
-     * @param jarOutputStream
+     * @param jarArchiveOutputStream
      * @param file
      * @param path
      * @throws IOException
      */
-    private static void addFile(JarOutputStream jarOutputStream,File file,String path) throws IOException {
-        JarEntry jarEntry = new JarEntry(path);
-        jarEntry.setTime(file.lastModified());
-        jarEntry.setSize(file.length());
-        jarEntry.setCrc(fastCalcFileCrc32(file));
-        jarOutputStream.putNextEntry(jarEntry);
+    private static void addFile(JarArchiveOutputStream jarArchiveOutputStream,File file,String path) throws IOException {
+        JarArchiveEntry jarArchiveEntry = new JarArchiveEntry(path);
+        jarArchiveOutputStream.putArchiveEntry(jarArchiveEntry);
         try(final FileInputStream fileInputStream = new FileInputStream(file)){
-            IOUtils.copy(fileInputStream,jarOutputStream);
-            jarOutputStream.closeEntry();
-        }
-    }
-    /**
-     * 计算 crc32
-     * @param file
-     * @return
-     * @throws IOException
-     */
-    public static long fastCalcFileCrc32(File file) throws IOException {
-        CRC32 crc32 = new CRC32();
-        try(FileInputStream fileInputStream = new FileInputStream(file)){
-            byte[] buffer = new byte[8192];
-            int length;
-            while ((length = fileInputStream.read(buffer)) != -1) {
-                crc32.update(buffer, 0, length);
-            }
-            return crc32.getValue();
+            IOUtils.copy(fileInputStream,jarArchiveOutputStream);
+            jarArchiveOutputStream.closeArchiveEntry();
         }
     }
 

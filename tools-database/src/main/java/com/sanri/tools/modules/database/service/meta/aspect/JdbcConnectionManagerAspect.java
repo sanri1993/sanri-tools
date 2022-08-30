@@ -42,7 +42,7 @@ public class JdbcConnectionManagerAspect {
     @Autowired
     private ConnDatasourceAdapter connDatasourceAdapter;
 
-    @Pointcut("@annotation(com.sanri.tools.modules.database.service.meta.aspect.JdbcConnection)")
+    @Pointcut("within(com.sanri.tools.modules.database..*) && @annotation(com.sanri.tools.modules.database.service.meta.aspect.JdbcConnection)")
     public void pointcut(){}
 
     public static final ThreadLocal<Map<DruidDataSource,ConnectionHolder>> connectionThreadLocal = new NamedThreadLocal<>("Connection Holder");
