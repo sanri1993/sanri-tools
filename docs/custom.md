@@ -35,12 +35,26 @@ npm run dev
 ```
 4. 访问地址 `http://localhost:9527`
 
+> 如果连接失败, 看是不是后端连接的是不是本地地址, 检查文件 .env.development 配置 VUE_APP_BASE_API 为当前机器 ip 地址或者直接写 http://localhost:8084
 
 ## 模块开发
 
 新建一个模块，命名为 `tools-*`， 包路径 `com.sanri.tools.modules.模块名`， 然后就可以开始你的开发，将服务提供出来。
 
 最后将模块添加到 tools-console/pom.xml 中就开发了一个新的模块
+
+> 如果需要打包, 需要将目录包含进 sanritools.jar 包中; 具体做法是打包配置插件 spring-boot-maven-plugin 添加一个 include
+>
+> 如果引用了外部的包, 需要重新生成 sanritoolslib 依赖包;
+
+``` shell script
+# 生成 sanritoolslib 依赖包
+
+# 1. 注释掉 /pom.xml 中的 tools-console 依赖
+
+# 2. 执行命令 
+mvn dependency:copy-dependencies -DoutputDirectory=d:/test/sanritoolslib  -DincludeScope=runtime 
+```
 
 ### 使用平台提供的功能
 
