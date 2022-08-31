@@ -11,6 +11,7 @@ import com.sanri.tools.modules.core.dtos.RelativeFile;
 import com.sanri.tools.modules.versioncontrol.project.dtos.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.NameFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -383,7 +384,12 @@ public class MavenProjectService implements InitializingBean {
             if (ArrayUtils.contains(parent.list(),"target")){
                 return new File(parent,compilePath);
             }
-            throw new IllegalStateException("是否还未编译, 没有找到 target 目录,在文件:" + file);
+//            throw new IllegalStateException("是否还未编译, 没有找到 target 目录,在文件:" + file);
+            log.warn("是否还未编译, 没有找到 target 目录,在文件:{}",file);
+            if ("java".equalsIgnoreCase(FilenameUtils.getExtension(file.getName()))){
+                throw new IllegalStateException("是否还未编译, 没有找到 target 目录,在文件:" + file);
+            }
+            return stop;
         }
         return new File(parent,compilePath);
     }

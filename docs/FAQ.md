@@ -28,3 +28,9 @@ properties:
     security:
       protocol: SASL_PLAINTEXT
 ```
+
+### 关于 elasticsearch 配置连接无效, 还是连接到了 localhost
+
+因为 es 是使用 http 协议的, 然后我使用了 forest 框架
+
+所以在配置 es 连接时, 需要添加前缀  http:// 不然会连接到 localhost 
