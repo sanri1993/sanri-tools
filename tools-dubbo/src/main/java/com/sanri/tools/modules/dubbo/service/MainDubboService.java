@@ -10,6 +10,10 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import com.sanri.tools.modules.classloader.MethodService;
+import com.sanri.tools.modules.classloader.dtos.ClassMethodInfo;
+import com.sanri.tools.modules.classloader.dtos.InvokeMethodResponse;
+import com.sanri.tools.modules.classloader.dtos.MethodReq;
 import com.sanri.tools.modules.core.service.connect.ConnectService;
 import com.sanri.tools.modules.core.service.connect.dtos.ConnectOutput;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,20 +45,7 @@ public class MainDubboService {
     @Autowired
     private ZookeeperService zookeeperService;
     @Autowired
-    private ClassloaderService classloaderService;
-
-    @Autowired
-    private ConnectService connectService;
-
-    /**
-     * 检查是否存在 dubbo 服务
-     * @param connName
-     * @return
-     * @throws IOException
-     */
-    public boolean checkIsDubbo(String connName) throws IOException {
-        return zookeeperService.exists(connName,"/dubbo");
-    }
+    private MethodService methodService;
 
     /**
      * 这个主要从 zookeeper 上取有哪些服务
@@ -98,41 +89,14 @@ public class MainDubboService {
         return dubboProviderDtos;
     }
 
-    private String [] primitiveTypeNames = {"long"};
-
-    public Object invoke(DubboInvokeParam dubboInvokeParam) throws ClassNotFoundException, NoSuchMethodException, RemotingException, ExecutionException, InterruptedException {
-        String classloaderName = dubboInvokeParam.getClassloaderName();
-        String serviceClassName = dubboInvokeParam.getServiceName();
-
-        // 解析出 class
-        ClassLoader classloader = classloaderService.getClassloader(classloaderName);
-        if (classloader == null){
-            classloader = ClassLoader.getSystemClassLoader();
-        }
-        Class<?> clazz = classloader.loadClass(serviceClassName);
-
-        // 解析出方法
-        Method[] declaredMethods = clazz.getDeclaredMethods();
-        Method method = null;
-        for (Method declaredMethod : declaredMethods) {
-            if (declaredMethod.getName().equals(dubboInvokeParam.getMethodName())){
-                method = declaredMethod;
-                break;
-            }
-        }
-
-        // 解析参数
-        Class<?>[] parameterTypes = method.getParameterTypes();
-        JSONArray args = dubboInvokeParam.getArgs();
-        Object [] argArray = new Object[parameterTypes.length];
-        for (int i = 0; i < parameterTypes.length; i++) {
-            Object object = args.get(i);
-            if (object instanceof JSONObject){
-                JSONObject current = (JSONObject) object;
-                object = JSON.parseObject(current.toJSONString(),parameterTypes[i]);
-            }
-            argArray[i] = object;
-        }
+    /**
+     * @param dubboInvokeParam
+     * @return
+     */
+    public InvokeMethodResponse invoke(DubboInvokeParam dubboInvokeParam) throws ClassNotFoundException, NoSuchMethodException, RemotingException, ExecutionException, InterruptedException {
+        final MethodReq methodReq = dubboInvokeParam.getMethodReq();
+        final Method method = methodService.toMethod(methodReq.getClassloaderName(), methodReq.getClassName(), methodReq.getMethodSignature());
+        final Object[] argArray = methodService.convertToMethodParams(methodReq, dubboInvokeParam.getParams());
 
         // 得到要请求的提供者信息
         String providerURL = dubboInvokeParam.getProviderURL();
@@ -146,14 +110,19 @@ public class MainDubboService {
         request.setTwoWay(true);
         request.setData(new RpcInvocation(method, argArray,map));
 
+        final ClassMethodInfo classMethodInfo = methodService.toMethodInfo(method);
         // 请求数据
+        long startTime = System.currentTimeMillis();
         DoeClient client = new DoeClient(provider);
         client.doConnect();
         client.send(request);
         CompletableFuture<RpcResult> future = ResponseDispatcher.getDispatcher().getFuture(request);
         RpcResult rpcResult = future.get();
         ResponseDispatcher.getDispatcher().removeFuture(request);
-        return rpcResult.getValue();
+        final Object value = rpcResult.getValue();
+        long spendTime = System.currentTimeMillis() - startTime;
+
+        return new InvokeMethodResponse(spendTime,classMethodInfo.getReturnType(),value);
     }
 
     public static HashMap<String,String> getAttachmentFromUrl(URL url) {
@@ -179,28 +148,5 @@ public class MainDubboService {
          map.put(Constants.VERSION_KEY, "1.0"); // 不能设置这个，不然服务端找不到invoker
          */
         return map;
-    }
-
-//    @PostConstruct
-//    public void register(){
-//        pluginManager.register(PluginDto.builder().module("call").name("dubbo").author("9420").desc("依赖 zookeeper ,在线调用 dubbo 方法").logo("dubbo.jpg").build());
-//    }
-
-    public List<String> connects() {
-        final List<ConnectOutput> connectOutputs = connectService.moduleConnects(ZookeeperService.module);
-//        List<String> names = connectService.names(ZookeeperService.module);
-        List<String> connects = new ArrayList<>();
-        for (ConnectOutput connectOutput : connectOutputs) {
-            final String name = connectOutput.getConnectInput().getBaseName();
-            try {
-                boolean isDubbo = checkIsDubbo(name);
-                if (isDubbo){
-                    connects.add(name);
-                }
-            } catch (IOException e) {
-                log.error(e.getMessage(),e);
-            }
-        }
-        return connects;
     }
 }

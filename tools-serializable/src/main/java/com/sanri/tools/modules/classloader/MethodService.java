@@ -1,6 +1,5 @@
 package com.sanri.tools.modules.classloader;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -12,7 +11,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.reflect.MethodUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
@@ -150,7 +148,7 @@ public class MethodService {
      * @return
      * @throws ClassNotFoundException
      */
-    protected Method toMethod(String classloaderName,String className,ClassMethodSignature methodSignature) throws ClassNotFoundException, NoSuchMethodException {
+    public Method toMethod(String classloaderName,String className,ClassMethodSignature methodSignature) throws ClassNotFoundException, NoSuchMethodException {
         final ClassLoader classloader = classloaderService.getClassloader(classloaderName);
         final Class<?> clazz = classloader.loadClass(className);
 
@@ -171,7 +169,7 @@ public class MethodService {
      * @param declaredMethod
      * @return
      */
-    protected ClassMethodInfo toMethodInfo(Method declaredMethod){
+    public ClassMethodInfo toMethodInfo(Method declaredMethod){
         final String name = declaredMethod.getName();
         // 获取方法参数
         final Type[] parameterTypes = declaredMethod.getGenericParameterTypes();
@@ -202,7 +200,7 @@ public class MethodService {
      */
     public InvokeMethodResponse invokeMethod(InvokeMethodRequest invokeMethodRequest) throws Throwable {
         final MethodReq methodReq = invokeMethodRequest.getMethodReq();
-        final ClassLoader classloader = classloaderService.getClassloader(methodReq.getClassloaderName());
+
 
         final Method method = toMethod(methodReq.getClassloaderName(), methodReq.getClassName(), methodReq.getMethodSignature());
         final Class<?> declaringClass = method.getDeclaringClass();
@@ -210,18 +208,42 @@ public class MethodService {
             throw new ToolException("枚举类型不允许调用方法");
         }
 
+        Object[] values = convertToMethodParams(methodReq,invokeMethodRequest.getParams());
+
+        // 判断是否是静态方法
+        final ClassMethodInfo classMethodInfo = toMethodInfo(method);
+        try {
+            if (Modifier.isStatic(method.getModifiers())){
+                long startTime = System.currentTimeMillis();
+                final Object invoke = method.invoke(null,values);
+                long spendTime = System.currentTimeMillis() - startTime;
+                return new InvokeMethodResponse(spendTime,classMethodInfo.getReturnType(),invoke);
+            }
+            final Object newInstance = declaringClass.newInstance();
+
+            long startTime = System.currentTimeMillis();
+            final Object invoke = method.invoke(newInstance, values);
+            long spendTime = System.currentTimeMillis() - startTime;
+            return new InvokeMethodResponse(spendTime,classMethodInfo.getReturnType(),invoke);
+        }catch (InvocationTargetException e) {
+            throw e.getTargetException();
+        }
+
+    }
+
+    public Object[] convertToMethodParams(MethodReq methodReq, List params) throws ClassNotFoundException {
+        final ClassLoader classloader = classloaderService.getClassloader(methodReq.getClassloaderName());
         final ClassMethodSignature methodSignature = methodReq.getMethodSignature();
         final List<String> argTypes = methodSignature.getArgTypes();
         Class<?> [] parameterTypes = new Class[argTypes.size()];
         Object[] values = new Object[argTypes.size()];
         if (CollectionUtils.isNotEmpty(argTypes)){
-            final List<Object> params = invokeMethodRequest.getParams();
             for (int i = 0; i < argTypes.size(); i++) {
                 parameterTypes[i] = TypeSupport.getType(argTypes.get(i), classloader);
 
                 if (ClassUtils.isPrimitiveOrWrapper(parameterTypes[i]) || parameterTypes[i] == String.class){
 //                    values[i] = parameterTypes[i].cast();
-                    final Object o = invokeMethodRequest.getParams().get(i);
+                    final Object o = params.get(i);
                     if (o instanceof Number && (parameterTypes[i] == Byte.class || parameterTypes[i] == Byte.TYPE)){
                         values[i] = ((Number)o).byteValue();
                     }else if (o instanceof Number && (parameterTypes[i] == Short.class || parameterTypes[i] == Short.TYPE) ){
@@ -270,37 +292,18 @@ public class MethodService {
                         values[i] = String.valueOf(o);
                     }
                 }else if (parameterTypes[i] == Date.class){
-                    final Object o = invokeMethodRequest.getParams().get(i);
+                    final Object o = params.get(i);
                     log.info("date: {}",o);
                 }else if (parameterTypes[i] == BigDecimal.class){
-                    final String value = (String) invokeMethodRequest.getParams().get(i);
+                    final String value = (String) params.get(i);
                     values[i] = new BigDecimal(value);
                 }else{
-                    final String value = (String) invokeMethodRequest.getParams().get(i);
+                    final String value = (String) params.get(i);
                     values[i] = JSON.parseObject(value,parameterTypes[i]);
                 }
             }
         }
-
-        // 判断是否是静态方法
-        final ClassMethodInfo classMethodInfo = toMethodInfo(method);
-        try {
-            if (Modifier.isStatic(method.getModifiers())){
-                long startTime = System.currentTimeMillis();
-                final Object invoke = method.invoke(null,values);
-                long spendTime = System.currentTimeMillis() - startTime;
-                return new InvokeMethodResponse(spendTime,classMethodInfo.getReturnType(),invoke);
-            }
-            final Object newInstance = declaringClass.newInstance();
-
-            long startTime = System.currentTimeMillis();
-            final Object invoke = method.invoke(newInstance, values);
-            long spendTime = System.currentTimeMillis() - startTime;
-            return new InvokeMethodResponse(spendTime,classMethodInfo.getReturnType(),invoke);
-        }catch (InvocationTargetException e) {
-            throw e.getTargetException();
-        }
-
+        return values;
     }
 
 

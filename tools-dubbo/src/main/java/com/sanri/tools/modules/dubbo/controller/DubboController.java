@@ -22,21 +22,6 @@ public class DubboController {
     @Autowired
     private MainDubboService dubboService;
 
-    @GetMapping("/connects")
-    public List<String> connects(){
-        return dubboService.connects();
-    }
-
-    /**
-     * 所有的 dubbo 服务,在某个连接上
-     * @param connName
-     * @return
-     */
-    @GetMapping("/services")
-    public List<String> services(@NotNull String connName) throws IOException {
-        return dubboService.services(connName);
-    }
-
     /**
      * 某个服务的提供者列表
      * @param connName
