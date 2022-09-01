@@ -114,7 +114,7 @@ public class PatchManager implements InitializingBean {
      * 序列化到文件, 检查文件是否可用
      */
     public void serializer() throws IOException {
-        final File dir = fileManager.mkDataDir("gitpatch");
+        final File dir = fileManager.mkDataDir("code/gitpatch");
         final File patchs = new File(dir, "patchs");
 
         checkEffect();
@@ -143,7 +143,8 @@ public class PatchManager implements InitializingBean {
     /**
      *
      * $dataDir[Dir]
-     *   gitpatch[Dir]
+     *   code[Dir]
+     *    gitpatch[Dir]
      *     patchs[File]
      *      title:group:repository:branch:time:user:filePath:effect
      */
