@@ -66,6 +66,7 @@ public class RocketMqManagerController {
     /**
      * @param connName
      * @param resetOffsetRequest
+     * @ignore
      * @return
      */
     @PostMapping("/consumerGroup/resetOffset/{connName}")

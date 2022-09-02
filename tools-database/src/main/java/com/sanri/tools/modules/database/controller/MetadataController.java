@@ -26,6 +26,10 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
 
+/**
+ * 数据库元数据管理
+ * @author sanri
+ */
 @RestController
 @RequestMapping("/db/metadata")
 @Validated

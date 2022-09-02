@@ -268,11 +268,11 @@ public class RandomStringGenerator {
       int repetitionNum = 1;
       if (i + 1 < length) {
         String nextCharacter = regexCharacters[i + 1];
-        if (nextCharacter.equals("{")) {
+        if ("{".equals(nextCharacter)) {
           int j = i + 1;
           StringBuilder sbForQuantifier = new StringBuilder();
           try {
-            while (!(nextCharacter = regexCharacters[++j]).equals("}")) {
+            while (!"}".equals(nextCharacter = regexCharacters[++j])) {
               sbForQuantifier.append(nextCharacter);
             }
             try {

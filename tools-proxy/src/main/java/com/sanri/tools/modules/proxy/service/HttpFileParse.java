@@ -130,6 +130,7 @@ public class HttpFileParse {
                                 .replaceAll("%\\}","")
                         );
                         break;
+                    default:
                 }
             }
         }
@@ -231,6 +232,7 @@ public class HttpFileParse {
                     case BODY:
                         boundaryBodyLines.add(currentLine);
                         break;
+                    default:
                 }
             }
 

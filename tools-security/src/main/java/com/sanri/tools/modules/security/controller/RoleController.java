@@ -13,6 +13,9 @@ import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * 安全 - 角色管理
+ */
 @RestController
 @RequestMapping("/security/role")
 @Validated

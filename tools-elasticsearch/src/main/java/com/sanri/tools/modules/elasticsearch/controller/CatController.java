@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.constraints.NotBlank;
 import java.io.IOException;
 
+/**
+ * es cat 命令
+ * @author sanri
+ */
 @RestController
 @RequestMapping("/elasticsearch")
 @Slf4j
@@ -24,6 +28,12 @@ public class CatController {
     @Autowired
     private ConnectService connectService;
 
+    /**
+     * 索引列表
+     * @param connName
+     * @return
+     * @throws IOException
+     */
     @GetMapping("/indices")
     public JSONArray indices(@NotBlank String connName) throws IOException {
         final String baseUrl = loadAddress(connName);

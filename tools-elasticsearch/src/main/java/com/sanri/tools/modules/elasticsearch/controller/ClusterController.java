@@ -18,6 +18,10 @@ import com.sanri.tools.modules.core.service.file.ConnectServiceOldFileBase;
 
 import com.sanri.tools.modules.elasticsearch.remote.apis.ClusterApis;
 
+/**
+ * es cluster 命令
+ * @author sanri
+ */
 @RestController
 @RequestMapping("/elasticsearch")
 @Validated

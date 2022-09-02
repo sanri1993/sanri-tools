@@ -27,6 +27,10 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+/**
+ * kafka 相关功能
+ * @author sanri
+ */
 @RestController
 @RequestMapping("/kafka")
 @Validated

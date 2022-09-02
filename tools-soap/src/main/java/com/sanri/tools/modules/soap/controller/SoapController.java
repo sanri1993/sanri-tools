@@ -14,6 +14,10 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * soap 服务功能
+ * @author sanri
+ */
 @RestController
 @RequestMapping("/soap")
 @Validated

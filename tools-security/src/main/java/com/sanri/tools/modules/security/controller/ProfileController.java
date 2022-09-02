@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 /**
  * 当前用户信息
+ * @author sanri
  */
 @RestController
 @RequestMapping("/profile")

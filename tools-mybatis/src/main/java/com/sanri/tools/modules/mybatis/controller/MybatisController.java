@@ -23,6 +23,10 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Mybatis 功能
+ * @author sanri
+ */
 @RestController
 @RequestMapping("/mybatis")
 @Validated

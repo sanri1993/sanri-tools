@@ -58,7 +58,7 @@ public class GitBranchService {
 
         List<Branches.Branch> branches = new ArrayList<>();
         for (Ref ref : call) {
-            final Branches.Branch branch = new Branches.Branch(ref.getName(),ref.getObjectId().name());
+            final Branches.Branch branch = new Branches.Branch(ref.getName(), ref.getObjectId().name());
             branches.add(branch);
         }
         return branches;

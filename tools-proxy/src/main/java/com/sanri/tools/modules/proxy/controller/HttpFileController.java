@@ -14,6 +14,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * http 文件相关功能
+ * @author sanri
+ */
 @RestController
 @Slf4j
 @RequestMapping("/http")

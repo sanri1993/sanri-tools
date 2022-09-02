@@ -16,6 +16,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * 业务词取名工具
+ * @author sanri
+ */
 @RestController
 @RequestMapping("/name")
 @Validated

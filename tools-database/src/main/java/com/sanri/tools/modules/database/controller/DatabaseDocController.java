@@ -16,6 +16,10 @@ import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.database.service.MetaDocService;
 import com.sanri.tools.modules.database.service.dtos.search.SearchParam;
 
+/**
+ * 数据表文档
+ * @author sanri
+ */
 @RestController
 @RequestMapping("/db/doc")
 public class DatabaseDocController {

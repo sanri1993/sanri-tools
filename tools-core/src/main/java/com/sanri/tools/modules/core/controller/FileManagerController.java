@@ -25,6 +25,10 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * 系统文件管理
+ * @author sanri
+ */
 @Controller
 @RequestMapping("/file/manager")
 @Validated

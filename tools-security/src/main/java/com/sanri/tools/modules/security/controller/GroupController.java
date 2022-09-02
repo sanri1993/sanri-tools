@@ -13,6 +13,10 @@ import javax.validation.constraints.NotBlank;
 import java.nio.file.Paths;
 import java.util.Set;
 
+/**
+ * 安全-组织管理
+ * @author sanri
+ */
 @RestController
 @RequestMapping("/security/group")
 @Validated

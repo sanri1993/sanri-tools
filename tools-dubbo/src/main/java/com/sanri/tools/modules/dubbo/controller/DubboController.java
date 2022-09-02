@@ -16,6 +16,10 @@ import com.sanri.tools.modules.dubbo.DubboProviderDto;
 import com.sanri.tools.modules.dubbo.dtos.DubboInvokeParam;
 import com.sanri.tools.modules.dubbo.service.MainDubboService;
 
+/**
+ * dubbo 服务
+ * @author sanri
+ */
 @RestController
 @RequestMapping("/dubbo")
 @Validated
@@ -38,11 +42,6 @@ public class DubboController {
      * 调用 dubbo 服务
      * @param dubboInvokeParam
      * @return
-     * @throws ClassNotFoundException
-     * @throws NoSuchMethodException
-     * @throws RemotingException
-     * @throws InterruptedException
-     * @throws ExecutionException
      */
     @PostMapping("/invoke")
     public Object invoke(@RequestBody @Valid DubboInvokeParam dubboInvokeParam) throws ClassNotFoundException, NoSuchMethodException, RemotingException, InterruptedException, ExecutionException {

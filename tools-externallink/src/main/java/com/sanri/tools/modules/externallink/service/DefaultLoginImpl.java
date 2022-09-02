@@ -33,6 +33,7 @@ public class DefaultLoginImpl implements CustomLogin{
      * 默认登录实现
      * @param loginInfo
      */
+    @Override
     public Object login(ExternalLink externalLink, HttpServletRequest request){
         final String loginDataValue = externalLink.getLoginInfo().getLoginData();
         final String loginUrl = externalLink.getLoginInfo().getLoginUrl();

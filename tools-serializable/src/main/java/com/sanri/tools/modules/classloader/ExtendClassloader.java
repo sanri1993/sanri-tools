@@ -37,6 +37,7 @@ public class ExtendClassloader extends URLClassLoader {
        return (Vector<Class<?>>)ReflectionUtils.getField(classesField,this);
     }
 
+    @Override
     public Class<?> findClass(String name) throws ClassNotFoundException {
         return super.findClass(name);
     }

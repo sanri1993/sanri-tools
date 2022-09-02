@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * 系统小工具
+ * @author sanri
+ */
 @Controller
 @RequestMapping("/system")
 public class SystemController {

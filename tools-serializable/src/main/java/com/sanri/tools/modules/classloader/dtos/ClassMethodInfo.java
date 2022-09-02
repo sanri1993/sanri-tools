@@ -238,8 +238,12 @@ public class ClassMethodInfo implements Comparable<ClassMethodInfo> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         ClassMethodInfo that = (ClassMethodInfo) o;
         return that.getSinature().equals(this.getSinature());
     }

@@ -18,6 +18,10 @@ import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.Jedis;
 import redis.clients.util.Slowlog;
 
+/**
+ * Redis 监控功能
+ * @author sanri
+ */
 @RequestMapping("/redis/monitor")
 @RestController
 @Validated

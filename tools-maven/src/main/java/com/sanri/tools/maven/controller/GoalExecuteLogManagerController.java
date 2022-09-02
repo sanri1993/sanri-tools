@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Maven 执行日志查询
+ * @author sanri
+ */
 @RestController
 @Slf4j
 @Validated

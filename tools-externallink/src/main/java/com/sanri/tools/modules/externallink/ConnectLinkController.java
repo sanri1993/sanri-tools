@@ -14,6 +14,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * 安全 - 外链管理
+ * @author sanri
+ */
 @RestController
 @RequestMapping("/security/connect")
 @Slf4j

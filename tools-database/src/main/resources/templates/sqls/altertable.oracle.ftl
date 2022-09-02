@@ -19,5 +19,13 @@
     /
 </#if>
 <#if diffType == "DELETE">
-
+    DECLARE
+        V_T_COUNT  NUMBER;
+    BEGIN
+        SELECT count(1) INTO V_T_COUNT FROM USER_TABLES WHERE TABLE_NAME = '${meta.actualTableName.tableName}';
+        IF V_T_COUNT > 0 THEN
+            EXECUTE IMMEDIATE 'DROP TABLE ${meta.actualTableName.tableName}
+        END IF;
+    END ;
+    /
 </#if>

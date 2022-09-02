@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Redis 相关功能
+ * @author sanri
+ */
 @RequestMapping("/redis")
 @RestController
 @Validated

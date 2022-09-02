@@ -284,7 +284,7 @@
             <plugin>
                 <groupId>com.github.shalousun</groupId>
                 <artifactId>smart-doc-maven-plugin</artifactId>
-                <version>1.1.4</version>
+                <version>1.1.9</version>
                 <configuration>
                     <configFile>./src/main/resources/smart-doc.json</configFile>
                     <excludes>

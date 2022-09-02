@@ -24,6 +24,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 数据提供能力
+ * @author sanri
+ */
 @RestController
 @RequestMapping("/data")
 @Validated

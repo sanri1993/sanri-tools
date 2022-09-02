@@ -14,6 +14,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 安全连接管理
+ * @author sanri
+ */
 @RestController
 @RequestMapping("/security/connect")
 public class SecurityConnectController {

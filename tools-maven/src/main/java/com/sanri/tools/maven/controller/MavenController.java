@@ -24,6 +24,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Maven 工具
+ * @author sanri
+ */
 @RestController
 @RequestMapping("/maven")
 @Slf4j
@@ -34,11 +38,6 @@ public class MavenController {
     private FileManager fileManager;
     @Autowired
     private StreamResponse streamUtil;
-
-    @GetMapping("/test")
-    public void test(){
-        int i = 1/0;
-    }
 
     /**
      * 下载依赖的 jar 包列表

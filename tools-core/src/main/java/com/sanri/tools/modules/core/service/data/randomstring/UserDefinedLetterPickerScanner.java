@@ -26,8 +26,8 @@ class UserDefinedLetterPickerScanner {
     List<String> bounds = new ArrayList<>();
 
     int i = index;
-    while (!(character = regexCharacters[++i]).equals("]")) {
-      if (character.equals("-") && !bounds.isEmpty()) {
+    while (!"]".equals(character = regexCharacters[++i])) {
+      if ("-".equals(character) && !bounds.isEmpty()) {
         String beginCharacter = bounds.get(bounds.size() - 1); // take from tail
         String endCharacter = regexCharacters[++i]; // take from after "-"
 

@@ -17,13 +17,13 @@ public class LocalTaskDto implements Serializable {
     private Map<String,Object> extraDatas = new HashMap<>();
 
     public LocalTaskDto() {
-        this.createTime = new Date().getTime();
+        this.createTime = System.currentTimeMillis();
     }
 
     public LocalTaskDto(String id, String title) {
         this.id = id;
         this.title = title;
-        this.createTime = new Date().getTime();
+        this.createTime = System.currentTimeMillis();
     }
 
     public void addExtraData(String key, Object data){

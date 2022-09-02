@@ -13,6 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * 类方法相关能力
+ * @author sanri
+ */
 @RestController
 @Slf4j
 @RequestMapping("/method")

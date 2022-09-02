@@ -12,6 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * 增量管理
+ * @author sanri
+ */
 @RestController
 @Slf4j
 @RequestMapping("/patch")

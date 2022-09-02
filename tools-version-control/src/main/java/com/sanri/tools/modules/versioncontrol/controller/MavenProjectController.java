@@ -38,6 +38,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+/**
+ * Maven 项目管理
+ * @author sanri
+ */
 @RequestMapping("/project/maven")
 @RestController
 @Validated

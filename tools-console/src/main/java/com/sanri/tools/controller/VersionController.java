@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 系统版本信息
+ * @author sanri
+ */
 @RestController
 @RequestMapping("/version")
 @Slf4j

@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * 序列化支持
+ * @author sanri
+ */
 @RestController
 @RequestMapping("/serializer")
 public class SerializerController {

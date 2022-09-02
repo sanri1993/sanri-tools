@@ -34,8 +34,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * @resourceName 类加载器
- * @parentMenu menu_level_1_basedata
+ * 类加载器相关功能
+ * @author sanri
  */
 @RestController
 @RequestMapping("/classloader")

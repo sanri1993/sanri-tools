@@ -34,6 +34,11 @@ public class DiagnosticCommandController {
         return heapService.gcClassHistogram(connName,all);
     }
 
+    /**
+     * 获取设置了的 vmflag
+     * @param connName
+     * @return
+     */
     @GetMapping("/flagsSetted")
     public List<VMParam> flagsSetted(@NotBlank String connName) throws ReflectionException, MBeanException, InstanceNotFoundException, IOException {
         return heapService.flagsSetted(connName);

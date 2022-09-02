@@ -19,6 +19,10 @@ import com.sanri.tools.modules.versioncontrol.dtos.*;
 import com.sanri.tools.modules.versioncontrol.git.*;
 import com.sanri.tools.modules.versioncontrol.git.dtos.*;
 
+/**
+ * git 命令支持
+ * @author sanri
+ */
 @RestController
 @RequestMapping("/git")
 @Validated

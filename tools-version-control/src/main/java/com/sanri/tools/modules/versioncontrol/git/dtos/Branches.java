@@ -1,11 +1,13 @@
 package com.sanri.tools.modules.versioncontrol.git.dtos;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@Slf4j
 public class Branches {
     private List<Branch> branches = new ArrayList<>();
     private String currentBranchName;
@@ -37,7 +39,12 @@ public class Branches {
                 local = true;
                 this.branchName = name.substring("refs/heads/".length());
             }else{
-                this.branchName = name.substring("refs/remotes/".length());
+                try {
+                    this.branchName = name.substring("refs/remotes/".length());
+                }catch (Exception e){
+                    log.error("名称截取异常, 使用原来名称: {}",name);
+                    this.branchName = name;
+                }
             }
         }
 

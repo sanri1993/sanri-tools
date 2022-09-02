@@ -37,6 +37,10 @@ import com.sanri.tools.modules.fastdfs.service.FastdfsService;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * fastdfs 相关功能
+ * @author sanri
+ */
 @Controller
 @Slf4j
 @RequestMapping("/fastdfs")

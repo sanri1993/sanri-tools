@@ -17,6 +17,10 @@ import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.Set;
 
+/**
+ * 代码片段构建
+ * @author sanri
+ */
 @RestController
 @RequestMapping("/db/code")
 public class CodeSnippetController {
@@ -29,6 +33,10 @@ public class CodeSnippetController {
     @Autowired
     private CodeSqlService codeSqlService;
 
+    /**
+     * 重命名策略列表
+     * @return
+     */
     @GetMapping("/renameStrategies")
     public Set<String> renameStrategies(){
         return codeGeneratorService.renameStrategies();

@@ -14,6 +14,10 @@ import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * 项目代码生成
+ * @author sanri
+ */
 @RestController
 @RequestMapping("/db/code")
 public class CodeProjectController {

@@ -17,6 +17,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * zookeeper 管理
+ * @author sanri
+ */
 @RestController
 @RequestMapping("/zookeeper")
 @Validated

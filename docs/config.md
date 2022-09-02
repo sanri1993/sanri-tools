@@ -1,10 +1,10 @@
 ## 系统级配置
 
-如果需要修改系统的一些固定参数，你可以在 jar 包的启动目录新建一个 `config` 目录，并添加 `application.yml` 文件来覆盖默认配置
+如果需要修改系统的一些固定参数，你可以在 jar 包的启动目录新建一个 `config` 目录，并添加 `application-deploy.yml` 文件来覆盖默认配置
 
 ### 修改启动端口号
 
-在 `application.yml` 中添加配置 
+在 `application-deploy.yml` 中添加配置 
 
 ```yml
 server
@@ -15,7 +15,7 @@ server
 
 ### 修改系统的数据存储位置
 
-系统产生的数据主要分为三种，配置数据，临时数据，数据，日志信息，你可以在 `application.yml` 中覆盖默认的路径配置
+系统产生的数据主要分为三种，配置数据，临时数据，数据，日志信息，你可以在 `application-deploy.yml` 中覆盖默认的路径配置
 
 ```yaml
 data:

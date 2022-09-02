@@ -3,6 +3,7 @@ package com.sanri.tools.modules.versioncontrol.project.dtos;
 import java.io.File;
 import java.util.Date;
 
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 
@@ -13,6 +14,7 @@ import com.sanri.tools.modules.core.utils.OnlyPath;
 import lombok.Data;
 
 @ToString
+@EqualsAndHashCode
 public class PomFile implements Comparable<PomFile>{
     private File project;
     private OnlyPath relativePath;

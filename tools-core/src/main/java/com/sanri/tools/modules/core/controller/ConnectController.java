@@ -16,8 +16,8 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * @resourceName 连接管理
- * @parentMenu menu_level_1_basedata
+ *  连接管理
+ * @author sanri
  */
 @RestController
 @RequestMapping("/connect")
