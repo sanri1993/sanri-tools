@@ -115,12 +115,13 @@ public class ServerService extends ChannelInboundHandlerAdapter  {
         webSocketService.sendMessage(strMessage);
     }
 
-    public void open(int port) throws SocketException, InterruptedException {
+    public void open(String host,int port) throws SocketException, InterruptedException {
         if (channel != null){
             log.info("关闭上次打开的端口:{}, 并重新监听新端口:{}",connectState.getPort(),port);
             close();
         }
         connectState.setPort(port);
+        connectState.setHost(host);
 
         bossGroup = new NioEventLoopGroup(1);
         workerGroup = new NioEventLoopGroup();
@@ -143,7 +144,7 @@ public class ServerService extends ChannelInboundHandlerAdapter  {
                 .childOption(ChannelOption.SO_SNDBUF, 64 * 1024)
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
 
-        channel = b.bind(port).sync().channel();
+        channel = b.bind(port)                  .sync().channel();
         log.info("服务端开始监听TCP端口： " + port + " ，等待客户端（设备）连接...");
         connectState.setState(true);
     }

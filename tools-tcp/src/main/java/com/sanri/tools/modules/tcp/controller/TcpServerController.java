@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.common.net.HostAndPort;
+import com.sanri.tools.modules.core.utils.NetUtil;
 import org.apache.commons.codec.DecoderException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,10 +22,15 @@ public class TcpServerController {
     private ServerService serverService;
 
     @GetMapping("/open")
-    public ServerService.ServerConnectState open(int port,String reciveModel) throws SocketException, InterruptedException {
-        serverService.open(port);
+    public ServerService.ServerConnectState open(String host,int port,String reciveModel) throws SocketException, InterruptedException {
+        serverService.open(host,port);
 
         return serverService.state(reciveModel);
+    }
+
+    @GetMapping("/localIps")
+    public List<String> localIps(){
+        return NetUtil.getLocalIPs();
     }
 
     @GetMapping("/close")
