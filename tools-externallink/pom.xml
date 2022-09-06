@@ -13,14 +13,14 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.sanri.tools</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>tools-core</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.sanri.tools</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>tools-serializable</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
