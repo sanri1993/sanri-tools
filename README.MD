@@ -10,8 +10,6 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
 
 * 文档地址: https://sanri.gitee.io/sanri-tools-maven
 
-> 在线预览只能预览前端功能, 后端功能需要在公司内网部署才能使用
-
 ## 工具理念和定位
 
 1. 轻量级,快速启动,只依赖于文件系统,可以自行决定要不要添加权限模块 
@@ -38,6 +36,7 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
 * 2022.08.29 引入 jmock 数据模拟
 * 2022.08.29 类加载器添加方法调用能力, 可用于 sign 之类的计算功能 
 * 2022.08.31 dubbo 功能优化, 借用类加载器的能力, 实现远程 dubbo 功能调用
+* 2022.09.05 添加配置文件转换, 支持 json, yaml, properties, xml
 
 ## 快速开始
 **说明:** 这里只会说当前发布最新版本的运行说明, 旧版本请咨询作者
@@ -74,8 +73,9 @@ nohup java -Dloader.path=sanritoolslib -Xms256m -Xmx256m -jar sanritools.jar >/d
 * [数据库模块](tools-database/src/main/resources/tools-database-introduce.md)
 * [Kafka数据监控](tools-kafka/src/main/resources/tools-kafka-introduce.md)
 * [rocketmq数据监控](tools-rocketmq/src/main/resources/tools-rocketmq-introduce.md)
-* [代码增量工具](tools-version-control/src/main/resources/tools-version-control-introduce.md)
 * [Redis监控工具](tools-redis/src/main/resources/tools-redis-introduce.md)
+* [fastdfs](tools-fastdfs/src/main/resources/tools-fastdfs-introduce.md)
+* [代码增量工具](tools-version-control/src/main/resources/tools-version-control-introduce.md)
 * [权限管理](tools-security/src/main/resources/tools-security-introduce.md)
 * [Mybatis工具](tools-mybatis/src/main/resources/tools-mybatis-introduce.md)
 * [jvm工具](tools-jvm/src/main/resources/tools-jvm-introduce.md)

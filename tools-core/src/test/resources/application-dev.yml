@@ -1,0 +1,698 @@
+spring:
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  jpa:
+    database: MYSQL
+    hibernate:
+      ddl-auto: validate
+      naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+        jdbc:
+          batch_size: 800
+          batch_versioned_data: true
+        order_inserts: true
+        order_updates: true
+    show-sql: true
+  ldap:
+    base: OU=citicpacific,DC=citicpacific,DC=com
+    domainName: '%s@citicpacific.com'
+    referral: follow
+    security:
+      credentials: queryAD@zt0034
+      principal: ldapuser@citicpacific.com
+    urls: ldap://192.168.78.8
+  messages:
+    basename: message,message-error,message-issue-invoice_zh_CN,message-accept-invoice_zh_CN,message_zh_CN,message-analyzer_zh_CN,message-vat_zh_CN,message-pay_zh_CN,message-corporate_zh_CN,message-accrual_zh_CN,message-othertax_zh_CN,message-report_zh_CN
+    encoding: UTF-8
+  mvc:
+    throw-exception-if-no-handler-found: true
+  resources:
+    add-mappings: false
+  webservices:
+    wsdl-locations: classpath:/wsdl
+  redis:
+    # redis数据库索引(默认为0)，我们使用索引2的数据库，避免和其他数据库冲突
+    database: ${redis_database:8}
+    # redis服务器地址
+    host: ${redis_host:192.168.61.71}
+    # redis访问密码（默认为空）
+    password: ${redis_password:Redis@1234@pAssword}
+    # redis端口（默认为6379）
+    port: ${redis_port:6699}
+    jedis:
+      pool:
+        # 最大可用连接数（默认为8，负数表示无限）
+        max-active: 200
+        # 最大空闲连接数（默认为8，负数表示无限）
+        max-idle: 200
+        # 最小空闲连接数（默认为0，该值只有为正数才有用）
+        min-idle: 100
+        #从连接池中获取连接最大等待时间（默认为-1，单位为毫秒，负数表示无限）
+        max-wait: 1000
+    timeout: 3000
+  #税务之前propertie转yml文件 开始
+  banner:
+    charset: UTF-8
+  #税务之前propertie转yml文件 结束
+
+  #Druid 连接池通用配置
+  datasource:
+    sharding: false
+    druid:
+      # 下面为连接池的补充设置，应用到上面所有数据源中
+      # 初始化大小，最小，最大
+      initial-size: 5
+      loginUsername: admin
+      loginPassword: 123456
+      min-idle: 5
+      max-active: 100
+      # 配置获取连接等待超时的时间
+      max-wait: 6000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      time-between-eviction-runs-millis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      min-evictable-idle-time-millis: 25200000
+      # sql 校验
+      validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      keep-alive: true
+      # 打开PSCache，并且指定每个连接上PSCache的大小
+      pool-prepared-statements: true
+      # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+      max-pool-prepared-statement-per-connection-size: 20
+      filter:
+        wall:
+          config:
+            comment-allow: true
+            multi-statement-allow: true
+      filters: stat,wall,log4j2
+      # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      remove-abandoned: true
+      remove-abandoned-timeout: 1800
+      log-abandoned: true
+
+    #mysql数据库相关配置
+    type: com.alibaba.druid.pool.DruidDataSource
+    #mysql驱动
+    driver-class-name: ${datasource_driver_class_name:com.mysql.jdbc.Driver}  #oracle.jdbc.OracleDriver（oracle驱动包）
+    #mysql数据库url
+    url: jdbc:${datasource_url:mysql://192.168.60.150:3306/huangzhr22071401?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowMultiQueries=true&serverTimezone=GMT%2B8}
+    #jdbc:oracle:thin:@localhost:1521:console_dev（oracl数据库url）
+    #mysql用户名
+    username: ${datasource_username:huangzhr22071401}
+    #mysql密码
+    password: ${datasource_password:huangzhr22071401}
+  servlet:
+    multipart:
+      # 税务之前的配置properties转换yml文件
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+mybatis:
+  configuration:
+    #使全局的映射器启用或禁用缓存。
+    cache-enabled: false
+    #设置本地缓存范围 session:就会有数据的共享  statement:语句范围 (这样就不会有数据的共享 ) defalut:session
+    local-cache-scope: statement
+    # 这个配置会将执行的sql打印出来，在开发或测试的时候可以用
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    call-setters-on-nulls: true
+  #mybatis的xml路径
+  mapper-locations: classpath*:com/**/dao/**/*DAO.xml,${mapper.dialect}
+  type-aliases-package: com.**.entity
+  type-handlers-package: com.epoch.infrastructure.util.service.typehandler
+#分页插件
+pagehelper:
+  helperDialect: ${datasource_type:mysql} #oracle修改为oracle
+  params: count=countSql
+  reasonable: true
+  supportMethodsArguments: true
+mapper:
+  dialect: classpath*:com/**/dao/**/*${pagehelper.helperDialect}.xml
+  #dialect: classpath*:com/**/dao/**/*oracle.xml #oracle数据库
+management:
+  health:
+    redis:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+com:
+  yuanian:
+    metadata:
+      autoInitial: false #元对象初始化开关
+      localInitialModuleName: eims
+      localCacheEnable: false #是否启用元对象本地，如果打开redis，可以打开本地缓存，否则不开启
+      controlByVersion: true #强制更新元数据表，默认true,比较版本号
+    redisKeyPrefix: ecs #redis前缀
+
+yn:
+  mq:
+    enable: ${mq_enable:false}  #MQ是否启动
+    defaultBinder: rocket
+    nameServers: ${mq_nameservers:192.168.2.237:9876} #MQ地址
+    prefix: ${mq_prefix:eims} #MQ前缀
+    reconsumeTimes: 3 #重试次数
+  openDebugLog: false #是否开启debug日志
+  login-auth-filter:
+    isOpen: false
+    exclusionsList: #与 yn.loginAuthfilter.exclusions 配置互斥，exclusionsList优先
+      - /console/api/*
+      - /logs/*
+      - /console/login/*
+      - /console/user/sendKaptchaToEmail
+      - /console/user/getPasswordRule
+      - /console/user/getLoginNameByKaptcha
+      - /console/user/resetPwdByEmailCode
+      - /console/enterpriseInfo/getEnterpriseInfo
+      - /console/client/task/receiveTask
+      - /console/client/auth/ssoLogin
+      - /console/client/auth/authenticate
+      - /console/client/user/getMsgLanCodeByLoginName
+      - /console/client/ynCloud/login
+      - /v2/api-docs*
+      - /swagger-resources*
+      - /webjars/*
+      - /language/getEnableLanguages
+      - /i18nStatic/queryAllPageLanguages
+      - /login/heartBeart
+      - /haierlogin/login
+      - /actuator
+      - /actuator/*
+      - /doc.html*
+      - /swagger-ui.html
+      - /businessobject/describe
+      - /metadata/describe
+      - /flow/runtime/clearFlowCaches
+      - /masterdata/metadata/sysUser/*
+      - /masterdata/metadata/sysUser
+      - /masterdata/client/getSysUserById
+      - "*healthz"
+      - /authority/client/data/getAuthData
+      - /authority/client/*
+      - /masterdata/dimSync/syncDims
+      - /masterdata/userSync/syncUsersss
+      - /console/sso/*
+fastdfs:
+  isOpen: false
+  connect_timeout: 5
+  network_timeout: 30
+  charset: ISO8859-1
+  tracker_server: 192.168.12.173:22122
+  http:
+    tracker_http_port: 80
+    anti_steal_token: no
+    secret_key: FastDFS1234567890
+#log4j2
+logging:
+  config: classpath:logback-spring.xml
+#  #税务之前properties文件转换yml
+  level:
+    com:
+      wenjing: INFO
+
+
+##税务之前properties文件转换yml
+attachment:
+  file:
+    path: ${utax.nfs.default.dir}/attachment
+cfg:
+  base:
+    excel:
+      path: ${utax.nfs.default.dir}/CfgExcel
+    kettle:
+      path: ${utax.nfs.default.dir}/kettle
+    template:
+      path: ${utax.nfs.default.dir}/CfgTemplate
+ecs:
+  acceptRoleApp: /api/rest/acceptRoleApp
+  addTask: /api/task/addTask
+  appId: xxxxx
+  authenticate: /api/rest/authenticate
+  call:
+    enable: false
+  createOrUpdateUser: /api/rest/createOrUpdateUser
+  deleteAppMenu: /api/rest/deleteAppMenu
+  deleteTask: /api/task/deleteTask
+  deleteUser: /api/rest/deleteUserByLoginName
+  front:
+    url: http://192.168.12.160:8099/
+  header: token
+  productCode: UTAXMP
+  saveAppMenu: /api/rest/saveAppMenu
+  synchronizeTask: /api/task/synchronizeTask
+  updateApp: /api/rest/updateApp
+  updateAttentionTask: /api/task/updateAttentionTask
+  updateTask: /api/task/updateTask
+  url: http://192.168.2.172:8080/ecs-console
+etl:
+  param:
+    db:
+      middle:
+        dbname: zxtf
+        driver:
+          name: ${datasource_driver_class_name:com.mysql.jdbc.Driver}
+        host: 118.187.4.77
+        password: Utax@123456
+        port: 3307
+        username: utax
+      utax:
+        dbname: zxtf
+        driver:
+          name: ${datasource_driver_class_name:com.mysql.jdbc.Driver}
+        host: 118.187.4.77
+        password: Utax@123456
+        port: 3307
+        username: utax
+express:
+  warning:
+    lower: 500
+file:
+  ucloud:
+    ufile:
+      beanName: com.wenjing.data.eam.storage.pool.impl.EamFastDFSClientFactory
+      bucketName: eims1
+      downloadProxySuffix: .ufile.ucloud.com.cn
+      privatekey: RXqTjZtFDVPaCQyvZZybCt_VsOLvKbF7Wf4KUP6N1DE8SnMqE0NAUmGJ0c2BhJdi
+      proxySuffix: ufileos.com
+      publickey: yvviPOzYG8WYvk3XCGnjgJAPnxZzq5cbQn3lpN1k
+      region: cn-bj
+gd:
+  file:
+    temp:
+      path: ${utax.nfs.root.dir}/gd
+inspect:
+  interface:
+    beanName: com.wenjing.eambase.service.EamTaxShareInspectService
+jwt:
+  auth-path: /user/token
+  expiration: 7200
+  header: Authorization
+  iss: yuanian
+  route:
+    authentication:
+      path: /auth
+      refresh: /refresh
+  secret: D0BA9D072CC84FCD8656EC2D37C36095
+limit:
+  clock:
+    minute: 10
+log:
+  path: open-logs
+ocr:
+  interface:
+    beanName: com.wenjing.eambase.service.EamTaxShareOcrService
+oinvoice:
+  pdf:
+    file:
+      path: ${utax.nfs.default.dir}/toPdf
+open:
+  commodity:
+    baiwang:
+      cloud:
+        add:
+          url: http://60.205.83.27/router/rest
+        delete:
+          url: http://60.205.83.27/router/rest
+        search:
+          url: http://60.205.83.27/router/re
+        update:
+          url: http://60.205.83.27/router/rest
+  company:
+    baiwang:
+      cloud:
+        search:
+          url: http://60.205.83.27/router/rest
+  context: /openapi
+  host: 118.187.4.74:8280
+  input:
+    aisino:
+      collect:
+        url: https://51fpin.aisino.com:8443/Aisinojxpf/fpcy/fpcy.action
+      deductible:
+        result:
+          url: https://51fpin.aisino.com:8443/Aisinojxpf/rzjgcx.action
+        url: https://51fpin.aisino.com:8443/Aisinojxpf/scqrfp.action
+      shanghai:
+        deductible:
+          url: http://101.124.0.195:8100/rest/invoice/dii
+        inspect:
+          url: https://ddptcs.ele-cloud.com/recipt/checkFp/getFPInfoByNSRSBH
+      sync:
+        url: https://51fpin.aisino.com:8443/Aisinojxpf/fpcy/jxfpcx.action
+    baiwang:
+      channel:
+        collect:
+          url: https://ivs.baiwang.com/collect
+        deductible:
+          result:
+            url: https://ivs.baiwang.com/result
+          url: https://ivs.baiwang.com/deductible
+        init:
+          url: https://ivs.baiwang.com/init
+        period:
+          switch:
+            url: https://ivs.baiwang.com/jxfp/api/thirdparty/v2/switchTaxPeriod
+        sync:
+          url: https://ivs.baiwang.com/sync
+        syncresult:
+          url: https://ivs.baiwang.com/syncresult
+        systime:
+          url: https://ivs.baiwang.com/systime
+        token:
+          url: https://ivs.baiwang.com/getToken
+      cloud:
+        collect:
+          init:
+            url: http://60.205.83.27/router/rest
+          result:
+            url: http://60.205.83.27/router/rest
+          url: http://60.205.83.27/router/rest
+        deduct:
+          url: http://60.205.83.27/router/rest
+        deductresult:
+          url: http://60.205.83.27/router/rest
+        inspect:
+          url: http://60.205.83.27/router/rest
+        period:
+          switch:
+            url: http://60.205.83.27/router/rest
+    holy:
+      collect:
+        init:
+          url: https://pubapi.holytax.com/pre/api
+        result:
+          url: https://pubapi.holytax.com/pre/api
+        url: https://pubapi.holytax.com/pre/api
+      deduct:
+        url: https://pubapi.holytax.com/pre/api
+      deductresult:
+        url: https://pubapi.holytax.com/pre/api
+      inspect:
+        url: https://pubapi.holytax.com/pre/api
+      period:
+        switch:
+          url: https://pubapi.holytax.com/pre/api
+    inspect:
+      taxno:
+        default: 91310110MA1G87YU8J
+    ivm:
+      sync:
+        url: http://118.187.4.58:8091/ivm/invoice/invoice-page-list
+    mode: production
+    mode.inspect: development
+    mode.test: AISINO
+    province:
+      selenium:
+        headless: false
+        mode: LOCAL
+        remote:
+          url: http://39.97.36.234:32768/wd/hub
+  job:
+    enabled: ${job_enable:false}
+  kaptcha-open: false
+  ocr:
+    baidu:
+      app:
+        id: 11404514
+        key: LB9Fi3ULDfaj8mfV9dY4KpdF
+      recognize:
+        url: https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic
+      secret:
+        key: 28Ai60ZOY4bmSWhdMS633ZCGyfUjcXyH
+    glority:
+      app_key: b89136b36e6248f8b7697e9892f7acd5
+      app_secret: 9f845ae145bd40cca6e5826c135321d0
+      recognize:
+        url: http://fapiao.glority.cn/v1/item/get_item_info
+        url.mult: http://fapiao.glority.cn/v1/item/get_item_info
+    intsig:
+      password: YTS36NQ462M
+      recognize:
+        url: https://imgs-sandbox.intsig.net/icr/recognize_vat_invoice
+      user: yuanian
+  output:
+    baiwang:
+      cloud:
+        empty:
+          query:
+            url: http://60.205.83.27/router/rest
+        exact:
+          query:
+            url: http://60.205.83.27/router/rest
+        formatfile:
+          build:
+            url: http://60.205.83.27/router/rest
+          query:
+            url: http://60.205.83.27/rou
+        invalid:
+          url: http://60.205.83.27/router/res
+        issue:
+          url: http://60.205.83.27/router/rest
+        print:
+          url: http://60.205.83.27/router/rest
+        purchase:
+          query:
+            url: http://60.205.83.27/rout
+        query:
+          url: http://60.205.83.27/router/rest
+        status:
+          url: http://60.205.83.27/router/re
+    mode: production
+  protocol: http
+  schedule:
+    switch: 'on'
+  sdk:
+    appId: 110242
+    appSecret: X7XOJYI2XJXTB5JL1NZT2E0Z5V9E5XOH
+    commodity:
+      delete:
+        url: https://openetaxv2.yuanian.com/utax/openapi/commodity/delete
+      save:
+        url: https://openetaxv2.yuanian.com/utax/openapi/commodity/save
+      search:
+        url: https://openetaxv2.yuanian.com/utax/openapi/commodity/search
+      update:
+        url: https://openetaxv2.yuanian.com/utax/openapi/commodity/update
+    company:
+      search:
+        url: https://openetaxv2.yuanian.com/utax/openapi/company/search
+    format: JSON
+    input:
+      collect:
+        feedback:
+          url: https://openetaxv2.yuanian.com/utax/utax/openapi/invoice/input/collect/feedback
+        init:
+          url: https://openetaxv2.yuanian.com/utax/utax/openapi/invoice/input/collect/init
+        url: https://openetaxv2.yuanian.com/utax/utax/openapi/invoice/input/collect
+      deduct:
+        record:
+          url: https://openetaxv2.yuanian.com/utax/utax/openapi/invoice/input/deduct/record
+        result:
+          url: https://openetaxv2.yuanian.com/utax/utax/openapi/invoice/input/deduct/result
+        url: https://openetaxv2.yuanian.com/utax/utax/openapi/invoice/input/deduct
+      inspect:
+        url: https://openetaxv2.yuanian.com/utax/utax/openapi/invoice/input/inspect
+      period:
+        get:
+          url: ''
+        switch:
+          url: https://openetaxv2.yuanian.com/utax/utax/openapi/invoice/input/period/switch
+    ocr:
+      common:
+        url: https://openetaxv2.yuanian.com/utax/openapi/ocr/common
+      invoice:
+        general:
+          url: https://openetaxv2.yuanian.com/utax/openapi/ocr/invoice/general
+        mult:
+          url: https://openetaxv2.yuanian.com/utax/openapi/ocr/invoice/mult
+        roll:
+          url: https://openetaxv2.yuanian.com/utax/openapi/ocr/invoice/roll
+        url: https://openetaxv2.yuanian.com/utax/openapi/ocr/invoice
+      qrcode:
+        generate:
+          url: https://openetaxv2.yuanian.com/utax/openapi/ocr/qrcode/generate
+        url: https://openetaxv2.yuanian.com/utax/openapi/ocr/qrcode
+      traffic:
+        itinerary:
+          url: https://openetaxv2.yuanian.com/utax/openapi/ocr/traffic/itinerary
+        taxi:
+          url: https://openetaxv2.yuanian.com/utax/openapi/ocr/traffic/taxi
+        train:
+          url: https://openetaxv2.yuanian.com/utax/openapi/ocr/traffic/train
+    output:
+      empty:
+        query:
+          url: https://openetaxv2.yuanian.com/utax/utax/openapi/invoice/output/empty/query
+      formatfile:
+        build:
+          url: https://openetaxv2.yuanian.com/utax/utax/openapi/invoice/output/formatfile/bulid
+        query:
+          url: https://openetaxv2.yuanian.com/utax/utax/openapi/invoice/output/formatfile/query
+      invalid:
+        url: https://openetaxv2.yuanian.com/utax/utax/openapi/invoice/output/invalid
+      issue:
+        url: https://openetaxv2.yuanian.com/utax/utax/openapi/invoice/output/issue
+      print:
+        url: https://openetaxv2.yuanian.com/utax/utax/openapi/invoice/output/print
+      purchase:
+        query:
+          url: https://openetaxv2.yuanian.com/utax/utax/openapi/invoice/output/purchase/query
+      query:
+        exact:
+          url: https://openetaxv2.yuanian.com/utax/utax/openapi/invoice/output/query/exact
+        url: https://openetaxv2.yuanian.com/utax/utax/openapi/invoice/output/query
+      status:
+        url: https://openetaxv2.yuanian.com/utax/openapi/invoice/output/status
+    rate:
+      conversion:
+        url: http://39.97.36.234:80/openapi/rate/conversion
+      exchange:
+        url: http://39.97.36.234:80/openapi/rate/exchange
+    salt:
+      value: QEUR32IFE1F8W1JPFJR
+    tax:
+      calendar:
+        url: https://openetaxv2.yuanian.com
+    user:
+      token:
+        url: https://openetaxv2.yuanian.com/utax/openapi/user/token
+    vendor: BAIWANG
+    version: v1.0
+  session-invalidate-time: 1800
+  session-validation-interval: 900
+  sign:
+    enabled: false
+  spring-session-open: false
+  swagger-open: true
+  token:
+    enabled: false
+  user:
+    baiwang:
+      cloud:
+        login:
+          url: http://60.205.83.27/router/rest
+  version: v1
+redis:
+  cache:
+    init:
+      enabled: true
+report:
+  excel:
+    path: ${utax.nfs.default.dir}/Excel
+  template:
+    path: ${utax.nfs.default.dir}/template
+server:
+  tomcat:
+    uri-encoding: UTF-8
+socket:
+  msg:
+    uri:
+      prefixes: /user/
+sso:
+  acs:
+    redirect:
+      uri: ''
+system:
+  host:
+    desc: 开发环境
+    url:
+      http: http://118.187.3.32:8280/utax/
+      https: https://118.187.3.32:8443/utax/
+  url:
+    hostname: localhost
+    root: http://${system.url.hostname}:{server.port}${server.servlet.context-path}
+tax:
+  manager:
+    role: 78787
+utax:
+  job:
+    enabled: false
+  nfs:
+    default:
+      dir: ${utax.nfs.root.dir}/utaxfiles
+    root:
+      dir: /ulan/nfs
+  static:
+    file:
+      url:
+        prefixes: http://118.187.4.95:9000
+  upload:
+    file:
+      store:
+        path: ${attachment.file.path}
+vat:
+  sdk:
+    accuredcharge:
+      list:
+        url: http://127.0.0.1:8099/utax/sdk/vat/list
+      update:
+        url: http://127.0.0.1:8099/utax/sdk/vat/update-accuredharge
+xxl:
+  job:
+    accessToken: ''
+    admin:
+      addresses: ${job_admin_addresses:http://192.168.80.100:9999/utax-job-admin}
+    executor:
+      appname: ${job_appname:job-executor-eims-dev}
+      ip: ''
+      logpath: C:\\Users\\Administrator\\AppData\\Local\\JetBrains\\IntelliJIdea2020.2\\compile-server/logs/jobhandler
+      logretentiondays: 30
+      port: ${job_port:22298}
+    url:
+      jobinfo:
+        trigger: ${xxl.job.admin.addresses}/jobinfo/trigger-by-handler
+#加密解密密钥
+encrypt:
+  secretKey: urCa65HI42sLkLT2BH/uQ1Y9A8PDWPjXgADlXari4Ug=
+
+eam:
+  version: mfeature-20220714-1238406
+  fastdfs:
+    isOpen: ${fastdfs_enable:true}
+    connect_timeout: 5
+    network_timeout: 30
+    charset: ISO8859-1
+    tracker_server: ${fastdfs_tracker_server:192.168.58.78:22122}
+    http:
+      tracker_http_port: 80
+      anti_steal_token: no
+      secret_key: FastDFS1234567890
+  storage:
+    dynamic:
+      - source: image
+        open: ${fastdfs_enable:true}
+        connect_timeout: 5
+        network_timeout: 30
+        charset: ISO8859-1
+        tracker_server: ${fastdfs_tracker_server:192.168.58.78:22122}
+        http:
+          tracker_http_port: 80
+          anti_steal_token: no
+          secret_key: FastDFS1234567890
+      - source: efile
+        open: ${fastdfs_enable:true}
+        connect_timeout: 5
+        network_timeout: 30
+        charset: ISO8859-1
+        tracker_server: ${fastdfs_tracker_server:192.168.58.78:22122}
+        http:
+          tracker_http_port: 80
+          anti_steal_token: no
+          secret_key: FastDFS1234567890
+eims:
+  enableTimeZone: true
+  highscan:
+    supportversion: 2.5.2

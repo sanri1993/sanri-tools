@@ -1,16 +1,23 @@
 package systest;
 
+import com.alibaba.fastjson.JSON;
+import com.sanri.tools.modules.core.security.dtos.FatUser;
+import com.sanri.tools.modules.core.service.data.RandomDataService;
+import com.sanri.tools.modules.core.service.file.FileManager;
 import com.sanri.tools.modules.core.service.file.Tailf;
 import com.sanri.tools.modules.core.service.file.TreeFile;
+import com.sanri.tools.modules.core.service.file.configfile.*;
 import com.sanri.tools.modules.core.utils.MybatisXNode;
 import com.sanri.tools.modules.core.utils.MybatisXPathParser;
 import com.sanri.tools.modules.core.utils.OnlyPath;
 import com.sanri.tools.modules.core.utils.OnlyPaths;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
@@ -35,11 +42,115 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class FileMain {
+
+    @Test
+    public void testConfigFileConvert() throws Exception {
+
+        // json => yaml
+//        final RandomDataService randomDataService = new RandomDataService();
+//        final Object o = randomDataService.populateDataStart(FatUser.class);
+//        ConfigFile source = new JsonConfigFile(JSON.toJSONString(o));
+//        ConfigFile target = new YamlConfigFile();
+//        target.write(source.read());
+//        System.out.println(target.getContent());
+
+        // json => properties
+//        final RandomDataService randomDataService = new RandomDataService();
+//        final Object o = randomDataService.populateDataStart(FatUser.class);
+//        ConfigFile source = new JsonConfigFile(JSON.toJSONString(o));
+//        ConfigFile target = new PropertiesConfigFile();
+//        target.write(source.read());
+//        System.out.println(target.getContent());
+
+        // json => xml
+        final RandomDataService randomDataService = new RandomDataService();
+        final Object o = randomDataService.populateDataStart(FatUser.class);
+        ConfigFile source = new JsonConfigFile(JSON.toJSONString(o));
+        ConfigFile target = new XmlConfigFile();
+        target.write(source.read());
+        System.out.println(target.getContent());
+
+        // properties => yaml
+//        final URI resolve = FileMain.class.getResource("/").toURI().resolve("application-dev.properties");
+//        final String s = IOUtils.toString(resolve.toURL().openStream());
+//        ConfigFile source = new PropertiesConfigFile(s);
+//        ConfigFile target = new YamlConfigFile();
+//        target.write(source.read());
+//        System.out.println(target.getContent());
+
+        // properties => json
+//        final URI resolve = FileMain.class.getResource("/").toURI().resolve("application-dev.properties");
+//        final String s = IOUtils.toString(resolve.toURL().openStream());
+//        ConfigFile source = new PropertiesConfigFile(s);
+//        ConfigFile target = new JsonConfigFile();
+//        target.write(source.read());
+//        System.out.println(target.getContent());
+
+        // properties => xml
+//        final URI resolve = FileMain.class.getResource("/").toURI().resolve("application-dev.properties");
+//        final String s = IOUtils.toString(resolve.toURL().openStream());
+//        ConfigFile source = new PropertiesConfigFile(s);
+//        ConfigFile target = new XmlConfigFile();
+//        target.write(source.read());
+//        System.out.println(target.getContent());
+
+
+        // yaml => json
+//        final URI resolve = FileMain.class.getResource("/").toURI().resolve("application-dev.yml");
+//        final String s = IOUtils.toString(resolve.toURL().openStream());
+//        ConfigFile source = new YamlConfigFile(s);
+//        ConfigFile target = new JsonConfigFile();
+//        target.write(source.read());
+//        System.out.println(target.getContent());
+
+        // yaml => properties
+//        final URI resolve = FileMain.class.getResource("/").toURI().resolve("application-dev.yml");
+//        final String s = IOUtils.toString(resolve.toURL().openStream());
+//        ConfigFile source = new YamlConfigFile(s);
+//        ConfigFile target = new PropertiesConfigFile();
+//        target.write(source.read());
+//        System.out.println(target.getContent());
+
+        // yaml => xml
+//        final URI resolve = FileMain.class.getResource("/").toURI().resolve("application-dev.yml");
+//        final String s = IOUtils.toString(resolve.toURL().openStream());
+//        ConfigFile source = new YamlConfigFile(s);
+//        ConfigFile target = new XmlConfigFile();
+//        target.write(source.read());
+//        System.out.println(target.getContent());
+
+        // xml => json
+//        final URI resolve = FileMain.class.getResource("/").toURI().resolve("ILogCleanDAO.xml");
+//        final String s = IOUtils.toString(resolve.toURL().openStream());
+//        ConfigFile source = new XmlConfigFile(s);
+//        ConfigFile target = new PropertiesConfigFile();
+//        target.write(source.read());
+//        System.out.println(target.getContent());
+
+        // xml => yaml
+//        final URI resolve = FileMain.class.getResource("/").toURI().resolve("ILogCleanDAO.xml");
+//        final String s = IOUtils.toString(resolve.toURL().openStream());
+//        ConfigFile source = new XmlConfigFile(s);
+//        ConfigFile target = new YamlConfigFile();
+//        target.write(source.read());
+//        System.out.println(target.getContent());
+
+        // xml => properties
+//        final URI resolve = FileMain.class.getResource("/").toURI().resolve("ILogCleanDAO.xml");
+//        final String s = IOUtils.toString(resolve.toURL().openStream());
+//        ConfigFile source = new XmlConfigFile(s);
+//        ConfigFile target = new PropertiesConfigFile();
+//        target.write(source.read());
+//        System.out.println(target.getContent());
+
+
+    }
 
     @Test
     public void fileAccessTimeRead() throws IOException {
