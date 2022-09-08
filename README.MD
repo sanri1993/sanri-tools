@@ -1,5 +1,11 @@
-# 9420 开发工具包
+# 9420 开发工具包 
+
+<img src="http://pic.yupoo.com/sanri1993/95547376/55af459b.png" width="80px" alt="logo">
+
 ---
+
+[![star](https://gitee.com/sanri/sanri-tools-maven/badge/star.svg?theme=dark)](https://gitee.com/sanri/sanri-tools-maven/stargazers) [![fork](https://gitee.com/sanri/sanri-tools-maven/badge/fork.svg?theme=dark)](https://gitee.com/sanri/sanri-tools-maven/members)
+
 sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想解决项目开发中一些数据可视化,数据监控,数据调用的问题
 
 目前已经提供一些常用的工具,读者也可以开发自己的工具 ,欢迎 pr 或者提 issue 
@@ -15,10 +21,11 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
 1. 轻量级,快速启动,只依赖于文件系统,可以自行决定要不要添加权限模块 
 2. 多模块,可插拨设计,只加载想要的工具
 3. 工具定位
-   * 数据可视化, Redis, Kafka 之类的数据明文展示
-   * 数据监控, 一些服务器信息, jvm 信息的监控
+   * 数据可视化, Redis, Kafka, Rocketmq 之类的数据明文展示
+   * 数据监控, Fastdfs 的图片查看和文件下载
    * 数据调用, 可以进行无环境的数据调用, 如 Dubbo , Soap, Mybatis 
-   * 代码生成, 模板代码, 通用项目的代码生成
+   * 数据库元数据管理, 代码生成, 模板代码, 通用项目的代码生成
+   * 任意无界面中间件的监控, 数据管理
 4. 本工具主要适用于开发, 不能用于监控生产数据
 
 ## 更新记录(代码库重要功能更新记录, 不是发行版)
