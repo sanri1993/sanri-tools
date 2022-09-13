@@ -145,13 +145,7 @@ public class MavenSettingsResolve {
      * @throws XmlPullParserException
      */
     public RepositorySystem repositorySystem(boolean offline) throws IOException, XmlPullParserException {
-        DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
-        locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
-        locator.addService(TransporterFactory.class, FileTransporterFactory.class);
-        if (!offline) {
-            locator.addService(TransporterFactory.class, HttpTransporterFactory.class);
-        }
-        return locator.getService(RepositorySystem.class);
+       return Booter.newRepositorySystem(offline);
     }
 
     /**
@@ -163,12 +157,6 @@ public class MavenSettingsResolve {
      */
     public RepositorySystemSession repositorySystemSession(String settingsName,RepositorySystem repositorySystem) throws IOException, XmlPullParserException {
         final Settings settings = parseSettings(settingsName);
-
-        LocalRepository localRepo = new LocalRepository(settings.getLocalRepository());
-        DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
-        session.setConfigProperty(ConflictResolver.CONFIG_PROP_VERBOSE, true);
-        session.setConfigProperty(DependencyManagerUtils.CONFIG_PROP_VERBOSE, true);
-        session.setLocalRepositoryManager(repositorySystem.newLocalRepositoryManager(session, localRepo));
-        return session;
+        return Booter.newRepositorySystemSession(repositorySystem,settings.getLocalRepository());
     }
 }

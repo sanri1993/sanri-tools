@@ -1,5 +1,5 @@
 <pre>
-3.2.0 版本菜单设计
+3.3.0 版本菜单设计
 
 前端工具
     二维码工具
@@ -16,16 +16,15 @@
 	rabbitmq -- 计划中
 	kafka
 数据库(database)
-	关系型(relation)
-		元数据查询
-		代码生成
-		元数据比对
-		数据管理
-		Mybatis工具
-	非关系型(nosql)
-		redis
-		mongodb
-		es
+    元数据查询
+    代码生成
+    元数据比对
+    数据管理
+    Mybatis工具	
+NoSql(nosql)
+    redis
+    mongodb
+    es
 文件存储(storage)
 	fastdfs
 远程方法调用(rpc)
@@ -42,17 +41,17 @@
 	业务取名工具
     随机数据生成
 安全管理(secruity)
-	组织管理
-	用户管理
-	角色管理
-	资源管理
-	权限视图
+	组织管理(group)
+	用户管理(user)
+	角色管理(role)
+	资源管理(resource)
+	权限视图(authView)
 系统管理(system)
 	本地连接管理(localSecurityConnect)
     基础数据(basedata)
-        Maven
-        Zookeeper
-        序列化工具
+        Maven(maven)
+        Zookeeper(zookeeper)
+        序列化工具(serializer)
 	类加载器管理(classloader)
 	系统文件管理(filemanager)
 

@@ -1,9 +1,11 @@
 package com.sanri.tools.modules.core.utils;
 
-import com.sanri.tools.modules.core.exception.ToolException;
-import lombok.extern.slf4j.Slf4j;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 import org.apache.commons.compress.archivers.zip.Zip64Mode;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
@@ -13,10 +15,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import com.sanri.tools.modules.core.exception.ToolException;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
@@ -26,6 +27,69 @@ import java.util.List;
  */
 @Slf4j
 public class ZipUtil {
+
+	/**
+	 * 多个文件打包
+	 * @param zipFile
+	 * @param files
+	 */
+	public static File zip(File zipFile,File...files) throws IOException {
+		if (!zipFile.getParentFile().exists()){
+			// 创建父级目录
+			zipFile.getParentFile().mkdirs();
+		}
+		try(final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(new FileOutputStream(zipFile));){
+			for (File file : files) {
+				if (file.isFile()){
+					addFile(zipArchiveOutputStream,file,file.getName());
+				}else if (file.isDirectory()){
+					addDirectory(zipArchiveOutputStream,file,new OnlyPath(file.getParentFile()));
+				}
+			}
+
+			zipArchiveOutputStream.finish();
+		}
+
+		return zipFile;
+	}
+
+	/**
+	 * zip 中添加一个目录
+	 * @param zipArchiveOutputStream
+	 * @param file
+	 * @param path
+	 * @throws IOException
+	 */
+	private static void addDirectory(ZipArchiveOutputStream zipArchiveOutputStream,File file,OnlyPath path) throws IOException {
+		final Collection<File> listFilesAndDirs = FileUtils.listFilesAndDirs(file, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
+		for (File listFilesAndDir : listFilesAndDirs) {
+			final String relativePath = path.relativize(new OnlyPath(listFilesAndDir)).toString();
+			if (listFilesAndDir.isDirectory()) {
+				// 如果是目录, 先添加一个 entry
+				ZipArchiveEntry zipArchiveEntry = new ZipArchiveEntry(relativePath + "/");
+				zipArchiveOutputStream.putArchiveEntry(zipArchiveEntry);
+				zipArchiveOutputStream.closeArchiveEntry();
+				continue;
+			}
+			addFile(zipArchiveOutputStream,listFilesAndDir,relativePath);
+		}
+	}
+
+	/**
+	 * zip 文件中添加一个文件
+	 * @param zipArchiveOutputStream
+	 * @param file
+	 * @param path
+	 * @throws IOException
+	 */
+	private static void addFile(ZipArchiveOutputStream zipArchiveOutputStream,File file,String path) throws IOException {
+		ZipArchiveEntry zipArchiveEntry = new ZipArchiveEntry(path);
+		zipArchiveOutputStream.putArchiveEntry(zipArchiveEntry);
+		try(final FileInputStream fileInputStream = new FileInputStream(file)){
+			IOUtils.copy(fileInputStream,zipArchiveOutputStream);
+			zipArchiveOutputStream.closeArchiveEntry();
+		}
+	}
 
 	/**
 	 * 
@@ -268,8 +332,8 @@ public class ZipUtil {
 				final String relativePath = path.relativize(new OnlyPath(listFilesAndDir)).toString();
 				if (listFilesAndDir.isDirectory()) {
 					// 如果是目录, 先添加一个 entry
-					JarArchiveEntry jarArchiveEntry = new JarArchiveEntry(relativePath + "/");
-					outputStream.putArchiveEntry(jarArchiveEntry);
+					ZipArchiveEntry zipArchiveEntry = new ZipArchiveEntry(relativePath + "/");
+					outputStream.putArchiveEntry(zipArchiveEntry);
 					outputStream.closeArchiveEntry();
 					continue;
 				}

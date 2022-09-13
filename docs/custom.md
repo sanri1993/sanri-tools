@@ -127,6 +127,12 @@ class Test{
 
 在 build 中的 spring-boot-maven-plugin 插件中, 需要将自己的模块包含到打包目录, 并且 lib 包中也要更新新引入的 jar 包
 
+### 打包
+
+sanri-tools-maven 目录执行 `mvn clean package`
+
+然后可以在 sanri-tools-maven/tools-console/target 目录中找到打好的包
+
 ## 技术指导 
 联系 sanri 
 
