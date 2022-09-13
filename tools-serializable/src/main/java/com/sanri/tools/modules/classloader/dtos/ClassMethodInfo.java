@@ -214,7 +214,7 @@ public class ClassMethodInfo implements Comparable<ClassMethodInfo> {
         buffer.append("(");
         for (int i = 0; i < args.size(); i++) {
             Arg arg = args.get(i);
-            buffer.append(arg.type.toString()).append(" ").append(arg.name);
+            buffer.append(arg.type.toString()).append(" ").append("arg"+i);
             if (i != args.size() - 1){
                 buffer.append(", ");
             }
