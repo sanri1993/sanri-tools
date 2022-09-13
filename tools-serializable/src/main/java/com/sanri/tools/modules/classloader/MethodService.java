@@ -13,6 +13,7 @@ import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.DefaultParameterNameDiscoverer;
+import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
@@ -36,7 +37,7 @@ public class MethodService {
     @Autowired
     private RandomDataService randomDataService;
 
-    private ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
+    private ParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
 
     /**
      * 列出所有的方法名
@@ -173,7 +174,16 @@ public class MethodService {
         final String name = declaredMethod.getName();
         // 获取方法参数
         final Type[] parameterTypes = declaredMethod.getGenericParameterTypes();
-        final String[] parameterNames = parameterNameDiscoverer.getParameterNames(declaredMethod);
+        String[] parameterNames = parameterNameDiscoverer.getParameterNames(declaredMethod);
+
+        // 解析获取不到参数名的情况
+        if (parameterNames == null){
+            parameterNames = new String[parameterTypes.length];
+            for (int i = 0; i < parameterNames.length; i++) {
+                parameterNames[i] = "arg" + i;
+            }
+        }
+
         List<ClassMethodInfo.Arg> args = new ArrayList<>();
         for (int i = 0; i < parameterNames.length; i++) {
             final Type parameterType = parameterTypes[i];
