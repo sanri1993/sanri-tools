@@ -30,8 +30,8 @@ sanri-tools-maven 是一个开源的用于企业开发的工具包，重点想�
 
 ## 更新记录(代码库重要功能更新记录, 不是发行版)
 
-* 2021.11.09 增加 Redis 树形 Key
 * 2021.11.01 增加 git 代码增量工具
+* 2021.11.09 增加 Redis 树形 Key
 * 2022.01.01 增加权限管理(v3.0.0)
 * 2022.03.01 数据库模块重构
 * 2022.05.06 添加 fastdfs 工具
@@ -75,7 +75,7 @@ nohup java -Dloader.path=sanritoolslib -Xms256m -Xmx256m -jar sanritools.jar >/d
 当前工具的版本在 `tools-console/src/main/resources/version` 文件中, 使用 3 位版本号, 主版本.次版本.bug更新
 
 各模块版本信息和描述信息在模块的 `resources/tools-[模块名].plugin.properties` 中注册进来(名称,版本,作者,依赖项,帮助文档), 
-> 帮助文档通过链接来指定, http 开头时为网络帮助文档, 否则在本地 resources 中查找 
+> 帮助文档通过链接来指定, http:// 开头时为网络帮助文档, 否则在本地 resources 中查找 
 
 * [核心模块](tools-core/src/main/resources/tools-core-introduce.md)
 * [数据库模块](tools-database/src/main/resources/tools-database-introduce.md)
@@ -117,7 +117,7 @@ nohup java -Dloader.path=sanritoolslib -Xms256m -Xmx256m -jar sanritools.jar >/d
 * 微信扫码并关注我，获得项目最新动态及更新提醒,拉你进入微信技术群
 * 如果有需要支持的中间件,可以提交 pr, 或者微信联系我
 
-![我的微信](https://images.gitee.com/uploads/images/2020/0802/183913_c89fb735_409739.jpeg)
+![我的微信](http://pic.yupoo.com/sanri1993/136eb7a3/c31cdd37.jpg)
 
 ## 捐赠
 创作不易, 觉得工具好用的话, 可以帮打赏一下啊
