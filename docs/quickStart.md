@@ -2,7 +2,7 @@
 
 ## 启动项目3.2.0
 
-下载完整包 <https://cowtransfer.com/s/4fc38439977f40>
+下载完整包 <https://cowtransfer.com/s/54549a5602394d>
 
 ```
 unzip sanritools3.2.0-jdk8.zip
