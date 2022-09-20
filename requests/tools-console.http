@@ -6,3 +6,6 @@ POST {{baseUrl}}/cron/nextExecutionTime
 Content-Type: application/x-www-form-urlencoded
 
 expression=0 1-6/2 14 ? * ?
+
+### 获取更新记录
+GET {{baseUrl}}/system/update/md
